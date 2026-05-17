@@ -1,0 +1,63 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 255 255 255;
+  --foreground: 5 0 64;
+  --brand: 22 163 74;
+  --accent: 196 49 120;
+}
+
+html,
+body {
+  color: rgb(var(--foreground));
+  background: rgb(var(--background));
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Smooth-scroll for in-page anchors */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Hide scrollbar but keep functionality */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Subtle leaf pattern background */
+.leaf-grid {
+  background-image:
+    radial-gradient(circle at 1px 1px, rgba(22, 101, 52, 0.08) 1px, transparent 0);
+  background-size: 28px 28px;
+}
+
+/* Gradient utilities */
+.bg-brand-gradient {
+  background-image: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+}
+.bg-accent-gradient {
+  background-image: linear-gradient(135deg, #c43178 0%, #9d2961 100%);
+}
+.bg-popular-gradient {
+  background-image: linear-gradient(135deg, #5eead4 0%, #14b8a6 100%);
+}
+
+/* Card lift on hover */
+.card-lift {
+  transition: transform 250ms ease, box-shadow 250ms ease;
+}
+.card-lift:hover {
+  transform: translateY(-4px);
+}
