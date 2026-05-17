@@ -8,6 +8,7 @@ import { User, Mail, Lock, Loader2, CheckCircle2 } from 'lucide-react';
 export default function SignupForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const redirectParam = searchParams.get('redirect');
   const planParam = (searchParams.get('plan') as 'basic' | 'premium' | 'vip' | null) ?? null;
   const supabase = createClient();
 
@@ -23,12 +24,16 @@ export default function SignupForm() {
     setError(null);
     setLoading(true);
 
+    const postSignupDestination =
+      redirectParam ||
+      (planParam ? `/checkout?plan=${planParam}` : '/dashboard');
+
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
         data: { full_name: fullName, intended_plan: planParam ?? 'basic' },
-        emailRedirectTo: `${window.location.origin}/dashboard`,
+        emailRedirectTo: `${window.location.origin}${postSignupDestination}`,
       },
     });
 
@@ -45,7 +50,7 @@ export default function SignupForm() {
     }
 
     if (data.session) {
-      router.push('/dashboard');
+      router.push(postSignupDestination);
       router.refresh();
     }
   }

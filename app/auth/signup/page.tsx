@@ -4,7 +4,19 @@ import Link from 'next/link';
 
 export const metadata = { title: 'Kreye yon kont' };
 
-export default function SignupPage() {
+export default function SignupPage({
+  searchParams,
+}: {
+  searchParams: { redirect?: string; plan?: string };
+}) {
+  const loginHref = (() => {
+    const params = new URLSearchParams();
+    if (searchParams.plan) params.set('plan', searchParams.plan);
+    if (searchParams.redirect) params.set('redirect', searchParams.redirect);
+    const qs = params.toString();
+    return `/auth/login${qs ? `?${qs}` : ''}`;
+  })();
+
   return (
     <>
       <h1 className="text-3xl font-bold tracking-tight text-ink">Kreye yon kont</h1>
@@ -17,7 +29,10 @@ export default function SignupPage() {
         </Suspense>
       </div>
       <p className="mt-6 text-sm text-ink-muted text-center">
-        Deja gen yon kont? <Link href="/auth/login" className="text-brand-700 font-medium hover:underline">Konekte</Link>
+        Deja gen yon kont?{' '}
+        <Link href={loginHref} className="text-brand-700 font-medium hover:underline">
+          Konekte
+        </Link>
       </p>
     </>
   );

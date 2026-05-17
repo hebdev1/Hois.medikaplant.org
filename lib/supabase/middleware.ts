@@ -32,13 +32,20 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const pathname = request.nextUrl.pathname;
-  const isProtected = pathname.startsWith('/dashboard') || pathname.startsWith('/admin');
+  const isProtected =
+    pathname.startsWith('/dashboard') ||
+    pathname.startsWith('/admin') ||
+    pathname.startsWith('/checkout');
   const isAuthRoute = pathname.startsWith('/auth/login') || pathname.startsWith('/auth/signup');
 
   if (!user && isProtected) {
     const url = request.nextUrl.clone();
+    const originalSearch = request.nextUrl.search; // includes leading "?" if present
+    const originalPlan = request.nextUrl.searchParams.get('plan');
+    url.search = '';
     url.pathname = '/auth/login';
-    url.searchParams.set('redirect', pathname);
+    url.searchParams.set('redirect', `${pathname}${originalSearch}`);
+    if (originalPlan) url.searchParams.set('plan', originalPlan);
     return NextResponse.redirect(url);
   }
 

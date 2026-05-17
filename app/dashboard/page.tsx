@@ -1,5 +1,5 @@
 import { createClient } from '@/lib/supabase/server';
-import { Bell, FileText, HeartPulse, Sparkles, type LucideIcon } from 'lucide-react';
+import { Bell, FileText, HeartPulse, Sparkles, PartyPopper, type LucideIcon } from 'lucide-react';
 import Link from 'next/link';
 
 const PLAN_LABELS: Record<string, string> = {
@@ -14,10 +14,19 @@ const PLAN_BADGES: Record<string, string> = {
   vip: 'bg-amber-100 text-amber-700',
 };
 
-export default async function DashboardHome() {
+export default async function DashboardHome({
+  searchParams,
+}: {
+  searchParams: { welcome?: string };
+}) {
   const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
+
+  const justSubscribedPlan =
+    searchParams.welcome && PLAN_LABELS[searchParams.welcome]
+      ? PLAN_LABELS[searchParams.welcome]
+      : null;
 
   const [{ data: profile }, { data: resources }, { data: notifications }, { data: latestHealth }] =
     await Promise.all([
@@ -38,6 +47,22 @@ export default async function DashboardHome() {
 
   return (
     <div className="p-6 md:p-10 max-w-[1280px]">
+      {justSubscribedPlan && (
+        <div className="mb-8 rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-4 flex items-start gap-3">
+          <span className="grid place-items-center w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 shrink-0">
+            <PartyPopper className="w-5 h-5" strokeWidth={2.2} />
+          </span>
+          <div>
+            <h2 className="font-bold text-emerald-900">
+              Felisitasyon! Ou vin yon manm {justSubscribedPlan}.
+            </h2>
+            <p className="text-sm text-emerald-800 mt-0.5">
+              Plan ou aktif kounye a. Tout resous yo disponib pou ou.
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-10">
         <div>

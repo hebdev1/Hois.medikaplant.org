@@ -158,7 +158,7 @@ export default function PricingSection() {
 
               {/* CTA */}
               <Link
-                href={`/auth/signup?plan=${plan.key}`}
+                href={`/checkout?plan=${plan.key}`}
                 className={cn(
                   'w-full text-center px-6 py-3.5 rounded-full font-semibold transition-all shadow-md',
                   plan.buttonClass
