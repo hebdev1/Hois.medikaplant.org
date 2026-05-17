@@ -14,11 +14,12 @@ export default async function DashboardLayout({
 
   if (!user) redirect('/auth/login?redirect=/dashboard');
 
-  const { data: profile } = await supabase
+  const { data: profileRaw } = await supabase
     .from('profiles')
     .select('role, suspended')
     .eq('id', user.id)
     .single();
+  const profile = profileRaw as { role: 'user' | 'admin'; suspended: boolean } | null;
 
   if (profile?.suspended) {
     redirect('/auth/login?error=suspended');

@@ -49,11 +49,12 @@ export async function updateSession(request: NextRequest) {
   }
 
   if (user && pathname.startsWith('/admin')) {
-    const { data: profile } = await supabase
+    const { data: profileRaw } = await supabase
       .from('profiles')
       .select('role')
       .eq('id', user.id)
       .single();
+    const profile = profileRaw as { role: 'user' | 'admin' } | null;
 
     if (profile?.role !== 'admin') {
       const url = request.nextUrl.clone();

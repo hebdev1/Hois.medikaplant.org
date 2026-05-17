@@ -1,5 +1,5 @@
 import { createClient } from '@/lib/supabase/server';
-import { Bell, FileText, HeartPulse, Sparkles } from 'lucide-react';
+import { Bell, FileText, HeartPulse, Sparkles, type LucideIcon } from 'lucide-react';
 import Link from 'next/link';
 
 const PLAN_LABELS: Record<string, string> = {
@@ -137,7 +137,7 @@ function StatCard({
   value,
   accent,
 }: {
-  icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
+  icon: LucideIcon;
   label: string;
   value: number | string;
   accent: string;
