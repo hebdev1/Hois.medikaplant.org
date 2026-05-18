@@ -37,22 +37,82 @@ export type Database = {
           started_at?: string
           target_user_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "admin_impersonation_logs_admin_id_fkey"
-            columns: ["admin_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "admin_impersonation_logs_target_user_id_fkey"
-            columns: ["target_user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
+      }
+      badges: {
+        Row: {
+          active: boolean
+          created_at: string
+          criteria_metric: string
+          criteria_threshold: number
+          display_order: number
+          icon: string
+          id: string
+          name: string
+          slug: string
+          sub: string | null
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          criteria_metric?: string
+          criteria_threshold?: number
+          display_order?: number
+          icon?: string
+          id?: string
+          name: string
+          slug: string
+          sub?: string | null
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          criteria_metric?: string
+          criteria_threshold?: number
+          display_order?: number
+          icon?: string
+          id?: string
+          name?: string
+          slug?: string
+          sub?: string | null
+        }
+        Relationships: []
+      }
+      daily_advice: {
+        Row: {
+          audio_url: string | null
+          body_html: string
+          created_at: string
+          created_by: string | null
+          duration_seconds: number | null
+          id: string
+          plan_required: Database["public"]["Enums"]["plan_type"]
+          plant_name: string | null
+          publish_date: string
+        }
+        Insert: {
+          audio_url?: string | null
+          body_html: string
+          created_at?: string
+          created_by?: string | null
+          duration_seconds?: number | null
+          id?: string
+          plan_required?: Database["public"]["Enums"]["plan_type"]
+          plant_name?: string | null
+          publish_date: string
+        }
+        Update: {
+          audio_url?: string | null
+          body_html?: string
+          created_at?: string
+          created_by?: string | null
+          duration_seconds?: number | null
+          id?: string
+          plan_required?: Database["public"]["Enums"]["plan_type"]
+          plant_name?: string | null
+          publish_date?: string
+        }
+        Relationships: []
       }
       health_logs: {
         Row: {
@@ -91,15 +151,7 @@ export type Database = {
           user_id?: string
           weight?: number | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "health_logs_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       notification_reads: {
         Row: {
@@ -117,22 +169,7 @@ export type Database = {
           read_at?: string
           user_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "notification_reads_notification_id_fkey"
-            columns: ["notification_id"]
-            isOneToOne: false
-            referencedRelation: "notifications"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "notification_reads_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       notifications: {
         Row: {
@@ -168,22 +205,64 @@ export type Database = {
           target_user_id?: string | null
           title?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "notifications_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "notifications_target_user_id_fkey"
-            columns: ["target_user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
+      }
+      products: {
+        Row: {
+          active: boolean
+          botanical: string | null
+          created_at: string
+          currency: string
+          description: string | null
+          featured: boolean
+          id: string
+          image_url: string | null
+          name: string
+          old_price: number | null
+          plan_recommendation: Database["public"]["Enums"]["plan_type"] | null
+          price: number
+          shipping_note: string | null
+          slug: string
+          tagline: string | null
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          botanical?: string | null
+          created_at?: string
+          currency?: string
+          description?: string | null
+          featured?: boolean
+          id?: string
+          image_url?: string | null
+          name: string
+          old_price?: number | null
+          plan_recommendation?: Database["public"]["Enums"]["plan_type"] | null
+          price: number
+          shipping_note?: string | null
+          slug: string
+          tagline?: string | null
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          botanical?: string | null
+          created_at?: string
+          currency?: string
+          description?: string | null
+          featured?: boolean
+          id?: string
+          image_url?: string | null
+          name?: string
+          old_price?: number | null
+          plan_recommendation?: Database["public"]["Enums"]["plan_type"] | null
+          price?: number
+          shipping_note?: string | null
+          slug?: string
+          tagline?: string | null
+          updated_at?: string
+        }
+        Relationships: []
       }
       profiles: {
         Row: {
@@ -221,6 +300,81 @@ export type Database = {
         }
         Relationships: []
       }
+      program_tasks: {
+        Row: {
+          chip_kind: string
+          chip_label: string | null
+          created_at: string
+          id: string
+          meta: string | null
+          order_index: number
+          program_id: string
+          title: string
+        }
+        Insert: {
+          chip_kind?: string
+          chip_label?: string | null
+          created_at?: string
+          id?: string
+          meta?: string | null
+          order_index: number
+          program_id: string
+          title: string
+        }
+        Update: {
+          chip_kind?: string
+          chip_label?: string | null
+          created_at?: string
+          id?: string
+          meta?: string | null
+          order_index?: number
+          program_id?: string
+          title?: string
+        }
+        Relationships: []
+      }
+      programs: {
+        Row: {
+          active: boolean
+          created_at: string
+          description: string | null
+          hero_color: string | null
+          id: string
+          name: string
+          plan_required: Database["public"]["Enums"]["plan_type"]
+          slug: string
+          total_days: number
+          updated_at: string
+          variant: string | null
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          description?: string | null
+          hero_color?: string | null
+          id?: string
+          name: string
+          plan_required?: Database["public"]["Enums"]["plan_type"]
+          slug: string
+          total_days?: number
+          updated_at?: string
+          variant?: string | null
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          description?: string | null
+          hero_color?: string | null
+          id?: string
+          name?: string
+          plan_required?: Database["public"]["Enums"]["plan_type"]
+          slug?: string
+          total_days?: number
+          updated_at?: string
+          variant?: string | null
+        }
+        Relationships: []
+      }
       resource_progress: {
         Row: {
           completed: boolean
@@ -249,22 +403,7 @@ export type Database = {
           resource_id?: string
           user_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "resource_progress_resource_id_fkey"
-            columns: ["resource_id"]
-            isOneToOne: false
-            referencedRelation: "resources"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "resource_progress_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       resources: {
         Row: {
@@ -321,15 +460,7 @@ export type Database = {
           type?: Database["public"]["Enums"]["resource_type"]
           updated_at?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "resources_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       subscriptions: {
         Row: {
@@ -368,20 +499,94 @@ export type Database = {
           updated_at?: string
           user_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "subscriptions_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
+      }
+      user_badges: {
+        Row: {
+          badge_id: string
+          just_unlocked: boolean
+          progress: number
+          unlocked: boolean
+          unlocked_at: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          badge_id: string
+          just_unlocked?: boolean
+          progress?: number
+          unlocked?: boolean
+          unlocked_at?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          badge_id?: string
+          just_unlocked?: boolean
+          progress?: number
+          unlocked?: boolean
+          unlocked_at?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_programs: {
+        Row: {
+          created_at: string
+          finished_at: string | null
+          id: string
+          is_active: boolean
+          program_id: string
+          started_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          finished_at?: string | null
+          id?: string
+          is_active?: boolean
+          program_id: string
+          started_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          finished_at?: string | null
+          id?: string
+          is_active?: boolean
+          program_id?: string
+          started_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_task_completions: {
+        Row: {
+          completed_at: string
+          completion_date: string
+          id: string
+          task_id: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string
+          completion_date?: string
+          id?: string
+          task_id: string
+          user_id: string
+        }
+        Update: {
+          completed_at?: string
+          completion_date?: string
+          id?: string
+          task_id?: string
+          user_id?: string
+        }
+        Relationships: []
       }
     }
-    Views: {
-      [_ in never]: never
-    }
+    Views: { [_ in never]: never }
     Functions: {
       get_user_plan: {
         Args: { uid: string }
@@ -392,6 +597,14 @@ export type Database = {
         Args: { p: Database["public"]["Enums"]["plan_type"] }
         Returns: number
       }
+      recompute_user_badges: { Args: { uid: string }; Returns: undefined }
+      user_level: { Args: { uid: string }; Returns: number }
+      user_level_name: { Args: { uid: string }; Returns: string }
+      user_streak: { Args: { uid: string }; Returns: number }
+      user_unread_notifications_count: {
+        Args: { uid: string }
+        Returns: number
+      }
     }
     Enums: {
       notification_target: "all" | "plan" | "user"
@@ -400,14 +613,11 @@ export type Database = {
       subscription_status: "active" | "cancelled" | "expired"
       user_role: "user" | "admin"
     }
-    CompositeTypes: {
-      [_ in never]: never
-    }
+    CompositeTypes: { [_ in never]: never }
   }
 }
 
 type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
-
 type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
 
 export type Tables<
@@ -514,3 +724,25 @@ export type Resource = Tables<"resources">
 export type HealthLog = Tables<"health_logs">
 export type Notification = Tables<"notifications">
 export type Subscription = Tables<"subscriptions">
+export type Program = Tables<"programs">
+export type ProgramTask = Tables<"program_tasks">
+export type UserProgram = Tables<"user_programs">
+export type UserTaskCompletion = Tables<"user_task_completions">
+export type Badge = Tables<"badges">
+export type UserBadge = Tables<"user_badges">
+export type DailyAdvice = Tables<"daily_advice">
+export type Product = Tables<"products">
+
+// Allowed icon values for badges
+export type BadgeIcon =
+  | 'sprout'
+  | 'leaf'
+  | 'droplet'
+  | 'flame'
+  | 'activity'
+  | 'target'
+  | 'calendar'
+  | 'star'
+
+// Allowed chip kinds for tasks
+export type TaskChipKind = 'forest' | 'gold' | 'cream'
