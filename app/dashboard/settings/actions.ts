@@ -285,6 +285,7 @@ const ALLOWED_MEDICAL_KEYS: readonly (keyof MedicalUpdate)[] = [
   'doctor_phone',
   'preferred_pharmacy',
   'health_goal',
+  'health_goal_other',
   'notes',
 ] as const;
 
@@ -332,6 +333,11 @@ export async function updateMedicalInfo<K extends keyof MedicalUpdate>(
   if (key === 'health_goal' && cleaned !== null) {
     if (!HEALTH_GOALS.includes(cleaned as (typeof HEALTH_GOALS)[number])) {
       return { ok: false, error: 'Objektif sante pa valid.' };
+    }
+  }
+  if (key === 'health_goal_other' && cleaned !== null) {
+    if ((cleaned as string).length > 500) {
+      return { ok: false, error: 'Detay yo twò long (maks 500 karaktè).' };
     }
   }
   if (key === 'height_cm' && cleaned !== null) {

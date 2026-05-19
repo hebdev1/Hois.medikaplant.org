@@ -411,6 +411,7 @@ export type Database = {
           doctor_name: string | null
           doctor_phone: string | null
           health_goal: string | null
+          health_goal_other: string | null
           height_cm: number | null
           medications: string | null
           notes: string | null
@@ -427,6 +428,7 @@ export type Database = {
           doctor_name?: string | null
           doctor_phone?: string | null
           health_goal?: string | null
+          health_goal_other?: string | null
           height_cm?: number | null
           medications?: string | null
           notes?: string | null
@@ -443,6 +445,7 @@ export type Database = {
           doctor_name?: string | null
           doctor_phone?: string | null
           health_goal?: string | null
+          health_goal_other?: string | null
           height_cm?: number | null
           medications?: string | null
           notes?: string | null

@@ -66,6 +66,7 @@ function defaultMedical(userId: string): MedicalRow {
     doctor_phone: null,
     preferred_pharmacy: null,
     health_goal: null,
+    health_goal_other: null,
     notes: null,
     updated_at: new Date().toISOString(),
   };

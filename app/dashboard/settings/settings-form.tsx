@@ -362,6 +362,16 @@ export default function SettingsForm({
           ]}
           commit={commitMedical('health_goal')}
         />
+        {medical.health_goal === 'other' && (
+          <TextareaSetting
+            label="Esplike objektif ou (Lòt)"
+            description="Dekri ak pwòp pawòl ou sa w ap chèche akonpli. Sa ede konsiltan Hoïs yo bay konsèy pi pèsonèl."
+            value={medical.health_goal_other}
+            placeholder="Egz: amelyore enèji apre yon maladi, prepare yon konpetisyon spòtif…"
+            rows={3}
+            commit={commitMedical('health_goal_other')}
+          />
+        )}
         <TextareaSetting
           label="Alèji"
           description="Plant, manje, oswa medikaman ou alerjik. Trè enpòtan anvan tizan."
