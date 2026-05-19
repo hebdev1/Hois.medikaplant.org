@@ -2,39 +2,23 @@ import { Settings } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import Topbar from '@/components/dashboard/topbar';
 import SettingsForm from './settings-form';
+import type {
+  SubscriptionInfo,
+  PastSubscription,
+} from '@/components/dashboard/plan-card';
 import type { Database } from '@/types/database';
 
 export const metadata = { title: 'Paramèt' };
 export const dynamic = 'force-dynamic';
 
 type PrefRow = Database['public']['Tables']['user_preferences']['Row'];
+type ProfileRow = Database['public']['Tables']['profiles']['Row'];
+type MedicalRow = Database['public']['Tables']['user_medical_info']['Row'];
 
 const PLAN_LABELS: Record<string, string> = {
   basic: 'Hoïs Bazilik',
   premium: 'Hoïs Sitwonèl',
   vip: 'Hoïs Melis',
-};
-
-const DEFAULT_PREFS: Omit<PrefRow, 'user_id' | 'updated_at'> = {
-  accent: 'both',
-  density: 'regular',
-  font_size: 16,
-  dark_mode: false,
-  language: 'ht',
-  email_notifications: true,
-  push_notifications: false,
-  daily_advice_email: true,
-  badge_unlock_email: true,
-  weekly_summary_email: false,
-  reminder_time: '18:00:00',
-  target_blood_sugar_min: 70,
-  target_blood_sugar_max: 130,
-  target_weight_kg: null,
-  daily_water_liters: 2.0,
-  weight_unit: 'kg',
-  show_in_vip_list: true,
-  share_progress_with_coach: false,
-  allow_research_use: false,
 };
 
 export default async function SettingsPage() {
@@ -44,28 +28,46 @@ export default async function SettingsPage() {
   } = await supabase.auth.getUser();
   if (!user) return null;
 
-  const [profileResult, preferencesResult, unreadResult] = await Promise.all([
-    supabase
-      .from('profiles')
-      .select('full_name, email, plan')
-      .eq('id', user.id)
-      .single(),
+  const [
+    profileResult,
+    preferencesResult,
+    medicalResult,
+    activeSubResult,
+    pastSubsResult,
+    unreadCountResult,
+  ] = await Promise.all([
+    supabase.from('profiles').select('*').eq('id', user.id).single(),
     supabase
       .from('user_preferences')
       .select('*')
       .eq('user_id', user.id)
       .maybeSingle(),
+    supabase
+      .from('user_medical_info')
+      .select('*')
+      .eq('user_id', user.id)
+      .maybeSingle(),
+    supabase
+      .from('subscriptions')
+      .select('id, status, start_date, end_date, amount')
+      .eq('user_id', user.id)
+      .eq('status', 'active')
+      .order('start_date', { ascending: false })
+      .limit(1)
+      .maybeSingle(),
+    supabase
+      .from('subscriptions')
+      .select('id, plan, status, start_date, end_date, amount')
+      .eq('user_id', user.id)
+      .order('start_date', { ascending: false })
+      .limit(10),
     supabase.rpc('user_unread_notifications_count', { uid: user.id }),
   ]);
 
-  const profile = profileResult.data as {
-    full_name: string | null;
-    email: string;
-    plan: 'basic' | 'premium' | 'vip';
-  } | null;
+  const profile = profileResult.data as ProfileRow | null;
+  if (!profile) return null;
 
-  // The auto-init trigger should have created a row, but fall back to defaults
-  // and insert one if missing (e.g. for an account created before this migration).
+  // Auto-create preferences / medical_info rows if somehow missing
   let preferences = preferencesResult.data as PrefRow | null;
   if (!preferences) {
     const { data: inserted } = await supabase
@@ -73,19 +75,48 @@ export default async function SettingsPage() {
       .upsert({ user_id: user.id }, { onConflict: 'user_id' })
       .select('*')
       .single();
-    preferences =
-      (inserted as PrefRow | null) ??
-      ({
-        user_id: user.id,
-        updated_at: new Date().toISOString(),
-        ...DEFAULT_PREFS,
-      } as PrefRow);
+    preferences = inserted as PrefRow | null;
   }
 
-  const userName = profile?.full_name || profile?.email?.split('@')[0] || 'Manm';
+  let medical = medicalResult.data as MedicalRow | null;
+  if (!medical) {
+    const { data: inserted } = await supabase
+      .from('user_medical_info')
+      .upsert({ user_id: user.id }, { onConflict: 'user_id' })
+      .select('*')
+      .single();
+    medical = inserted as MedicalRow | null;
+  }
+
+  if (!preferences || !medical) return null;
+
+  const activeSub = activeSubResult.data as {
+    id: string;
+    status: 'active';
+    start_date: string;
+    end_date: string | null;
+    amount: number | null;
+  } | null;
+
+  const subscription: SubscriptionInfo = activeSub
+    ? {
+        id: activeSub.id,
+        status: activeSub.status,
+        start_date: activeSub.start_date,
+        end_date: activeSub.end_date,
+        amount: activeSub.amount,
+      }
+    : { id: null, status: null, start_date: null, end_date: null, amount: null };
+
+  const pastSubscriptions = (pastSubsResult.data ?? []) as PastSubscription[];
+
+  const userName =
+    profile.full_name ||
+    [profile.first_name, profile.last_name].filter(Boolean).join(' ') ||
+    profile.email.split('@')[0];
   const shortName = userName.split(' ')[0];
-  const planLabel = profile ? PLAN_LABELS[profile.plan] : 'Hoïs Bazilik';
-  const unreadCount = (unreadResult.data as number | null) ?? 0;
+  const planLabel = PLAN_LABELS[profile.plan] ?? 'Hoïs Bazilik';
+  const unreadCount = (unreadCountResult.data as number | null) ?? 0;
 
   return (
     <>
@@ -109,9 +140,13 @@ export default async function SettingsPage() {
           </p>
         </header>
 
-        {profile && preferences && (
-          <SettingsForm preferences={preferences} profile={profile} />
-        )}
+        <SettingsForm
+          profile={profile}
+          preferences={preferences}
+          medical={medical}
+          subscription={subscription}
+          pastSubscriptions={pastSubscriptions}
+        />
       </div>
     </>
   );
