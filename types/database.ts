@@ -78,6 +78,66 @@ export type Database = {
         }
         Relationships: []
       }
+      consultations: {
+        Row: {
+          consultant_name: string
+          consultant_role: string | null
+          cost: number | null
+          created_at: string
+          duration_minutes: number | null
+          follow_up_at: string | null
+          id: string
+          meeting_url: string | null
+          notes: string | null
+          prescription: string | null
+          recommendations: string | null
+          scheduled_at: string
+          status: Database["public"]["Enums"]["consultation_status"]
+          topic: string | null
+          type: Database["public"]["Enums"]["consultation_type"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          consultant_name: string
+          consultant_role?: string | null
+          cost?: number | null
+          created_at?: string
+          duration_minutes?: number | null
+          follow_up_at?: string | null
+          id?: string
+          meeting_url?: string | null
+          notes?: string | null
+          prescription?: string | null
+          recommendations?: string | null
+          scheduled_at: string
+          status?: Database["public"]["Enums"]["consultation_status"]
+          topic?: string | null
+          type?: Database["public"]["Enums"]["consultation_type"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          consultant_name?: string
+          consultant_role?: string | null
+          cost?: number | null
+          created_at?: string
+          duration_minutes?: number | null
+          follow_up_at?: string | null
+          id?: string
+          meeting_url?: string | null
+          notes?: string | null
+          prescription?: string | null
+          recommendations?: string | null
+          scheduled_at?: string
+          status?: Database["public"]["Enums"]["consultation_status"]
+          topic?: string | null
+          type?: Database["public"]["Enums"]["consultation_type"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       daily_advice: {
         Row: {
           audio_url: string | null
@@ -772,6 +832,8 @@ export type Database = {
       }
     }
     Enums: {
+      consultation_status: "scheduled" | "completed" | "cancelled" | "no_show"
+      consultation_type: "video" | "in_person" | "audio" | "written"
       notification_target: "all" | "plan" | "user"
       plan_type: "basic" | "premium" | "vip"
       resource_type: "pdf" | "video" | "audio"

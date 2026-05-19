@@ -6,6 +6,7 @@ import type {
   SubscriptionInfo,
   PastSubscription,
 } from '@/components/dashboard/plan-card';
+import type { PaymentRecord } from '@/components/dashboard/payment-history-panel';
 import type { Database } from '@/types/database';
 
 export const metadata = { title: 'Paramèt' };
@@ -14,6 +15,7 @@ export const dynamic = 'force-dynamic';
 type PrefRow = Database['public']['Tables']['user_preferences']['Row'];
 type ProfileRow = Database['public']['Tables']['profiles']['Row'];
 type MedicalRow = Database['public']['Tables']['user_medical_info']['Row'];
+type ConsultationRow = Database['public']['Tables']['consultations']['Row'];
 
 const PLAN_LABELS: Record<string, string> = {
   basic: 'Hoïs Bazilik',
@@ -34,6 +36,8 @@ export default async function SettingsPage() {
     medicalResult,
     activeSubResult,
     pastSubsResult,
+    paymentsResult,
+    consultationsResult,
     unreadCountResult,
   ] = await Promise.all([
     supabase.from('profiles').select('*').eq('id', user.id).single(),
@@ -61,6 +65,18 @@ export default async function SettingsPage() {
       .eq('user_id', user.id)
       .order('start_date', { ascending: false })
       .limit(10),
+    supabase
+      .from('subscriptions')
+      .select('id, plan, status, start_date, end_date, amount, payment_reference')
+      .eq('user_id', user.id)
+      .order('start_date', { ascending: false })
+      .limit(50),
+    supabase
+      .from('consultations')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('scheduled_at', { ascending: false })
+      .limit(20),
     supabase.rpc('user_unread_notifications_count', { uid: user.id }),
   ]);
 
@@ -109,6 +125,8 @@ export default async function SettingsPage() {
     : { id: null, status: null, start_date: null, end_date: null, amount: null };
 
   const pastSubscriptions = (pastSubsResult.data ?? []) as PastSubscription[];
+  const payments = (paymentsResult.data ?? []) as PaymentRecord[];
+  const consultations = (consultationsResult.data ?? []) as ConsultationRow[];
 
   const userName =
     profile.full_name ||
@@ -146,6 +164,8 @@ export default async function SettingsPage() {
           medical={medical}
           subscription={subscription}
           pastSubscriptions={pastSubscriptions}
+          consultations={consultations}
+          payments={payments}
         />
       </div>
     </>

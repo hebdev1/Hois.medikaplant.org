@@ -24,6 +24,11 @@ import PlanCard, {
   type PastSubscription,
 } from '@/components/dashboard/plan-card';
 import PasswordSection from '@/components/dashboard/password-section';
+import ConsultationsPanel from '@/components/dashboard/consultations-panel';
+import PaymentHistoryPanel, {
+  type PaymentRecord,
+} from '@/components/dashboard/payment-history-panel';
+import DangerZonePanel from '@/components/dashboard/danger-zone-panel';
 import {
   updatePreference,
   updateProfileField,
@@ -36,6 +41,7 @@ import type { Database } from '@/types/database';
 type PrefRow = Database['public']['Tables']['user_preferences']['Row'];
 type ProfileRow = Database['public']['Tables']['profiles']['Row'];
 type MedicalRow = Database['public']['Tables']['user_medical_info']['Row'];
+type ConsultationRow = Database['public']['Tables']['consultations']['Row'];
 
 type Props = {
   profile: ProfileRow;
@@ -43,6 +49,8 @@ type Props = {
   medical: MedicalRow;
   subscription: SubscriptionInfo;
   pastSubscriptions: PastSubscription[];
+  consultations: ConsultationRow[];
+  payments: PaymentRecord[];
 };
 
 const COUNTRIES: { value: string; label: string }[] = [
@@ -82,6 +90,8 @@ export default function SettingsForm({
   medical: initialMedical,
   subscription,
   pastSubscriptions,
+  consultations,
+  payments,
 }: Props) {
   const [profile, setProfile] = React.useState(initialProfile);
   const [prefs, setPrefs] = React.useState(initialPrefs);
@@ -128,6 +138,9 @@ export default function SettingsForm({
         subscription={subscription}
         pastSubscriptions={pastSubscriptions}
       />
+
+      {/* ── Istwa Pèman & Resi ─────────────────────────────────────────────── */}
+      <PaymentHistoryPanel payments={payments} />
 
       {/* ── Pwofil ─────────────────────────────────────────────────────────── */}
       <SettingsSection
@@ -392,6 +405,9 @@ export default function SettingsForm({
         />
       </SettingsSection>
 
+      {/* ── Dosye Konsiltasyon ─────────────────────────────────────────────── */}
+      <ConsultationsPanel initial={consultations} />
+
       {/* ── Sib Sante (preferences) ────────────────────────────────────────── */}
       <SettingsSection
         title="Sib Sante"
@@ -557,6 +573,9 @@ export default function SettingsForm({
 
       {/* ── Sekirite ───────────────────────────────────────────────────────── */}
       <PasswordSection />
+
+      {/* ── Zòn Danje ──────────────────────────────────────────────────────── */}
+      <DangerZonePanel />
     </div>
   );
 }

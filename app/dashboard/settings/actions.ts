@@ -406,3 +406,236 @@ export async function changePassword(input: {
 
   return { ok: true };
 }
+
+// ─── GDPR data export ───────────────────────────────────────────────────────
+
+export type ExportPayload = {
+  ok: true;
+  filename: string;
+  data: Record<string, unknown>;
+};
+
+export async function exportUserData(): Promise<
+  ExportPayload | { ok: false; error: string }
+> {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, error: 'Ou dwe konekte.' };
+
+  // Fetch everything the user owns. Each query is RLS-scoped so the user
+  // gets only their own rows.
+  const [
+    profile,
+    preferences,
+    medical,
+    subscriptions,
+    healthLogs,
+    notificationReads,
+    resourceProgress,
+    userBadges,
+    userPrograms,
+    taskCompletions,
+    consultations,
+  ] = await Promise.all([
+    supabase.from('profiles').select('*').eq('id', user.id).maybeSingle(),
+    supabase.from('user_preferences').select('*').eq('user_id', user.id).maybeSingle(),
+    supabase.from('user_medical_info').select('*').eq('user_id', user.id).maybeSingle(),
+    supabase
+      .from('subscriptions')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('start_date', { ascending: false }),
+    supabase
+      .from('health_logs')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('logged_at', { ascending: false }),
+    supabase
+      .from('notification_reads')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('read_at', { ascending: false }),
+    supabase
+      .from('resource_progress')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('last_accessed_at', { ascending: false }),
+    supabase.from('user_badges').select('*').eq('user_id', user.id),
+    supabase
+      .from('user_programs')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('started_at', { ascending: false }),
+    supabase
+      .from('user_task_completions')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('completed_at', { ascending: false }),
+    supabase
+      .from('consultations')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('scheduled_at', { ascending: false }),
+  ]);
+
+  const payload = {
+    exported_at: new Date().toISOString(),
+    schema_version: '019',
+    user: {
+      id: user.id,
+      email: user.email,
+      created_at: user.created_at,
+      last_sign_in_at: user.last_sign_in_at ?? null,
+    },
+    profile: profile.data ?? null,
+    preferences: preferences.data ?? null,
+    medical_info: medical.data ?? null,
+    subscriptions: subscriptions.data ?? [],
+    health_logs: healthLogs.data ?? [],
+    notification_reads: notificationReads.data ?? [],
+    resource_progress: resourceProgress.data ?? [],
+    badges: userBadges.data ?? [],
+    programs: userPrograms.data ?? [],
+    task_completions: taskCompletions.data ?? [],
+    consultations: consultations.data ?? [],
+  };
+
+  const stamp = new Date().toISOString().slice(0, 10);
+  return {
+    ok: true,
+    filename: `medikaplant-export-${stamp}.json`,
+    data: payload,
+  };
+}
+
+// ─── Account deletion ──────────────────────────────────────────────────────
+
+export async function deleteAccount(): Promise<
+  { ok: true } | { ok: false; error: string }
+> {
+  const supabase = createClient();
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  if (!session) return { ok: false, error: 'Ou dwe konekte.' };
+
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!url || !anonKey) {
+    return { ok: false, error: 'Konfigirasyon sèvè a manke.' };
+  }
+
+  // Call our Edge Function with the user's JWT — it verifies the user and
+  // uses the service role to actually drop the auth.users row, which cascades
+  // to profiles → all related tables via ON DELETE CASCADE.
+  let resp: Response;
+  try {
+    resp = await fetch(`${url}/functions/v1/delete-user`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${session.access_token}`,
+        apikey: anonKey,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ confirmation: 'DELETE MY ACCOUNT' }),
+    });
+  } catch (e) {
+    return { ok: false, error: 'Pa ka rive nan sèvè a.' };
+  }
+
+  if (!resp.ok) {
+    let message = 'Erè sou efase kont la.';
+    try {
+      const body = await resp.json();
+      if (body?.error) message = body.error;
+    } catch (_) {
+      /* ignore */
+    }
+    return { ok: false, error: message };
+  }
+
+  // After the auth user is gone the cookie session is invalid; sign out locally.
+  await supabase.auth.signOut();
+  return { ok: true };
+}
+
+// ─── Consultations ─────────────────────────────────────────────────────────
+
+type ConsultationInsert = Database['public']['Tables']['consultations']['Insert'];
+type ConsultationRow = Database['public']['Tables']['consultations']['Row'];
+
+const CONSULTATION_TYPES = ['video', 'in_person', 'audio', 'written'] as const;
+
+export async function createConsultation(input: {
+  consultant_name: string;
+  type: (typeof CONSULTATION_TYPES)[number];
+  scheduled_at: string; // ISO datetime
+  duration_minutes?: number;
+  topic?: string | null;
+}): Promise<{ ok: true; consultation: ConsultationRow } | { ok: false; error: string }> {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, error: 'Ou dwe konekte.' };
+
+  const name = input.consultant_name.trim();
+  if (name.length < 2) return { ok: false, error: 'Non konsiltan an manke.' };
+  if (!CONSULTATION_TYPES.includes(input.type)) {
+    return { ok: false, error: 'Tip konsiltasyon pa valid.' };
+  }
+  const when = new Date(input.scheduled_at);
+  if (Number.isNaN(when.getTime())) {
+    return { ok: false, error: 'Dat la pa valid.' };
+  }
+  if (when.getTime() < Date.now() - 60_000) {
+    return { ok: false, error: 'Dat la pa ka nan pase.' };
+  }
+  const duration =
+    input.duration_minutes && input.duration_minutes >= 5 && input.duration_minutes <= 240
+      ? input.duration_minutes
+      : 30;
+
+  const insert: ConsultationInsert = {
+    user_id: user.id,
+    consultant_name: name,
+    type: input.type,
+    status: 'scheduled',
+    scheduled_at: when.toISOString(),
+    duration_minutes: duration,
+    topic: input.topic?.trim() || null,
+  };
+
+  const { data, error } = await supabase
+    .from('consultations')
+    .insert(insert)
+    .select('*')
+    .single();
+  if (error || !data) return { ok: false, error: error?.message ?? 'Erè inkoni.' };
+
+  revalidatePath('/dashboard/settings');
+  return { ok: true, consultation: data as ConsultationRow };
+}
+
+export async function cancelConsultation(
+  id: string
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, error: 'Ou dwe konekte.' };
+
+  const { error } = await supabase
+    .from('consultations')
+    .update({ status: 'cancelled' })
+    .eq('id', id)
+    .eq('user_id', user.id)
+    .eq('status', 'scheduled');
+  if (error) return { ok: false, error: error.message };
+
+  revalidatePath('/dashboard/settings');
+  return { ok: true };
+}
