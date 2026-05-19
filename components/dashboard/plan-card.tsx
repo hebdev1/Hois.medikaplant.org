@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import {
   Sparkles,
   ArrowUpRight,
@@ -75,6 +76,7 @@ export default function PlanCard({
   subscription: SubscriptionInfo;
   pastSubscriptions: PastSubscription[];
 }) {
+  const router = useRouter();
   const [confirming, setConfirming] = React.useState(false);
   const [cancelling, setCancelling] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
@@ -110,6 +112,9 @@ export default function PlanCard({
     }
     setConfirming(false);
     setJustCancelled(true);
+    // Re-run the server component so profile.plan, subscription badge,
+    // upgrade options, and past subscriptions all reflect the new state.
+    router.refresh();
   }
 
   return (

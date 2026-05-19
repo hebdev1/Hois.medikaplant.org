@@ -6,6 +6,7 @@ import type { Database } from '@/types/database';
 
 type PrefRow = Database['public']['Tables']['user_preferences']['Row'];
 type PrefUpdate = Database['public']['Tables']['user_preferences']['Update'];
+type ProfileRow = Database['public']['Tables']['profiles']['Row'];
 type ProfileUpdate = Database['public']['Tables']['profiles']['Update'];
 type MedicalRow = Database['public']['Tables']['user_medical_info']['Row'];
 type MedicalUpdate = Database['public']['Tables']['user_medical_info']['Update'];
@@ -88,11 +89,14 @@ const ALLOWED_PROFILE_KEYS: readonly (keyof ProfileUpdate)[] = [
 const GENDER_VALUES = ['male', 'female', 'other', 'prefer_not_to_say'] as const;
 
 export type ProfileResult = { ok: true } | { ok: false; error: string };
+export type ProfileWithRowResult =
+  | { ok: true; profile: ProfileRow }
+  | { ok: false; error: string };
 
 export async function updateProfileField<K extends keyof ProfileUpdate>(
   key: K,
   value: ProfileUpdate[K]
-): Promise<ProfileResult> {
+): Promise<ProfileWithRowResult> {
   if (!ALLOWED_PROFILE_KEYS.includes(key)) {
     return { ok: false, error: 'Chan pwofil sa a pa otorize.' };
   }
@@ -150,12 +154,19 @@ export async function updateProfileField<K extends keyof ProfileUpdate>(
     if (combined.length >= 2) update.full_name = combined;
   }
 
-  const { error } = await supabase.from('profiles').update(update).eq('id', user.id);
-  if (error) return { ok: false, error: error.message };
+  const { data: updated, error } = await supabase
+    .from('profiles')
+    .update(update)
+    .eq('id', user.id)
+    .select('*')
+    .single();
+  if (error || !updated) {
+    return { ok: false, error: error?.message ?? 'Erè inkoni.' };
+  }
 
   revalidatePath('/dashboard');
   revalidatePath('/dashboard/settings');
-  return { ok: true };
+  return { ok: true, profile: updated as ProfileRow };
 }
 
 // ─── Avatar upload ──────────────────────────────────────────────────────────
@@ -165,7 +176,10 @@ const MAX_AVATAR_BYTES = 4 * 1024 * 1024; // 4 MB
 
 export async function uploadAvatar(
   formData: FormData
-): Promise<{ ok: true; url: string } | { ok: false; error: string }> {
+): Promise<
+  | { ok: true; url: string; profile: ProfileRow }
+  | { ok: false; error: string }
+> {
   const supabase = createClient();
   const {
     data: { user },
@@ -210,18 +224,24 @@ export async function uploadAvatar(
     await supabase.storage.from('public-assets').remove(toDelete);
   }
 
-  const { error: profileError } = await supabase
+  const { data: updatedProfile, error: profileError } = await supabase
     .from('profiles')
     .update({ avatar_url: publicUrl })
-    .eq('id', user.id);
-  if (profileError) return { ok: false, error: profileError.message };
+    .eq('id', user.id)
+    .select('*')
+    .single();
+  if (profileError || !updatedProfile) {
+    return { ok: false, error: profileError?.message ?? 'Erè inkoni.' };
+  }
 
   revalidatePath('/dashboard');
   revalidatePath('/dashboard/settings');
-  return { ok: true, url: publicUrl };
+  return { ok: true, url: publicUrl, profile: updatedProfile as ProfileRow };
 }
 
-export async function removeAvatar(): Promise<ProfileResult> {
+export async function removeAvatar(): Promise<
+  { ok: true; profile: ProfileRow } | { ok: false; error: string }
+> {
   const supabase = createClient();
   const {
     data: { user },
@@ -236,15 +256,19 @@ export async function removeAvatar(): Promise<ProfileResult> {
     await supabase.storage.from('public-assets').remove(paths);
   }
 
-  const { error } = await supabase
+  const { data: updated, error } = await supabase
     .from('profiles')
     .update({ avatar_url: null })
-    .eq('id', user.id);
-  if (error) return { ok: false, error: error.message };
+    .eq('id', user.id)
+    .select('*')
+    .single();
+  if (error || !updated) {
+    return { ok: false, error: error?.message ?? 'Erè inkoni.' };
+  }
 
   revalidatePath('/dashboard');
   revalidatePath('/dashboard/settings');
-  return { ok: true };
+  return { ok: true, profile: updated as ProfileRow };
 }
 
 // ─── Medical info ───────────────────────────────────────────────────────────

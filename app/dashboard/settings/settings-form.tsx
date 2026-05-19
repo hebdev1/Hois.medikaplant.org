@@ -112,9 +112,25 @@ export default function SettingsForm({
   function commitProfile<K extends keyof ProfileRow>(key: K) {
     return async (value: ProfileRow[K]) => {
       const res = await updateProfileField(key, value as never);
-      if (res.ok) setProfile((p) => ({ ...p, [key]: value } as ProfileRow));
+      // Use the canonical row from the server so normalizations (trimmed
+      // strings, cleaned phone numbers, auto-synced full_name) reach the UI.
+      if (res.ok) setProfile(res.profile);
       return res;
     };
+  }
+
+  // Avatar wrappers — relay the server's canonical profile back to parent
+  // state so other components on this page (sidebar avatar, etc.) update too.
+  async function handleUploadAvatar(formData: FormData) {
+    const res = await uploadAvatar(formData);
+    if (res.ok) setProfile(res.profile);
+    return res;
+  }
+
+  async function handleRemoveAvatar() {
+    const res = await removeAvatar();
+    if (res.ok) setProfile(res.profile);
+    return res;
   }
 
   function commitMedical<K extends keyof MedicalRow>(key: K) {
@@ -152,8 +168,8 @@ export default function SettingsForm({
           description="Yon foto pwòp ede manm yo rekonèt ou nan kominote a."
           currentUrl={profile.avatar_url}
           fallbackInitials={initials}
-          uploadAction={uploadAvatar}
-          removeAction={removeAvatar}
+          uploadAction={handleUploadAvatar}
+          removeAction={handleRemoveAvatar}
         />
         <TextSetting
           label="Prenon"
