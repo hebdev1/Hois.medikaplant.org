@@ -1,4 +1,4 @@
-import { Settings } from 'lucide-react';
+import { Settings, AlertCircle } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import Topbar from '@/components/dashboard/topbar';
 import SettingsForm from './settings-form';
@@ -23,6 +23,82 @@ const PLAN_LABELS: Record<string, string> = {
   vip: 'Hoïs Melis',
 };
 
+// Default rows used as last-resort fallbacks so the form always has something
+// to render. They never reach the database — the upsert path replaces them
+// the moment the user toggles any control.
+function defaultPreferences(userId: string): PrefRow {
+  return {
+    user_id: userId,
+    accent: 'both',
+    density: 'regular',
+    font_size: 16,
+    dark_mode: false,
+    language: 'ht',
+    email_notifications: true,
+    push_notifications: false,
+    daily_advice_email: true,
+    badge_unlock_email: true,
+    weekly_summary_email: false,
+    reminder_time: '18:00:00',
+    target_blood_sugar_min: 70,
+    target_blood_sugar_max: 130,
+    target_weight_kg: null,
+    daily_water_liters: 2.0,
+    weight_unit: 'kg',
+    show_in_vip_list: true,
+    share_progress_with_coach: false,
+    allow_research_use: false,
+    updated_at: new Date().toISOString(),
+  };
+}
+
+function defaultMedical(userId: string): MedicalRow {
+  return {
+    user_id: userId,
+    blood_type: null,
+    height_cm: null,
+    conditions: [],
+    allergies: null,
+    medications: null,
+    chronic_diseases: null,
+    past_surgeries: null,
+    doctor_name: null,
+    doctor_phone: null,
+    preferred_pharmacy: null,
+    health_goal: null,
+    notes: null,
+    updated_at: new Date().toISOString(),
+  };
+}
+
+function defaultProfile(userId: string, email: string): ProfileRow {
+  return {
+    id: userId,
+    email,
+    full_name: email.split('@')[0],
+    first_name: null,
+    last_name: null,
+    avatar_url: null,
+    plan: 'basic',
+    role: 'user',
+    suspended: false,
+    date_of_birth: null,
+    gender: null,
+    phone: null,
+    address_line1: null,
+    address_line2: null,
+    city: null,
+    region: null,
+    postal_code: null,
+    country: 'HT',
+    emergency_contact_name: null,
+    emergency_contact_phone: null,
+    bio: null,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  };
+}
+
 export default async function SettingsPage() {
   const supabase = createClient();
   const {
@@ -30,6 +106,8 @@ export default async function SettingsPage() {
   } = await supabase.auth.getUser();
   if (!user) return null;
 
+  // Fan-out fetch. Each maybeSingle returns null without erroring if there's
+  // no row — that lets us heal missing rows below without crashing.
   const [
     profileResult,
     preferencesResult,
@@ -40,7 +118,7 @@ export default async function SettingsPage() {
     consultationsResult,
     unreadCountResult,
   ] = await Promise.all([
-    supabase.from('profiles').select('*').eq('id', user.id).single(),
+    supabase.from('profiles').select('*').eq('id', user.id).maybeSingle(),
     supabase
       .from('user_preferences')
       .select('*')
@@ -80,10 +158,43 @@ export default async function SettingsPage() {
     supabase.rpc('user_unread_notifications_count', { uid: user.id }),
   ]);
 
-  const profile = profileResult.data as ProfileRow | null;
-  if (!profile) return null;
+  // ─── Self-heal profile ───────────────────────────────────────────────────
+  let profile = profileResult.data as ProfileRow | null;
+  let healingNotice: string | null = null;
 
-  // Auto-create preferences / medical_info rows if somehow missing
+  if (!profile) {
+    const meta = (user.user_metadata ?? {}) as Record<string, unknown>;
+    const firstName = typeof meta.first_name === 'string' ? meta.first_name.trim() : null;
+    const lastName = typeof meta.last_name === 'string' ? meta.last_name.trim() : null;
+    const metaFullName = typeof meta.full_name === 'string' ? meta.full_name.trim() : null;
+    const derivedFullName =
+      [firstName, lastName].filter(Boolean).join(' ').trim() ||
+      metaFullName ||
+      user.email?.split('@')[0] ||
+      'Manm';
+
+    const { data: inserted } = await supabase
+      .from('profiles')
+      .upsert(
+        {
+          id: user.id,
+          email: user.email ?? '',
+          full_name: derivedFullName,
+          first_name: firstName,
+          last_name: lastName,
+        },
+        { onConflict: 'id' }
+      )
+      .select('*')
+      .single();
+    profile = (inserted as ProfileRow | null) ?? defaultProfile(user.id, user.email ?? '');
+    if (!inserted) {
+      healingNotice =
+        'Pwofil ou poko anrejistre konplètman. Nou ap eseye repare li — refresh paj la nan kèk segond.';
+    }
+  }
+
+  // ─── Self-heal preferences ───────────────────────────────────────────────
   let preferences = preferencesResult.data as PrefRow | null;
   if (!preferences) {
     const { data: inserted } = await supabase
@@ -91,9 +202,10 @@ export default async function SettingsPage() {
       .upsert({ user_id: user.id }, { onConflict: 'user_id' })
       .select('*')
       .single();
-    preferences = inserted as PrefRow | null;
+    preferences = (inserted as PrefRow | null) ?? defaultPreferences(user.id);
   }
 
+  // ─── Self-heal medical info ──────────────────────────────────────────────
   let medical = medicalResult.data as MedicalRow | null;
   if (!medical) {
     const { data: inserted } = await supabase
@@ -101,10 +213,8 @@ export default async function SettingsPage() {
       .upsert({ user_id: user.id }, { onConflict: 'user_id' })
       .select('*')
       .single();
-    medical = inserted as MedicalRow | null;
+    medical = (inserted as MedicalRow | null) ?? defaultMedical(user.id);
   }
-
-  if (!preferences || !medical) return null;
 
   const activeSub = activeSubResult.data as {
     id: string;
@@ -157,6 +267,13 @@ export default async function SettingsPage() {
             la nenpòt lè — pwogrè ou rete.
           </p>
         </header>
+
+        {healingNotice && (
+          <div className="mb-6 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 flex items-start gap-2 text-sm text-amber-900">
+            <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" strokeWidth={2.2} />
+            <span>{healingNotice}</span>
+          </div>
+        )}
 
         <SettingsForm
           profile={profile}
