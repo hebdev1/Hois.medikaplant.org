@@ -618,6 +618,147 @@ export type Database = {
         }
         Relationships: []
       }
+      support_contacts: {
+        Row: {
+          active: boolean
+          created_at: string
+          display_order: number
+          href: string | null
+          id: string
+          kind: Database["public"]["Enums"]["support_contact_kind"]
+          label: string
+          sub_label: string | null
+          updated_at: string
+          value: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          display_order?: number
+          href?: string | null
+          id?: string
+          kind: Database["public"]["Enums"]["support_contact_kind"]
+          label: string
+          sub_label?: string | null
+          updated_at?: string
+          value: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          display_order?: number
+          href?: string | null
+          id?: string
+          kind?: Database["public"]["Enums"]["support_contact_kind"]
+          label?: string
+          sub_label?: string | null
+          updated_at?: string
+          value?: string
+        }
+        Relationships: []
+      }
+      support_faqs: {
+        Row: {
+          answer: string
+          category: string | null
+          created_at: string
+          display_order: number
+          id: string
+          published: boolean
+          question: string
+          updated_at: string
+        }
+        Insert: {
+          answer: string
+          category?: string | null
+          created_at?: string
+          display_order?: number
+          id?: string
+          published?: boolean
+          question: string
+          updated_at?: string
+        }
+        Update: {
+          answer?: string
+          category?: string | null
+          created_at?: string
+          display_order?: number
+          id?: string
+          published?: boolean
+          question?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      support_messages: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          sender_id: string | null
+          sender_role: Database["public"]["Enums"]["support_sender_role"]
+          thread_id: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          id?: string
+          sender_id?: string | null
+          sender_role: Database["public"]["Enums"]["support_sender_role"]
+          thread_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          sender_id?: string | null
+          sender_role?: Database["public"]["Enums"]["support_sender_role"]
+          thread_id?: string
+        }
+        Relationships: []
+      }
+      support_threads: {
+        Row: {
+          agent_id: string | null
+          agent_initials: string
+          agent_name: string
+          agent_role: string
+          created_at: string
+          id: string
+          last_message_at: string
+          status: Database["public"]["Enums"]["support_thread_status"]
+          subject: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          agent_id?: string | null
+          agent_initials?: string
+          agent_name?: string
+          agent_role?: string
+          created_at?: string
+          id?: string
+          last_message_at?: string
+          status?: Database["public"]["Enums"]["support_thread_status"]
+          subject?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          agent_id?: string | null
+          agent_initials?: string
+          agent_name?: string
+          agent_role?: string
+          created_at?: string
+          id?: string
+          last_message_at?: string
+          status?: Database["public"]["Enums"]["support_thread_status"]
+          subject?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       subscriptions: {
         Row: {
           amount: number | null
@@ -820,6 +961,10 @@ export type Database = {
         Args: { uid: string }
         Returns: Database["public"]["Enums"]["plan_type"]
       }
+      insert_support_auto_reply: {
+        Args: { p_thread_id: string; p_body: string }
+        Returns: Database["public"]["Tables"]["support_messages"]["Row"]
+      }
       is_admin: { Args: { uid: string }; Returns: boolean }
       plan_rank: {
         Args: { p: Database["public"]["Enums"]["plan_type"] }
@@ -841,6 +986,9 @@ export type Database = {
       plan_type: "basic" | "premium" | "vip"
       resource_type: "pdf" | "video" | "audio"
       subscription_status: "active" | "cancelled" | "expired"
+      support_contact_kind: "whatsapp" | "email" | "phone" | "instagram" | "facebook"
+      support_sender_role: "user" | "agent" | "system"
+      support_thread_status: "open" | "resolved" | "archived"
       user_role: "user" | "admin"
     }
     CompositeTypes: { [_ in never]: never }
