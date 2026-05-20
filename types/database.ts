@@ -174,6 +174,132 @@ export type Database = {
         }
         Relationships: []
       }
+      guide_categories: {
+        Row: {
+          active: boolean
+          created_at: string
+          display_order: number
+          id: string
+          label: string
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          display_order?: number
+          id?: string
+          label: string
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          display_order?: number
+          id?: string
+          label?: string
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      guides: {
+        Row: {
+          accent_color: string
+          art: Database["public"]["Enums"]["guide_art"]
+          author_avatar_url: string | null
+          author_name: string
+          author_role: string | null
+          body_markdown: string
+          category_id: string | null
+          cover_image_url: string | null
+          created_at: string
+          created_by: string | null
+          excerpt: string
+          featured: boolean
+          id: string
+          language: string
+          plan_required: Database["public"]["Enums"]["plan_type"]
+          published: boolean
+          published_at: string | null
+          read_minutes: number
+          slug: string
+          tag: string | null
+          title: string
+          updated_at: string
+          view_count: number
+        }
+        Insert: {
+          accent_color?: string
+          art?: Database["public"]["Enums"]["guide_art"]
+          author_avatar_url?: string | null
+          author_name?: string
+          author_role?: string | null
+          body_markdown: string
+          category_id?: string | null
+          cover_image_url?: string | null
+          created_at?: string
+          created_by?: string | null
+          excerpt: string
+          featured?: boolean
+          id?: string
+          language?: string
+          plan_required?: Database["public"]["Enums"]["plan_type"]
+          published?: boolean
+          published_at?: string | null
+          read_minutes?: number
+          slug: string
+          tag?: string | null
+          title: string
+          updated_at?: string
+          view_count?: number
+        }
+        Update: {
+          accent_color?: string
+          art?: Database["public"]["Enums"]["guide_art"]
+          author_avatar_url?: string | null
+          author_name?: string
+          author_role?: string | null
+          body_markdown?: string
+          category_id?: string | null
+          cover_image_url?: string | null
+          created_at?: string
+          created_by?: string | null
+          excerpt?: string
+          featured?: boolean
+          id?: string
+          language?: string
+          plan_required?: Database["public"]["Enums"]["plan_type"]
+          published?: boolean
+          published_at?: string | null
+          read_minutes?: number
+          slug?: string
+          tag?: string | null
+          title?: string
+          updated_at?: string
+          view_count?: number
+        }
+        Relationships: []
+      }
+      user_guide_saves: {
+        Row: {
+          guide_id: string
+          saved_at: string
+          user_id: string
+        }
+        Insert: {
+          guide_id: string
+          saved_at?: string
+          user_id: string
+        }
+        Update: {
+          guide_id?: string
+          saved_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       health_logs: {
         Row: {
           blood_pressure_diastolic: number | null
@@ -961,6 +1087,10 @@ export type Database = {
         Args: { uid: string }
         Returns: Database["public"]["Enums"]["plan_type"]
       }
+      increment_guide_view: {
+        Args: { p_guide_id: string }
+        Returns: undefined
+      }
       insert_support_auto_reply: {
         Args: { p_thread_id: string; p_body: string }
         Returns: Database["public"]["Tables"]["support_messages"]["Row"]
@@ -982,6 +1112,7 @@ export type Database = {
     Enums: {
       consultation_status: "scheduled" | "completed" | "cancelled" | "no_show"
       consultation_type: "video" | "in_person" | "audio" | "written"
+      guide_art: "leaf" | "sprout" | "droplet" | "sparkle" | "tree" | "flower"
       notification_target: "all" | "plan" | "user"
       plan_type: "basic" | "premium" | "vip"
       resource_type: "pdf" | "video" | "audio"
