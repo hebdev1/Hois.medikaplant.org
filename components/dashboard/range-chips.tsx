@@ -3,16 +3,13 @@
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useTransition } from 'react';
 import { cn } from '@/lib/utils';
+import { RANGES, type Range } from './range-utils';
 
-const RANGES = [7, 30, 90] as const;
-type Range = (typeof RANGES)[number];
-
-export const DEFAULT_RANGE: Range = 30;
-
-export function rangeFromSearch(value: string | undefined): Range {
-  const n = Number(value);
-  return (RANGES as readonly number[]).includes(n) ? (n as Range) : DEFAULT_RANGE;
-}
+// Re-export so existing import sites that grabbed Range/DEFAULT_RANGE/
+// rangeFromSearch from this file don't break. Server components should
+// import directly from './range-utils' (no 'use client'), but client
+// callers can keep going through here.
+export { DEFAULT_RANGE, rangeFromSearch, type Range } from './range-utils';
 
 export default function RangeChips({ active }: { active: Range }) {
   const router = useRouter();

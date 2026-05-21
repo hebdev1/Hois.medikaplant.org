@@ -4,10 +4,12 @@ import Topbar from '@/components/dashboard/topbar';
 import MetricTabs, {
   type MetricKey,
 } from '@/components/dashboard/metric-tabs';
-import RangeChips, {
-  rangeFromSearch,
-  DEFAULT_RANGE,
-} from '@/components/dashboard/range-chips';
+import RangeChips from '@/components/dashboard/range-chips';
+// Helpers come from a plain module, NOT the 'use client' RangeChips file —
+// importing a non-component value out of a 'use client' module makes Next.js
+// hand the server component a client reference, which fails as
+// "TypeError: c is not a function" at request time.
+import { rangeFromSearch } from '@/components/dashboard/range-utils';
 import HealthLineChart from '@/components/dashboard/health-line-chart';
 import LogForm from '@/components/dashboard/log-form';
 import LogEntries, { type LogEntry } from '@/components/dashboard/log-entries';
