@@ -18,7 +18,7 @@ import { cn } from '@/lib/utils';
 import {
   createTreatment,
   type AdminTreatmentState,
-} from '@/app/admin/health/actions';
+} from '../actions';
 
 type Kind = 'medication' | 'herbal' | 'lifestyle' | 'monitoring' | 'referral';
 

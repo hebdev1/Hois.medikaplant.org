@@ -4,7 +4,7 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import { CheckCircle2, XCircle, Trash2, Loader2, AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { setTreatmentStatus, deleteTreatment } from '@/app/admin/health/actions';
+import { setTreatmentStatus, deleteTreatment } from '../actions';
 
 export default function TreatmentActions({
   treatmentId,
