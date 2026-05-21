@@ -617,43 +617,88 @@ export type Database = {
       }
       programs: {
         Row: {
+          accent_color: string
           active: boolean
           created_at: string
           description: string | null
           hero_color: string | null
           id: string
+          level: string
+          milestone_days: number[]
           name: string
           plan_required: Database["public"]["Enums"]["plan_type"]
+          short_tagline: string | null
           slug: string
           total_days: number
           updated_at: string
           variant: string | null
         }
         Insert: {
+          accent_color?: string
           active?: boolean
           created_at?: string
           description?: string | null
           hero_color?: string | null
           id?: string
+          level?: string
+          milestone_days?: number[]
           name: string
           plan_required?: Database["public"]["Enums"]["plan_type"]
+          short_tagline?: string | null
           slug: string
           total_days?: number
           updated_at?: string
           variant?: string | null
         }
         Update: {
+          accent_color?: string
           active?: boolean
           created_at?: string
           description?: string | null
           hero_color?: string | null
           id?: string
+          level?: string
+          milestone_days?: number[]
           name?: string
           plan_required?: Database["public"]["Enums"]["plan_type"]
+          short_tagline?: string | null
           slug?: string
           total_days?: number
           updated_at?: string
           variant?: string | null
+        }
+        Relationships: []
+      }
+      program_phases: {
+        Row: {
+          created_at: string
+          day_end: number
+          day_start: number
+          id: string
+          phase_num: number
+          program_id: string
+          sub: string | null
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          day_end: number
+          day_start: number
+          id?: string
+          phase_num: number
+          program_id: string
+          sub?: string | null
+          title: string
+        }
+        Update: {
+          created_at?: string
+          day_end?: number
+          day_start?: number
+          id?: string
+          phase_num?: number
+          program_id?: string
+          sub?: string | null
+          title?: string
         }
         Relationships: []
       }
@@ -1023,6 +1068,8 @@ export type Database = {
           finished_at: string | null
           id: string
           is_active: boolean
+          pause_offset_seconds: number
+          paused_at: string | null
           program_id: string
           started_at: string
           user_id: string
@@ -1032,6 +1079,8 @@ export type Database = {
           finished_at?: string | null
           id?: string
           is_active?: boolean
+          pause_offset_seconds?: number
+          paused_at?: string | null
           program_id: string
           started_at?: string
           user_id: string
@@ -1041,6 +1090,8 @@ export type Database = {
           finished_at?: string | null
           id?: string
           is_active?: boolean
+          pause_offset_seconds?: number
+          paused_at?: string | null
           program_id?: string
           started_at?: string
           user_id?: string
