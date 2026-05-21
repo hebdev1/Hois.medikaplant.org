@@ -14,6 +14,13 @@ export const dynamic = 'force-dynamic';
 type Guide = Database['public']['Tables']['guides']['Row'];
 type GuideArt = Database['public']['Enums']['guide_art'];
 type Category = Database['public']['Tables']['guide_categories']['Row'];
+type Profile = {
+  full_name: string | null;
+  first_name: string | null;
+  last_name: string | null;
+  email: string;
+  plan: 'basic' | 'premium' | 'vip';
+};
 
 const PLAN_LABELS: Record<string, string> = {
   basic: 'Hoïs Bazilik',
@@ -21,11 +28,42 @@ const PLAN_LABELS: Record<string, string> = {
   vip: 'Hoïs Melis',
 };
 
-const HT_DATE = new Intl.DateTimeFormat('fr-HT', {
-  day: 'numeric',
-  month: 'long',
-  year: 'numeric',
-});
+// Vercel's default Node runtime ships full-icu, but we keep the date format
+// locale-agnostic ('en-GB' is essentially the same shape) and translate the
+// month manually so we never depend on locale data that might be missing.
+const MONTHS_HT = [
+  'Janvye',
+  'Fevriye',
+  'Mas',
+  'Avril',
+  'Me',
+  'Jen',
+  'Jiyè',
+  'Out',
+  'Septanm',
+  'Oktòb',
+  'Novanm',
+  'Desanm',
+];
+
+function formatHaitianDate(iso: string | null): string {
+  if (!iso) return '';
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '';
+  return `${d.getDate()} ${MONTHS_HT[d.getMonth()]} ${d.getFullYear()}`;
+}
+
+// Pull a single row out of a settled result and tolerate every failure mode
+// (network, RLS, malformed cast). Anything weird returns the fallback.
+function settledData<T>(
+  result: PromiseSettledResult<{ data: unknown; error?: unknown } | null>,
+  fallback: T
+): T {
+  if (result.status !== 'fulfilled') return fallback;
+  const raw = result.value;
+  if (!raw || raw.error) return fallback;
+  return (raw.data as T | null) ?? fallback;
+}
 
 export default async function GuidesIndexPage({
   searchParams,
@@ -38,16 +76,15 @@ export default async function GuidesIndexPage({
   } = await supabase.auth.getUser();
   if (!user) return null;
 
-  const activeCatSlug = searchParams.cat;
-
-  // Categories first — needed to resolve cat slug → id for the guides filter
+  // Fan-out fetch with allSettled so one failure doesn't kill the whole page.
   const [
     profileResult,
     categoriesResult,
     featuredResult,
     savesResult,
+    allCountResult,
     unreadCountResult,
-  ] = await Promise.all([
+  ] = await Promise.allSettled([
     supabase
       .from('profiles')
       .select('full_name, first_name, last_name, email, plan')
@@ -66,53 +103,56 @@ export default async function GuidesIndexPage({
       .order('published_at', { ascending: false })
       .limit(1)
       .maybeSingle(),
+    supabase.from('user_guide_saves').select('guide_id').eq('user_id', user.id),
     supabase
-      .from('user_guide_saves')
-      .select('guide_id')
-      .eq('user_id', user.id),
+      .from('guides')
+      .select('*', { count: 'exact', head: true })
+      .eq('published', true),
     supabase.rpc('user_unread_notifications_count', { uid: user.id }),
   ]);
 
-  const profile = profileResult.data as {
-    full_name: string | null;
-    first_name: string | null;
-    last_name: string | null;
-    email: string;
-    plan: 'basic' | 'premium' | 'vip';
-  } | null;
-  const categories = (categoriesResult.data ?? []) as Category[];
-  const featured = featuredResult.data as Guide | null;
-  const savedIds = new Set(
-    ((savesResult.data ?? []) as { guide_id: string }[]).map((s) => s.guide_id)
-  );
+  const profile = settledData<Profile | null>(profileResult, null);
+  const categories = settledData<Category[]>(categoriesResult, []);
+  const featured = settledData<Guide | null>(featuredResult, null);
+  const saveRows = settledData<Array<{ guide_id: string }>>(savesResult, []);
+  const savedIds = new Set(saveRows.map((s) => s.guide_id));
 
+  // allCount uses head:true, so .data is null and we need .count instead.
+  // settledData<T>() walks the success path; we just inspect .count manually.
+  const allCount =
+    allCountResult.status === 'fulfilled' &&
+    typeof (allCountResult.value as { count?: number | null })?.count === 'number'
+      ? ((allCountResult.value as { count: number }).count ?? 0)
+      : 0;
+
+  const unreadCount =
+    unreadCountResult.status === 'fulfilled' &&
+    typeof (unreadCountResult.value as { data?: number | null })?.data === 'number'
+      ? ((unreadCountResult.value as { data: number }).data ?? 0)
+      : 0;
+
+  // Resolve the active category from the URL ?cat= slug
+  const activeCatSlug = searchParams.cat;
   const activeCategory = activeCatSlug
     ? categories.find((c) => c.slug === activeCatSlug) ?? null
     : null;
 
-  // Now query guides, filtered if a category is selected. Always exclude the
-  // featured guide so it doesn't render twice on the page.
-  let guidesQuery = supabase
-    .from('guides')
-    .select('*')
-    .eq('published', true)
-    .order('published_at', { ascending: false });
-
-  if (activeCategory) {
-    guidesQuery = guidesQuery.eq('category_id', activeCategory.id);
+  // Pull the grid in a separate await so it can use the (now resolved) featured + category
+  let guidesData: Guide[] = [];
+  try {
+    let q = supabase
+      .from('guides')
+      .select('*')
+      .eq('published', true)
+      .order('published_at', { ascending: false })
+      .limit(40);
+    if (activeCategory) q = q.eq('category_id', activeCategory.id);
+    if (featured) q = q.neq('id', featured.id);
+    const { data } = await q;
+    guidesData = (data ?? []) as Guide[];
+  } catch (e) {
+    console.error('[guides] grid fetch failed:', e);
   }
-  if (featured) {
-    guidesQuery = guidesQuery.neq('id', featured.id);
-  }
-
-  const { data: guidesData, count: totalCount } = await guidesQuery;
-  const guides = (guidesData ?? []) as Guide[];
-
-  // Total count for the "All" chip (no filter, includes featured)
-  const { count: allCount } = await supabase
-    .from('guides')
-    .select('*', { count: 'exact', head: true })
-    .eq('published', true);
 
   const userName =
     profile?.full_name ||
@@ -120,9 +160,10 @@ export default async function GuidesIndexPage({
     profile?.email?.split('@')[0] ||
     user.email?.split('@')[0] ||
     'Manm';
-  const shortName = userName.split(' ')[0];
-  const planLabel = profile ? PLAN_LABELS[profile.plan] ?? 'Hoïs Bazilik' : 'Hoïs Bazilik';
-  const unreadCount = (unreadCountResult.data as number | null) ?? 0;
+  const shortName = userName.split(' ')[0] || 'Manm';
+  const planLabel = profile?.plan
+    ? PLAN_LABELS[profile.plan] ?? 'Hoïs Bazilik'
+    : 'Hoïs Bazilik';
 
   return (
     <>
@@ -148,25 +189,24 @@ export default async function GuidesIndexPage({
         </header>
 
         {/* Filter chips */}
-        <div className="mb-6">
-          <GuideCategoryChips
-            categories={categories.map((c) => ({ slug: c.slug, label: c.label }))}
-            totalCount={allCount ?? 0}
-          />
-        </div>
+        {categories.length > 0 && (
+          <div className="mb-6">
+            <GuideCategoryChips
+              categories={categories.map((c) => ({ slug: c.slug, label: c.label }))}
+              totalCount={allCount}
+            />
+          </div>
+        )}
 
         {/* Featured */}
         {!activeCategory && featured && (
-          <FeaturedHero
-            featured={featured}
-            saved={savedIds.has(featured.id)}
-          />
+          <FeaturedHero featured={featured} saved={savedIds.has(featured.id)} />
         )}
 
         {/* Grid */}
-        {guides.length > 0 ? (
+        {guidesData.length > 0 ? (
           <div className="mt-8 grid sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
-            {guides.map((g) => (
+            {guidesData.map((g) => (
               <div key={g.id} className="relative">
                 <GuideCard guide={g} />
                 <div className="absolute top-3 right-3 z-10">
@@ -184,21 +224,14 @@ export default async function GuidesIndexPage({
         )}
 
         {/* Saved shortcut */}
-        {savedIds.size > 0 && (
-          <SavedFooter count={savedIds.size} />
-        )}
+        {savedIds.size > 0 && <SavedFooter count={savedIds.size} />}
       </div>
     </>
   );
 }
 
-function FeaturedHero({
-  featured,
-  saved,
-}: {
-  featured: Guide;
-  saved: boolean;
-}) {
+function FeaturedHero({ featured, saved }: { featured: Guide; saved: boolean }) {
+  const dateLabel = formatHaitianDate(featured.published_at);
   return (
     <section className="relative overflow-hidden grid lg:grid-cols-[1fr_1.2fr] gap-6 lg:gap-8 bg-gradient-to-br from-forest-800 to-forest-900 text-cream-50 rounded-3xl p-6 md:p-8 lg:p-10 shadow-hero">
       <div
@@ -216,7 +249,6 @@ function FeaturedHero({
         aria-hidden
       />
 
-      {/* LEFT — art */}
       <div className="relative grid place-items-center min-h-[220px]">
         <PlantBig
           art={featured.art as GuideArt}
@@ -226,7 +258,6 @@ function FeaturedHero({
         />
       </div>
 
-      {/* RIGHT — body */}
       <div className="relative flex flex-col justify-center">
         <div className="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-[0.2em] text-gold-300 font-semibold mb-3">
           <Star className="w-3 h-3 fill-gold-400" strokeWidth={0} />
@@ -245,9 +276,7 @@ function FeaturedHero({
           {featured.excerpt}
         </p>
         <div className="mt-5 flex flex-wrap items-center gap-2 text-xs text-cream-200/80">
-          <span className="font-semibold text-cream-50">
-            {featured.author_name}
-          </span>
+          <span className="font-semibold text-cream-50">{featured.author_name}</span>
           {featured.author_role && (
             <>
               <span aria-hidden>·</span>
@@ -259,10 +288,10 @@ function FeaturedHero({
             <Clock className="w-3 h-3" strokeWidth={2.2} />
             {featured.read_minutes} min lekti
           </span>
-          {featured.published_at && (
+          {dateLabel && (
             <>
               <span aria-hidden>·</span>
-              <span>Pibliye {HT_DATE.format(new Date(featured.published_at))}</span>
+              <span>Pibliye {dateLabel}</span>
             </>
           )}
         </div>
@@ -288,10 +317,7 @@ function FeaturedHero({
 function EmptyState({ category }: { category: string | null }) {
   return (
     <div className="mt-8 rounded-2xl bg-cream-50 border border-dashed border-cream-200 p-12 text-center">
-      <BookOpen
-        className="w-8 h-8 text-earth-500 mx-auto mb-3"
-        strokeWidth={1.6}
-      />
+      <BookOpen className="w-8 h-8 text-earth-500 mx-auto mb-3" strokeWidth={1.6} />
       <p className="text-earth-700 font-semibold">
         {category
           ? `Pa gen atik nan kategori "${category}" ankò.`
@@ -321,10 +347,10 @@ function SavedFooter({ count }: { count: number }) {
         </div>
       </div>
       <Link
-        href="/dashboard/guides?cat=saved"
+        href="/dashboard/guides"
         className="text-xs font-semibold text-forest-700 hover:text-forest-800 inline-flex items-center gap-1"
       >
-        Wè sove yo
+        Wè tout
         <ChevronRight className="w-3 h-3" strokeWidth={2.4} />
       </Link>
     </div>
