@@ -10,7 +10,6 @@ import {
   BookOpen,
   LifeBuoy,
   UserCircle,
-  Shield,
   Leaf,
   LogOut,
 } from 'lucide-react';
@@ -19,6 +18,9 @@ import { createClient } from '@/lib/supabase/client';
 import Avatar from './avatar';
 
 type SidebarProps = {
+  /** @deprecated kept for backward-compatibility with existing callers;
+   *  no longer used since admin/user dashboards are intentionally
+   *  isolated and there is no cross-link from here to /admin. */
   isAdmin?: boolean;
   userName: string;
   planLabel: string;
@@ -36,7 +38,6 @@ const NAV_ITEMS = [
 ] as const;
 
 export default function Sidebar({
-  isAdmin,
   userName,
   planLabel,
   level = 3,
@@ -117,20 +118,8 @@ export default function Sidebar({
           })}
         </nav>
 
-        {isAdmin && (
-          <Link
-            href="/admin"
-            className={cn(
-              'mt-5 flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition border',
-              pathname.startsWith('/admin')
-                ? 'bg-accent text-white border-accent'
-                : 'border-cream-200 text-accent hover:bg-accent/5'
-            )}
-          >
-            <Shield className="w-[18px] h-[18px]" strokeWidth={1.8} />
-            <span>Admin Panel</span>
-          </Link>
-        )}
+        {/* Admin and user dashboards are intentionally isolated — no cross
+            link here. Admins reach /admin directly via the URL. */}
       </div>
 
       {/* User card */}

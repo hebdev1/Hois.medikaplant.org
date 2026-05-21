@@ -10,7 +10,6 @@ import {
   Bell,
   BookOpen,
   Activity,
-  ArrowLeft,
   LogOut,
 } from 'lucide-react';
 import { adminSignOut } from '../login/actions';
@@ -105,14 +104,7 @@ export default async function AdminProtectedLayout({
             </Link>
           ))}
         </nav>
-        <div className="p-3 border-t border-white/10 space-y-1">
-          <Link
-            href="/dashboard"
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/70 hover:text-white hover:bg-white/5 w-full transition"
-          >
-            <ArrowLeft className="w-4 h-4" strokeWidth={2} />
-            Back to user dashboard
-          </Link>
+        <div className="p-3 border-t border-white/10">
           <form action={adminSignOut}>
             <button
               type="submit"
