@@ -1,20 +1,42 @@
-'use client';
-
-import { Search, Bell, ShoppingCart, ChevronDown } from 'lucide-react';
+import { Search, ShoppingCart, ChevronDown } from 'lucide-react';
 import Link from 'next/link';
+import { createClient } from '@/lib/supabase/server';
 import Avatar from './avatar';
+import NotificationBell from './notification-bell';
 
 type TopbarProps = {
   userName: string;
   userCondition?: string;
+  /** @deprecated Kept for backward compatibility — NotificationBell now
+   *  computes its own live unread count via realtime subscription. */
   unreadCount?: number;
 };
 
-export default function Topbar({
+/**
+ * Topbar is a server component so it can fetch the current user's id + plan
+ * once and pass them to the live <NotificationBell />. The bell handles its
+ * own realtime subscription + dropdown state on the client.
+ */
+export default async function Topbar({
   userName,
   userCondition = 'Manm Hoïs',
-  unreadCount = 0,
 }: TopbarProps) {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  let userPlan: 'basic' | 'premium' | 'vip' = 'basic';
+  if (user) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('plan')
+      .eq('id', user.id)
+      .maybeSingle();
+    const p = profile as { plan: 'basic' | 'premium' | 'vip' } | null;
+    if (p?.plan) userPlan = p.plan;
+  }
+
   return (
     <header className="sticky top-0 z-30 flex items-center gap-4 px-6 md:px-8 lg:px-10 py-4 bg-cream-50/85 backdrop-blur-md border-b border-cream-200">
       <label className="relative flex-1 max-w-2xl">
@@ -34,15 +56,7 @@ export default function Topbar({
       </label>
 
       <div className="flex items-center gap-2">
-        <button
-          aria-label="Notifikasyon"
-          className="relative grid place-items-center w-10 h-10 rounded-full bg-white border border-cream-200 hover:border-forest-300 text-earth-700 hover:text-forest-700 transition"
-        >
-          <Bell className="w-[18px] h-[18px]" strokeWidth={1.8} />
-          {unreadCount > 0 && (
-            <span className="absolute top-2 right-2.5 w-2 h-2 rounded-full bg-accent ring-2 ring-cream-50" />
-          )}
-        </button>
+        {user && <NotificationBell userId={user.id} userPlan={userPlan} />}
         <button
           aria-label="Panye"
           className="grid place-items-center w-10 h-10 rounded-full bg-white border border-cream-200 hover:border-forest-300 text-earth-700 hover:text-forest-700 transition"

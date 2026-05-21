@@ -10,6 +10,7 @@ import {
   Bell,
   BookOpen,
   Activity,
+  MessageCircle,
   LogOut,
 } from 'lucide-react';
 import { adminSignOut } from '../login/actions';
@@ -54,6 +55,7 @@ export default async function AdminProtectedLayout({
     { href: '/admin', label: 'Overview', icon: LayoutDashboard },
     { href: '/admin/users', label: 'Users', icon: Users },
     { href: '/admin/health', label: 'Swivi Sante', icon: Activity },
+    { href: '/admin/support', label: 'Sipò chat', icon: MessageCircle },
     { href: '/admin/resources', label: 'Resources', icon: FileText },
     { href: '/admin/guides', label: 'Guides', icon: BookOpen },
     { href: '/admin/subscriptions', label: 'Subscriptions', icon: CreditCard },

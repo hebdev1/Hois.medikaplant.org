@@ -1197,6 +1197,10 @@ export type Database = {
     }
     Views: { [_ in never]: never }
     Functions: {
+      admin_send_support_reply: {
+        Args: { p_thread_id: string; p_body: string }
+        Returns: Database["public"]["Tables"]["support_messages"]["Row"]
+      }
       get_user_plan: {
         Args: { uid: string }
         Returns: Database["public"]["Enums"]["plan_type"]

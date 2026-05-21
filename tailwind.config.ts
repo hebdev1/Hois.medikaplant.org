@@ -96,6 +96,14 @@ const config: Config = {
           '0%': { opacity: '1', transform: 'translateY(0) scale(1)' },
           '100%': { opacity: '0', transform: 'translateY(-8px) scale(0.96)' },
         },
+        wiggle: {
+          '0%, 60%, 100%': { transform: 'rotate(0deg)' },
+          '10%': { transform: 'rotate(-12deg)' },
+          '20%': { transform: 'rotate(10deg)' },
+          '30%': { transform: 'rotate(-8deg)' },
+          '40%': { transform: 'rotate(6deg)' },
+          '50%': { transform: 'rotate(-3deg)' },
+        },
       },
       animation: {
         fadeUp: 'fadeUp 0.6s ease forwards',
@@ -103,6 +111,7 @@ const config: Config = {
         pulseGold: 'pulseGold 2s ease-in-out infinite',
         toastIn: 'toastIn 0.32s cubic-bezier(0.22, 1, 0.36, 1) forwards',
         toastOut: 'toastOut 0.32s ease forwards',
+        wiggle: 'wiggle 2.4s ease-in-out infinite',
       },
     },
   },
