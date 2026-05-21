@@ -32,42 +32,94 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const pathname = request.nextUrl.pathname;
-  const isProtected =
-    pathname.startsWith('/dashboard') ||
-    pathname.startsWith('/admin') ||
-    pathname.startsWith('/checkout');
-  const isAuthRoute = pathname.startsWith('/auth/login') || pathname.startsWith('/auth/signup');
+  const isAdminRoute = pathname.startsWith('/admin');
+  const isAdminLogin = pathname === '/admin/login' || pathname.startsWith('/admin/login/');
+  const isMemberRoute =
+    pathname.startsWith('/dashboard') || pathname.startsWith('/checkout');
+  const isMemberAuthRoute =
+    pathname.startsWith('/auth/login') || pathname.startsWith('/auth/signup');
 
-  if (!user && isProtected) {
-    const url = request.nextUrl.clone();
-    const originalSearch = request.nextUrl.search; // includes leading "?" if present
-    const originalPlan = request.nextUrl.searchParams.get('plan');
-    url.search = '';
-    url.pathname = '/auth/login';
-    url.searchParams.set('redirect', `${pathname}${originalSearch}`);
-    if (originalPlan) url.searchParams.set('plan', originalPlan);
-    return NextResponse.redirect(url);
-  }
-
-  if (user && isAuthRoute) {
-    const url = request.nextUrl.clone();
-    url.pathname = '/dashboard';
-    return NextResponse.redirect(url);
-  }
-
-  if (user && pathname.startsWith('/admin')) {
-    const { data: profileRaw } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', user.id)
-      .single();
-    const profile = profileRaw as { role: 'user' | 'admin' } | null;
-
-    if (profile?.role !== 'admin') {
+  // ── 1. Unauthed visits ─────────────────────────────────────────────────
+  if (!user) {
+    // /admin/* (except /admin/login) → /admin/login
+    if (isAdminRoute && !isAdminLogin) {
       const url = request.nextUrl.clone();
-      url.pathname = '/dashboard';
+      url.search = '';
+      url.pathname = '/admin/login';
       return NextResponse.redirect(url);
     }
+    // /dashboard/* or /checkout → /auth/login?redirect=…
+    if (isMemberRoute) {
+      const url = request.nextUrl.clone();
+      const originalSearch = request.nextUrl.search;
+      const originalPlan = request.nextUrl.searchParams.get('plan');
+      url.search = '';
+      url.pathname = '/auth/login';
+      url.searchParams.set('redirect', `${pathname}${originalSearch}`);
+      if (originalPlan) url.searchParams.set('plan', originalPlan);
+      return NextResponse.redirect(url);
+    }
+    return response;
+  }
+
+  // ── 2. Authed: fetch role once, route from there ───────────────────────
+  const { data: profileRaw } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', user.id)
+    .single();
+  const role = (profileRaw as { role: 'user' | 'admin' } | null)?.role ?? 'user';
+  const isAdmin = role === 'admin';
+
+  // Already signed in but visiting a public auth/login page → bounce home
+  if (isMemberAuthRoute) {
+    const url = request.nextUrl.clone();
+    url.pathname = isAdmin ? '/admin' : '/dashboard';
+    return NextResponse.redirect(url);
+  }
+
+  // Already signed in as admin visiting /admin/login → straight into /admin
+  // (mirrors the page-level check; covers the case where the page is cached
+  // or hit before the page-level guard runs)
+  if (isAdmin && isAdminLogin) {
+    const url = request.nextUrl.clone();
+    url.search = '';
+    url.pathname = '/admin';
+    return NextResponse.redirect(url);
+  }
+
+  // ── 3. Strict isolation — keep admins inside /admin ────────────────────
+  // If the signed-in user is admin and tries to reach any /dashboard or
+  // /checkout URL (including via the browser Back button rewinding through
+  // history), bounce them back to /admin so the admin shell stays sticky.
+  if (isAdmin && isMemberRoute) {
+    const url = request.nextUrl.clone();
+    url.search = '';
+    url.pathname = '/admin';
+    return NextResponse.redirect(url);
+  }
+
+  // ── 4. Non-admin trying to enter /admin/* → /admin/login?error=not_admin
+  if (!isAdmin && isAdminRoute && !isAdminLogin) {
+    const url = request.nextUrl.clone();
+    url.search = '';
+    url.pathname = '/admin/login';
+    url.searchParams.set('error', 'not_admin');
+    return NextResponse.redirect(url);
+  }
+
+  // ── 5. Defeat back-forward cache for admins inside /admin ──────────────
+  // Without no-store, hitting Back from /admin to a previously visited
+  // /dashboard would restore the dashboard page from bfcache and the
+  // middleware redirect above wouldn't fire. Forcing revalidation makes
+  // every Back hit re-enter middleware so the sticky-admin rule applies.
+  if (isAdmin && isAdminRoute) {
+    response.headers.set(
+      'Cache-Control',
+      'no-store, no-cache, must-revalidate, proxy-revalidate'
+    );
+    response.headers.set('Pragma', 'no-cache');
+    response.headers.set('Expires', '0');
   }
 
   return response;
