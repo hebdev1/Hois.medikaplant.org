@@ -924,6 +924,69 @@ export type Database = {
         }
         Relationships: []
       }
+      treatment_recommendations: {
+        Row: {
+          admin_id: string | null
+          created_at: string
+          description: string
+          dose: string | null
+          duration: string | null
+          end_date: string | null
+          frequency: string | null
+          id: string
+          kind: Database["public"]["Enums"]["treatment_kind"]
+          notes: string | null
+          read_at: string | null
+          related_condition: string | null
+          related_metric: string | null
+          start_date: string
+          status: Database["public"]["Enums"]["treatment_status"]
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          admin_id?: string | null
+          created_at?: string
+          description: string
+          dose?: string | null
+          duration?: string | null
+          end_date?: string | null
+          frequency?: string | null
+          id?: string
+          kind: Database["public"]["Enums"]["treatment_kind"]
+          notes?: string | null
+          read_at?: string | null
+          related_condition?: string | null
+          related_metric?: string | null
+          start_date?: string
+          status?: Database["public"]["Enums"]["treatment_status"]
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          admin_id?: string | null
+          created_at?: string
+          description?: string
+          dose?: string | null
+          duration?: string | null
+          end_date?: string | null
+          frequency?: string | null
+          id?: string
+          kind?: Database["public"]["Enums"]["treatment_kind"]
+          notes?: string | null
+          read_at?: string | null
+          related_condition?: string | null
+          related_metric?: string | null
+          start_date?: string
+          status?: Database["public"]["Enums"]["treatment_status"]
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_badges: {
         Row: {
           badge_id: string
@@ -1120,6 +1183,8 @@ export type Database = {
       support_contact_kind: "whatsapp" | "email" | "phone" | "instagram" | "facebook"
       support_sender_role: "user" | "agent" | "system"
       support_thread_status: "open" | "resolved" | "archived"
+      treatment_kind: "medication" | "herbal" | "lifestyle" | "monitoring" | "referral"
+      treatment_status: "active" | "completed" | "cancelled"
       user_role: "user" | "admin"
     }
     CompositeTypes: { [_ in never]: never }

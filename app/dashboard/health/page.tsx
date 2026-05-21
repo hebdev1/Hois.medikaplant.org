@@ -15,6 +15,12 @@ import LogForm from '@/components/dashboard/log-form';
 import LogEntries, { type LogEntry } from '@/components/dashboard/log-entries';
 import HealthSummary from '@/components/dashboard/health-summary';
 import ExportCsvButton from '@/components/dashboard/export-csv-button';
+import ConditionsStrip, {
+  primaryMetricFor,
+} from '@/components/dashboard/conditions-strip';
+import TreatmentsSection, {
+  type Treatment,
+} from '@/components/dashboard/treatments-section';
 
 export const metadata = { title: 'Swivi Sante' };
 export const dynamic = 'force-dynamic';
@@ -37,8 +43,12 @@ const METRIC_DEFAULT_TARGET: Record<MetricKey, { min: number; max: number }> = {
   pressure: { min: 100, max: 130 },
 };
 
-function metricFromSearch(v: string | undefined): MetricKey {
-  return v === 'weight' || v === 'pressure' ? v : 'blood_sugar';
+function metricFromSearch(
+  v: string | undefined,
+  fallback: MetricKey
+): MetricKey {
+  if (v === 'blood_sugar' || v === 'weight' || v === 'pressure') return v;
+  return fallback;
 }
 
 type HealthLog = {
@@ -68,35 +78,62 @@ export default async function HealthPage({
   } = await supabase.auth.getUser();
   if (!user) return null;
 
-  const metric = metricFromSearch(searchParams.metric);
   const range = rangeFromSearch(searchParams.range);
 
-  // Fetch profile (for topbar), preferences (for target zone), and a wide
-  // window of logs (90 days max). Bucket per-metric in memory.
+  // Fetch profile (for topbar), preferences (for target zone), a wide window
+  // of logs (90 days max), medical conditions, and any treatments from admins.
   const since = new Date(Date.now() - 90 * 86400000).toISOString();
 
-  const [profileResult, prefsResult, logsResult, unreadCountResult] =
-    await Promise.all([
-      supabase
-        .from('profiles')
-        .select('full_name, first_name, last_name, email, plan')
-        .eq('id', user.id)
-        .maybeSingle(),
-      supabase
-        .from('user_preferences')
-        .select(
-          'target_blood_sugar_min, target_blood_sugar_max, target_weight_kg'
-        )
-        .eq('user_id', user.id)
-        .maybeSingle(),
-      supabase
-        .from('health_logs')
-        .select('*')
-        .eq('user_id', user.id)
-        .gte('logged_at', since)
-        .order('logged_at', { ascending: true }),
-      supabase.rpc('user_unread_notifications_count', { uid: user.id }),
-    ]);
+  const [
+    profileResult,
+    prefsResult,
+    logsResult,
+    medicalResult,
+    treatmentsResult,
+    unreadCountResult,
+  ] = await Promise.all([
+    supabase
+      .from('profiles')
+      .select('full_name, first_name, last_name, email, plan')
+      .eq('id', user.id)
+      .maybeSingle(),
+    supabase
+      .from('user_preferences')
+      .select(
+        'target_blood_sugar_min, target_blood_sugar_max, target_weight_kg'
+      )
+      .eq('user_id', user.id)
+      .maybeSingle(),
+    supabase
+      .from('health_logs')
+      .select('*')
+      .eq('user_id', user.id)
+      .gte('logged_at', since)
+      .order('logged_at', { ascending: true }),
+    supabase
+      .from('user_medical_info')
+      .select('conditions')
+      .eq('user_id', user.id)
+      .maybeSingle(),
+    supabase
+      .from('treatment_recommendations')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+      .limit(50),
+    supabase.rpc('user_unread_notifications_count', { uid: user.id }),
+  ]);
+
+  const conditions =
+    ((medicalResult.data as { conditions: string[] } | null)?.conditions ?? [])
+      .filter(Boolean);
+  const treatments = (treatmentsResult.data ?? []) as Treatment[];
+
+  // Default the active metric to whichever metric maps to the user's first
+  // matching condition — so a diabetic user lands on "Sik nan san" by
+  // default, a hypertensive user on "Tansyon", etc. URL ?metric= always wins.
+  const conditionDefault = primaryMetricFor(conditions) ?? 'blood_sugar';
+  const metric = metricFromSearch(searchParams.metric, conditionDefault);
 
   const profile = profileResult.data as {
     full_name: string | null;
@@ -230,6 +267,10 @@ export default async function HealthPage({
           </p>
         </header>
 
+        <div className="mb-5">
+          <ConditionsStrip conditions={conditions} activeMetric={metric} />
+        </div>
+
         <MetricTabs active={metric} summaries={summaries} />
 
         {/* Chart card */}
@@ -308,6 +349,11 @@ export default async function HealthPage({
               <ExportCsvButton />
             </div>
           </section>
+        </div>
+
+        {/* Treatments / prescriptions from admin / herbalist */}
+        <div className="mt-6">
+          <TreatmentsSection treatments={treatments} />
         </div>
       </div>
     </>

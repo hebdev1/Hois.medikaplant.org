@@ -7,6 +7,29 @@ import type { Database } from '@/types/database';
 type HealthLogInsert = Database['public']['Tables']['health_logs']['Insert'];
 type HealthLogRow = Database['public']['Tables']['health_logs']['Row'];
 
+// ─── Treatment recommendations (user-side actions) ─────────────────────────
+
+export async function markTreatmentRead(
+  id: string
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, error: 'Ou dwe konekte.' };
+
+  const { error } = await supabase
+    .from('treatment_recommendations')
+    .update({ read_at: new Date().toISOString() })
+    .eq('id', id)
+    .eq('user_id', user.id)
+    .is('read_at', null);
+  if (error) return { ok: false, error: error.message };
+
+  revalidatePath('/dashboard/health');
+  return { ok: true };
+}
+
 export type Metric = 'blood_sugar' | 'weight' | 'pressure';
 
 const METRIC_BOUNDS: Record<Metric, { min: number; max: number }> = {
