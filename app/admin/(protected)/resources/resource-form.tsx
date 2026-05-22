@@ -11,13 +11,13 @@ import {
   FileText,
   Play,
   Volume2,
-  ExternalLink,
 } from 'lucide-react';
 import {
   createResource,
   updateResource,
   type AdminResourceState,
 } from './actions';
+import ResourceUpload, { type UploadedFile } from './resource-upload';
 import type { Database } from '@/types/database';
 import { cn } from '@/lib/utils';
 
@@ -90,6 +90,38 @@ export default function ResourceForm(props: Props) {
     (resource?.type as 'pdf' | 'video' | 'audio' | undefined) ?? 'pdf'
   );
 
+  // The file URL + size + duration are populated by the upload component.
+  // We mirror them into form state so they ride along on submit as hidden
+  // inputs (and so we can disable submit until a file is attached).
+  const [fileUrl, setFileUrl] = React.useState<string>(resource?.file_url ?? '');
+  const [fileSize, setFileSize] = React.useState<number | null>(
+    resource?.file_size_bytes ?? null
+  );
+  const [duration, setDuration] = React.useState<number | null>(
+    resource?.duration_seconds ?? null
+  );
+
+  function onUploaded(f: UploadedFile) {
+    setFileUrl(f.url);
+    setFileSize(f.sizeBytes);
+    setDuration(f.durationSeconds);
+    // Helpful UX: suggest a type from the detected kind, but only if the
+    // admin hasn't already picked one different.
+    if (
+      f.detectedKind === 'pdf' ||
+      f.detectedKind === 'video' ||
+      f.detectedKind === 'audio'
+    ) {
+      setType(f.detectedKind);
+    }
+  }
+
+  function onCleared() {
+    setFileUrl('');
+    setFileSize(null);
+    setDuration(null);
+  }
+
   return (
     <form action={formAction} className="space-y-6">
       {/* Title */}
@@ -130,10 +162,36 @@ export default function ResourceForm(props: Props) {
         />
       </div>
 
+      {/* ── File upload ─────────────────────────────────────────────── */}
+      <div>
+        <label className="block text-xs font-bold uppercase tracking-wide text-earth-700 mb-2">
+          Fichye <span className="text-rose-700">*</span>
+        </label>
+        <ResourceUpload
+          initialUrl={resource?.file_url ?? null}
+          initialSizeBytes={resource?.file_size_bytes ?? null}
+          initialDurationSeconds={resource?.duration_seconds ?? null}
+          onUploaded={onUploaded}
+          onCleared={onCleared}
+        />
+        {/* Hidden inputs ride along on submit */}
+        <input type="hidden" name="file_url" value={fileUrl} />
+        <input
+          type="hidden"
+          name="file_size_bytes"
+          value={fileSize ?? ''}
+        />
+        <input
+          type="hidden"
+          name="duration_seconds"
+          value={duration ?? ''}
+        />
+      </div>
+
       {/* Type */}
       <fieldset>
         <legend className="block text-xs font-bold uppercase tracking-wide text-earth-700 mb-2">
-          Tip
+          Tip (otomatikman detekte — w ka chanje l)
         </legend>
         <input type="hidden" name="type" value={type} />
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
@@ -233,102 +291,6 @@ export default function ResourceForm(props: Props) {
         </div>
       </div>
 
-      {/* File URL */}
-      <div>
-        <label
-          htmlFor="file_url"
-          className="block text-xs font-bold uppercase tracking-wide text-earth-700 mb-1.5"
-        >
-          URL fichye <span className="text-rose-700">*</span>
-        </label>
-        <div className="flex gap-2">
-          <input
-            id="file_url"
-            name="file_url"
-            type="url"
-            required
-            defaultValue={resource?.file_url ?? ''}
-            className="flex-1 px-3 py-2.5 text-sm bg-white border border-cream-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-forest-200 focus:border-forest-300 font-mono"
-            placeholder="https://cdn.medikaplant.org/resources/…"
-          />
-          {resource?.file_url && (
-            <a
-              href={resource.file_url}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-1 px-3 py-2 text-xs font-semibold bg-white border border-cream-200 rounded-lg text-earth-700 hover:border-forest-300 hover:text-forest-700"
-              title="Ouvri fichye a"
-            >
-              <ExternalLink className="w-3.5 h-3.5" strokeWidth={2.2} />
-            </a>
-          )}
-        </div>
-      </div>
-
-      {/* Thumbnail URL */}
-      <div>
-        <label
-          htmlFor="thumbnail_url"
-          className="block text-xs font-bold uppercase tracking-wide text-earth-700 mb-1.5"
-        >
-          Miniature (opsyonèl)
-        </label>
-        <input
-          id="thumbnail_url"
-          name="thumbnail_url"
-          type="url"
-          defaultValue={resource?.thumbnail_url ?? ''}
-          className="w-full px-3 py-2.5 text-sm bg-white border border-cream-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-forest-200 focus:border-forest-300 font-mono"
-          placeholder="https://cdn.medikaplant.org/thumbs/…"
-        />
-      </div>
-
-      {/* Duration + Size */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label
-            htmlFor="duration_seconds"
-            className="block text-xs font-bold uppercase tracking-wide text-earth-700 mb-1.5"
-          >
-            Dirasyon (segond)
-          </label>
-          <input
-            id="duration_seconds"
-            name="duration_seconds"
-            type="number"
-            min="0"
-            step="1"
-            defaultValue={resource?.duration_seconds ?? ''}
-            className="w-full px-3 py-2.5 text-sm bg-white border border-cream-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-forest-200 focus:border-forest-300"
-            placeholder="ex. 720 pou 12 minit"
-          />
-          <p className="mt-1 text-[11px] text-earth-500">
-            Pou videyo ak odyo sèlman.
-          </p>
-        </div>
-        <div>
-          <label
-            htmlFor="file_size_bytes"
-            className="block text-xs font-bold uppercase tracking-wide text-earth-700 mb-1.5"
-          >
-            Gwosè (byte)
-          </label>
-          <input
-            id="file_size_bytes"
-            name="file_size_bytes"
-            type="number"
-            min="0"
-            step="1"
-            defaultValue={resource?.file_size_bytes ?? ''}
-            className="w-full px-3 py-2.5 text-sm bg-white border border-cream-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-forest-200 focus:border-forest-300"
-            placeholder="ex. 2516582 pou 2.4 Mo"
-          />
-          <p className="mt-1 text-[11px] text-earth-500">
-            Konvèti: 1 Mo = 1 048 576 byte.
-          </p>
-        </div>
-      </div>
-
       {/* Published toggle */}
       <div className="flex items-center justify-between gap-3 p-4 rounded-xl bg-cream-50 border border-cream-200">
         <div>
@@ -377,18 +339,25 @@ export default function ResourceForm(props: Props) {
         >
           ← Anile
         </Link>
-        <SubmitButton mode={props.mode} />
+        <SubmitButton mode={props.mode} disabled={!fileUrl} />
       </div>
     </form>
   );
 }
 
-function SubmitButton({ mode }: { mode: 'create' | 'edit' }) {
+function SubmitButton({
+  mode,
+  disabled,
+}: {
+  mode: 'create' | 'edit';
+  disabled: boolean;
+}) {
   const { pending } = useFormStatus();
   return (
     <button
       type="submit"
-      disabled={pending}
+      disabled={pending || disabled}
+      title={disabled ? 'Monte yon fichye anvan' : undefined}
       className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-bold bg-forest-700 hover:bg-forest-800 disabled:opacity-60 disabled:cursor-not-allowed text-cream-50 rounded-lg transition shadow-plant"
     >
       {pending ? (
