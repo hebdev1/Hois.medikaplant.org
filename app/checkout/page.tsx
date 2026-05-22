@@ -1,11 +1,12 @@
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import { Check, Leaf, ArrowLeft } from 'lucide-react';
+import { Check, Leaf, ArrowLeft, Lock } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { PLANS, isValidPlan } from './plans';
 import CheckoutForm from './checkout-form';
 
 export const metadata = { title: 'Checkout' };
+export const dynamic = 'force-dynamic';
 
 export default async function CheckoutPage({
   searchParams,
@@ -20,14 +21,14 @@ export default async function CheckoutPage({
 
   const plan = PLANS[planKey];
 
+  // We intentionally DO NOT redirect anonymous visitors away — they should
+  // land on this page with the plan they chose and complete login OR signup
+  // inline as part of the purchase flow. The Haiti-only gate is applied
+  // inside the server action when a fresh signup is being created.
   const supabase = createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
-
-  if (!user) {
-    redirect(`/auth/signup?plan=${plan.key}&redirect=/checkout?plan=${plan.key}`);
-  }
 
   return (
     <main className="min-h-screen bg-slate-50">
@@ -60,10 +61,13 @@ export default async function CheckoutPage({
             Etap final
           </span>
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-ink">
-            Konplete pèman ou pou <span className="text-brand-600">{plan.name}</span>
+            Konplete pèman ou pou{' '}
+            <span className="text-brand-600">{plan.name}</span>
           </h1>
           <p className="mt-3 text-ink-muted">
-            Apre w peye, w ap jwenn aksè a tout sa plan an ofri imedyatman.
+            {user
+              ? 'Antre detay pèman ou pou aktive plan an imedyatman.'
+              : 'Konekte (oswa kreye yon kont) epi peye nan menm fòm sa. Plan yo disponib sèlman pou manm ki nan Ayiti.'}
           </p>
         </div>
 
@@ -89,7 +93,10 @@ export default async function CheckoutPage({
 
             <ul className="py-5 space-y-3 border-b border-slate-100">
               {plan.features.map((feature) => (
-                <li key={feature} className="flex gap-3 items-start text-sm text-ink/85">
+                <li
+                  key={feature}
+                  className="flex gap-3 items-start text-sm text-ink/85"
+                >
                   <span className="mt-0.5 grid place-items-center w-5 h-5 rounded-full bg-brand-100 text-brand-700 shrink-0">
                     <Check className="w-3 h-3" strokeWidth={3} />
                   </span>
@@ -112,16 +119,26 @@ export default async function CheckoutPage({
                 <dd>${plan.price}.00 USD</dd>
               </div>
             </dl>
+
+            <div className="mt-5 rounded-xl bg-slate-50 border border-slate-200 px-3 py-2.5 text-[11px] text-slate-700 flex items-start gap-2">
+              <Lock
+                className="w-3.5 h-3.5 mt-0.5 shrink-0 text-slate-500"
+                strokeWidth={2.2}
+              />
+              <span>
+                Plan sa yo disponib <strong>sèlman pou manm ki nan Ayiti</strong>.
+                Si ou pa nan Ayiti, kreyasyon kont peye a ap refize.
+              </span>
+            </div>
           </aside>
 
-          {/* RIGHT — Payment form */}
+          {/* RIGHT — Auth + Payment form */}
           <section className="bg-white rounded-2xl border border-slate-200 shadow-card p-6 md:p-8 lg:order-1">
-            <h2 className="text-lg font-bold text-ink mb-1">Enfòmasyon pèman</h2>
-            <p className="text-sm text-ink-muted mb-6">
-              Konekte tankou <strong className="text-ink">{user.email}</strong>
-            </p>
-
-            <CheckoutForm plan={plan.key} amount={plan.price} />
+            <CheckoutForm
+              plan={plan.key}
+              amount={plan.price}
+              userEmail={user?.email ?? null}
+            />
           </section>
         </div>
       </div>

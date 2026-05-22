@@ -34,8 +34,11 @@ export async function updateSession(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   const isAdminRoute = pathname.startsWith('/admin');
   const isAdminLogin = pathname === '/admin/login' || pathname.startsWith('/admin/login/');
-  const isMemberRoute =
-    pathname.startsWith('/dashboard') || pathname.startsWith('/checkout');
+  // /checkout is intentionally NOT gated here — anonymous visitors must be
+  // able to land on the checkout page with their plan choice and complete
+  // the login/signup inline while they purchase. Only /dashboard requires a
+  // session up front.
+  const isMemberRoute = pathname.startsWith('/dashboard');
   const isMemberAuthRoute =
     pathname.startsWith('/auth/login') || pathname.startsWith('/auth/signup');
 
