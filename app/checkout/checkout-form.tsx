@@ -15,6 +15,7 @@ import {
   EyeOff,
   MapPin,
   LogOut,
+  CheckCircle2,
 } from 'lucide-react';
 import { processCheckout, type CheckoutState } from './actions';
 import { cn } from '@/lib/utils';
@@ -87,12 +88,47 @@ export default function CheckoutForm({
   const [showPw, setShowPw] = React.useState(false);
   const [cardNumber, setCardNumber] = React.useState('');
   const [expiry, setExpiry] = React.useState('');
+  const [redirecting, setRedirecting] = React.useState(false);
 
   // If the server tells us to switch tabs (e.g. "account already exists"
   // during signup), honor that.
   React.useEffect(() => {
     if (state.switchToLogin) setMode('login');
   }, [state.switchToLogin]);
+
+  // On successful checkout the action returns a redirectTo URL. Force a
+  // full-page navigation so the destination page boots with the freshly
+  // written session cookie in scope. router.push would re-use the existing
+  // client cache and occasionally render /dashboard as anonymous before the
+  // middleware kicks in.
+  React.useEffect(() => {
+    if (state.redirectTo) {
+      setRedirecting(true);
+      window.location.href = state.redirectTo;
+    }
+  }, [state.redirectTo]);
+
+  // Success state — show a clean confirmation while the browser navigates
+  // away. Otherwise the form would briefly show "Ap trete…" then vanish.
+  if (redirecting) {
+    return (
+      <div className="text-center py-12">
+        <span className="inline-grid place-items-center w-14 h-14 rounded-full bg-green-100 text-green-700 mb-4 mx-auto">
+          <CheckCircle2 className="w-7 h-7" strokeWidth={2.2} />
+        </span>
+        <h2 className="font-display text-2xl font-bold text-ink">
+          Pèman pase!
+        </h2>
+        <p className="text-sm text-ink-muted mt-2 max-w-xs mx-auto leading-relaxed">
+          Plan ou aktif kounye a. N ap mennen ou nan tablodebò ou…
+        </p>
+        <Loader2
+          className="w-5 h-5 animate-spin text-brand-600 mx-auto mt-4"
+          strokeWidth={2.2}
+        />
+      </div>
+    );
+  }
 
   return (
     <form action={formAction} className="space-y-6">

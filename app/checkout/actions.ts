@@ -1,6 +1,5 @@
 'use server';
 
-import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
 import { PLANS, isValidPlan } from './plans';
@@ -13,6 +12,15 @@ export type CheckoutState = {
    * visitor toward the login tab without retyping their email.
    */
   switchToLogin?: boolean;
+  /**
+   * On successful checkout we return the post-purchase URL instead of
+   * calling Next's `redirect()` directly. The client effect then drives a
+   * full-page navigation, which is the only reliable way to guarantee the
+   * freshly-issued session cookie is in scope on the destination page —
+   * `redirect()` inside a server action can race the cookie write when
+   * called immediately after `signUp` / `signInWithPassword`.
+   */
+  redirectTo?: string;
 };
 
 /**
@@ -175,5 +183,5 @@ export async function processCheckout(
   }
 
   revalidatePath('/dashboard');
-  redirect(`/dashboard?welcome=${plan.key}`);
+  return { redirectTo: `/dashboard?welcome=${plan.key}` };
 }
