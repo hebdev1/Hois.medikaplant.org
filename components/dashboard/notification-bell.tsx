@@ -171,6 +171,8 @@ export default function NotificationBell({
     setMarking(false);
   }
 
+  const hasUnread = unreadCount > 0;
+
   return (
     <div ref={dropdownRef} className="relative">
       <button
@@ -178,54 +180,77 @@ export default function NotificationBell({
         aria-label="Notifikasyon"
         onClick={() => setOpen((v) => !v)}
         className={cn(
-          'relative grid place-items-center w-10 h-10 rounded-full border transition',
-          unreadCount > 0
-            ? 'bg-accent/10 border-accent/30 text-accent hover:bg-accent/15'
-            : 'bg-white border-cream-200 text-earth-700 hover:border-forest-300 hover:text-forest-700'
+          'relative grid place-items-center w-10 h-10 rounded-full border transition-all duration-200',
+          hasUnread
+            ? 'bg-gradient-to-br from-accent/15 via-accent/10 to-cream-50 border-accent/40 text-accent shadow-[0_0_0_3px_rgba(196,49,120,0.12)] hover:shadow-[0_0_0_4px_rgba(196,49,120,0.18)]'
+            : 'bg-white border-cream-200 text-earth-700 hover:border-forest-300 hover:text-forest-700 hover:shadow-sm'
         )}
       >
+        {/* Soft pulse halo behind the bell when unread */}
+        {hasUnread && (
+          <span
+            aria-hidden
+            className="absolute inset-0 rounded-full bg-accent/15 animate-pulseGold"
+            style={{ animationDuration: '2.6s' }}
+          />
+        )}
         <Bell
           className={cn(
-            'w-[18px] h-[18px]',
-            unreadCount > 0 && 'animate-wiggle'
+            'w-[18px] h-[18px] relative z-10',
+            hasUnread && 'animate-wiggle drop-shadow'
           )}
-          strokeWidth={1.8}
+          strokeWidth={hasUnread ? 2.2 : 1.8}
         />
-        {unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-accent text-white text-[10px] font-bold flex items-center justify-center ring-2 ring-cream-50">
+        {hasUnread && (
+          <span
+            className="absolute -top-1 -right-1 min-w-[20px] h-[20px] px-1.5 rounded-full bg-gradient-to-br from-rose-500 to-rose-700 text-white text-[10px] font-extrabold flex items-center justify-center ring-2 ring-cream-50 shadow-md tracking-tight z-20"
+            style={{ animationDuration: '420ms' }}
+          >
             {unreadCount > 99 ? '99+' : unreadCount}
           </span>
         )}
       </button>
 
       {open && (
-        <div className="absolute right-0 top-12 w-[360px] max-w-[calc(100vw-2rem)] bg-white border border-cream-200 rounded-2xl shadow-2xl overflow-hidden z-40">
-          <header className="px-4 py-3 border-b border-cream-200 flex items-center justify-between bg-cream-50/40">
-            <div>
-              <div className="font-display text-sm font-bold text-ink">
-                Notifikasyon
+        <div className="absolute right-0 top-12 w-[360px] max-w-[calc(100vw-2rem)] bg-white border border-cream-200 rounded-2xl shadow-2xl overflow-hidden z-40 animate-fadeIn">
+          <header className="relative px-4 py-3 border-b border-cream-200 bg-gradient-to-br from-accent/10 via-cream-50 to-white">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <span className="grid place-items-center w-8 h-8 rounded-xl bg-gradient-to-br from-accent to-accent-dark text-white shadow">
+                  <Bell className="w-3.5 h-3.5" strokeWidth={2.2} />
+                </span>
+                <div>
+                  <div className="font-display text-sm font-bold text-ink leading-tight">
+                    Notifikasyon
+                  </div>
+                  <div
+                    className={cn(
+                      'text-[11px] font-medium',
+                      hasUnread ? 'text-accent' : 'text-earth-600'
+                    )}
+                  >
+                    {hasUnread
+                      ? `${unreadCount} ki poko li`
+                      : 'Tout li ✓'}
+                  </div>
+                </div>
               </div>
-              <div className="text-[11px] text-earth-600">
-                {unreadCount === 0
-                  ? 'Tout li ✓'
-                  : `${unreadCount} ki poko li`}
-              </div>
+              {hasUnread && (
+                <button
+                  type="button"
+                  onClick={onMarkAll}
+                  disabled={marking}
+                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold text-forest-700 bg-white hover:bg-forest-50 border border-cream-200 hover:border-forest-300 disabled:opacity-60 transition shadow-sm"
+                >
+                  {marking ? (
+                    <Loader2 className="w-3 h-3 animate-spin" strokeWidth={2.2} />
+                  ) : (
+                    <CheckCheck className="w-3 h-3" strokeWidth={2.4} />
+                  )}
+                  Make tout li
+                </button>
+              )}
             </div>
-            {unreadCount > 0 && (
-              <button
-                type="button"
-                onClick={onMarkAll}
-                disabled={marking}
-                className="inline-flex items-center gap-1 text-xs font-semibold text-forest-700 hover:text-forest-800 disabled:opacity-60"
-              >
-                {marking ? (
-                  <Loader2 className="w-3 h-3 animate-spin" strokeWidth={2.2} />
-                ) : (
-                  <CheckCheck className="w-3 h-3" strokeWidth={2.4} />
-                )}
-                Make tout li
-              </button>
-            )}
           </header>
 
           <div className="max-h-[420px] overflow-y-auto">
@@ -261,17 +286,24 @@ export default function NotificationBell({
                         {...(wrapperProps as { href: string })}
                         onClick={() => onClickNotification(n)}
                         className={cn(
-                          'block px-4 py-3 cursor-pointer transition',
+                          'block px-4 py-3 cursor-pointer transition relative group',
                           unread
-                            ? 'bg-accent/5 hover:bg-accent/10'
+                            ? 'bg-gradient-to-r from-accent/[0.06] to-transparent hover:from-accent/[0.10]'
                             : 'hover:bg-cream-50'
                         )}
                       >
+                        {/* Unread left-side accent stripe */}
+                        {unread && (
+                          <span
+                            aria-hidden
+                            className="absolute left-0 top-2 bottom-2 w-[3px] rounded-r-full bg-gradient-to-b from-accent to-accent-dark"
+                          />
+                        )}
                         <div className="flex items-start gap-2">
                           {unread && (
                             <span
                               aria-hidden
-                              className="mt-1.5 w-2 h-2 rounded-full bg-accent shrink-0"
+                              className="mt-1.5 w-2 h-2 rounded-full bg-accent shrink-0 shadow-[0_0_0_3px_rgba(196,49,120,0.15)]"
                             />
                           )}
                           <div className="flex-1 min-w-0">
@@ -293,16 +325,23 @@ export default function NotificationBell({
                             >
                               {n.message}
                             </div>
-                            <div className="text-[10px] text-earth-500 mt-1 flex items-center gap-1.5">
-                              <span>{relativeLabel(n.created_at)}</span>
+                            <div className="text-[10px] text-earth-500 mt-1.5 flex items-center gap-1.5 flex-wrap">
+                              <span className="font-medium">
+                                {relativeLabel(n.created_at)} pase
+                              </span>
                               {n.target === 'all' && (
-                                <span className="text-[9px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded-full bg-cream-100 text-earth-600">
+                                <span className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-cream-100 text-earth-600 border border-cream-200">
                                   Tout manm
                                 </span>
                               )}
                               {n.target === 'plan' && n.target_plan && (
-                                <span className="text-[9px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded-full bg-accent/10 text-accent">
+                                <span className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-accent/10 text-accent border border-accent/20">
                                   {n.target_plan}
+                                </span>
+                              )}
+                              {n.target === 'user' && (
+                                <span className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-forest-100 text-forest-700 border border-forest-200">
+                                  Pèsonèl
                                 </span>
                               )}
                             </div>
