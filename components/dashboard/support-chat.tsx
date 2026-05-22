@@ -81,6 +81,14 @@ export default function SupportChat({
     const text = draft.trim();
     if (!text || sending || resolved) return;
 
+    // Decide BEFORE the optimistic insert so the just-sent message is not
+    // counted. The auto-reply should fire exactly once per thread — right
+    // after the member's first message. Subsequent messages just sit
+    // there waiting for an admin to respond from /admin/support.
+    const isFirstUserMessage = messages.every(
+      (m) => m.sender_role !== 'user'
+    );
+
     setSending(true);
     setError(null);
     setDraft('');
@@ -111,8 +119,10 @@ export default function SupportChat({
     );
     setSending(false);
 
-    // Trigger the auto-reply after a short delay so the typing indicator
-    // shows for a beat — feels human, matches the wireframe behavior.
+    if (!isFirstUserMessage) return;
+
+    // Trigger the one-time auto-reply after a short delay so the typing
+    // indicator shows for a beat — feels human and confirms receipt.
     setTyping(true);
     const replyDelay = 1400 + Math.random() * 900;
     setTimeout(async () => {
