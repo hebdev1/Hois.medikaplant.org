@@ -40,39 +40,39 @@ export async function processCheckout(
   const supabase = createClient();
   const {
     data: { user },
+    error: userError,
   } = await supabase.auth.getUser();
 
-  if (!user) {
+  if (userError || !user) {
     return { error: 'Ou dwe konekte pou w peye.' };
   }
 
-  // Mock payment "success" — generate a fake reference.
-  // In production, replace with Stripe / Moncash / payment gateway flow.
-  const paymentReference = `mock_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
-  const startDate = new Date();
-  const endDate = new Date(startDate);
-  endDate.setMonth(endDate.getMonth() + plan.durationMonths);
+  // ── Defer the actual subscription mutation to the `checkout` edge function.
+  // Running the insert + cancel-prior-active behind the service role inside
+  // the edge keeps the contract atomic and prevents clients from rolling
+  // their own plan upgrades via direct table writes.
+  const paymentReference = `mock_${Date.now()}_${Math.random()
+    .toString(36)
+    .slice(2, 10)}`;
 
-  // Cancel any existing active subscriptions before creating the new one
-  // (database trigger will reconcile profile.plan to the highest active plan).
-  await supabase
-    .from('subscriptions')
-    .update({ status: 'cancelled' })
-    .eq('user_id', user.id)
-    .eq('status', 'active');
+  const { data, error: invokeError } = await supabase.functions.invoke(
+    'checkout',
+    {
+      body: {
+        plan: plan.key,
+        payment_reference: paymentReference,
+      },
+    }
+  );
 
-  const { error: insertError } = await supabase.from('subscriptions').insert({
-    user_id: user.id,
-    plan: plan.key,
-    status: 'active',
-    start_date: startDate.toISOString(),
-    end_date: endDate.toISOString(),
-    amount: plan.price,
-    payment_reference: paymentReference,
-  });
-
-  if (insertError) {
-    return { error: `Yon erè rive: ${insertError.message}` };
+  if (invokeError) {
+    return {
+      error: `Pèman pa pase: ${invokeError.message ?? 'Erè inkoni.'}`,
+    };
+  }
+  const result = data as { ok?: boolean; error?: string } | null;
+  if (!result?.ok) {
+    return { error: result?.error ?? 'Pèman pa pase.' };
   }
 
   revalidatePath('/dashboard');

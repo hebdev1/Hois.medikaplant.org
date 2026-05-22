@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { Mail, Lock, Loader2 } from 'lucide-react';
@@ -47,7 +48,15 @@ export default function LoginForm() {
         </div>
       </div>
       <div>
-        <label className="text-sm font-medium text-ink">Modpas</label>
+        <div className="flex items-baseline justify-between">
+          <label className="text-sm font-medium text-ink">Modpas</label>
+          <Link
+            href="/auth/forgot-password"
+            className="text-xs text-brand-700 font-medium hover:underline"
+          >
+            Bliye modpas?
+          </Link>
+        </div>
         <div className="mt-1 relative">
           <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-ink-muted" strokeWidth={2.2} />
           <input
