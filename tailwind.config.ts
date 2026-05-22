@@ -104,6 +104,14 @@ const config: Config = {
           '40%': { transform: 'rotate(6deg)' },
           '50%': { transform: 'rotate(-3deg)' },
         },
+        slideInLeft: {
+          '0%': { transform: 'translateX(-100%)' },
+          '100%': { transform: 'translateX(0)' },
+        },
+        fadeIn: {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        },
       },
       animation: {
         fadeUp: 'fadeUp 0.6s ease forwards',
@@ -112,6 +120,9 @@ const config: Config = {
         toastIn: 'toastIn 0.32s cubic-bezier(0.22, 1, 0.36, 1) forwards',
         toastOut: 'toastOut 0.32s ease forwards',
         wiggle: 'wiggle 2.4s ease-in-out infinite',
+        slideInLeft:
+          'slideInLeft 0.26s cubic-bezier(0.22, 1, 0.36, 1) forwards',
+        fadeIn: 'fadeIn 0.2s ease forwards',
       },
     },
   },

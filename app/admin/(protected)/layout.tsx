@@ -1,19 +1,10 @@
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
-import {
-  Leaf,
-  LayoutDashboard,
-  Users,
-  FileText,
-  CreditCard,
-  Bell,
-  BookOpen,
-  Activity,
-  MessageCircle,
-  LogOut,
-} from 'lucide-react';
+import { Leaf, LogOut } from 'lucide-react';
 import { adminSignOut } from '../login/actions';
+import { ADMIN_NAV_LINKS } from './admin-nav-config';
+import AdminMobileNav from './admin-mobile-nav';
 
 export const dynamic = 'force-dynamic';
 
@@ -51,19 +42,12 @@ export default async function AdminProtectedLayout({
     profile.email.split('@')[0];
   const initials = (profile.first_name?.[0] ?? profile.email[0] ?? 'A').toUpperCase();
 
-  const links = [
-    { href: '/admin', label: 'Overview', icon: LayoutDashboard },
-    { href: '/admin/users', label: 'Users', icon: Users },
-    { href: '/admin/health', label: 'Swivi Sante', icon: Activity },
-    { href: '/admin/support', label: 'Sipò chat', icon: MessageCircle },
-    { href: '/admin/resources', label: 'Resources', icon: FileText },
-    { href: '/admin/guides', label: 'Guides', icon: BookOpen },
-    { href: '/admin/subscriptions', label: 'Subscriptions', icon: CreditCard },
-    { href: '/admin/notifications', label: 'Notifications', icon: Bell },
-  ];
-
   return (
-    <div className="min-h-screen bg-slate-50 flex">
+    <div className="min-h-screen bg-slate-50 lg:flex">
+      {/* ── Mobile-only top strip + drawer (hidden lg+) ──────────────── */}
+      <AdminMobileNav adminName={adminName} initials={initials} />
+
+      {/* ── Desktop sidebar (hidden below lg) ────────────────────────── */}
       <aside className="hidden lg:flex flex-col w-64 shrink-0 bg-ink text-white/80 h-screen sticky top-0">
         <div className="p-6 border-b border-white/10">
           <Link href="/admin" className="flex items-center gap-2">
@@ -94,8 +78,8 @@ export default async function AdminProtectedLayout({
           </div>
         </div>
 
-        <nav className="flex-1 px-3 py-4 space-y-1">
-          {links.map(({ href, label, icon: Icon }) => (
+        <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+          {ADMIN_NAV_LINKS.map(({ href, label, icon: Icon }) => (
             <Link
               key={href}
               href={href}
@@ -106,18 +90,21 @@ export default async function AdminProtectedLayout({
             </Link>
           ))}
         </nav>
+
+        {/* Sign-out — now visually distinct with a tinted red background */}
         <div className="p-3 border-t border-white/10">
           <form action={adminSignOut}>
             <button
               type="submit"
-              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/70 hover:text-rose-300 hover:bg-rose-500/10 w-full transition"
+              className="flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg text-sm font-bold text-rose-100 bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/30 hover:border-rose-500/50 w-full transition"
             >
-              <LogOut className="w-4 h-4" strokeWidth={2} />
+              <LogOut className="w-4 h-4" strokeWidth={2.4} />
               Dekonèkte
             </button>
           </form>
         </div>
       </aside>
+
       <div className="flex-1 min-w-0">{children}</div>
     </div>
   );
