@@ -127,6 +127,18 @@ export async function adminUpdateProfileField<K extends keyof ProfileUpdate>(
 
 // ─── Plan / role / suspend ─────────────────────────────────────────────────
 
+const PLAN_AMOUNT: Record<'basic' | 'premium' | 'vip', number> = {
+  basic: 350,
+  premium: 600,
+  vip: 800,
+};
+
+const PLAN_MONTHS: Record<'basic' | 'premium' | 'vip', number> = {
+  basic: 12,
+  premium: 24,
+  vip: 36,
+};
+
 export async function setUserPlan(
   userId: string,
   plan: 'basic' | 'premium' | 'vip'
@@ -135,16 +147,57 @@ export async function setUserPlan(
   const auth = await assertAdmin();
   if (!auth.ok) return { ok: false, error: auth.error };
 
+  // ── 1. Cancel any currently-active subscriptions for this user ─────────
+  // The trg_sync_profile_plan trigger reconciles profiles.plan
+  // automatically: cancelling all active subs drops the member back to
+  // 'basic'; inserting a new active sub below pushes them up again.
+  await auth.supabase
+    .from('subscriptions')
+    .update({
+      status: 'cancelled',
+      updated_at: new Date().toISOString(),
+    })
+    .eq('user_id', userId)
+    .eq('status', 'active');
+
+  // ── 2. If target plan is non-basic, insert a new active subscription ──
+  // For 'basic' we skip the insert: cancelling all paid subs already
+  // leaves the member on the default 'basic' tier, no audit row needed.
+  if (plan !== 'basic') {
+    const startDate = new Date();
+    const endDate = new Date(startDate);
+    endDate.setMonth(endDate.getMonth() + PLAN_MONTHS[plan]);
+
+    const { error: insertErr } = await auth.supabase
+      .from('subscriptions')
+      .insert({
+        user_id: userId,
+        plan,
+        status: 'active',
+        start_date: startDate.toISOString(),
+        end_date: endDate.toISOString(),
+        amount: PLAN_AMOUNT[plan],
+        payment_reference: `admin_grant_${Date.now()}`,
+      });
+
+    if (insertErr) {
+      return { ok: false, error: insertErr.message };
+    }
+  }
+
+  // ── 3. Re-read the profile so we see the value the trigger wrote ──────
   const { data: updated, error } = await auth.supabase
     .from('profiles')
-    .update({ plan })
-    .eq('id', userId)
     .select('*')
+    .eq('id', userId)
     .single();
-  if (error || !updated) return { ok: false, error: error?.message ?? 'Erè inkoni.' };
+  if (error || !updated) {
+    return { ok: false, error: error?.message ?? 'Erè inkoni.' };
+  }
 
   revalidatePath(`/admin/users/${userId}`);
   revalidatePath('/admin/users');
+  revalidatePath('/admin/subscriptions');
   return { ok: true, profile: updated as ProfileRow };
 }
 
