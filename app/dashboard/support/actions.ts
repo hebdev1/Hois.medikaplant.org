@@ -10,12 +10,11 @@ type MessageRow = Database['public']['Tables']['support_messages']['Row'];
 const DEFAULT_WELCOME =
   'Bonjou! 🌿 Mwen se Mèt Joseph, èrboris santiniye ou. Kòman ou santi w jodi a? Di m sa ki sou kè ou — m ap reponn nan kèk minit.';
 
-const AUTO_REPLIES = [
-  'Mèsi pou mesaj la. M ap reponn ou nan 5 minit. Pandan tan an, gade gid yo nan paj Telechajman.',
-  'Mwen nòt sa w di a. Pou yon repons pi konplè, m ap pale ak yon manm ekip la epi tounen ba ou.',
-  'Bon nouvèl: kò a ap reponn. Kontinye swiv pwogram ou epi note sa w santi nan Swivi Sante. M ap kontwole ak ou.',
-  'Si sentòm la prese, fè yon apèl dirèk ak Sipò pou yo ka swiv ou. Pou tout lòt bagay, ekri m isit la.',
-];
+// Single fixed acknowledgement sent after each user message. Replaces the
+// earlier 4-option pool so members always get the same, predictable reply
+// while they wait for a real admin response from /admin/support.
+const AUTO_REPLY =
+  'Mèsi pou mesaj la. M ap reponn ou nan mwens ke 5 minit. Pandan tan an, gade gid yo nan paj Telechajman.';
 
 // ─── Get-or-create the user's open thread ───────────────────────────────────
 
@@ -143,7 +142,7 @@ export async function simulateAgentReply(
   // insert agent/system rows, so we go through a SECURITY DEFINER helper.
   const { data, error } = await supabase.rpc('insert_support_auto_reply', {
     p_thread_id: threadId,
-    p_body: AUTO_REPLIES[Math.floor(Math.random() * AUTO_REPLIES.length)],
+    p_body: AUTO_REPLY,
   });
   if (error || !data) {
     return { ok: false, error: error?.message ?? 'Erè inkoni.' };
