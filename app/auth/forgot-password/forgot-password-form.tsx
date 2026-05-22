@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { createClient } from '@/lib/supabase/client';
+import { siteUrl } from '@/lib/site-url';
 import { Mail, Loader2, CheckCircle2, AlertCircle, ArrowRight } from 'lucide-react';
 
 export default function ForgotPasswordForm() {
@@ -23,11 +24,11 @@ export default function ForgotPasswordForm() {
       return;
     }
 
-    const origin =
-      typeof window !== 'undefined' ? window.location.origin : '';
-
+    // Use the canonical site URL so the recovery link always points at the
+    // production domain — never at localhost when the user opens the email
+    // on a different device, and never at a stale preview deploy.
     const { error } = await supabase.auth.resetPasswordForEmail(cleaned, {
-      redirectTo: `${origin}/auth/reset-password`,
+      redirectTo: siteUrl('/auth/reset-password'),
     });
     setLoading(false);
     if (error) {

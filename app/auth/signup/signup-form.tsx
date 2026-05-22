@@ -3,6 +3,7 @@
 import React from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
+import { siteUrl } from '@/lib/site-url';
 import { User, Mail, Lock, Loader2, CheckCircle2 } from 'lucide-react';
 
 export default function SignupForm() {
@@ -33,7 +34,10 @@ export default function SignupForm() {
       password,
       options: {
         data: { full_name: fullName, intended_plan: planParam ?? 'basic' },
-        emailRedirectTo: `${window.location.origin}${postSignupDestination}`,
+        // Anchor confirmation links to the canonical production URL so the
+        // recipient lands on the right deploy even if they open the email
+        // on a different device.
+        emailRedirectTo: siteUrl(postSignupDestination),
       },
     });
 

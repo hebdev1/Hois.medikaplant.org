@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
+import { siteUrl } from '@/lib/site-url';
 import { PLANS, isValidPlan } from './plans';
 
 export type CheckoutState = {
@@ -112,6 +113,10 @@ export async function processCheckout(
             country: 'HT',
             intended_plan: plan.key,
           },
+          // If Supabase Auth requires email confirmation, the confirmation
+          // link drops them right back on /checkout so they can complete
+          // payment after verifying.
+          emailRedirectTo: siteUrl(`/checkout?plan=${plan.key}`),
         },
       });
 
