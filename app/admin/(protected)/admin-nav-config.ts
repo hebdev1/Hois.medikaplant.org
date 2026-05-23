@@ -7,6 +7,7 @@ import {
   BookOpen,
   Activity,
   MessageCircle,
+  MessagesSquare,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -26,6 +27,7 @@ export const ADMIN_NAV_LINKS: readonly AdminNavLink[] = [
   { href: '/admin/users', label: 'Users', icon: Users },
   { href: '/admin/health', label: 'Swivi Sante', icon: Activity },
   { href: '/admin/support', label: 'Sipò chat', icon: MessageCircle },
+  { href: '/admin/forum', label: 'Fowòm', icon: MessagesSquare },
   { href: '/admin/resources', label: 'Resources', icon: FileText },
   { href: '/admin/guides', label: 'Guides', icon: BookOpen },
   { href: '/admin/subscriptions', label: 'Subscriptions', icon: CreditCard },
