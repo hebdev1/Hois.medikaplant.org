@@ -230,3 +230,60 @@ export async function adminSetTopicCategory(
   revalidatePath('/dashboard/forum');
   return { ok: true };
 }
+
+// ─── Admin replies in any topic ───────────────────────────────────────────
+
+type ReplyRow = Database['public']['Tables']['forum_replies']['Row'];
+
+export type AdminReplyResult =
+  | { ok: true; reply: ReplyRow }
+  | { ok: false; error: string };
+
+/**
+ * Post a reply to any topic as the current admin. The "forum_replies
+ * admin manage" RLS policy lets this go through even on locked topics,
+ * which is what we want — admins should always be able to drop a
+ * moderator note. Notifies the topic author via trigger if it isn't the
+ * admin themselves.
+ */
+export async function adminPostReply(
+  topicId: string,
+  body: string
+): Promise<AdminReplyResult> {
+  const auth = await assertAdmin();
+  if (!auth.ok) return { ok: false, error: auth.error };
+
+  const text = body.trim();
+  if (text.length < 1) return { ok: false, error: 'Repons la pa ka vid.' };
+  if (text.length > 4000) {
+    return { ok: false, error: 'Repons la twò long (maks 4000 karaktè).' };
+  }
+
+  // Ensure topic exists so we surface a clear error instead of a generic FK
+  const { data: topic } = await auth.supabase
+    .from('forum_topics')
+    .select('id, slug')
+    .eq('id', topicId)
+    .maybeSingle();
+  const topicRow = topic as { id: string; slug: string } | null;
+  if (!topicRow) return { ok: false, error: 'Sijè a pa egziste.' };
+
+  const { data, error } = await auth.supabase
+    .from('forum_replies')
+    .insert({
+      topic_id: topicId,
+      user_id: auth.user.id,
+      body: text,
+    })
+    .select('*')
+    .single();
+  if (error || !data) {
+    return { ok: false, error: error?.message ?? 'Erè inkoni.' };
+  }
+
+  revalidatePath('/admin/forum');
+  revalidatePath(`/admin/forum/${topicRow.slug}`);
+  revalidatePath('/dashboard/forum');
+  revalidatePath(`/dashboard/forum/${topicRow.slug}`);
+  return { ok: true, reply: data as ReplyRow };
+}

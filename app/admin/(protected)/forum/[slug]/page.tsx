@@ -13,6 +13,7 @@ import {
 import { createClient } from '@/lib/supabase/server';
 import TopicRowActions from '../topic-row-actions';
 import ReplyRowActions from './reply-row-actions';
+import AdminReplyComposer from './admin-reply-composer';
 import type { Database } from '@/types/database';
 
 export const metadata = { title: 'Admin · Sijè fowòm' };
@@ -51,15 +52,20 @@ export default async function AdminForumTopicPage({
 }) {
   const supabase = createClient();
 
-  const { data: rawTopic } = await supabase
-    .from('forum_topics')
-    .select('*')
-    .eq('slug', params.slug)
-    .maybeSingle();
-  const topic = rawTopic as Topic | null;
+  const [topicResult, viewerAuthResult] = await Promise.all([
+    supabase
+      .from('forum_topics')
+      .select('*')
+      .eq('slug', params.slug)
+      .maybeSingle(),
+    supabase.auth.getUser(),
+  ]);
+
+  const topic = topicResult.data as Topic | null;
+  const viewerUserId = viewerAuthResult.data.user?.id ?? null;
   if (!topic) notFound();
 
-  const [categoryResult, authorResult, repliesResult] = await Promise.all([
+  const [categoryResult, authorResult, repliesResult, viewerResult] = await Promise.all([
     topic.category_id
       ? supabase
           .from('forum_categories')
@@ -77,11 +83,27 @@ export default async function AdminForumTopicPage({
       .select('*')
       .eq('topic_id', topic.id)
       .order('created_at', { ascending: true }),
+    viewerUserId
+      ? supabase
+          .from('profiles')
+          .select('id, full_name, email, role')
+          .eq('id', viewerUserId)
+          .maybeSingle()
+      : Promise.resolve({ data: null }),
   ]);
 
   const category = (categoryResult.data ?? null) as Category | null;
   const author = (authorResult.data ?? null) as Profile | null;
   const replies = (repliesResult.data ?? []) as Reply[];
+  const viewer = (viewerResult.data ?? null) as Profile | null;
+
+  const viewerName =
+    viewer?.full_name ?? viewer?.email?.split('@')[0] ?? 'Admin';
+  const viewerInitials = (
+    viewer?.full_name?.[0] ??
+    viewer?.email?.[0] ??
+    'A'
+  ).toUpperCase();
 
   // Profiles for everyone who replied
   const replierIds = Array.from(new Set(replies.map((r) => r.user_id)));
@@ -226,6 +248,14 @@ export default async function AdminForumTopicPage({
           </div>
         </div>
       </article>
+
+      {/* Admin reply composer */}
+      <AdminReplyComposer
+        topicId={topic.id}
+        topicLocked={topic.locked}
+        adminInitials={viewerInitials}
+        adminName={viewerName}
+      />
 
       {/* Replies */}
       <section>
