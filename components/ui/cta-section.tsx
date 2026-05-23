@@ -42,10 +42,10 @@ export default function CtaSection() {
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" strokeWidth={2.4} />
               </Link>
               <Link
-                href="/auth/signup"
+                href="/auth/login"
                 className="inline-flex items-center justify-center gap-2 bg-white/15 backdrop-blur-sm border border-white/30 hover:bg-white/25 text-white px-7 py-3.5 rounded-full font-medium transition-all w-full lg:w-auto"
               >
-                Kreye yon kont
+                Mwen gen yon kont
               </Link>
             </div>
           </div>
