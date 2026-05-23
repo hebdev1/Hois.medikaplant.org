@@ -14,6 +14,7 @@ import {
   Leaf,
   LogOut,
   X,
+  MessagesSquare,
   type LucideIcon,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -42,7 +43,8 @@ const NAV_ITEMS: readonly NavItem[] = [
   { href: '/dashboard/programs', label: 'Pwogram mwen yo', icon: FolderOpen },
   { href: '/dashboard/resources', label: 'Telechajman', icon: Download, badge: '12' },
   { href: '/dashboard/health', label: 'Swivi Sante', icon: Activity },
-  { href: '/dashboard/guides', label: 'Gid & Konsèy', icon: BookOpen, badge: 'NEW' },
+  { href: '/dashboard/guides', label: 'Gid & Konsèy', icon: BookOpen },
+  { href: '/dashboard/forum', label: 'Fowòm', icon: MessagesSquare, badge: 'NEW' },
   { href: '/dashboard/support', label: 'Sipò', icon: LifeBuoy },
   { href: '/dashboard/settings', label: 'Kont mwen', icon: UserCircle },
 ];

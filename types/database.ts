@@ -78,6 +78,117 @@ export type Database = {
         }
         Relationships: []
       }
+      forum_categories: {
+        Row: {
+          color: string
+          created_at: string
+          description: string | null
+          display_order: number
+          icon: string | null
+          id: string
+          name: string
+          slug: string
+        }
+        Insert: {
+          color?: string
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          icon?: string | null
+          id?: string
+          name: string
+          slug: string
+        }
+        Update: {
+          color?: string
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          icon?: string | null
+          id?: string
+          name?: string
+          slug?: string
+        }
+        Relationships: []
+      }
+      forum_topics: {
+        Row: {
+          body: string
+          category_id: string | null
+          created_at: string
+          id: string
+          last_reply_at: string | null
+          last_reply_by: string | null
+          locked: boolean
+          pinned: boolean
+          reply_count: number
+          slug: string
+          title: string
+          updated_at: string
+          user_id: string
+          view_count: number
+        }
+        Insert: {
+          body: string
+          category_id?: string | null
+          created_at?: string
+          id?: string
+          last_reply_at?: string | null
+          last_reply_by?: string | null
+          locked?: boolean
+          pinned?: boolean
+          reply_count?: number
+          slug?: string
+          title: string
+          updated_at?: string
+          user_id: string
+          view_count?: number
+        }
+        Update: {
+          body?: string
+          category_id?: string | null
+          created_at?: string
+          id?: string
+          last_reply_at?: string | null
+          last_reply_by?: string | null
+          locked?: boolean
+          pinned?: boolean
+          reply_count?: number
+          slug?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+          view_count?: number
+        }
+        Relationships: []
+      }
+      forum_replies: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          topic_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          id?: string
+          topic_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          topic_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       consultations: {
         Row: {
           consultant_name: string
@@ -1204,6 +1315,10 @@ export type Database = {
       get_user_plan: {
         Args: { uid: string }
         Returns: Database["public"]["Enums"]["plan_type"]
+      }
+      increment_forum_topic_view: {
+        Args: { p_topic_id: string }
+        Returns: undefined
       }
       increment_guide_view: {
         Args: { p_guide_id: string }
