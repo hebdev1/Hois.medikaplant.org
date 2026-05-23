@@ -160,10 +160,13 @@ export async function setUserPlan(
     .eq('user_id', userId)
     .eq('status', 'active');
 
-  // ── 2. If target plan is non-basic, insert a new active subscription ──
-  // For 'basic' we skip the insert: cancelling all paid subs already
-  // leaves the member on the default 'basic' tier, no audit row needed.
-  if (plan !== 'basic') {
+  // ── 2. Insert a new active subscription for the target plan ───────────
+  // Always insert — even for 'basic' — so the invariant holds:
+  //   COUNT(profiles) == COUNT(active subscriptions)
+  // This means the /admin/subscriptions tile always mirrors /admin/users
+  // and the plan-mix breakdown reflects everyone, including downgrades
+  // back to Bazilik.
+  {
     const startDate = new Date();
     const endDate = new Date(startDate);
     endDate.setMonth(endDate.getMonth() + PLAN_MONTHS[plan]);
