@@ -11,12 +11,12 @@ const FEATURES = [
   {
     icon: HeartPulse,
     title: 'Swivi Sante Pèsonèl',
-    body: 'Anrejistre tansyon, sik, ak pwa ou. Dashboard ou trase pwogrè ou ak grafik klè chak semèn.',
+    body: 'Anrejistre tansyon w, To sik , ak pwa ou. Dashboard la edew swiv pwogrè ou ak grafik klè chak semèn.',
     accent: 'bg-rose-100 text-rose-700',
   },
   {
     icon: Brain,
-    title: 'Mantè Espirityèl',
+    title: 'Mantò Espirityèl',
     body: 'Konvèsasyon pwofon ak Vye Ewòl. Konsiltasyon konfidansyèl pou byennèt lespri ou.',
     accent: 'bg-indigo-100 text-indigo-700',
   },
