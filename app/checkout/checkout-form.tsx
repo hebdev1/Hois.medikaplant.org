@@ -71,10 +71,12 @@ function SubmitButton({
 
 export default function CheckoutForm({
   plan,
+  cycle,
   amount,
   userEmail,
 }: {
   plan: 'basic' | 'premium' | 'vip';
+  cycle: 'monthly' | 'yearly';
   amount: number;
   userEmail: string | null;
 }) {
@@ -133,6 +135,7 @@ export default function CheckoutForm({
   return (
     <form action={formAction} className="space-y-6">
       <input type="hidden" name="plan" value={plan} />
+      <input type="hidden" name="cycle" value={cycle} />
       <input type="hidden" name="mode" value={mode} />
 
       {/* ── Step 1: Identity ───────────────────────────────────────────── */}

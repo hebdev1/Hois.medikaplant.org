@@ -2,7 +2,13 @@ import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { Check, Leaf, ArrowLeft, Lock } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
-import { PLANS, isValidPlan } from './plans';
+import {
+  PLANS,
+  isValidPlan,
+  isValidCycle,
+  priceFor,
+  type BillingCycle,
+} from './plans';
 import CheckoutForm from './checkout-form';
 
 export const metadata = { title: 'Checkout' };
@@ -11,7 +17,7 @@ export const dynamic = 'force-dynamic';
 export default async function CheckoutPage({
   searchParams,
 }: {
-  searchParams: { plan?: string };
+  searchParams: { plan?: string; cycle?: string };
 }) {
   const planKey = searchParams.plan;
 
@@ -20,6 +26,16 @@ export default async function CheckoutPage({
   }
 
   const plan = PLANS[planKey];
+  const cycle: BillingCycle = isValidCycle(searchParams.cycle)
+    ? searchParams.cycle
+    : 'yearly';
+
+  // Resolved price for the chosen cycle. Used to render the order summary;
+  // the edge function re-resolves it from get_plan_price() on submit so
+  // the user can't tamper with what they pay.
+  const displayPrice = priceFor(plan, cycle);
+  const savings =
+    cycle === 'yearly' ? plan.priceYearlyOriginal - plan.priceYearlyDiscounted : 0;
 
   // We intentionally DO NOT redirect anonymous visitors away — they should
   // land on this page with the plan they chose and complete login OR signup
@@ -84,10 +100,22 @@ export default async function CheckoutPage({
                 <p className="text-sm text-ink-muted mt-0.5">{plan.tagline}</p>
               </div>
               <div className="text-right">
+                {cycle === 'yearly' && (
+                  <p className="text-xs text-ink-muted line-through">
+                    ${plan.priceYearlyOriginal.toFixed(2)}
+                  </p>
+                )}
                 <p className="text-2xl font-extrabold text-ink leading-none">
-                  ${plan.price}
+                  ${displayPrice.toFixed(2)}
                 </p>
-                <p className="text-xs text-ink-muted mt-1">/ {plan.period}</p>
+                <p className="text-xs text-ink-muted mt-1">
+                  / {cycle === 'yearly' ? 'an' : 'mwa'}
+                </p>
+                {cycle === 'yearly' && savings > 0 && (
+                  <p className="mt-1 inline-flex text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-100 text-amber-700">
+                    Ekonomize ${savings.toFixed(2)}
+                  </p>
+                )}
               </div>
             </div>
 
@@ -106,17 +134,31 @@ export default async function CheckoutPage({
             </ul>
 
             <dl className="pt-5 space-y-2 text-sm">
-              <div className="flex justify-between text-ink-muted">
-                <dt>Sou-total</dt>
-                <dd>${plan.price}.00</dd>
-              </div>
+              {cycle === 'yearly' && (
+                <>
+                  <div className="flex justify-between text-ink-muted">
+                    <dt>Pri orijinal anyèl</dt>
+                    <dd>${plan.priceYearlyOriginal.toFixed(2)}</dd>
+                  </div>
+                  <div className="flex justify-between text-amber-700">
+                    <dt>Rabè 10% (anyèl)</dt>
+                    <dd>− ${savings.toFixed(2)}</dd>
+                  </div>
+                </>
+              )}
+              {cycle === 'monthly' && (
+                <div className="flex justify-between text-ink-muted">
+                  <dt>Pèyman mansyèl</dt>
+                  <dd>${displayPrice.toFixed(2)}</dd>
+                </div>
+              )}
               <div className="flex justify-between text-ink-muted">
                 <dt>Taks</dt>
                 <dd>$0.00</dd>
               </div>
               <div className="flex justify-between text-ink font-bold text-base pt-3 border-t border-slate-100">
                 <dt>Total kounye a</dt>
-                <dd>${plan.price}.00 USD</dd>
+                <dd>${displayPrice.toFixed(2)} USD</dd>
               </div>
             </dl>
 
@@ -136,7 +178,8 @@ export default async function CheckoutPage({
           <section className="bg-white rounded-2xl border border-slate-200 shadow-card p-6 md:p-8 lg:order-1">
             <CheckoutForm
               plan={plan.key}
-              amount={plan.price}
+              cycle={cycle}
+              amount={displayPrice}
               userEmail={user?.email ?? null}
             />
           </section>

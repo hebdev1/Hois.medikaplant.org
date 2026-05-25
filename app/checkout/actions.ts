@@ -3,7 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
 import { siteUrl } from '@/lib/site-url';
-import { PLANS, isValidPlan } from './plans';
+import { PLANS, isValidPlan, isValidCycle, type BillingCycle } from './plans';
 
 export type CheckoutState = {
   error?: string;
@@ -39,12 +39,17 @@ export async function processCheckout(
   _prev: CheckoutState,
   formData: FormData
 ): Promise<CheckoutState> {
-  // ── 1. Plan ────────────────────────────────────────────────────────────
+  // ── 1. Plan + billing cycle ───────────────────────────────────────────
   const planRaw = formData.get('plan')?.toString() ?? '';
   if (!isValidPlan(planRaw)) {
     return { error: 'Plan ki chwazi a pa valid.' };
   }
   const plan = PLANS[planRaw];
+
+  // Validate cycle but never trust the price from the client — the edge
+  // function re-derives it from get_plan_price() server-side.
+  const cycleRaw = formData.get('cycle')?.toString() ?? 'yearly';
+  const cycle: BillingCycle = isValidCycle(cycleRaw) ? cycleRaw : 'yearly';
 
   // ── 2. Card details (mock validation) ──────────────────────────────────
   const cardholderName =
@@ -174,7 +179,11 @@ export async function processCheckout(
 
   const { data: invokeData, error: invokeError } =
     await supabase.functions.invoke('checkout', {
-      body: { plan: plan.key, payment_reference: paymentReference },
+      body: {
+        plan: plan.key,
+        billing_cycle: cycle,
+        payment_reference: paymentReference,
+      },
     });
 
   if (invokeError) {

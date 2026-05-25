@@ -127,16 +127,18 @@ export async function adminUpdateProfileField<K extends keyof ProfileUpdate>(
 
 // ─── Plan / role / suspend ─────────────────────────────────────────────────
 
+// Admin promotions default to the yearly (discounted) tier of each plan.
+// Matches the subscription_plans table seeded in migration 037.
 const PLAN_AMOUNT: Record<'basic' | 'premium' | 'vip', number> = {
-  basic: 350,
-  premium: 600,
-  vip: 800,
+  basic: 121.5,
+  premium: 157.5,
+  vip: 224.1,
 };
 
 const PLAN_MONTHS: Record<'basic' | 'premium' | 'vip', number> = {
   basic: 12,
-  premium: 24,
-  vip: 36,
+  premium: 12,
+  vip: 12,
 };
 
 export async function setUserPlan(

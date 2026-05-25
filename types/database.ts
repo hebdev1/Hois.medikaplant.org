@@ -1044,6 +1044,7 @@ export type Database = {
       subscriptions: {
         Row: {
           amount: number | null
+          billing_cycle: 'monthly' | 'yearly'
           created_at: string
           end_date: string | null
           id: string
@@ -1056,6 +1057,7 @@ export type Database = {
         }
         Insert: {
           amount?: number | null
+          billing_cycle?: 'monthly' | 'yearly'
           created_at?: string
           end_date?: string | null
           id?: string
@@ -1068,6 +1070,7 @@ export type Database = {
         }
         Update: {
           amount?: number | null
+          billing_cycle?: 'monthly' | 'yearly'
           created_at?: string
           end_date?: string | null
           id?: string
@@ -1077,6 +1080,60 @@ export type Database = {
           status?: Database["public"]["Enums"]["subscription_status"]
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      subscription_plans: {
+        Row: {
+          id: Database["public"]["Enums"]["plan_type"]
+          name: string
+          description: string | null
+          price_yearly_original: number
+          price_yearly_discounted: number
+          price_monthly: number
+          discount_percentage: number
+          is_popular: boolean
+          display_order: number
+          features: string[]
+          stripe_price_id_monthly: string | null
+          stripe_price_id_yearly: string | null
+          active: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id: Database["public"]["Enums"]["plan_type"]
+          name: string
+          description?: string | null
+          price_yearly_original: number
+          price_yearly_discounted: number
+          price_monthly: number
+          discount_percentage?: number
+          is_popular?: boolean
+          display_order?: number
+          features?: string[]
+          stripe_price_id_monthly?: string | null
+          stripe_price_id_yearly?: string | null
+          active?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: Database["public"]["Enums"]["plan_type"]
+          name?: string
+          description?: string | null
+          price_yearly_original?: number
+          price_yearly_discounted?: number
+          price_monthly?: number
+          discount_percentage?: number
+          is_popular?: boolean
+          display_order?: number
+          features?: string[]
+          stripe_price_id_monthly?: string | null
+          stripe_price_id_yearly?: string | null
+          active?: boolean
+          created_at?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -1311,6 +1368,13 @@ export type Database = {
       admin_send_support_reply: {
         Args: { p_thread_id: string; p_body: string }
         Returns: Database["public"]["Tables"]["support_messages"]["Row"]
+      }
+      get_plan_price: {
+        Args: {
+          p_plan: Database["public"]["Enums"]["plan_type"]
+          p_cycle: 'monthly' | 'yearly'
+        }
+        Returns: number
       }
       get_user_plan: {
         Args: { uid: string }
