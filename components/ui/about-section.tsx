@@ -15,7 +15,7 @@ const PILLARS = [
   {
     icon: Globe,
     title: 'Kominote',
-    body: 'Yon rezo manm ki sipòte youn lòt — atravè peyi Ayiti ak dyaspora a.',
+    body: 'Yon rezo manm ki sipòte youn lòt atravè peyi D'Ayiti ak dyaspora a.',
   },
 ];
 
