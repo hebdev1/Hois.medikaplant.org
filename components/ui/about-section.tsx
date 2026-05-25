@@ -64,7 +64,7 @@ export default function AboutSection() {
               Yon pon ant <span className="text-brand-600">tradisyon</span> ak modènite
             </h2>
             <p className="mt-5 text-ink-muted text-base md:text-lg leading-relaxed">
-              MedikaPlant te fonde pa Hoïs Inivèsite pou prezève ak pataje konesans medsin tradisyonèl Ayisyen an. Nou konekte plant ki te toujou geri ak yon platfòm modèn pou edike, swiv, ak akonpaye chak manm nan vwayaj byennèt yo.
+             Hoïs Inivèsite fonde pa MedikaPlant  pou prezève ak pataje konesans medsin tradisyonèl Ayisyen an. Nou konekte plant ki te toujou geri ak yon platfòm modèn pou edike, swiv, ak akonpaye chak manm nan vwayaj byennèt yo.
             </p>
 
             <div className="mt-8 grid sm:grid-cols-3 gap-4">
