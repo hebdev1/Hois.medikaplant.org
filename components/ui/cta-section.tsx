@@ -26,10 +26,10 @@ export default function CtaSection() {
                 Pare pou kòmanse?
               </div>
               <h2 className="text-3xl md:text-5xl font-bold tracking-tight leading-tight max-w-[680px]">
-                Rantre nan kominote Hoïs jodi a ak pran swen kò w ak nanm ou.
+                Rantre nan kominote Hoïs la jodi a pou w pran swen kò w ak nanm ou.
               </h2>
               <p className="mt-5 text-white/85 max-w-[560px] text-base md:text-lg leading-relaxed">
-                Plis pase 5,000 manm deja swiv pwogresyon yo, dekouvri remèd fèy, ak konekte ak Vye Ewòl la. Ou se pwochèn nan.
+                Plis pase 500 manm deja swiv pwogresyon yo, dekouvri remèd fèy yo ak Hoïs Medikaplant.
               </p>
             </div>
 
@@ -45,7 +45,7 @@ export default function CtaSection() {
                 href="/auth/signup"
                 className="inline-flex items-center justify-center gap-2 bg-white/15 backdrop-blur-sm border border-white/30 hover:bg-white/25 text-white px-7 py-3.5 rounded-full font-medium transition-all w-full lg:w-auto"
               >
-                Kreye yon kont
+                Kreye kont ou Jodi a
               </Link>
             </div>
           </div>
