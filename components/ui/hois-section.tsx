@@ -83,7 +83,7 @@ export default function HoisSection() {
         </blockquote>
 
         {/* CTA */}
-        <div className="mt-14 flex flex-col sm:flex-row gap-3 justify-center items-center">
+        <div className="mt-14 flex justify-center">
           <Link
             href="#pri"
             className="group inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full font-semibold text-white shadow-lg transition-all"
@@ -97,12 +97,6 @@ export default function HoisSection() {
               className="w-4 h-4 group-hover:translate-x-0.5 transition-transform"
               strokeWidth={2.4}
             />
-          </Link>
-          <Link
-            href="/auth/login?redirect=/dashboard/guides"
-            className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full font-medium border border-slate-300 hover:border-amber-400 hover:bg-amber-50/40 text-ink transition-all"
-          >
-            Li 4 gid fondatè yo
           </Link>
         </div>
       </div>
