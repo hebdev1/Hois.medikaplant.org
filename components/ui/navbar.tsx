@@ -9,6 +9,7 @@ const NAV_LINKS = [
   { href: '#akey', label: 'Akèy' },
   { href: '#pwodui', label: 'Pwodui' },
   { href: '#istwa', label: 'Istwa' },
+  { href: '#hois', label: 'HOÏS' },
   { href: '#pri', label: 'Pri' },
 ];
 

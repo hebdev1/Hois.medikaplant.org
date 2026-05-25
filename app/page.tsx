@@ -2,6 +2,7 @@ import Navbar from '@/components/ui/navbar';
 import HeroSection from '@/components/ui/hero-section';
 import FeaturesSection from '@/components/ui/features-section';
 import AboutSection from '@/components/ui/about-section';
+import HoisSection from '@/components/ui/hois-section';
 import PricingSection from '@/components/ui/pricing-section';
 import TestimonialsSection from '@/components/ui/testimonials-section';
 import CtaSection from '@/components/ui/cta-section';
@@ -14,6 +15,7 @@ export default function HomePage() {
       <HeroSection />
       <FeaturesSection />
       <AboutSection />
+      <HoisSection />
       <PricingSection />
       <TestimonialsSection />
       <CtaSection />
