@@ -111,6 +111,27 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
+  // ── 4b. Member without an active subscription → forced to checkout ────
+  // Cancelling the plan signs the user out AND leaves zero active subs.
+  // If they ever come back (sign in via /auth/login, then land on
+  // /dashboard or any sub-path) they must purchase a new plan before
+  // regaining access. Admins are exempt from this gate.
+  if (!isAdmin && isMemberRoute) {
+    const { count } = await supabase
+      .from('subscriptions')
+      .select('id', { count: 'exact', head: true })
+      .eq('user_id', user.id)
+      .eq('status', 'active');
+
+    if ((count ?? 0) === 0) {
+      const url = request.nextUrl.clone();
+      url.search = '';
+      url.pathname = '/checkout';
+      url.searchParams.set('reason', 'no_active_plan');
+      return NextResponse.redirect(url);
+    }
+  }
+
   // ── 5. Defeat back-forward cache for admins inside /admin ──────────────
   // Without no-store, hitting Back from /admin to a previously visited
   // /dashboard would restore the dashboard page from bfcache and the

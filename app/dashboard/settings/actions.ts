@@ -390,26 +390,24 @@ export async function cancelActiveSubscription(): Promise<ProfileResult> {
   } = await supabase.auth.getUser();
   if (!user) return { ok: false, error: 'Ou dwe konekte.' };
 
-  const { data: active, error: fetchErr } = await supabase
-    .from('subscriptions')
-    .select('id, plan')
-    .eq('user_id', user.id)
-    .eq('status', 'active')
-    .order('start_date', { ascending: false })
-    .limit(1)
-    .maybeSingle();
-  if (fetchErr) return { ok: false, error: fetchErr.message };
-  if (!active) return { ok: false, error: 'Pa gen sibskripsyon aktif.' };
-
-  // Trigger sync_profile_plan_on_subscription will reconcile profile.plan
+  // Cancel EVERY active subscription for this user — there should only be
+  // one due to the 1:1 invariant, but being defensive prevents a half-
+  // cancelled state if the invariant ever drifts.
   const { error } = await supabase
     .from('subscriptions')
     .update({ status: 'cancelled', end_date: new Date().toISOString() })
-    .eq('id', (active as { id: string }).id);
+    .eq('user_id', user.id)
+    .eq('status', 'active');
   if (error) return { ok: false, error: error.message };
+
+  // Sign the user out so the session can't keep them inside /dashboard.
+  // Middleware's "no active sub" rule will route any future attempt to
+  // /checkout, so they must purchase a new plan to regain access.
+  await supabase.auth.signOut();
 
   revalidatePath('/dashboard');
   revalidatePath('/dashboard/settings');
+  revalidatePath('/admin/subscriptions');
   return { ok: true };
 }
 

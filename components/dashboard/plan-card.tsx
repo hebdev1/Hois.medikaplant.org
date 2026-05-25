@@ -105,16 +105,17 @@ export default function PlanCard({
     setCancelling(true);
     setError(null);
     const res = await cancelActiveSubscription();
-    setCancelling(false);
     if (!res.ok) {
+      setCancelling(false);
       setError(res.error);
       return;
     }
     setConfirming(false);
     setJustCancelled(true);
-    // Re-run the server component so profile.plan, subscription badge,
-    // upgrade options, and past subscriptions all reflect the new state.
-    router.refresh();
+    // The server action signed the user out. Hard-reload to the home page
+    // so the cleared session is picked up; middleware will then route
+    // /dashboard attempts to /checkout until a new plan is purchased.
+    window.location.href = '/?cancelled=1';
   }
 
   return (
