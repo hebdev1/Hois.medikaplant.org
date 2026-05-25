@@ -7,6 +7,23 @@
   --foreground: 5 0 64;
   --brand: 22 163 74;
   --accent: 196 49 120;
+
+  /* shadcn-compatible HSL token map for <Button>, <Badge>, etc.
+     Anchored to the existing forest+gold+cream palette instead of
+     shadcn's default neutral blue — see tailwind.config.ts. */
+  --primary: 96 53% 23%;
+  --primary-foreground: 39 67% 98%;
+  --secondary: 39 50% 95%;
+  --secondary-foreground: 245 100% 13%;
+  --muted: 39 50% 95%;
+  --muted-foreground: 22 33% 27%;
+  --shadcn-accent: 39 50% 92%;
+  --shadcn-accent-foreground: 245 100% 13%;
+  --destructive: 348 83% 41%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 39 47% 89%;
+  --input: 39 47% 89%;
+  --ring: 96 40% 51%;
 }
 
 html,

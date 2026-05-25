@@ -28,11 +28,39 @@ const config: Config = {
         accent: {
           DEFAULT: '#c43178',
           dark: '#9d2961',
+          // shadcn primitives use bg-accent/text-accent-foreground on
+          // their outline / ghost hover variants. White reads well on
+          // top of the brand pink.
+          foreground: '#ffffff',
         },
         ink: {
           DEFAULT: '#050040',
           muted: '#5b5a7a',
         },
+        // shadcn token aliases — read the HSL CSS variables defined in
+        // app/globals.css. Used by <Button>, <Badge>, BentoPricing.
+        // <alpha-value> lets opacity modifiers like /50 work.
+        primary: {
+          DEFAULT: 'hsl(var(--primary) / <alpha-value>)',
+          foreground: 'hsl(var(--primary-foreground) / <alpha-value>)',
+        },
+        secondary: {
+          DEFAULT: 'hsl(var(--secondary) / <alpha-value>)',
+          foreground: 'hsl(var(--secondary-foreground) / <alpha-value>)',
+        },
+        muted: {
+          DEFAULT: 'hsl(var(--muted) / <alpha-value>)',
+          foreground: 'hsl(var(--muted-foreground) / <alpha-value>)',
+        },
+        destructive: {
+          DEFAULT: 'hsl(var(--destructive) / <alpha-value>)',
+          foreground: 'hsl(var(--destructive-foreground) / <alpha-value>)',
+        },
+        border: 'hsl(var(--border) / <alpha-value>)',
+        input: 'hsl(var(--input) / <alpha-value>)',
+        ring: 'hsl(var(--ring) / <alpha-value>)',
+        background: 'rgb(var(--background) / <alpha-value>)',
+        foreground: 'rgb(var(--foreground) / <alpha-value>)',
         // Naturopathic palette pulled from the dashboard wireframe
         forest: {
           50: '#f3f8ef',
