@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -13,6 +14,7 @@ type PricingCardProps = {
   priceSuffix?: string;
   features: string[];
   cta?: string;
+  ctaHref?: string;
   className?: string;
 };
 
@@ -30,6 +32,7 @@ function PricingCard({
   priceSuffix = '/month',
   features,
   cta = 'Subscribe',
+  ctaHref,
   className,
 }: PricingCardProps) {
   return (
@@ -43,7 +46,13 @@ function PricingCard({
       <div className="flex items-center gap-3 p-4">
         <Badge variant="secondary">{titleBadge}</Badge>
         <div className="ml-auto">
-          <Button variant="outline">{cta}</Button>
+          {ctaHref ? (
+            <Button variant="outline" asChild>
+              <Link href={ctaHref}>{cta}</Link>
+            </Button>
+          ) : (
+            <Button variant="outline">{cta}</Button>
+          )}
         </div>
       </div>
 
@@ -74,6 +83,10 @@ export type BentoPlan = {
   priceSuffix?: string;
   features: string[];
   cta?: string;
+  /** When provided, the CTA renders as a Next.js Link so the button
+   *  navigates instead of being inert. Used by the landing page to send
+   *  a visitor straight to /checkout?plan=X. */
+  ctaHref?: string;
   featured?: boolean;
   featuredTagline?: string;
 };
@@ -122,7 +135,15 @@ export function BentoPricing({ plans }: { plans: BentoPlan[] }) {
               </Badge>
             )}
             <div className="ml-auto">
-              <Button>{featured.cta ?? 'Eksplore'}</Button>
+              {featured.ctaHref ? (
+                <Button asChild>
+                  <Link href={featured.ctaHref}>
+                    {featured.cta ?? 'Eksplore'}
+                  </Link>
+                </Button>
+              ) : (
+                <Button>{featured.cta ?? 'Eksplore'}</Button>
+              )}
             </div>
           </div>
           <div className="flex flex-col p-4 lg:flex-row">
@@ -157,6 +178,7 @@ export function BentoPricing({ plans }: { plans: BentoPlan[] }) {
           priceSuffix={p.priceSuffix ?? '/year'}
           features={p.features}
           cta={p.cta ?? 'Eksplore'}
+          ctaHref={p.ctaHref}
           // First fills 3 cols, the rest fill 4 cols
           className={cn(i === 0 ? 'lg:col-span-3' : 'lg:col-span-4')}
         />

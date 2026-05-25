@@ -11,7 +11,6 @@ import {
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { cn } from '@/lib/utils';
-import { BentoPricing, type BentoPlan } from '@/components/ui/bento-pricing';
 import SubscriptionActions from './subscription-actions';
 import type { Database } from '@/types/database';
 
@@ -192,66 +191,44 @@ export default async function AdminSubscriptionsPage({
         />
       </section>
 
-      {/* Plan breakdown — bento layout */}
-      <section className="mb-6">
-        <header className="mb-3 flex items-end justify-between gap-3 flex-wrap">
-          <div>
-            <h2 className="font-display text-base font-bold text-ink">
-              Konpozisyon abònman
-            </h2>
-            <p className="text-[11px] text-earth-600">
-              Konte aktif + revni pou chak plan. Sitwonèl se plan ki pi
-              popilè a — li okipe gwo kat featured la.
-            </p>
+      {/* Plan breakdown */}
+      <section className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
+        {planBreakdown.map((b) => (
+          <div
+            key={b.plan}
+            className="bg-white border border-cream-200 rounded-2xl p-5 shadow-card relative overflow-hidden"
+          >
+            <span
+              aria-hidden
+              className="absolute top-0 left-0 right-0 h-1"
+              style={{ background: b.accent }}
+            />
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <div className="text-[10px] uppercase tracking-wider font-bold text-earth-600">
+                  Plan {b.label}
+                </div>
+                <div className="font-display text-3xl font-bold text-ink leading-none mt-1">
+                  {b.activeCount}
+                </div>
+                <div className="text-[11px] text-earth-600 mt-1">
+                  abònman aktif
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="text-[10px] uppercase tracking-wider font-bold text-earth-600">
+                  Revni
+                </div>
+                <div
+                  className="font-display text-xl font-bold leading-tight mt-1"
+                  style={{ color: b.accent }}
+                >
+                  ${b.revenue.toFixed(0)}
+                </div>
+              </div>
+            </div>
           </div>
-        </header>
-
-        <BentoPricing
-          plans={(() => {
-            const bazilik = planBreakdown.find((b) => b.plan === 'basic')!;
-            const sitwonel = planBreakdown.find((b) => b.plan === 'premium')!;
-            const melis = planBreakdown.find((b) => b.plan === 'vip')!;
-            const plans: BentoPlan[] = [
-              {
-                titleBadge: 'SITWONÈL · POPILÈ',
-                priceLabel: `${sitwonel.activeCount}`,
-                priceSuffix: 'abònman aktif',
-                features: [
-                  `Revni: $${sitwonel.revenue.toFixed(0)} USD total`,
-                  'Plan ki pi popilè nan kominote a',
-                  '$600 / 2 ane — pi bon valè',
-                  'Gen aksè avans pou kèk pòs',
-                ],
-                cta: 'Filtre',
-                featured: true,
-                featuredTagline: 'Pi rekòmande',
-              },
-              {
-                titleBadge: 'BAZILIK',
-                priceLabel: `${bazilik.activeCount}`,
-                priceSuffix: 'abònman aktif',
-                features: [
-                  `Revni: $${bazilik.revenue.toFixed(0)} USD`,
-                  'Pòt antre nan inivè VIP la',
-                  '$350 / 1 ane',
-                ],
-                cta: 'Filtre',
-              },
-              {
-                titleBadge: 'MELIS · VIP',
-                priceLabel: `${melis.activeCount}`,
-                priceSuffix: 'abònman aktif',
-                features: [
-                  `Revni: $${melis.revenue.toFixed(0)} USD`,
-                  'Eksperyans VIP ki pi konplè',
-                  '$800 / 3 ane — konsiltasyon Vye Ewòl chak semèn',
-                ],
-                cta: 'Filtre',
-              },
-            ];
-            return plans;
-          })()}
-        />
+        ))}
       </section>
 
       {/* Filters */}
