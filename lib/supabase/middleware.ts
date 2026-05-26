@@ -102,16 +102,17 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  // ── 3. Strict isolation — keep admins inside /admin ────────────────────
-  // If the signed-in user is admin and tries to reach any /dashboard or
-  // /checkout URL (including via the browser Back button rewinding through
-  // history), bounce them back to /admin so the admin shell stays sticky.
-  if (isAdmin && isMemberRoute) {
-    const url = request.nextUrl.clone();
-    url.search = '';
-    url.pathname = '/admin';
-    return NextResponse.redirect(url);
-  }
+  // ── 3. Per-tab isolation: admins are FREE to also browse /dashboard ────
+  // We used to bounce every admin visit to /dashboard back to /admin to
+  // "keep the admin shell sticky". The side-effect was that running two
+  // tabs (admin in one, member dashboard in the other) was impossible —
+  // every button click in /dashboard reloaded into /admin because the
+  // shared Supabase cookie said "role=admin". Operators want to inspect
+  // the live member experience while staying signed in to the admin
+  // panel, so we now let admins navigate /dashboard freely. Each browser
+  // tab keeps the URL it was on without the middleware second-guessing.
+  //
+  // Members trying to enter /admin/* still get bounced (next block).
 
   // ── 4. Non-admin trying to enter /admin/* → /admin/login?error=not_admin
   if (!isAdmin && isAdminRoute && !isAdminLogin) {
@@ -141,20 +142,6 @@ export async function updateSession(request: NextRequest) {
       url.searchParams.set('reason', 'no_active_plan');
       return NextResponse.redirect(url);
     }
-  }
-
-  // ── 5. Defeat back-forward cache for admins inside /admin ──────────────
-  // Without no-store, hitting Back from /admin to a previously visited
-  // /dashboard would restore the dashboard page from bfcache and the
-  // middleware redirect above wouldn't fire. Forcing revalidation makes
-  // every Back hit re-enter middleware so the sticky-admin rule applies.
-  if (isAdmin && isAdminRoute) {
-    response.headers.set(
-      'Cache-Control',
-      'no-store, no-cache, must-revalidate, proxy-revalidate'
-    );
-    response.headers.set('Pragma', 'no-cache');
-    response.headers.set('Expires', '0');
   }
 
   return response;
