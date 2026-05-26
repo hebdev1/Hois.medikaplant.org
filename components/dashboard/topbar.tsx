@@ -29,15 +29,25 @@ export default async function Topbar({
     data: { user },
   } = await supabase.auth.getUser();
 
+  // Read plan from the JWT claim (populated by custom_access_token_hook).
+  // Falls back to a profile query for sessions issued before the hook
+  // was enabled — one DB roundtrip saved per dashboard navigation in the
+  // common case.
   let userPlan: 'basic' | 'premium' | 'vip' = 'basic';
   if (user) {
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('plan')
-      .eq('id', user.id)
-      .maybeSingle();
-    const p = profile as { plan: 'basic' | 'premium' | 'vip' } | null;
-    if (p?.plan) userPlan = p.plan;
+    const metaPlan = (user.user_metadata as { app_plan?: string } | null)
+      ?.app_plan;
+    if (metaPlan === 'basic' || metaPlan === 'premium' || metaPlan === 'vip') {
+      userPlan = metaPlan;
+    } else {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('plan')
+        .eq('id', user.id)
+        .maybeSingle();
+      const p = profile as { plan: 'basic' | 'premium' | 'vip' } | null;
+      if (p?.plan) userPlan = p.plan;
+    }
   }
 
   return (

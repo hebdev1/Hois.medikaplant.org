@@ -65,13 +65,24 @@ export async function updateSession(request: NextRequest) {
     return response;
   }
 
-  // ── 2. Authed: fetch role once, route from there ───────────────────────
-  const { data: profileRaw } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('id', user.id)
-    .single();
-  const role = (profileRaw as { role: 'user' | 'admin' } | null)?.role ?? 'user';
+  // ── 2. Authed: read role from JWT claim (set by custom_access_token_hook).
+  //    Falls back to a DB read if the hook hasn't populated user_metadata
+  //    yet — that path only fires for sessions issued BEFORE the hook was
+  //    enabled in the dashboard. Once the user signs in again the hook
+  //    runs and we hit the fast path forever after.
+  const metadataRole = (user.user_metadata as { app_role?: string } | null)
+    ?.app_role;
+  let role: 'user' | 'admin' = 'user';
+  if (metadataRole === 'admin' || metadataRole === 'user') {
+    role = metadataRole;
+  } else {
+    const { data: profileRaw } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', user.id)
+      .maybeSingle();
+    role = (profileRaw as { role: 'user' | 'admin' } | null)?.role ?? 'user';
+  }
   const isAdmin = role === 'admin';
 
   // Already signed in but visiting a public auth/login page → bounce home
