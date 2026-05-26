@@ -22,13 +22,34 @@ async function assertAdmin() {
   if (!user) return { ok: false as const, error: 'Ou dwe konekte.' };
   const { data: profile } = await supabase
     .from('profiles')
-    .select('role')
+    .select('role, admin_role')
     .eq('id', user.id)
     .maybeSingle();
-  if ((profile as { role: string } | null)?.role !== 'admin') {
+  const p = profile as {
+    role: string;
+    admin_role: 'super_admin' | 'admin' | 'support' | 'moderator' | 'content' | null;
+  } | null;
+  if (p?.role !== 'admin') {
     return { ok: false as const, error: 'Aksè entèdi.' };
   }
-  return { ok: true as const, user, supabase };
+  return {
+    ok: true as const,
+    user,
+    supabase,
+    adminRole: p.admin_role,
+    isSuperAdmin: p.admin_role === 'super_admin',
+  };
+}
+
+/** Tighter gate: only super_admin can call this branch (for managing
+ *  other admins and changing role/admin_role). */
+async function assertSuperAdmin() {
+  const auth = await assertAdmin();
+  if (!auth.ok) return auth;
+  if (!auth.isSuperAdmin) {
+    return { ok: false as const, error: 'Sèlman super-admin ka fè aksyon sa.' };
+  }
+  return auth;
 }
 
 // ─── Profile editing (admin can edit any field for any user) ────────────────
@@ -55,6 +76,18 @@ const ALLOWED_PROFILE_KEYS: readonly (keyof ProfileUpdate)[] = [
 const GENDER_VALUES = ['male', 'female', 'other', 'prefer_not_to_say'] as const;
 const PLAN_VALUES = ['basic', 'premium', 'vip'] as const;
 const ROLE_VALUES = ['user', 'admin'] as const;
+
+// Granular sub-roles for admin accounts (mirrors the SQL enum from
+// migration 038). Declared up here so setUserRole — which lives above the
+// sub-role management section — can type its updates object cleanly.
+const ADMIN_ROLE_VALUES = [
+  'super_admin',
+  'admin',
+  'support',
+  'moderator',
+  'content',
+] as const;
+export type AdminRole = (typeof ADMIN_ROLE_VALUES)[number];
 
 export type ProfileResult =
   | { ok: true; profile: ProfileRow }
@@ -236,17 +269,36 @@ export async function setUserRole(
   role: 'user' | 'admin'
 ): Promise<ProfileResult> {
   if (!ROLE_VALUES.includes(role)) return { ok: false, error: 'Wòl pa valid.' };
-  const auth = await assertAdmin();
+  // Only super_admin can grant or revoke the admin badge.
+  const auth = await assertSuperAdmin();
   if (!auth.ok) return { ok: false, error: auth.error };
 
-  // Don't let an admin demote themselves (lockout risk)
+  // Don't let a super-admin demote themselves (lockout risk)
   if (auth.user.id === userId && role !== 'admin') {
     return { ok: false, error: 'Ou pa ka retire wòl admin ou pwòp tèt ou.' };
   }
 
+  // When promoting fresh user → admin without a sub-role, default to
+  // 'support' (least-privileged). Super-admin can upgrade them after.
+  const updates: ProfileUpdate = { role };
+  if (role === 'admin') {
+    // Check current admin_role; if null, give them 'support' by default
+    const { data: existing } = await auth.supabase
+      .from('profiles')
+      .select('admin_role')
+      .eq('id', userId)
+      .maybeSingle();
+    const currentRole = (existing as { admin_role: AdminRole | null } | null)
+      ?.admin_role;
+    if (!currentRole) updates.admin_role = 'support';
+  } else {
+    // Demotion → clear admin_role so they're back to plain user.
+    updates.admin_role = null;
+  }
+
   const { data: updated, error } = await auth.supabase
     .from('profiles')
-    .update({ role })
+    .update(updates)
     .eq('id', userId)
     .select('*')
     .single();
@@ -254,6 +306,89 @@ export async function setUserRole(
 
   revalidatePath(`/admin/users/${userId}`);
   revalidatePath('/admin/users');
+  return { ok: true, profile: updated as ProfileRow };
+}
+
+// ─── Admin sub-role management (super_admin only) ──────────────────────────
+
+export async function setUserAdminRole(
+  userId: string,
+  adminRole: AdminRole
+): Promise<ProfileResult> {
+  if (!ADMIN_ROLE_VALUES.includes(adminRole)) {
+    return { ok: false, error: 'Wòl admin pa valid.' };
+  }
+  const auth = await assertSuperAdmin();
+  if (!auth.ok) return { ok: false, error: auth.error };
+
+  // A super-admin can't demote themselves out of super_admin (lockout risk)
+  if (auth.user.id === userId && adminRole !== 'super_admin') {
+    return {
+      ok: false,
+      error: 'Ou pa ka retire pwòp wòl super-admin ou.',
+    };
+  }
+
+  // Ensure the target is already an admin (role='admin'); refuse otherwise.
+  const { data: target } = await auth.supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', userId)
+    .maybeSingle();
+  if ((target as { role: string } | null)?.role !== 'admin') {
+    return {
+      ok: false,
+      error: 'Manm sa pa admin. Pwomote l an admin avan w bay yon wòl.',
+    };
+  }
+
+  const { data: updated, error } = await auth.supabase
+    .from('profiles')
+    .update({ admin_role: adminRole })
+    .eq('id', userId)
+    .select('*')
+    .single();
+  if (error || !updated) {
+    return { ok: false, error: error?.message ?? 'Erè inkoni.' };
+  }
+
+  revalidatePath(`/admin/users/${userId}`);
+  revalidatePath('/admin/users');
+  return { ok: true, profile: updated as ProfileRow };
+}
+
+/**
+ * Update the admin's display name in the support chat. Each admin can
+ * tweak their OWN persona; super_admin can also override anyone else's.
+ */
+export async function setSupportPersonaName(
+  userId: string,
+  personaName: string | null
+): Promise<ProfileResult> {
+  const auth = await assertAdmin();
+  if (!auth.ok) return { ok: false, error: auth.error };
+
+  // Self-edit always allowed. Cross-edit only by super-admin.
+  if (auth.user.id !== userId && !auth.isSuperAdmin) {
+    return { ok: false, error: 'Sèlman super-admin ka chanje non yon lòt.' };
+  }
+
+  const cleaned = personaName?.trim() ?? '';
+  const value =
+    cleaned.length === 0 ? null : cleaned.slice(0, 60);
+
+  const { data: updated, error } = await auth.supabase
+    .from('profiles')
+    .update({ support_persona_name: value })
+    .eq('id', userId)
+    .select('*')
+    .single();
+  if (error || !updated) {
+    return { ok: false, error: error?.message ?? 'Erè inkoni.' };
+  }
+
+  revalidatePath(`/admin/users/${userId}`);
+  revalidatePath('/admin/support');
   return { ok: true, profile: updated as ProfileRow };
 }
 

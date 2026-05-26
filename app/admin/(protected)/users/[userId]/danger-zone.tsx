@@ -3,7 +3,6 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import {
-  Shield,
   Ban,
   ShieldAlert,
   Trash2,
@@ -11,36 +10,67 @@ import {
   AlertCircle,
   CheckCircle2,
   Sparkles,
+  UserCog,
+  IdCard,
+  Lock,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
   setUserPlan,
   setUserSuspended,
   setUserRole,
+  setUserAdminRole,
+  setSupportPersonaName,
   adminDeleteUser,
+  type AdminRole,
 } from '../actions';
+import { ADMIN_ROLE_LABEL, ADMIN_ROLE_DESCRIPTION } from '../../admin-nav-config';
 
 type Plan = 'basic' | 'premium' | 'vip';
 type Role = 'user' | 'admin';
+
+const ADMIN_ROLE_OPTIONS: { value: AdminRole; label: string }[] = [
+  { value: 'super_admin', label: ADMIN_ROLE_LABEL.super_admin },
+  { value: 'admin', label: ADMIN_ROLE_LABEL.admin },
+  { value: 'support', label: ADMIN_ROLE_LABEL.support },
+  { value: 'moderator', label: ADMIN_ROLE_LABEL.moderator },
+  { value: 'content', label: ADMIN_ROLE_LABEL.content },
+];
 
 export default function DangerZone({
   userId,
   initialPlan,
   initialRole,
+  initialAdminRole,
+  initialPersonaName,
   initialSuspended,
   email,
   isSelf,
+  viewerIsSuperAdmin,
 }: {
   userId: string;
   initialPlan: Plan;
   initialRole: Role;
+  initialAdminRole: AdminRole | null;
+  initialPersonaName: string | null;
   initialSuspended: boolean;
   email: string;
   isSelf: boolean;
+  /**
+   * True when the currently-signed-in admin has admin_role='super_admin'.
+   * Controls visibility of the role / admin_role selectors, which are
+   * super-admin-only per migration 038. Non-super admins still see
+   * plan/suspend/persona controls (subject to per-action guards on the
+   * server).
+   */
+  viewerIsSuperAdmin: boolean;
 }) {
   const router = useRouter();
   const [plan, setPlan] = React.useState(initialPlan);
   const [role, setRole] = React.useState(initialRole);
+  const [adminRole, setAdminRole] = React.useState<AdminRole | null>(initialAdminRole);
+  const [personaName, setPersonaName] = React.useState(initialPersonaName ?? '');
+  const [personaSaving, setPersonaSaving] = React.useState(false);
   const [suspended, setSuspended] = React.useState(initialSuspended);
   const [pending, setPending] = React.useState<string | null>(null);
   const [errors, setErrors] = React.useState<Record<string, string | null>>({});
@@ -80,7 +110,47 @@ export default function DangerZone({
       setErrors((e) => ({ ...e, role: res.error }));
       return;
     }
+    // Server defaults new admins to 'support'; reflect that locally so the
+    // sub-role picker shows up immediately without a refresh.
+    if (r === 'admin') {
+      setAdminRole((existing) => existing ?? 'support');
+    } else {
+      setAdminRole(null);
+    }
     flashSaved('role');
+  }
+
+  async function onPickAdminRole(next: AdminRole) {
+    if (next === adminRole) return;
+    const prev = adminRole;
+    setAdminRole(next);
+    setPending('admin_role');
+    setErrors((e) => ({ ...e, admin_role: null }));
+    const res = await setUserAdminRole(userId, next);
+    setPending(null);
+    if (!res.ok) {
+      setAdminRole(prev);
+      setErrors((e) => ({ ...e, admin_role: res.error }));
+      return;
+    }
+    flashSaved('admin_role');
+  }
+
+  async function onSavePersona() {
+    setPersonaSaving(true);
+    setErrors((e) => ({ ...e, persona: null }));
+    const cleaned = personaName.trim();
+    const res = await setSupportPersonaName(
+      userId,
+      cleaned.length === 0 ? null : cleaned
+    );
+    setPersonaSaving(false);
+    if (!res.ok) {
+      setErrors((e) => ({ ...e, persona: res.error }));
+      return;
+    }
+    flashSaved('persona');
+    router.refresh();
   }
 
   async function onToggleSuspended() {
@@ -98,6 +168,11 @@ export default function DangerZone({
     }
     flashSaved('suspend');
   }
+
+  // Persona input is editable for self OR by any super_admin.
+  const canEditPersona = isSelf || viewerIsSuperAdmin;
+  const personaDirty = (personaName.trim() || null) !== (initialPersonaName ?? null);
+  const showAdminRolePicker = role === 'admin' && viewerIsSuperAdmin;
 
   return (
     <section className="bg-white border border-cream-200 rounded-2xl p-5 md:p-6 shadow-card space-y-5">
@@ -131,13 +206,25 @@ export default function DangerZone({
         />
       </Row>
 
-      {/* Role */}
+      {/* Role — gated behind super_admin */}
       <Row
-        label="Wòl"
+        label={
+          <span className="inline-flex items-center gap-1.5">
+            Wòl
+            {!viewerIsSuperAdmin && (
+              <span className="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-full bg-cream-100 text-earth-600 font-bold">
+                <Lock className="w-2.5 h-2.5" strokeWidth={2.4} />
+                Super-admin sèlman
+              </span>
+            )}
+          </span>
+        }
         description={
           isSelf
             ? 'Ou pa ka retire pwòp wòl admin ou (anpechman lockout).'
-            : 'Yon admin gen aksè total sou tout done.'
+            : !viewerIsSuperAdmin
+              ? 'Sèlman super-admin yo ka pwomote oswa retire wòl admin.'
+              : 'Yon admin gen aksè total sou tout done.'
         }
         saved={savedTick === 'role'}
         error={errors.role}
@@ -145,7 +232,7 @@ export default function DangerZone({
         <Segment
           value={role}
           onChange={onPickRole}
-          disabled={pending === 'role' || isSelf}
+          disabled={pending === 'role' || isSelf || !viewerIsSuperAdmin}
           options={[
             { value: 'user', label: 'Itilizatè' },
             { value: 'admin', label: 'Admin' },
@@ -153,6 +240,125 @@ export default function DangerZone({
           activeTone="bg-accent text-white"
         />
       </Row>
+
+      {/* Admin sub-role picker — only when target is admin AND viewer is super_admin */}
+      {showAdminRolePicker && (
+        <div className="rounded-xl bg-cream-50/70 border border-cream-200 p-4 space-y-3">
+          <div className="flex items-start gap-2.5">
+            <span className="grid place-items-center w-8 h-8 rounded-lg bg-accent/10 text-accent shrink-0">
+              <UserCog className="w-4 h-4" strokeWidth={2.2} />
+            </span>
+            <div className="flex-1 min-w-0">
+              <div className="text-sm font-semibold text-ink flex items-center gap-1.5">
+                Wòl admin
+                {savedTick === 'admin_role' && (
+                  <span className="inline-flex items-center gap-1 text-[10px] text-forest-700">
+                    <CheckCircle2 className="w-3 h-3" strokeWidth={2.6} />
+                    Anrejistre
+                  </span>
+                )}
+              </div>
+              <div className="text-[11px] text-earth-600 mt-0.5 leading-relaxed">
+                {adminRole
+                  ? ADMIN_ROLE_DESCRIPTION[adminRole]
+                  : 'Chwazi yon wòl pou defini sa moun sa ka fè nan panel admin nan.'}
+              </div>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap gap-1.5">
+            {ADMIN_ROLE_OPTIONS.map((opt) => {
+              const active = opt.value === adminRole;
+              const disabled =
+                pending === 'admin_role' ||
+                (isSelf && adminRole === 'super_admin' && opt.value !== 'super_admin');
+              return (
+                <button
+                  key={opt.value}
+                  type="button"
+                  disabled={disabled}
+                  onClick={() => onPickAdminRole(opt.value)}
+                  className={cn(
+                    'px-3 py-1.5 text-xs font-semibold rounded-lg border transition disabled:cursor-not-allowed disabled:opacity-50',
+                    active
+                      ? 'bg-accent text-white border-accent shadow-sm'
+                      : 'bg-white text-earth-700 border-cream-200 hover:border-accent/60 hover:text-ink'
+                  )}
+                >
+                  {opt.label}
+                </button>
+              );
+            })}
+          </div>
+
+          {errors.admin_role && (
+            <p className="text-[11px] text-rose-700 inline-flex items-center gap-1">
+              <AlertCircle className="w-3 h-3" strokeWidth={2.4} />
+              {errors.admin_role}
+            </p>
+          )}
+          {isSelf && adminRole === 'super_admin' && (
+            <p className="text-[11px] text-earth-500 italic">
+              Ou pa ka retire pwòp wòl super-admin ou.
+            </p>
+          )}
+        </div>
+      )}
+
+      {/* Support persona — visible to all admins; editable for self or super_admin */}
+      {role === 'admin' && (
+        <div className="rounded-xl bg-cream-50/70 border border-cream-200 p-4 space-y-3">
+          <div className="flex items-start gap-2.5">
+            <span className="grid place-items-center w-8 h-8 rounded-lg bg-forest-100 text-forest-700 shrink-0">
+              <IdCard className="w-4 h-4" strokeWidth={2.2} />
+            </span>
+            <div className="flex-1 min-w-0">
+              <div className="text-sm font-semibold text-ink flex items-center gap-1.5">
+                Non nan sipò chat
+                {savedTick === 'persona' && (
+                  <span className="inline-flex items-center gap-1 text-[10px] text-forest-700">
+                    <CheckCircle2 className="w-3 h-3" strokeWidth={2.6} />
+                    Anrejistre
+                  </span>
+                )}
+              </div>
+              <div className="text-[11px] text-earth-600 mt-0.5 leading-relaxed">
+                {canEditPersona
+                  ? 'Non sa ap parèt nan en-tèt chat manm yo lè ou voye yon repons. Si w kite l vid, n ap sèvi ak non konplè pwofil ou.'
+                  : 'Sèlman moun sa oswa yon super-admin ka chanje non sa.'}
+              </div>
+            </div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-2">
+            <input
+              type="text"
+              value={personaName}
+              maxLength={60}
+              disabled={!canEditPersona || personaSaving}
+              onChange={(e) => setPersonaName(e.target.value)}
+              placeholder="ex: Mèt Joseph, èrboris santiniye"
+              className="flex-1 px-3 py-2 text-sm bg-white border border-cream-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-forest-200 focus:border-forest-300 disabled:opacity-60 disabled:cursor-not-allowed"
+            />
+            <button
+              type="button"
+              onClick={onSavePersona}
+              disabled={!canEditPersona || personaSaving || !personaDirty}
+              className="inline-flex items-center justify-center gap-1.5 px-4 py-2 text-xs font-semibold rounded-lg bg-forest-700 hover:bg-forest-800 text-cream-50 disabled:opacity-50 disabled:cursor-not-allowed transition shrink-0"
+            >
+              {personaSaving && <Loader2 className="w-3.5 h-3.5 animate-spin" strokeWidth={2.2} />}
+              Anrejistre
+            </button>
+          </div>
+
+          {errors.persona && (
+            <p className="text-[11px] text-rose-700 inline-flex items-center gap-1">
+              <AlertCircle className="w-3 h-3" strokeWidth={2.4} />
+              {errors.persona}
+            </p>
+          )}
+        </div>
+      )}
 
       {/* Suspended */}
       <Row
@@ -202,7 +408,7 @@ function Row({
   error,
   children,
 }: {
-  label: string;
+  label: React.ReactNode;
   description?: string;
   saved?: boolean;
   error?: string | null;

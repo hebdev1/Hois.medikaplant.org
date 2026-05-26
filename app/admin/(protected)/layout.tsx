@@ -3,7 +3,11 @@ import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
 import { Leaf, LogOut } from 'lucide-react';
 import { adminSignOut } from '../login/actions';
-import { ADMIN_NAV_LINKS } from './admin-nav-config';
+import {
+  navLinksForRole,
+  ADMIN_ROLE_LABEL,
+  type AdminRole,
+} from './admin-nav-config';
 import AdminMobileNav from './admin-mobile-nav';
 
 export const dynamic = 'force-dynamic';
@@ -22,11 +26,12 @@ export default async function AdminProtectedLayout({
 
   const { data: profileRaw } = await supabase
     .from('profiles')
-    .select('role, first_name, last_name, email, avatar_url')
+    .select('role, admin_role, first_name, last_name, email, avatar_url')
     .eq('id', user.id)
     .maybeSingle();
   const profile = profileRaw as {
     role: 'user' | 'admin';
+    admin_role: AdminRole | null;
     first_name: string | null;
     last_name: string | null;
     email: string;
@@ -41,11 +46,20 @@ export default async function AdminProtectedLayout({
     [profile.first_name, profile.last_name].filter(Boolean).join(' ') ||
     profile.email.split('@')[0];
   const initials = (profile.first_name?.[0] ?? profile.email[0] ?? 'A').toUpperCase();
+  const links = navLinksForRole(profile.admin_role);
+  const roleLabel = profile.admin_role
+    ? ADMIN_ROLE_LABEL[profile.admin_role]
+    : 'Administratè';
 
   return (
     <div className="min-h-screen bg-slate-50 lg:flex">
       {/* ── Mobile-only top strip + drawer (hidden lg+) ──────────────── */}
-      <AdminMobileNav adminName={adminName} initials={initials} />
+      <AdminMobileNav
+        adminName={adminName}
+        initials={initials}
+        links={links}
+        roleLabel={roleLabel}
+      />
 
       {/* ── Desktop sidebar (hidden below lg) ────────────────────────── */}
       <aside className="hidden lg:flex flex-col w-64 shrink-0 bg-ink text-white/80 h-screen sticky top-0">
@@ -73,13 +87,13 @@ export default async function AdminProtectedLayout({
               {adminName}
             </div>
             <div className="text-[10px] uppercase tracking-wide text-white/50 font-bold">
-              Administratè
+              {roleLabel}
             </div>
           </div>
         </div>
 
         <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-          {ADMIN_NAV_LINKS.map(({ href, label, icon: Icon }) => (
+          {links.map(({ href, label, icon: Icon }) => (
             <Link
               key={href}
               href={href}

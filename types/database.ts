@@ -584,6 +584,8 @@ export type Database = {
           postal_code: string | null
           region: string | null
           role: Database["public"]["Enums"]["user_role"]
+          admin_role: 'super_admin' | 'admin' | 'support' | 'moderator' | 'content' | null
+          support_persona_name: string | null
           suspended: boolean
           updated_at: string
         }
@@ -609,6 +611,8 @@ export type Database = {
           postal_code?: string | null
           region?: string | null
           role?: Database["public"]["Enums"]["user_role"]
+          admin_role?: 'super_admin' | 'admin' | 'support' | 'moderator' | 'content' | null
+          support_persona_name?: string | null
           suspended?: boolean
           updated_at?: string
         }
@@ -634,6 +638,8 @@ export type Database = {
           postal_code?: string | null
           region?: string | null
           role?: Database["public"]["Enums"]["user_role"]
+          admin_role?: 'super_admin' | 'admin' | 'support' | 'moderator' | 'content' | null
+          support_persona_name?: string | null
           suspended?: boolean
           updated_at?: string
         }

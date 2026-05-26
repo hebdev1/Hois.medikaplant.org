@@ -5,12 +5,18 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Leaf, Menu, X, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { ADMIN_NAV_LINKS } from './admin-nav-config';
+import type { AdminNavLink } from './admin-nav-config';
 import { adminSignOut } from '../login/actions';
 
 type Props = {
   adminName: string;
   initials: string;
+  /**
+   * Already filtered by the layout to just the links the current admin
+   * can use, based on their admin_role / capabilities.
+   */
+  links: AdminNavLink[];
+  roleLabel: string;
 };
 
 /**
@@ -24,7 +30,12 @@ type Props = {
  * The drawer auto-closes on route change so tapping a link feels like
  * native navigation.
  */
-export default function AdminMobileNav({ adminName, initials }: Props) {
+export default function AdminMobileNav({
+  adminName,
+  initials,
+  links,
+  roleLabel,
+}: Props) {
   const pathname = usePathname();
   const [open, setOpen] = React.useState(false);
 
@@ -151,14 +162,14 @@ export default function AdminMobileNav({ adminName, initials }: Props) {
                   {adminName}
                 </div>
                 <div className="text-[10px] uppercase tracking-wide text-white/50 font-bold">
-                  Administratè
+                  {roleLabel}
                 </div>
               </div>
             </div>
 
             {/* Nav links */}
             <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-              {ADMIN_NAV_LINKS.map(({ href, label, icon: Icon }) => {
+              {links.map(({ href, label, icon: Icon }) => {
                 const active =
                   pathname === href ||
                   (href !== '/admin' && pathname.startsWith(href));

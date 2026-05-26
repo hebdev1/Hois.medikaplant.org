@@ -34,6 +34,13 @@ type ThreadWithUser = Thread & {
 
 type Props = {
   initialThreads: ThreadWithUser[];
+  /**
+   * Display name for the currently-signed-in admin — used in the chat
+   * composer placeholder. Falls back to a generic label if the persona
+   * was never set. Server resolves this from support_persona_name OR the
+   * admin's full_name (see /admin/support/page.tsx).
+   */
+  adminPersona: string;
 };
 
 const TIME_FORMAT = new Intl.DateTimeFormat(undefined, {
@@ -57,7 +64,7 @@ function relativeLabel(iso: string): string {
   return `${Math.floor(days / 7)} sem`;
 }
 
-export default function SupportInbox({ initialThreads }: Props) {
+export default function SupportInbox({ initialThreads, adminPersona }: Props) {
   const supabase = React.useMemo(() => createClient(), []);
   const [threads, setThreads] = React.useState<ThreadWithUser[]>(initialThreads);
   const [activeThreadId, setActiveThreadId] = React.useState<string | null>(
@@ -469,7 +476,7 @@ export default function SupportInbox({ initialThreads }: Props) {
                   }
                 }}
                 rows={1}
-                placeholder="Ekri repons ou kòm Mèt Joseph…"
+                placeholder={`Ekri repons ou kòm ${adminPersona}…`}
                 disabled={sending || activeThread.status !== 'open'}
                 className="flex-1 resize-none px-4 py-2.5 text-sm bg-cream-50 border border-cream-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-forest-200 focus:border-forest-300 leading-relaxed max-h-32 disabled:opacity-60"
               />

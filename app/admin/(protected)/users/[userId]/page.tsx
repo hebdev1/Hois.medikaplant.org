@@ -113,10 +113,23 @@ export default async function AdminUserDetailPage({
 }) {
   const supabase = createClient();
 
-  // 1) Auth + admin check + fetch current admin id (for "isSelf" logic)
+  // 1) Auth + admin check + fetch current admin id (for "isSelf" logic).
+  //    We also pull the viewer's own admin_role so the DangerZone can show
+  //    super-admin-only controls (role + admin_role) to the right people.
   const {
     data: { user: currentUser },
   } = await supabase.auth.getUser();
+
+  let viewerIsSuperAdmin = false;
+  if (currentUser) {
+    const { data: viewerRaw } = await supabase
+      .from('profiles')
+      .select('admin_role')
+      .eq('id', currentUser.id)
+      .maybeSingle();
+    const viewer = viewerRaw as { admin_role: string | null } | null;
+    viewerIsSuperAdmin = viewer?.admin_role === 'super_admin';
+  }
 
   // 2) Fetch profile first — must exist
   const { data: profileRaw, error: profileError } = await supabase
@@ -403,9 +416,20 @@ export default async function AdminUserDetailPage({
             userId={profile.id}
             initialPlan={profile.plan as 'basic' | 'premium' | 'vip'}
             initialRole={profile.role as 'user' | 'admin'}
+            initialAdminRole={
+              (profile.admin_role ?? null) as
+                | 'super_admin'
+                | 'admin'
+                | 'support'
+                | 'moderator'
+                | 'content'
+                | null
+            }
+            initialPersonaName={profile.support_persona_name ?? null}
             initialSuspended={profile.suspended ?? false}
             email={profile.email}
             isSelf={isSelf}
+            viewerIsSuperAdmin={viewerIsSuperAdmin}
           />
 
           <UserEditor

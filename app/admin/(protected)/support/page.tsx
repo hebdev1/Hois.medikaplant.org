@@ -14,6 +14,37 @@ type Profile = { id: string; email: string; full_name: string | null };
 export default async function AdminSupportPage() {
   const supabase = createClient();
 
+  // Current admin — used to render their own display name in the chat
+  // composer placeholder (was hard-coded "Mèt Joseph" before). The
+  // support_persona_name override lets each admin tweak how their name
+  // appears in the support chat without renaming their profile.
+  const {
+    data: { user: currentUser },
+  } = await supabase.auth.getUser();
+
+  let adminPersona = 'Sipò MedikaPlant';
+  if (currentUser) {
+    const { data: meRaw } = await supabase
+      .from('profiles')
+      .select('full_name, first_name, last_name, email, support_persona_name')
+      .eq('id', currentUser.id)
+      .maybeSingle();
+    const me = meRaw as {
+      full_name: string | null;
+      first_name: string | null;
+      last_name: string | null;
+      email: string;
+      support_persona_name: string | null;
+    } | null;
+    if (me) {
+      adminPersona =
+        me.support_persona_name?.trim() ||
+        me.full_name?.trim() ||
+        [me.first_name, me.last_name].filter(Boolean).join(' ').trim() ||
+        me.email.split('@')[0];
+    }
+  }
+
   // Fetch all threads (admins can see all via RLS)
   const { data: threadsRaw } = await supabase
     .from('support_threads')
@@ -104,7 +135,7 @@ export default async function AdminSupportPage() {
         </p>
       </header>
 
-      <SupportInbox initialThreads={enriched} />
+      <SupportInbox initialThreads={enriched} adminPersona={adminPersona} />
     </div>
   );
 }

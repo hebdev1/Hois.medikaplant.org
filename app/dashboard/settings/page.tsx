@@ -95,6 +95,8 @@ function defaultProfile(userId: string, email: string): ProfileRow {
     emergency_contact_name: null,
     emergency_contact_phone: null,
     bio: null,
+    admin_role: null,
+    support_persona_name: null,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   };

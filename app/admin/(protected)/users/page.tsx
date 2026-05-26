@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { cn } from '@/lib/utils';
+import { ADMIN_ROLE_LABEL, type AdminRole } from '../admin-nav-config';
 
 export const metadata = { title: 'Admin · Manm' };
 export const dynamic = 'force-dynamic';
@@ -33,6 +34,7 @@ type Profile = {
   email: string;
   plan: 'basic' | 'premium' | 'vip';
   role: 'user' | 'admin';
+  admin_role: AdminRole | null;
   suspended: boolean;
   avatar_url: string | null;
   city: string | null;
@@ -62,7 +64,7 @@ export default async function AdminUsersListPage({
     supabase
       .from('profiles')
       .select(
-        'id, full_name, first_name, last_name, email, plan, role, suspended, avatar_url, city, country, created_at'
+        'id, full_name, first_name, last_name, email, plan, role, admin_role, suspended, avatar_url, city, country, created_at'
       )
       .order('created_at', { ascending: false }),
     supabase.from('user_medical_info').select('user_id, conditions'),
@@ -277,7 +279,9 @@ export default async function AdminUsersListPage({
                         {p.role === 'admin' ? (
                           <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full bg-accent/10 text-accent">
                             <Shield className="w-3 h-3" strokeWidth={2.4} />
-                            Admin
+                            {p.admin_role
+                              ? ADMIN_ROLE_LABEL[p.admin_role]
+                              : 'Admin'}
                           </span>
                         ) : (
                           <span className="text-[11px] text-earth-600">Manm</span>
