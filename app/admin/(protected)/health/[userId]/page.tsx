@@ -23,7 +23,7 @@ import { createClient } from '@/lib/supabase/server';
 import HealthLineChart from '@/components/dashboard/health-line-chart';
 import { cn } from '@/lib/utils';
 import PrescriptionForm from './prescription-form';
-import TreatmentActions from './treatment-actions';
+import TreatmentRow from './treatment-row';
 import type { Database } from '@/types/database';
 
 export const metadata = { title: 'Admin · Pasyan' };
@@ -434,7 +434,11 @@ export default async function AdminPatientPage({
         ) : (
           <ul className="space-y-3">
             {[...activeTreatments, ...pastTreatments].map((t) => (
-              <TreatmentRow key={t.id} treatment={t} />
+              <TreatmentRow
+                key={t.id}
+                treatment={t}
+                conditions={conditions ?? []}
+              />
             ))}
           </ul>
         )}
@@ -565,79 +569,6 @@ function ChartCard({
   );
 }
 
-function TreatmentRow({ treatment: t }: { treatment: Treatment }) {
-  const meta = KIND_META[t.kind] ?? KIND_META.monitoring;
-  const Icon = meta.icon;
-  const isCancelled = t.status === 'cancelled';
-  const isCompleted = t.status === 'completed';
-
-  return (
-    <li
-      className={cn(
-        'grid grid-cols-[auto_1fr_auto] gap-3 items-start p-3 rounded-xl border',
-        t.status === 'active'
-          ? 'bg-cream-50 border-cream-200'
-          : 'bg-cream-50/40 border-cream-200/60 opacity-80'
-      )}
-    >
-      <span className={cn('grid place-items-center w-10 h-10 rounded-xl shrink-0', meta.tone)}>
-        <Icon className="w-4 h-4" strokeWidth={2} />
-      </span>
-      <div className="min-w-0">
-        <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-sm font-semibold text-ink truncate">
-            {t.title}
-          </span>
-          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-cream-100 text-earth-700 border border-cream-200 text-[9px] font-bold uppercase tracking-wide">
-            {meta.label}
-          </span>
-          {isCancelled && (
-            <span className="inline-flex items-center px-1.5 py-0.5 rounded-full bg-rose-100 text-rose-700 text-[9px] font-bold uppercase tracking-wide">
-              Anile
-            </span>
-          )}
-          {isCompleted && (
-            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-forest-100 text-forest-700 text-[9px] font-bold uppercase tracking-wide">
-              <CheckCircle2 className="w-2.5 h-2.5" strokeWidth={2.4} />
-              Konplete
-            </span>
-          )}
-          {t.read_at && (
-            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-forest-50 text-forest-700 border border-forest-100 text-[9px] font-bold uppercase tracking-wide">
-              <Eye className="w-2.5 h-2.5" strokeWidth={2.4} />
-              Li
-            </span>
-          )}
-        </div>
-        <p className="text-xs text-earth-700 leading-relaxed mt-1 line-clamp-2 whitespace-pre-wrap">
-          {t.description}
-        </p>
-        <div className="text-[11px] text-earth-500 mt-1 flex items-center gap-2 flex-wrap">
-          <span>Voye {formatDate(t.created_at)}</span>
-          {t.dose && (
-            <>
-              <span aria-hidden>·</span>
-              <span>Dòz: {t.dose}</span>
-            </>
-          )}
-          {t.frequency && (
-            <>
-              <span aria-hidden>·</span>
-              <span>{t.frequency}</span>
-            </>
-          )}
-          {t.duration && (
-            <>
-              <span aria-hidden>·</span>
-              <span>{t.duration}</span>
-            </>
-          )}
-        </div>
-      </div>
-      <TreatmentActions
-        treatmentId={t.id}
-        status={t.status as 'active' | 'completed' | 'cancelled'}
-      />
-    </li>
-  );
-}
+// TreatmentRow moved to ./treatment-row.tsx so it can carry inline edit
+// state on the client. The page just provides the static data and lets
+// the client decide whether the row is in view-mode or edit-mode.

@@ -90,6 +90,66 @@ export async function createTreatment(
   return { ok: true, createdId: (data as { id: string }).id };
 }
 
+// ─── Edit existing treatment (admin can fix mistakes) ───────────────────
+// Mirrors createTreatment's validation rules. We accept a partial set
+// of fields via FormData so the same form component works for both
+// create and edit (just toggles which action it submits to).
+
+export async function updateTreatment(
+  treatmentId: string,
+  _prev: AdminTreatmentState,
+  formData: FormData
+): Promise<AdminTreatmentState> {
+  const auth = await assertAdmin();
+  if (!auth.ok) return { error: auth.error };
+
+  const get = (k: string) => (formData.get(k)?.toString() ?? '').trim();
+  const title = get('title');
+  const description = get('description');
+  const kind = get('kind') as (typeof KIND_VALUES)[number];
+  const dose = get('dose') || null;
+  const frequency = get('frequency') || null;
+  const duration = get('duration') || null;
+  const notes = get('notes') || null;
+  const relatedMetric = get('related_metric') || null;
+  const relatedCondition = get('related_condition') || null;
+  const startDate = get('start_date') || null;
+  const endDate = get('end_date') || null;
+
+  if (title.length < 2) return { error: 'Tit la twò kout.' };
+  if (description.length < 4) return { error: 'Deskripsyon an twò kout.' };
+  if (!KIND_VALUES.includes(kind)) return { error: 'Tip tretman pa valid.' };
+  if (relatedMetric && !METRIC_VALUES.includes(relatedMetric as (typeof METRIC_VALUES)[number])) {
+    return { error: 'Mezi a pa valid.' };
+  }
+
+  const { data, error } = await auth.supabase
+    .from('treatment_recommendations')
+    .update({
+      kind,
+      title,
+      description,
+      dose,
+      frequency,
+      duration,
+      notes,
+      related_metric: relatedMetric,
+      related_condition: relatedCondition,
+      start_date: startDate ?? new Date().toISOString().slice(0, 10),
+      end_date: endDate,
+    })
+    .eq('id', treatmentId)
+    .select('user_id, id')
+    .single();
+  if (error || !data) return { error: error?.message ?? 'Erè inkoni.' };
+
+  const row = data as { user_id: string; id: string };
+  revalidatePath(`/admin/health/${row.user_id}`);
+  revalidatePath('/admin/health');
+  revalidatePath('/dashboard/health');
+  return { ok: true, createdId: row.id };
+}
+
 // ─── Update status (toggle completed / cancelled) ────────────────────────
 
 export async function setTreatmentStatus(
