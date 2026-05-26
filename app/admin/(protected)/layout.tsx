@@ -57,7 +57,7 @@ export default async function AdminProtectedLayout({
       <AdminMobileNav
         adminName={adminName}
         initials={initials}
-        links={links}
+        visibleHrefs={links.map((l) => l.href)}
         roleLabel={roleLabel}
       />
 

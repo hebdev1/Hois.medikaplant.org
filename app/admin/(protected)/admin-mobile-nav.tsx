@@ -5,17 +5,20 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Leaf, Menu, X, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import type { AdminNavLink } from './admin-nav-config';
+import { ADMIN_NAV_LINKS } from './admin-nav-config';
 import { adminSignOut } from '../login/actions';
 
 type Props = {
   adminName: string;
   initials: string;
   /**
-   * Already filtered by the layout to just the links the current admin
-   * can use, based on their admin_role / capabilities.
+   * Hrefs the current admin is allowed to see, computed server-side from
+   * their admin_role. We pass strings (not full link objects) because
+   * Next.js cannot serialize Lucide's React-component icons across the
+   * server→client boundary — keeping the icons looked up locally via
+   * ADMIN_NAV_LINKS sidesteps that.
    */
-  links: AdminNavLink[];
+  visibleHrefs: string[];
   roleLabel: string;
 };
 
@@ -33,11 +36,16 @@ type Props = {
 export default function AdminMobileNav({
   adminName,
   initials,
-  links,
+  visibleHrefs,
   roleLabel,
 }: Props) {
   const pathname = usePathname();
   const [open, setOpen] = React.useState(false);
+  const visible = React.useMemo(() => new Set(visibleHrefs), [visibleHrefs]);
+  const links = React.useMemo(
+    () => ADMIN_NAV_LINKS.filter((l) => visible.has(l.href)),
+    [visible]
+  );
 
   // Auto-close on route change
   React.useEffect(() => {
