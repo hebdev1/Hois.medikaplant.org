@@ -8,6 +8,7 @@ import {
   Activity,
   MessageCircle,
   MessagesSquare,
+  Settings as SettingsIcon,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -40,7 +41,8 @@ export type AdminCapability =
   | 'manage_resources'
   | 'manage_guides'
   | 'manage_subscriptions'
-  | 'broadcast_notifications';
+  | 'broadcast_notifications'
+  | 'manage_self';
 
 /**
  * Which capabilities each admin role unlocks. Used by the layout to filter
@@ -59,6 +61,7 @@ export const ROLE_CAPABILITIES: Record<AdminRole, ReadonlySet<AdminCapability>> 
     'manage_guides',
     'manage_subscriptions',
     'broadcast_notifications',
+    'manage_self',
   ]),
   admin: new Set<AdminCapability>([
     'overview',
@@ -70,22 +73,26 @@ export const ROLE_CAPABILITIES: Record<AdminRole, ReadonlySet<AdminCapability>> 
     'manage_guides',
     'manage_subscriptions',
     'broadcast_notifications',
+    'manage_self',
   ]),
   support: new Set<AdminCapability>([
     'overview',
     'manage_users',
     'reply_support',
+    'manage_self',
   ]),
   moderator: new Set<AdminCapability>([
     'overview',
     'reply_support',
     'moderate_forum',
+    'manage_self',
   ]),
   content: new Set<AdminCapability>([
     'overview',
     'manage_resources',
     'manage_guides',
     'broadcast_notifications',
+    'manage_self',
   ]),
 };
 
@@ -140,6 +147,7 @@ export const ADMIN_NAV_LINKS: readonly AdminNavLink[] = [
   { href: '/admin/guides', label: 'Guides', icon: BookOpen, capability: 'manage_guides' },
   { href: '/admin/subscriptions', label: 'Subscriptions', icon: CreditCard, capability: 'manage_subscriptions' },
   { href: '/admin/notifications', label: 'Notifications', icon: Bell, capability: 'broadcast_notifications' },
+  { href: '/admin/settings', label: 'Paramèt', icon: SettingsIcon, capability: 'manage_self' },
 ];
 
 export function navLinksForRole(role: AdminRole | null | undefined): AdminNavLink[] {
