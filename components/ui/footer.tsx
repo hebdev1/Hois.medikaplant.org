@@ -5,27 +5,27 @@ const COLUMNS: { title: string; links: { label: string; href: string }[] }[] = [
   {
     title: 'Pwodui',
     links: [
-      { label: 'Remèd Fèy', href: '#' },
-      { label: 'Swivi Sante', href: '#' },
-      { label: 'Konsiltasyon', href: '#' },
-      { label: 'Boutik', href: '#' },
+      { label: 'Medikaplant', href: 'https://medikaplant.org/' },
+      { label: 'Boutik', href: 'https://medikaplantshop.com' },
+      { label: 'Konsiltasyon', href: 'https://medikaplantshop.com/consultation' },
+      
     ],
   },
   {
     title: 'Hoïs Inivèsite',
     links: [
       { label: 'Plan VIP', href: '#pri' },
-      { label: 'Fòmasyon', href: '#' },
-      { label: 'Blòg', href: '#' },
-      { label: 'Evènman', href: '#' },
+      { label: 'Fòmasyon', href: '' },
+      { label: 'Blòg', href: '' },
+      { label: 'Evènman', href: '' },
     ],
   },
   {
-    title: 'Konpayi',
+    title: 'Hoïs Inivèsite',
     links: [
-      { label: 'Sou nou', href: '#istwa' },
+      { label: 'Itwa nou', href: '#istwa' },
       { label: 'Kontak', href: '#' },
-      { label: 'Karyè', href: '#' },
+      { label: 'Klas', href: '#' },
       { label: 'Konfidansyalite', href: '#' },
     ],
   },
@@ -50,7 +50,7 @@ export default function Footer() {
               </span>
             </Link>
             <p className="text-sm leading-relaxed max-w-sm">
-              Platfòm natiropatik #1 nan peyi Ayiti — yon pon ant medsin tradisyonèl ak teknoloji modèn pou byennèt total ou.
+              Platfòm natiropatik #1 nan kominote Ayisyèn nan, yon pon ant medsin tradisyonèl ak teknoloji modèn pou byennèt total ou.
             </p>
 
             <div className="mt-6 flex items-center gap-3">
