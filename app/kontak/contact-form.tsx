@@ -7,6 +7,11 @@ import {
   Loader2,
   CheckCircle2,
   AlertCircle,
+  HelpCircle,
+  Headphones,
+  Stethoscope,
+  Handshake,
+  Newspaper,
   type LucideIcon,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -19,11 +24,48 @@ type TopicOption = {
   body: string;
 };
 
+// Topic list is defined here (in the client module) rather than passed
+// from the server page — passing the LucideIcon component references
+// across the server→client boundary fails with:
+//   "Functions cannot be passed directly to Client Components"
+const TOPICS: TopicOption[] = [
+  {
+    value: 'general',
+    label: 'Yon kesyon jeneral',
+    Icon: HelpCircle,
+    body: 'Pou sa ki pa rantre nan lòt katègori yo.',
+  },
+  {
+    value: 'support',
+    label: 'Sipò manm',
+    Icon: Headphones,
+    body: 'Pwoblèm ak kont, plan, oswa platfòm la.',
+  },
+  {
+    value: 'plant',
+    label: 'Konsèy plant',
+    Icon: Stethoscope,
+    body: 'Yon kesyon sou yon plant oswa yon tretman.',
+  },
+  {
+    value: 'partnership',
+    label: 'Patenarya',
+    Icon: Handshake,
+    body: 'Klinik, doktè, èrboris ki vle kolabore.',
+  },
+  {
+    value: 'press',
+    label: 'Laprès',
+    Icon: Newspaper,
+    body: 'Demann entèvyou, mediya, kominikasyon.',
+  },
+];
+
 const INITIAL: ContactState = { status: 'idle' };
 
-export default function ContactForm({ topics }: { topics: TopicOption[] }) {
+export default function ContactForm() {
   const [state, action] = useFormState(submitContactMessage, INITIAL);
-  const [topic, setTopic] = React.useState(topics[0]?.value ?? 'general');
+  const [topic, setTopic] = React.useState(TOPICS[0].value);
   const formRef = React.useRef<HTMLFormElement | null>(null);
 
   // Reset the textareas on success — the action returns ok but Next.js
@@ -31,9 +73,9 @@ export default function ContactForm({ topics }: { topics: TopicOption[] }) {
   React.useEffect(() => {
     if (state.status === 'ok' && formRef.current) {
       formRef.current.reset();
-      setTopic(topics[0]?.value ?? 'general');
+      setTopic(TOPICS[0].value);
     }
-  }, [state, topics]);
+  }, [state]);
 
   if (state.status === 'ok') {
     return (
@@ -72,7 +114,7 @@ export default function ContactForm({ topics }: { topics: TopicOption[] }) {
           Sou kisa mesaj ou a?
         </legend>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-2">
-          {topics.map(({ value, label, Icon, body }) => {
+          {TOPICS.map(({ value, label, Icon, body }) => {
             const active = value === topic;
             return (
               <label

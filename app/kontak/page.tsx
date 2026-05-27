@@ -10,10 +10,6 @@ import {
   Youtube,
   Sparkles,
   HelpCircle,
-  Headphones,
-  Stethoscope,
-  Handshake,
-  Newspaper,
   Leaf,
 } from 'lucide-react';
 import Navbar from '@/components/ui/navbar';
@@ -58,39 +54,6 @@ const CHANNELS = [
     value: 'Lendi → Vandredi · 8h–17h',
     href: null,
     tone: 'bg-sky-50 text-sky-700',
-  },
-];
-
-const TOPICS = [
-  {
-    value: 'general',
-    label: 'Yon kesyon jeneral',
-    Icon: HelpCircle,
-    body: 'Pou sa ki pa rantre nan lòt katègori yo.',
-  },
-  {
-    value: 'support',
-    label: 'Sipò manm',
-    Icon: Headphones,
-    body: 'Pwoblèm ak kont, plan, oswa platfòm la.',
-  },
-  {
-    value: 'plant',
-    label: 'Konsèy plant',
-    Icon: Stethoscope,
-    body: 'Yon kesyon sou yon plant oswa yon tretman.',
-  },
-  {
-    value: 'partnership',
-    label: 'Patenarya',
-    Icon: Handshake,
-    body: 'Klinik, doktè, èrboris ki vle kolabore.',
-  },
-  {
-    value: 'press',
-    label: 'Laprès',
-    Icon: Newspaper,
-    body: 'Demann entèvyou, mediya, kominikasyon.',
   },
 ];
 
@@ -224,7 +187,7 @@ export default function KontakPage() {
                 obligatwa.
               </p>
 
-              <ContactForm topics={TOPICS} />
+              <ContactForm />
             </div>
 
             {/* RIGHT — Side rail */}
