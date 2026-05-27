@@ -2,18 +2,16 @@ import Image from 'next/image';
 import Link from 'next/link';
 import {
   Leaf,
-  Heart,
   Globe,
   Sparkles,
   Users,
-  BookOpen,
   Sprout,
-  Stethoscope,
   Mountain,
   ArrowRight,
 } from 'lucide-react';
 import Navbar from '@/components/ui/navbar';
 import Footer from '@/components/ui/footer';
+import { Features } from '@/components/ui/features-4';
 
 export const metadata = {
   title: 'Itwa nou · MedikaPlant Hoïs Inivèsite',
@@ -39,29 +37,6 @@ const PILLARS = [
     title: 'Kominote ki sipòte',
     body:
       'Yon rezo manm an Ayiti ak nan dyaspora ki pataje eksperyans, rezilta, ak ankourajman youn pou lòt.',
-  },
-];
-
-const VALUES = [
-  {
-    label: 'Tradisyon',
-    body: 'Konesans plant medisinal Ayisyen, jenerasyon apre jenerasyon.',
-    Icon: Leaf,
-  },
-  {
-    label: 'Lasyans',
-    body: 'Chak tretman dwe jistifye ak rechèch klinik aktyèl.',
-    Icon: Stethoscope,
-  },
-  {
-    label: 'Bonjan Swen',
-    body: 'Apwòch holistik — kò, lespri, ak nanm gen menm valè.',
-    Icon: Heart,
-  },
-  {
-    label: 'Edikasyon',
-    body: 'Aprann manm yo otonomi sou pwòp sante yo, pa depandans.',
-    Icon: BookOpen,
   },
 ];
 
@@ -312,34 +287,8 @@ export default function IstwaNouPage() {
         </div>
       </section>
 
-      {/* ── VALÈ YO ─────────────────────────────────────────────────────────── */}
-      <section className="py-20 md:py-28 bg-white">
-        <div className="max-w-[1400px] mx-auto px-4 md:px-12 lg:px-20 xl:px-32">
-          <div className="max-w-2xl mb-12">
-            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-100 text-brand-700 text-sm font-medium mb-4">
-              Sa nou kwè
-            </span>
-            <h2 className="font-display text-3xl md:text-5xl font-bold tracking-tight text-ink leading-tight">
-              4 valè ki gide chak desizyon
-            </h2>
-          </div>
-
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-            {VALUES.map(({ label, body, Icon }) => (
-              <div
-                key={label}
-                className="relative rounded-2xl border border-slate-200/70 bg-gradient-to-br from-white to-brand-50/30 p-6 md:p-7 hover:border-brand-300 transition-colors"
-              >
-                <Icon className="w-7 h-7 text-brand-600" strokeWidth={2} />
-                <h3 className="mt-4 font-display text-lg font-bold text-ink">
-                  {label}
-                </h3>
-                <p className="mt-2 text-sm text-ink-muted leading-relaxed">{body}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* ── VALÈ YO — features-4 shadcn block adapte pou Hoïs ──────────── */}
+      <Features />
 
       {/* ── IMPAK ─────────────────────────────────────────────────────────── */}
       <section className="py-20 md:py-28 bg-ink text-cream-50 overflow-hidden relative">
