@@ -55,10 +55,10 @@ export default function Footer() {
 
             <div className="mt-6 flex items-center gap-3">
               {[
-                { Icon: Facebook, label: 'Facebook', href: '#' },
-                { Icon: Instagram, label: 'Instagram', href: '#' },
-                { Icon: Youtube, label: 'YouTube', href: '#' },
-                { Icon: Mail, label: 'Email', href: 'mailto:hello@medikaplant.org' },
+                { Icon: Facebook, label: 'Facebook', href: 'https://www.facebook.com/medikaplant/?locale=fr_FR' },
+                { Icon: Instagram, label: 'Instagram', href: 'https://www.instagram.com/medikaplant/' },
+                { Icon: Youtube, label: 'YouTube', href: 'https://www.youtube.com/@medikaplant' },
+                { Icon: Mail, label: 'Email', href: 'mailto:plant@medikaplant.org' },
               ].map(({ Icon, label, href }) => (
                 <a
                   key={label}
