@@ -249,6 +249,51 @@ export type Database = {
         }
         Relationships: []
       }
+      contact_messages: {
+        Row: {
+          id: string
+          user_id: string | null
+          full_name: string
+          email: string
+          phone: string | null
+          subject: string
+          message: string
+          topic: string
+          status: 'new' | 'read' | 'responded' | 'archived'
+          responded_by: string | null
+          responded_at: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id?: string | null
+          full_name: string
+          email: string
+          phone?: string | null
+          subject: string
+          message: string
+          topic?: string
+          status?: 'new' | 'read' | 'responded' | 'archived'
+          responded_by?: string | null
+          responded_at?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string | null
+          full_name?: string
+          email?: string
+          phone?: string | null
+          subject?: string
+          message?: string
+          topic?: string
+          status?: 'new' | 'read' | 'responded' | 'archived'
+          responded_by?: string | null
+          responded_at?: string | null
+          created_at?: string
+        }
+        Relationships: []
+      }
       admin_invites: {
         Row: {
           token: string
