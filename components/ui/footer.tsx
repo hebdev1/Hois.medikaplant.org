@@ -23,10 +23,10 @@ const COLUMNS: { title: string; links: { label: string; href: string }[] }[] = [
   {
     title: 'Hoïs Inivèsite',
     links: [
-      { label: 'Itwa nou', href: '#istwa' },
-      { label: 'Kontak', href: '#' },
-      { label: 'Klas', href: '#' },
-      { label: 'Konfidansyalite', href: '#' },
+      { label: 'Itwa nou', href: '/istwa-nou' },
+      { label: 'Kontak', href: '/kontak' },
+      { label: 'Klas', href: '/klas' },
+      { label: 'Konfidansyalite', href: '/konfidansyalite' },
     ],
   },
 ];
