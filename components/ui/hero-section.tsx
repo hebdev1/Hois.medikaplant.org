@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { ArrowRight, Sparkles, ChevronRight, Leaf, ShieldCheck, Users } from 'lucide-react';
 
 const TRUST_BADGES = [
-  { icon: Users, label: '5K+ Manm Hoïs' },
+  { icon: Users, label: '500+ Manm Hoïs' },
   { icon: ShieldCheck, label: 'Sètifye & Konfidansyèl' },
   { icon: Leaf, label: '100% Plant-Based' },
 ];
