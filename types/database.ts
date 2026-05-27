@@ -191,7 +191,7 @@ export type Database = {
       }
       consultations: {
         Row: {
-          consultant_name: string
+          consultant_name: string | null
           consultant_role: string | null
           cost: number | null
           created_at: string
@@ -202,7 +202,7 @@ export type Database = {
           notes: string | null
           prescription: string | null
           recommendations: string | null
-          scheduled_at: string
+          scheduled_at: string | null
           status: Database["public"]["Enums"]["consultation_status"]
           topic: string | null
           type: Database["public"]["Enums"]["consultation_type"]
@@ -210,7 +210,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
-          consultant_name: string
+          consultant_name?: string | null
           consultant_role?: string | null
           cost?: number | null
           created_at?: string
@@ -221,7 +221,7 @@ export type Database = {
           notes?: string | null
           prescription?: string | null
           recommendations?: string | null
-          scheduled_at: string
+          scheduled_at?: string | null
           status?: Database["public"]["Enums"]["consultation_status"]
           topic?: string | null
           type?: Database["public"]["Enums"]["consultation_type"]
@@ -229,7 +229,7 @@ export type Database = {
           user_id: string
         }
         Update: {
-          consultant_name?: string
+          consultant_name?: string | null
           consultant_role?: string | null
           cost?: number | null
           created_at?: string
@@ -240,12 +240,51 @@ export type Database = {
           notes?: string | null
           prescription?: string | null
           recommendations?: string | null
-          scheduled_at?: string
+          scheduled_at?: string | null
           status?: Database["public"]["Enums"]["consultation_status"]
           topic?: string | null
           type?: Database["public"]["Enums"]["consultation_type"]
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      admin_invites: {
+        Row: {
+          token: string
+          email: string
+          first_name: string | null
+          last_name: string | null
+          admin_role: Database["public"]["Enums"]["admin_role"]
+          created_by: string
+          created_at: string
+          expires_at: string
+          consumed_at: string | null
+          consumed_by: string | null
+        }
+        Insert: {
+          token?: string
+          email: string
+          first_name?: string | null
+          last_name?: string | null
+          admin_role?: Database["public"]["Enums"]["admin_role"]
+          created_by: string
+          created_at?: string
+          expires_at?: string
+          consumed_at?: string | null
+          consumed_by?: string | null
+        }
+        Update: {
+          token?: string
+          email?: string
+          first_name?: string | null
+          last_name?: string | null
+          admin_role?: Database["public"]["Enums"]["admin_role"]
+          created_by?: string
+          created_at?: string
+          expires_at?: string
+          consumed_at?: string | null
+          consumed_by?: string | null
         }
         Relationships: []
       }
@@ -1375,6 +1414,31 @@ export type Database = {
         Args: { p_thread_id: string; p_body: string }
         Returns: Database["public"]["Tables"]["support_messages"]["Row"]
       }
+      create_admin_invite: {
+        Args: {
+          p_email: string
+          p_first_name: string
+          p_last_name: string
+          p_admin_role: Database["public"]["Enums"]["admin_role"]
+        }
+        Returns: Database["public"]["Tables"]["admin_invites"]["Row"]
+      }
+      consume_admin_invite: {
+        Args: { p_token: string }
+        Returns: Database["public"]["Tables"]["profiles"]["Row"]
+      }
+      get_admin_invite: {
+        Args: { p_token: string }
+        Returns: {
+          email: string | null
+          first_name: string | null
+          last_name: string | null
+          admin_role: Database["public"]["Enums"]["admin_role"] | null
+          is_valid: boolean
+          is_expired: boolean
+          is_consumed: boolean
+        }
+      }
       get_plan_price: {
         Args: {
           p_plan: Database["public"]["Enums"]["plan_type"]
@@ -1413,7 +1477,8 @@ export type Database = {
       }
     }
     Enums: {
-      consultation_status: "scheduled" | "completed" | "cancelled" | "no_show"
+      consultation_status: "requested" | "scheduled" | "completed" | "cancelled" | "no_show"
+      admin_role: "super_admin" | "admin" | "support" | "moderator" | "content"
       consultation_type: "video" | "in_person" | "audio" | "written"
       guide_art: "leaf" | "sprout" | "droplet" | "sparkle" | "tree" | "flower"
       notification_target: "all" | "plan" | "user"

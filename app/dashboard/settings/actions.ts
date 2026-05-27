@@ -596,12 +596,17 @@ type ConsultationRow = Database['public']['Tables']['consultations']['Row'];
 
 const CONSULTATION_TYPES = ['video', 'in_person', 'audio', 'written'] as const;
 
+/**
+ * Members no longer book the date/time themselves — they submit a
+ * REQUEST with the topic + preferred type (+ optional preferred
+ * timeframe note), and the admin picks the actual scheduled_at later
+ * from /admin/consultations. The row lands with status='requested'.
+ */
 export async function createConsultation(input: {
-  consultant_name: string;
   type: (typeof CONSULTATION_TYPES)[number];
-  scheduled_at: string; // ISO datetime
-  duration_minutes?: number;
-  topic?: string | null;
+  topic: string;
+  /** Free-text "I prefer Tuesday afternoons" — stored in notes for now. */
+  preferred_timeframe?: string | null;
 }): Promise<{ ok: true; consultation: ConsultationRow } | { ok: false; error: string }> {
   const supabase = createClient();
   const {
@@ -609,31 +614,27 @@ export async function createConsultation(input: {
   } = await supabase.auth.getUser();
   if (!user) return { ok: false, error: 'Ou dwe konekte.' };
 
-  const name = input.consultant_name.trim();
-  if (name.length < 2) return { ok: false, error: 'Non konsiltan an manke.' };
   if (!CONSULTATION_TYPES.includes(input.type)) {
     return { ok: false, error: 'Tip konsiltasyon pa valid.' };
   }
-  const when = new Date(input.scheduled_at);
-  if (Number.isNaN(when.getTime())) {
-    return { ok: false, error: 'Dat la pa valid.' };
+  const topic = input.topic.trim();
+  if (topic.length < 4) {
+    return { ok: false, error: 'Dekri sijè konsiltasyon an pi byen (omwen 4 karaktè).' };
   }
-  if (when.getTime() < Date.now() - 60_000) {
-    return { ok: false, error: 'Dat la pa ka nan pase.' };
+  if (topic.length > 1000) {
+    return { ok: false, error: 'Sijè a twò long (maks 1000 karaktè).' };
   }
-  const duration =
-    input.duration_minutes && input.duration_minutes >= 5 && input.duration_minutes <= 240
-      ? input.duration_minutes
-      : 30;
+  const timeframe = input.preferred_timeframe?.trim() || null;
 
   const insert: ConsultationInsert = {
     user_id: user.id,
-    consultant_name: name,
+    consultant_name: null,
     type: input.type,
-    status: 'scheduled',
-    scheduled_at: when.toISOString(),
-    duration_minutes: duration,
-    topic: input.topic?.trim() || null,
+    status: 'requested',
+    scheduled_at: null,
+    duration_minutes: 30,
+    topic,
+    notes: timeframe ? `Tan ki pi bon: ${timeframe}` : null,
   };
 
   const { data, error } = await supabase
@@ -644,6 +645,7 @@ export async function createConsultation(input: {
   if (error || !data) return { ok: false, error: error?.message ?? 'Erè inkoni.' };
 
   revalidatePath('/dashboard/settings');
+  revalidatePath('/admin/consultations');
   return { ok: true, consultation: data as ConsultationRow };
 }
 
@@ -656,14 +658,16 @@ export async function cancelConsultation(
   } = await supabase.auth.getUser();
   if (!user) return { ok: false, error: 'Ou dwe konekte.' };
 
+  // Users can cancel both requested and scheduled appointments.
   const { error } = await supabase
     .from('consultations')
     .update({ status: 'cancelled' })
     .eq('id', id)
     .eq('user_id', user.id)
-    .eq('status', 'scheduled');
+    .in('status', ['requested', 'scheduled']);
   if (error) return { ok: false, error: error.message };
 
   revalidatePath('/dashboard/settings');
+  revalidatePath('/admin/consultations');
   return { ok: true };
 }

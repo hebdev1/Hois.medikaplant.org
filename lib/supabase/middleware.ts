@@ -34,6 +34,11 @@ export async function updateSession(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   const isAdminRoute = pathname.startsWith('/admin');
   const isAdminLogin = pathname === '/admin/login' || pathname.startsWith('/admin/login/');
+  // /admin/accept-invite/<token> is publicly reachable so a brand-new
+  // invitee can land on it without an existing session, sign up, then
+  // consume the invite. We treat it like /admin/login for gating
+  // purposes (no auto-redirect either way).
+  const isAdminAcceptInvite = pathname.startsWith('/admin/accept-invite');
   // /checkout is intentionally NOT gated here — anonymous visitors must be
   // able to land on the checkout page with their plan choice and complete
   // the login/signup inline while they purchase. Only /dashboard requires a
@@ -44,8 +49,8 @@ export async function updateSession(request: NextRequest) {
 
   // ── 1. Unauthed visits ─────────────────────────────────────────────────
   if (!user) {
-    // /admin/* (except /admin/login) → /admin/login
-    if (isAdminRoute && !isAdminLogin) {
+    // /admin/* (except /admin/login and /admin/accept-invite) → /admin/login
+    if (isAdminRoute && !isAdminLogin && !isAdminAcceptInvite) {
       const url = request.nextUrl.clone();
       url.search = '';
       url.pathname = '/admin/login';

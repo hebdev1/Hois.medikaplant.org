@@ -7,6 +7,7 @@ import {
   Activity,
   Sparkles,
   ChevronRight,
+  UserPlus,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { cn } from '@/lib/utils';
@@ -59,6 +60,22 @@ export default async function AdminUsersListPage({
   searchParams: { q?: string; plan?: string; role?: string; status?: string };
 }) {
   const supabase = createClient();
+
+  // Viewer admin_role — controls whether the "Ajoute admin" CTA appears
+  const {
+    data: { user: viewer },
+  } = await supabase.auth.getUser();
+  let viewerIsSuperAdmin = false;
+  if (viewer) {
+    const { data: viewerProfile } = await supabase
+      .from('profiles')
+      .select('admin_role')
+      .eq('id', viewer.id)
+      .maybeSingle();
+    viewerIsSuperAdmin =
+      (viewerProfile as { admin_role: string | null } | null)?.admin_role ===
+      'super_admin';
+  }
 
   const [profilesResult, medicalResult, healthResult] = await Promise.all([
     supabase
@@ -130,19 +147,30 @@ export default async function AdminUsersListPage({
 
   return (
     <div className="p-5 md:p-8 lg:p-10 max-w-[1280px] mx-auto">
-      <header className="mb-6">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 text-accent text-xs font-semibold mb-3">
-          <Users className="w-3.5 h-3.5" strokeWidth={2.2} />
-          Admin · Manm
+      <header className="mb-6 flex items-start justify-between gap-4 flex-wrap">
+        <div>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 text-accent text-xs font-semibold mb-3">
+            <Users className="w-3.5 h-3.5" strokeWidth={2.2} />
+            Admin · Manm
+          </div>
+          <h1 className="font-display text-3xl md:text-4xl font-bold tracking-tight text-ink">
+            Manm Hoïs Inivèsite
+          </h1>
+          <p className="mt-2 text-sm text-earth-600 max-w-2xl">
+            Klike sou yon liy pou ouvri pwofil konplè a — modifye enfòmasyon
+            pèsonèl, plan, kondisyon medikal, preferans, oswa voye yon
+            notifikasyon dirèk.
+          </p>
         </div>
-        <h1 className="font-display text-3xl md:text-4xl font-bold tracking-tight text-ink">
-          Manm Hoïs Inivèsite
-        </h1>
-        <p className="mt-2 text-sm text-earth-600 max-w-2xl">
-          Klike sou yon liy pou ouvri pwofil konplè a — modifye enfòmasyon
-          pèsonèl, plan, kondisyon medikal, preferans, oswa voye yon
-          notifikasyon dirèk.
-        </p>
+        {viewerIsSuperAdmin && (
+          <Link
+            href="/admin/users/new"
+            className="inline-flex items-center gap-1.5 px-4 py-2.5 text-sm font-semibold bg-forest-700 hover:bg-forest-800 text-cream-50 rounded-lg transition shrink-0"
+          >
+            <UserPlus className="w-4 h-4" strokeWidth={2.2} />
+            Ajoute yon admin
+          </Link>
+        )}
       </header>
 
       {/* Stats */}

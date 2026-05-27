@@ -34,13 +34,15 @@ const STATUS_META: Record<
   Database['public']['Enums']['consultation_status'],
   { label: string; tone: string }
 > = {
+  requested: { label: 'Ann atant', tone: 'bg-amber-100 text-amber-700' },
   scheduled: { label: 'Pwograme', tone: 'bg-gold-100 text-gold-600' },
   completed: { label: 'Konplete', tone: 'bg-forest-100 text-forest-700' },
   cancelled: { label: 'Anile', tone: 'bg-rose-100 text-rose-700' },
   no_show: { label: 'Pa parèt', tone: 'bg-cream-200 text-earth-700' },
 };
 
-function formatDateTime(iso: string) {
+function formatDateTime(iso: string | null) {
+  if (!iso) return null;
   const d = new Date(iso);
   return new Intl.DateTimeFormat('fr-HT', {
     weekday: 'short',
@@ -65,27 +67,35 @@ export default function ConsultationsPanel({
   React.useEffect(() => setItems(initial), [initial]);
 
   const now = Date.now();
+  // Requests (awaiting admin to schedule) + upcoming scheduled meetings
+  // both belong in the "active" lane.
   const upcoming = items.filter(
-    (c) => c.status === 'scheduled' && new Date(c.scheduled_at).getTime() >= now
+    (c) =>
+      c.status === 'requested' ||
+      (c.status === 'scheduled' &&
+        c.scheduled_at !== null &&
+        new Date(c.scheduled_at).getTime() >= now)
   );
   const past = items.filter(
-    (c) => c.status !== 'scheduled' || new Date(c.scheduled_at).getTime() < now
+    (c) =>
+      !(
+        c.status === 'requested' ||
+        (c.status === 'scheduled' &&
+          c.scheduled_at !== null &&
+          new Date(c.scheduled_at).getTime() >= now)
+      )
   );
 
   async function onCreate(data: {
-    consultant_name: string;
     type: 'video' | 'audio' | 'in_person' | 'written';
-    scheduled_at: string;
-    duration_minutes: number;
     topic: string;
+    preferred_timeframe: string;
   }) {
     setError(null);
     const res = await createConsultation({
-      consultant_name: data.consultant_name,
       type: data.type,
-      scheduled_at: new Date(data.scheduled_at).toISOString(),
-      duration_minutes: data.duration_minutes,
       topic: data.topic,
+      preferred_timeframe: data.preferred_timeframe || null,
     });
     if (!res.ok) {
       setError(res.error);
@@ -118,7 +128,9 @@ export default function ConsultationsPanel({
             Dosye Konsiltasyon
           </h2>
           <p className="text-sm text-earth-600 mt-1">
-            Pran randevou ak konsiltan Hoïs, gade nòt + rekòmandasyon yo.
+            Voye yon demann konsiltasyon. Yon admin Hoïs ap kontakte w pou
+            pwograme dat ak èdtan an, epi swivi w pandan ak apre konsiltasyon
+            an.
           </p>
         </div>
         {!showForm && (
@@ -128,7 +140,7 @@ export default function ConsultationsPanel({
             className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold bg-forest-700 hover:bg-forest-800 text-cream-50 rounded-lg transition"
           >
             <CalendarPlus className="w-3.5 h-3.5" strokeWidth={2.2} />
-            Pran randevou
+            Mande yon konsiltasyon
           </button>
         )}
       </header>
@@ -147,7 +159,7 @@ export default function ConsultationsPanel({
       {upcoming.length > 0 && (
         <div className={cn('mt-2', showForm && 'mt-6')}>
           <h3 className="text-xs uppercase tracking-wider text-earth-600 font-semibold mb-3">
-            Pwograme
+            Pwograme + ann atant
           </h3>
           <ul className="space-y-2">
             {upcoming.map((c) => (
@@ -178,7 +190,8 @@ export default function ConsultationsPanel({
       {items.length === 0 && !showForm && (
         <div className="text-center py-8 rounded-xl bg-cream-50 border border-dashed border-cream-200">
           <p className="text-sm text-earth-600">
-            Ou poko gen konsiltasyon. Klike <strong>Pran randevou</strong> pou kòmanse.
+            Ou poko gen konsiltasyon. Klike <strong>Mande yon konsiltasyon</strong>{' '}
+            pou voye yon demann.
           </p>
         </div>
       )}
@@ -198,8 +211,16 @@ function ConsultationItem({
   const [expanded, setExpanded] = React.useState(false);
   const typeMeta = TYPE_META[c.type];
   const statusMeta = STATUS_META[c.status];
-  const canCancel = c.status === 'scheduled' && new Date(c.scheduled_at).getTime() > Date.now();
+  const canCancel =
+    c.status === 'requested' ||
+    (c.status === 'scheduled' &&
+      c.scheduled_at !== null &&
+      new Date(c.scheduled_at).getTime() > Date.now());
   const hasDetails = c.notes || c.recommendations || c.prescription;
+  const formattedTime = formatDateTime(c.scheduled_at);
+  const headline =
+    c.consultant_name ||
+    (c.status === 'requested' ? 'Demann ann atant — admin ap kontakte w' : 'Konsiltasyon');
 
   return (
     <li className="rounded-xl border border-cream-200 bg-cream-50 hover:bg-white transition overflow-hidden">
@@ -213,15 +234,19 @@ function ConsultationItem({
         </span>
         <div className="min-w-0">
           <div className="font-semibold text-sm text-ink truncate">
-            {c.consultant_name}
+            {headline}
             {c.consultant_role && (
               <span className="text-earth-500 font-normal"> · {c.consultant_role}</span>
             )}
           </div>
           <div className="text-[11px] text-earth-600 mt-0.5 flex items-center gap-1.5 flex-wrap">
             <Clock className="w-3 h-3" strokeWidth={2.2} />
-            <span>{formatDateTime(c.scheduled_at)}</span>
-            {c.duration_minutes && (
+            <span>
+              {formattedTime
+                ? formattedTime
+                : 'Dat poko fikse — admin ap pwograme l'}
+            </span>
+            {c.duration_minutes && formattedTime && (
               <>
                 <span aria-hidden>·</span>
                 <span>{c.duration_minutes} min</span>
@@ -308,7 +333,7 @@ function ConsultationItem({
                 ) : (
                   <XCircle className="w-3 h-3" strokeWidth={2.2} />
                 )}
-                Anile konsiltasyon
+                {c.status === 'requested' ? 'Anile demann' : 'Anile konsiltasyon'}
               </button>
             </div>
           )}
@@ -323,45 +348,30 @@ function BookingForm({
   onCancel,
 }: {
   onSubmit: (data: {
-    consultant_name: string;
     type: 'video' | 'audio' | 'in_person' | 'written';
-    scheduled_at: string;
-    duration_minutes: number;
     topic: string;
+    preferred_timeframe: string;
   }) => Promise<boolean>;
   onCancel: () => void;
 }) {
-  const [consultantName, setConsultantName] = React.useState('Vye Ewòl');
   const [type, setType] = React.useState<'video' | 'audio' | 'in_person' | 'written'>('video');
-  const [date, setDate] = React.useState('');
-  const [time, setTime] = React.useState('');
-  const [duration, setDuration] = React.useState(30);
   const [topic, setTopic] = React.useState('');
+  const [preferredTimeframe, setPreferredTimeframe] = React.useState('');
   const [submitting, setSubmitting] = React.useState(false);
-
-  // Default to tomorrow 10:00 AM
-  React.useEffect(() => {
-    const t = new Date(Date.now() + 86400000);
-    t.setHours(10, 0, 0, 0);
-    setDate(t.toISOString().slice(0, 10));
-    setTime('10:00');
-  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!date || !time) return;
+    if (topic.trim().length < 4) return;
     setSubmitting(true);
-    const scheduledAt = new Date(`${date}T${time}`).toISOString();
     const ok = await onSubmit({
-      consultant_name: consultantName,
       type,
-      scheduled_at: scheduledAt,
-      duration_minutes: duration,
-      topic,
+      topic: topic.trim(),
+      preferred_timeframe: preferredTimeframe.trim(),
     });
     setSubmitting(false);
     if (ok) {
       setTopic('');
+      setPreferredTimeframe('');
     }
   }
 
@@ -370,77 +380,57 @@ function BookingForm({
       onSubmit={handleSubmit}
       className="mb-4 rounded-xl border border-cream-200 bg-cream-50/50 p-4 space-y-3"
     >
+      <div className="rounded-lg bg-amber-50 border border-amber-200 px-3 py-2 text-[12px] text-amber-900 leading-relaxed">
+        Yon admin Hoïs ap revize demann ou epi kontakte w pou fikse dat + èdtan
+        an. Ou pap chwazi dat la la a — admin nan pwograme l avèk ou.
+      </div>
+
       <div className="grid sm:grid-cols-2 gap-3">
         <div>
-          <label className="text-xs font-semibold text-earth-700">Konsiltan</label>
-          <input
-            type="text"
-            value={consultantName}
-            onChange={(e) => setConsultantName(e.target.value)}
-            required
-            minLength={2}
-            className="mt-1 w-full px-3 py-2 text-sm bg-white border border-cream-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-forest-200"
-          />
-        </div>
-        <div>
-          <label className="text-xs font-semibold text-earth-700">Tip</label>
+          <label className="text-xs font-semibold text-earth-700">
+            Tip konsiltasyon
+          </label>
           <select
             value={type}
             onChange={(e) => setType(e.target.value as typeof type)}
             className="mt-1 w-full px-3 py-2 text-sm bg-white border border-cream-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-forest-200"
           >
-            <option value="video">Videyo</option>
+            <option value="video">Vidyo</option>
             <option value="audio">Telefòn</option>
             <option value="in_person">An pèsòn</option>
             <option value="written">Ekri</option>
           </select>
         </div>
         <div>
-          <label className="text-xs font-semibold text-earth-700">Dat</label>
-          <input
-            type="date"
-            value={date}
-            min={new Date().toISOString().slice(0, 10)}
-            onChange={(e) => setDate(e.target.value)}
-            required
-            className="mt-1 w-full px-3 py-2 text-sm bg-white border border-cream-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-forest-200"
-          />
-        </div>
-        <div>
-          <label className="text-xs font-semibold text-earth-700">Èdtan</label>
-          <input
-            type="time"
-            value={time}
-            onChange={(e) => setTime(e.target.value)}
-            required
-            className="mt-1 w-full px-3 py-2 text-sm bg-white border border-cream-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-forest-200"
-          />
-        </div>
-        <div>
-          <label className="text-xs font-semibold text-earth-700">Dire (min)</label>
-          <select
-            value={duration}
-            onChange={(e) => setDuration(Number(e.target.value))}
-            className="mt-1 w-full px-3 py-2 text-sm bg-white border border-cream-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-forest-200"
-          >
-            <option value={15}>15 min</option>
-            <option value={30}>30 min</option>
-            <option value={45}>45 min</option>
-            <option value={60}>60 min</option>
-            <option value={90}>90 min</option>
-          </select>
-        </div>
-        <div>
-          <label className="text-xs font-semibold text-earth-700">Sijè</label>
+          <label className="text-xs font-semibold text-earth-700">
+            Tan ki pi bon pou ou (opsyonèl)
+          </label>
           <input
             type="text"
-            value={topic}
-            onChange={(e) => setTopic(e.target.value)}
-            placeholder="Pwoblèm dijesyon, swivi dyabèt, eks."
+            value={preferredTimeframe}
+            onChange={(e) => setPreferredTimeframe(e.target.value)}
+            placeholder="ex: maten yo, jou semèn 14:00–18:00"
             className="mt-1 w-full px-3 py-2 text-sm bg-white border border-cream-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-forest-200"
           />
         </div>
       </div>
+
+      <div>
+        <label className="text-xs font-semibold text-earth-700">
+          Sijè / sa w bezwen pale sou li <span className="text-rose-600">*</span>
+        </label>
+        <textarea
+          value={topic}
+          onChange={(e) => setTopic(e.target.value)}
+          required
+          minLength={4}
+          maxLength={1000}
+          rows={4}
+          placeholder="Dekri kondisyon, sentom, oswa sijè w vle pale sou li…"
+          className="mt-1 w-full px-3 py-2 text-sm bg-white border border-cream-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-forest-200 resize-y"
+        />
+      </div>
+
       <div className="flex items-center justify-end gap-2 pt-2">
         <button
           type="button"
@@ -452,11 +442,11 @@ function BookingForm({
         </button>
         <button
           type="submit"
-          disabled={submitting}
+          disabled={submitting || topic.trim().length < 4}
           className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-semibold bg-forest-700 hover:bg-forest-800 disabled:opacity-60 text-cream-50 rounded-lg transition"
         >
           {submitting && <Loader2 className="w-3.5 h-3.5 animate-spin" strokeWidth={2.2} />}
-          Konfime randevou
+          Voye demann
         </button>
       </div>
     </form>

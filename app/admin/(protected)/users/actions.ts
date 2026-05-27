@@ -552,6 +552,72 @@ export async function adminSendDirectNotification(
   return { ok: true };
 }
 
+// ─── Invite a brand-new admin (super_admin only) ────────────────────────
+// We don't create an auth.users row here because that requires the
+// service_role key. Instead we generate a one-time invite token via
+// SECURITY DEFINER RPC and let the super_admin share the URL. When the
+// invitee signs up via /admin/accept-invite/<token>, the page calls
+// consume_admin_invite() which elevates their freshly-created profile
+// row to the chosen admin_role.
+
+export type InviteResult =
+  | {
+      ok: true;
+      invite: {
+        token: string;
+        email: string;
+        admin_role: AdminRole;
+        first_name: string | null;
+        last_name: string | null;
+        expires_at: string;
+      };
+      invite_url: string;
+    }
+  | { ok: false; error: string };
+
+export async function inviteAdmin(
+  email: string,
+  firstName: string,
+  lastName: string,
+  adminRole: AdminRole
+): Promise<InviteResult> {
+  if (!ADMIN_ROLE_VALUES.includes(adminRole)) {
+    return { ok: false, error: 'Wòl admin pa valid.' };
+  }
+  const auth = await assertSuperAdmin();
+  if (!auth.ok) return { ok: false, error: auth.error };
+
+  const { data, error } = await auth.supabase.rpc('create_admin_invite', {
+    p_email: email,
+    p_first_name: firstName,
+    p_last_name: lastName,
+    p_admin_role: adminRole,
+  });
+  if (error || !data) {
+    return { ok: false, error: error?.message ?? 'Erè inkoni.' };
+  }
+
+  const row = data as {
+    token: string;
+    email: string;
+    admin_role: AdminRole;
+    first_name: string | null;
+    last_name: string | null;
+    expires_at: string;
+  };
+
+  // Build the shareable URL. NEXT_PUBLIC_SITE_URL is the canonical
+  // origin (set in env). Fall back to the production hostname so the
+  // copy-paste URL still works in dev when the env var isn't set.
+  const origin =
+    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ??
+    'https://hois-medikaplant.vercel.app';
+  const invite_url = `${origin}/admin/accept-invite/${row.token}`;
+
+  revalidatePath('/admin/users');
+  return { ok: true, invite: row, invite_url };
+}
+
 // ─── Hard delete (last-resort) ──────────────────────────────────────────────
 // We keep this gated behind a confirmation phrase to mirror the user-side
 // danger zone. Cascading FKs handle everything downstream.
