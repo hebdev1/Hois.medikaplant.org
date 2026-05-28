@@ -2,7 +2,6 @@ import { PartyPopper } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import Topbar from '@/components/dashboard/topbar';
 import Hero from '@/components/dashboard/hero';
-import StatsRow from '@/components/dashboard/stats-row';
 import ChecklistPanel, {
   type ChecklistItem,
 } from '@/components/dashboard/checklist-panel';
@@ -11,7 +10,21 @@ import BadgesPanel, {
 } from '@/components/dashboard/badges-panel';
 import DownloadsPanel from '@/components/dashboard/downloads-panel';
 import UpsellCard from '@/components/dashboard/upsell-card';
-import type { BadgeIcon, TaskChipKind } from '@/types/database';
+import TreatmentsSection, {
+  type Treatment,
+} from '@/components/dashboard/treatments-section';
+import ConsultationsPanel from '@/components/dashboard/consultations-panel';
+import OnboardingBlock from '@/components/dashboard/blocks/onboarding-block';
+import HoisReflectionBlock from '@/components/dashboard/blocks/hois-reflection-block';
+import AdaptiveMetrics from '@/components/dashboard/blocks/adaptive-metrics';
+import {
+  buildDashboardContext,
+  orderedBlocks,
+  type BlockId,
+} from '@/lib/dashboard/personalization';
+import type { BadgeIcon, TaskChipKind, Database } from '@/types/database';
+
+type ConsultationRow = Database['public']['Tables']['consultations']['Row'];
 
 const PLAN_LABELS: Record<string, string> = {
   basic: 'Hoïs Bazilik',
@@ -60,16 +73,18 @@ export default async function DashboardHome({
   } = await supabase.auth.getUser();
   if (!user) return null;
 
-  // Fan-out fetch
   const today = new Date().toISOString().slice(0, 10);
 
   const [
     profileResult,
+    medicalResult,
     activeProgramResult,
     badgesResult,
     userBadgesResult,
     resourcesResult,
     healthLogsResult,
+    treatmentsResult,
+    consultationsResult,
     adviceResult,
     productResult,
     streakResult,
@@ -78,7 +93,11 @@ export default async function DashboardHome({
     unreadCountResult,
   ] = await Promise.all([
     supabase.from('profiles').select('*').eq('id', user.id).single(),
-    // Active program with its tasks
+    supabase
+      .from('user_medical_info')
+      .select('conditions, health_goal')
+      .eq('user_id', user.id)
+      .maybeSingle(),
     supabase
       .from('user_programs')
       .select(
@@ -107,6 +126,18 @@ export default async function DashboardHome({
       .order('logged_at', { ascending: false })
       .limit(7),
     supabase
+      .from('treatment_recommendations')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+      .limit(10),
+    supabase
+      .from('consultations')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+      .limit(20),
+    supabase
       .from('daily_advice')
       .select('*')
       .lte('publish_date', today)
@@ -131,7 +162,15 @@ export default async function DashboardHome({
     full_name: string | null;
     email: string;
     plan: 'basic' | 'premium' | 'vip';
+    created_at: string;
   } | null;
+
+  const medical = medicalResult.data as {
+    conditions: string[] | null;
+    health_goal: string | null;
+  } | null;
+  const conditions = (medical?.conditions ?? []).filter(Boolean);
+  const healthGoal = medical?.health_goal ?? null;
 
   type ActiveProgramRow = {
     id: string;
@@ -149,7 +188,6 @@ export default async function DashboardHome({
   const activeProgram = activeProgramResult.data as ActiveProgramRow | null;
   const programId = activeProgram?.programs?.id;
 
-  // Fetch program tasks + today's completions in parallel (depends on programId)
   const [tasksResult, completionsResult] = await Promise.all([
     programId
       ? supabase
@@ -157,14 +195,17 @@ export default async function DashboardHome({
           .select('*')
           .eq('program_id', programId)
           .order('order_index', { ascending: true })
-      : Promise.resolve({ data: [] as Array<{
-          id: string;
-          title: string;
-          meta: string | null;
-          chip_label: string | null;
-          chip_kind: string;
-          order_index: number;
-        }>, error: null }),
+      : Promise.resolve({
+          data: [] as Array<{
+            id: string;
+            title: string;
+            meta: string | null;
+            chip_label: string | null;
+            chip_kind: string;
+            order_index: number;
+          }>,
+          error: null,
+        }),
     supabase
       .from('user_task_completions')
       .select('task_id')
@@ -196,7 +237,7 @@ export default async function DashboardHome({
     done: completedTaskIds.has(t.id),
   }));
 
-  // ---- Build badges with real progress ----
+  // ---- Badges with real progress ----
   type CatalogBadge = {
     id: string;
     slug: string;
@@ -218,7 +259,6 @@ export default async function DashboardHome({
       ub,
     ])
   );
-
   const badges: DashboardBadge[] = catalog.map((b) => {
     const state = userBadgesMap.get(b.id);
     const icon = (['sprout', 'leaf', 'droplet', 'flame', 'activity', 'target', 'calendar', 'star'].includes(b.icon)
@@ -235,52 +275,29 @@ export default async function DashboardHome({
     };
   });
 
-  // ---- Health logs → sparklines ----
+  // ---- Real health logs (NO fake fallback — honest empty states) ----
   const healthLogs = (healthLogsResult.data ?? []) as Array<{
     blood_sugar: number | null;
     weight: number | null;
+    blood_pressure_systolic: number | null;
     logged_at: string;
   }>;
-  const reversed = [...healthLogs].reverse();
-  const bsValuesReal = reversed
-    .map((l) => l.blood_sugar)
-    .filter((v): v is number => v !== null);
-  const wtValuesReal = reversed
-    .map((l) => l.weight)
-    .filter((v): v is number => v !== null);
+  const realLogCount = healthLogs.length;
 
-  // Fallback so the wireframe still tells a story before the user logs anything
-  const bsValues =
-    bsValuesReal.length >= 2 ? bsValuesReal : [142, 138, 134, 129, 131, 124, 118];
-  const wtValues =
-    wtValuesReal.length >= 2
-      ? wtValuesReal
-      : [74.0, 73.8, 73.6, 73.4, 73.0, 72.6, 72.4];
-
-  const latestBloodSugar = bsValues[bsValues.length - 1];
-  const previousBloodSugar = bsValues[bsValues.length - 2];
-  const bsDelta =
-    previousBloodSugar != null && previousBloodSugar !== 0
-      ? ((latestBloodSugar - previousBloodSugar) / previousBloodSugar) * 100
-      : null;
-
-  const latestWeight = wtValues[wtValues.length - 1];
-  const firstWeight = wtValues[0];
-  const wtDelta =
-    latestWeight != null && firstWeight != null ? latestWeight - firstWeight : null;
+  const treatments = (treatmentsResult.data ?? []) as Treatment[];
+  const consultations = (consultationsResult.data ?? []) as ConsultationRow[];
 
   // ---- Daily totals ----
   const doneToday = tasks.filter((t) => t.done).length;
   const totalToday = tasks.length;
   const todayCompletion = totalToday > 0 ? doneToday / totalToday : 0;
 
-  // ---- Plan day from active program start_date ----
+  // ---- Plan day ----
   let dayOfPlan = 1;
-  let totalDays = activeProgram?.programs?.total_days ?? 30;
+  const totalDays = activeProgram?.programs?.total_days ?? 30;
   if (activeProgram?.started_at) {
     const start = new Date(activeProgram.started_at).getTime();
-    const elapsedDays =
-      Math.floor((Date.now() - start) / 86400000) + 1;
+    const elapsedDays = Math.floor((Date.now() - start) / 86400000) + 1;
     dayOfPlan = Math.max(1, Math.min(totalDays, elapsedDays));
   }
 
@@ -291,8 +308,7 @@ export default async function DashboardHome({
   const adviceBody =
     advice?.body_html ??
     'Jodi a, evite <em>sik rafine a</em>. Bwè plis dlo, e prepare yon tas tizan <em>mounn-bwa</em> apre manje midi pou ekilibre glikemi an.';
-  const advicePlant =
-    advice?.plant_name ?? 'Mounn-bwa — Cnidoscolus chayamansa';
+  const advicePlant = advice?.plant_name ?? 'Mounn-bwa — Cnidoscolus chayamansa';
 
   // ---- Featured product ----
   const product = productResult.data as
@@ -316,9 +332,8 @@ export default async function DashboardHome({
       ? `${currencySymbol(product.currency)} ${product.old_price.toFixed(2)}`
       : undefined;
 
-  // ---- Identity helpers ----
-  const userName =
-    profile?.full_name || profile?.email?.split('@')[0] || 'Manm';
+  // ---- Identity ----
+  const userName = profile?.full_name || profile?.email?.split('@')[0] || 'Manm';
   const shortName = userName.split(' ')[0];
   const planLabel = profile ? PLAN_LABELS[profile.plan] : 'Hoïs Bazilik';
 
@@ -331,6 +346,89 @@ export default async function DashboardHome({
     searchParams.welcome && PLAN_LABELS[searchParams.welcome]
       ? PLAN_LABELS[searchParams.welcome]
       : null;
+
+  // ── Build the personalization context ─────────────────────────────────
+  const accountAgeDays = profile?.created_at
+    ? Math.floor((Date.now() - new Date(profile.created_at).getTime()) / 86400000)
+    : 0;
+
+  const ctx = buildDashboardContext({
+    plan: profile?.plan ?? 'basic',
+    conditions,
+    healthGoal,
+    accountAgeDays,
+    realLogCount,
+    streak,
+    hasProgram: tasks.length > 0,
+    hasTreatments: treatments.length > 0,
+  });
+
+  // ── Map each block id → rendered node ─────────────────────────────────
+  const blockNodes: Record<BlockId, React.ReactNode> = {
+    onboarding: (
+      <OnboardingBlock
+        firstName={shortName}
+        hasGoal={healthGoal !== null}
+        hasCondition={conditions.length > 0}
+        hasLoggedMetric={realLogCount > 0}
+      />
+    ),
+    hero: (
+      <Hero
+        userShortName={shortName}
+        planName={activeProgram?.programs?.name ?? planLabel}
+        planVariant={activeProgram?.programs?.variant ?? 'Detox & Sik'}
+        dayOfPlan={dayOfPlan}
+        totalDays={totalDays}
+        streak={streak}
+        doneToday={doneToday}
+        totalToday={totalToday}
+        todayCompletion={todayCompletion}
+        todayLabel={formatHaitianDate(new Date())}
+        dailyAdvice={{
+          date: formatHaitianDate(
+            advice?.publish_date ? new Date(advice.publish_date) : new Date()
+          ),
+          bodyHtml: adviceBody,
+          plant: advicePlant,
+        }}
+      />
+    ),
+    hois: <HoisReflectionBlock />,
+    metrics: ctx.primaryMetric ? (
+      <AdaptiveMetrics
+        primaryMetric={ctx.primaryMetric}
+        logs={healthLogs}
+        dailyGoal={{
+          percent: todayCompletion * 100,
+          doneToday,
+          totalToday: Math.max(totalToday, 1),
+        }}
+      />
+    ) : null,
+    consultations: <ConsultationsPanel initial={consultations} />,
+    checklist: <ChecklistPanel initialTasks={tasks} />,
+    treatments: <TreatmentsSection treatments={treatments} />,
+    badges: <BadgesPanel badges={badges} level={level} levelName={levelName} />,
+    downloads: <DownloadsPanel resources={resourcesResult.data ?? []} />,
+    upsell: (
+      <UpsellCard
+        productName={product?.name ?? 'Hois Detox Plus'}
+        tagline={
+          product?.tagline ??
+          'Yon booste pou plan ou — mounn-bwa konsantre + ekstra jenjanm pou ekilibre sik la pi vit.'
+        }
+        botanical={
+          product?.botanical ?? 'Cnidoscolus chayamansa × Zingiber officinale'
+        }
+        price={upsellPrice}
+        oldPrice={upsellOldPrice}
+        shippingNote={product?.shipping_note ?? 'Livrezon gratis · Pòtoprens'}
+      />
+    ),
+  };
+
+  const blocks = orderedBlocks(ctx);
 
   return (
     <>
@@ -356,68 +454,9 @@ export default async function DashboardHome({
           </div>
         )}
 
-        <Hero
-          userShortName={shortName}
-          planName={activeProgram?.programs?.name ?? planLabel}
-          planVariant={activeProgram?.programs?.variant ?? 'Detox & Sik'}
-          dayOfPlan={dayOfPlan}
-          totalDays={totalDays}
-          streak={streak}
-          doneToday={doneToday}
-          totalToday={totalToday}
-          todayCompletion={todayCompletion}
-          todayLabel={formatHaitianDate(new Date())}
-          dailyAdvice={{
-            date: formatHaitianDate(
-              advice?.publish_date ? new Date(advice.publish_date) : new Date()
-            ),
-            bodyHtml: adviceBody,
-            plant: advicePlant,
-          }}
-        />
-
-        <StatsRow
-          bloodSugar={{
-            value: latestBloodSugar ?? null,
-            target: '70 – 130',
-            deltaPct: bsDelta,
-            spark: bsValues,
-          }}
-          weight={{
-            value: latestWeight ?? null,
-            target: '68 – 71 kg',
-            deltaKg: wtDelta,
-            spark: wtValues,
-          }}
-          dailyGoal={{
-            percent: todayCompletion * 100,
-            doneToday,
-            totalToday: Math.max(totalToday, 1),
-            deltaVsYesterday: undefined,
-          }}
-        />
-
-        <div className="grid lg:grid-cols-2 gap-5 md:gap-6">
-          <ChecklistPanel initialTasks={tasks} />
-          <BadgesPanel badges={badges} level={level} levelName={levelName} />
-        </div>
-
-        <div className="grid lg:grid-cols-[1.4fr_1fr] gap-5 md:gap-6">
-          <DownloadsPanel resources={resourcesResult.data ?? []} />
-          <UpsellCard
-            productName={product?.name ?? 'Hois Detox Plus'}
-            tagline={
-              product?.tagline ??
-              'Yon booste pou plan ou — mounn-bwa konsantre + ekstra jenjanm pou ekilibre sik la pi vit.'
-            }
-            botanical={
-              product?.botanical ?? 'Cnidoscolus chayamansa × Zingiber officinale'
-            }
-            price={upsellPrice}
-            oldPrice={upsellOldPrice}
-            shippingNote={product?.shipping_note ?? 'Livrezon gratis · Pòtoprens'}
-          />
-        </div>
+        {blocks.map((id) =>
+          blockNodes[id] ? <div key={id}>{blockNodes[id]}</div> : null
+        )}
       </div>
     </>
   );
