@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
+import { emailNotifyMember } from '@/lib/email/notify';
 import type { Database } from '@/types/database';
 
 type MessageRow = Database['public']['Tables']['support_messages']['Row'];
@@ -46,6 +47,26 @@ export async function adminSendSupportReply(
   });
   if (error || !data) {
     return { ok: false, error: error?.message ?? 'Erè inkoni.' };
+  }
+
+  // Email the thread owner that they got a reply (best-effort).
+  const { data: threadRaw } = await auth.supabase
+    .from('support_threads')
+    .select('user_id')
+    .eq('id', threadId)
+    .maybeSingle();
+  const threadUserId = (threadRaw as { user_id: string } | null)?.user_id;
+  if (threadUserId) {
+    await emailNotifyMember(auth.supabase, threadUserId, {
+      subject: 'Nouvo repons nan sipò chat ou',
+      heading: 'Sipò Hoïs reponn ou',
+      body: [
+        'Yon manm ekip sipò Hoïs reponn mesaj ou.',
+        'Konekte sou kont ou pou li repons lan epi kontinye konvèsasyon an.',
+      ],
+      linkPath: '/dashboard/support',
+      linkLabel: 'Wè konvèsasyon an',
+    });
   }
 
   revalidatePath('/admin/support');

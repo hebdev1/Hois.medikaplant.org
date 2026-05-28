@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
+import { emailNotifyMember } from '@/lib/email/notify';
 import type { Database } from '@/types/database';
 
 type ConsultationRow = Database['public']['Tables']['consultations']['Row'];
@@ -82,9 +83,34 @@ export async function scheduleConsultation(
     .single();
   if (error || !data) return { ok: false, error: error?.message ?? 'Erè inkoni.' };
 
+  const row = data as ConsultationRow;
+  const whenLabel = row.scheduled_at
+    ? new Intl.DateTimeFormat('fr-HT', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        hour: '2-digit',
+        minute: '2-digit',
+      }).format(new Date(row.scheduled_at))
+    : null;
+  await emailNotifyMember(auth.supabase, row.user_id, {
+    subject: 'Konsiltasyon ou pwograme',
+    heading: 'Konsiltasyon ou konfime',
+    body: [
+      whenLabel
+        ? `Konsiltasyon ou pwograme pou ${whenLabel}.`
+        : 'Konsiltasyon ou pwograme.',
+      `Konsiltan: ${name}.`,
+      'Konekte sou kont ou pou wè tout detay yo.',
+    ],
+    linkPath: '/dashboard/health',
+    linkLabel: 'Wè konsiltasyon an',
+  });
+
   revalidatePath('/admin/consultations');
   revalidatePath('/dashboard/settings');
-  return { ok: true, row: data as ConsultationRow };
+  revalidatePath('/dashboard/health');
+  return { ok: true, row };
 }
 
 /**

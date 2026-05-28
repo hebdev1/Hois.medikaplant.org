@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
+import { emailNotifyMember } from '@/lib/email/notify';
 import type { Database } from '@/types/database';
 
 type TreatmentInsert = Database['public']['Tables']['treatment_recommendations']['Insert'];
@@ -83,6 +84,18 @@ export async function createTreatment(
     .select('id')
     .single();
   if (error || !data) return { error: error?.message ?? 'Erè inkoni.' };
+
+  // Email the member (best-effort, respects their email preference).
+  await emailNotifyMember(auth.supabase, userId, {
+    subject: 'Yon tretman pwopoze pou ou',
+    heading: 'Èrboris ou pwopoze yon tretman',
+    body: [
+      `Ou gen yon nouvo pwopozisyon: "${title}".`,
+      'Konekte sou kont ou pou wè detay konplè yo — dòz, frekans, ak enstriksyon.',
+    ],
+    linkPath: '/dashboard/health',
+    linkLabel: 'Wè tretman an',
+  });
 
   revalidatePath(`/admin/health/${userId}`);
   revalidatePath('/admin/health');

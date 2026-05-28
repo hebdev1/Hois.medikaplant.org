@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
+import { emailNotifyMember } from '@/lib/email/notify';
 import type { Database } from '@/types/database';
 
 type ProfileUpdate = Database['public']['Tables']['profiles']['Update'];
@@ -546,6 +547,14 @@ export async function adminSendDirectNotification(
 
   const { error } = await auth.supabase.from('notifications').insert(insert);
   if (error) return { error: error.message };
+
+  await emailNotifyMember(auth.supabase, userId, {
+    subject: title,
+    heading: title,
+    body: [message],
+    linkPath: link_url && link_url.startsWith('/') ? link_url : '/dashboard',
+    linkLabel: 'Ouvè kont ou',
+  });
 
   revalidatePath(`/admin/users/${userId}`);
   revalidatePath('/dashboard');
