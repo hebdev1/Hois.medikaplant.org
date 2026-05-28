@@ -1,4 +1,5 @@
-import { Activity, Calendar } from 'lucide-react';
+import Link from 'next/link';
+import { Activity, Calendar, Target, Pencil } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import Topbar from '@/components/dashboard/topbar';
 import MetricTabs, {
@@ -28,6 +29,20 @@ type ConsultationRow = Database['public']['Tables']['consultations']['Row'];
 
 export const metadata = { title: 'Swivi Sante' };
 export const dynamic = 'force-dynamic';
+
+// Health-goal labels — mirror the options in /dashboard/settings so the
+// banner on this page reads the same goal the member picked there.
+const HEALTH_GOAL_LABELS: Record<string, string> = {
+  manage_diabetes: 'Jere dyabèt',
+  manage_hypertension: 'Jere tansyon',
+  lose_weight: 'Pèdi pwa',
+  gain_weight: 'Pran pwa',
+  spiritual_balance: 'Ekilib espirityèl',
+  detox: 'Detox / netwayaj',
+  general_wellness: 'Byennèt jeneral',
+  fertility: 'Fètilite',
+  other: 'Objektif pèsonèl',
+};
 
 const PLAN_LABELS: Record<string, string> = {
   basic: 'Hoïs Bazilik',
@@ -117,7 +132,7 @@ export default async function HealthPage({
       .order('logged_at', { ascending: true }),
     supabase
       .from('user_medical_info')
-      .select('conditions')
+      .select('conditions, health_goal, health_goal_other')
       .eq('user_id', user.id)
       .maybeSingle(),
     supabase
@@ -135,9 +150,14 @@ export default async function HealthPage({
     supabase.rpc('user_unread_notifications_count', { uid: user.id }),
   ]);
 
-  const conditions =
-    ((medicalResult.data as { conditions: string[] } | null)?.conditions ?? [])
-      .filter(Boolean);
+  const medicalRow = medicalResult.data as {
+    conditions: string[] | null;
+    health_goal: string | null;
+    health_goal_other: string | null;
+  } | null;
+  const conditions = (medicalRow?.conditions ?? []).filter(Boolean);
+  const healthGoal = medicalRow?.health_goal ?? null;
+  const healthGoalOther = medicalRow?.health_goal_other ?? null;
   const treatments = (treatmentsResult.data ?? []) as Treatment[];
   const consultations = (consultationsResult.data ?? []) as ConsultationRow[];
 
@@ -278,6 +298,58 @@ export default async function HealthPage({
             rezilta w.
           </p>
         </header>
+
+        {/* Objektif sante — moved here from settings so the member sees
+            what they're working toward right above their numbers. */}
+        <div className="mb-5">
+          {healthGoal ? (
+            <div className="flex items-center gap-3 rounded-2xl border border-forest-200 bg-gradient-to-r from-forest-50 to-white px-4 py-3.5 md:px-5">
+              <span className="grid place-items-center w-11 h-11 rounded-xl bg-gradient-to-br from-forest-500 to-forest-700 text-cream-50 shrink-0 shadow-plant">
+                <Target className="w-5 h-5" strokeWidth={2.2} />
+              </span>
+              <div className="flex-1 min-w-0">
+                <div className="text-[10px] uppercase tracking-[0.18em] text-forest-700 font-bold">
+                  Objektif sante ou
+                </div>
+                <div className="font-display text-lg font-bold text-ink leading-tight truncate">
+                  {HEALTH_GOAL_LABELS[healthGoal] ?? 'Objektif pèsonèl'}
+                </div>
+                {healthGoal === 'other' && healthGoalOther && (
+                  <p className="text-xs text-earth-600 mt-0.5 line-clamp-2">
+                    {healthGoalOther}
+                  </p>
+                )}
+              </div>
+              <Link
+                href="/dashboard/settings"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-forest-700 hover:text-forest-800 border border-forest-200 hover:border-forest-300 rounded-lg transition shrink-0"
+              >
+                <Pencil className="w-3.5 h-3.5" strokeWidth={2.2} />
+                <span className="hidden sm:inline">Modifye</span>
+              </Link>
+            </div>
+          ) : (
+            <Link
+              href="/dashboard/settings"
+              className="flex items-center gap-3 rounded-2xl border border-dashed border-cream-300 bg-cream-50/60 px-4 py-3.5 md:px-5 hover:border-forest-300 hover:bg-forest-50/40 transition group"
+            >
+              <span className="grid place-items-center w-11 h-11 rounded-xl bg-cream-100 text-earth-500 group-hover:bg-forest-100 group-hover:text-forest-700 shrink-0 transition">
+                <Target className="w-5 h-5" strokeWidth={2.2} />
+              </span>
+              <div className="flex-1 min-w-0">
+                <div className="font-semibold text-ink text-sm">
+                  Defini yon objektif sante
+                </div>
+                <p className="text-xs text-earth-600 mt-0.5">
+                  Sa ap ede Hoïs pèsonalize konsèy ak rekòmandasyon yo pou ou.
+                </p>
+              </div>
+              <span className="text-xs font-semibold text-forest-700 shrink-0">
+                Mete youn →
+              </span>
+            </Link>
+          )}
+        </div>
 
         <div className="mb-5">
           <ConditionsStrip conditions={conditions} activeMetric={metric} />
