@@ -49,22 +49,33 @@ function SettingRow({
   control,
   status,
   inline = true,
+  comingSoon = false,
 }: {
   label: string;
   description?: string;
   control: React.ReactNode;
   status?: ControlStatus;
   inline?: boolean;
+  /** Renders a "Talè konsa" pill + dims the row for features whose
+   *  delivery channel (email / browser push / scheduler) isn't built yet. */
+  comingSoon?: boolean;
 }) {
   return (
-    <div className="pt-5 first:pt-0">
+    <div className={cn('pt-5 first:pt-0', comingSoon && 'opacity-60')}>
       <div
         className={cn(
           inline ? 'flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3' : 'space-y-3'
         )}
       >
         <div className="flex-1 min-w-0">
-          <div className="text-sm font-semibold text-ink">{label}</div>
+          <div className="text-sm font-semibold text-ink flex items-center gap-2 flex-wrap">
+            {label}
+            {comingSoon && (
+              <span className="inline-flex items-center text-[10px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded-full bg-cream-200 text-earth-600">
+                Talè konsa
+              </span>
+            )}
+          </div>
           {description && (
             <div className="text-xs text-earth-600 mt-0.5 leading-relaxed">
               {description}
@@ -131,11 +142,15 @@ export function ToggleSetting({
   description,
   value,
   commit,
+  comingSoon = false,
 }: {
   label: string;
   description?: string;
   value: boolean;
   commit: (v: boolean) => Promise<{ ok: boolean; error?: string }>;
+  /** Mark the toggle as not-yet-functional: disabled + "Talè konsa" pill.
+   *  Used for channels (email, browser push) whose delivery isn't built. */
+  comingSoon?: boolean;
 }) {
   const [local, setLocal] = React.useState(value);
   const { status, run } = useCommit<boolean>(commit);
@@ -143,6 +158,7 @@ export function ToggleSetting({
   React.useEffect(() => setLocal(value), [value]);
 
   async function onToggle() {
+    if (comingSoon) return;
     const prev = local;
     const next = !prev;
     setLocal(next);
@@ -154,6 +170,7 @@ export function ToggleSetting({
       label={label}
       description={description}
       status={status}
+      comingSoon={comingSoon}
       control={
         <button
           type="button"
@@ -161,7 +178,7 @@ export function ToggleSetting({
           aria-checked={local}
           aria-label={label}
           onClick={onToggle}
-          disabled={status === 'saving'}
+          disabled={status === 'saving' || comingSoon}
           className={cn(
             'relative w-11 h-6 rounded-full transition-colors disabled:cursor-not-allowed',
             local ? 'bg-forest-600' : 'bg-cream-300'
@@ -487,11 +504,13 @@ export function TimeSetting({
   description,
   value,
   commit,
+  comingSoon = false,
 }: {
   label: string;
   description?: string;
   value: string; // 'HH:MM:SS'
   commit: (v: string) => Promise<{ ok: boolean; error?: string }>;
+  comingSoon?: boolean;
 }) {
   const hhmm = value.slice(0, 5);
   const [local, setLocal] = React.useState(hhmm);
@@ -500,6 +519,7 @@ export function TimeSetting({
   React.useEffect(() => setLocal(value.slice(0, 5)), [value]);
 
   async function persist() {
+    if (comingSoon) return;
     const next = local.length === 5 ? `${local}:00` : local;
     if (next === value) return;
     const prev = value;
@@ -511,14 +531,16 @@ export function TimeSetting({
       label={label}
       description={description}
       status={status}
+      comingSoon={comingSoon}
       control={
         <input
           type="time"
           value={local}
           onChange={(e) => setLocal(e.target.value)}
           onBlur={persist}
+          disabled={comingSoon}
           aria-label={label}
-          className="px-3 py-1.5 text-sm bg-cream-50 border border-cream-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-forest-200 focus:border-forest-300"
+          className="px-3 py-1.5 text-sm bg-cream-50 border border-cream-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-forest-200 focus:border-forest-300 disabled:cursor-not-allowed"
         />
       }
     />

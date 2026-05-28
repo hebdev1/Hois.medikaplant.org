@@ -527,40 +527,46 @@ export default function SettingsForm({
       {/* ── Notifikasyon ───────────────────────────────────────────────────── */}
       <SettingsSection
         title="Notifikasyon"
-        description="Chwazi kilè ak ki jan w vle resevwa nouvèl Hoïs."
+        description="Kontwole notifikasyon w resevwa. Notifikasyon nan aplikasyon an aktif kounye a; kanal imèl ak push sou navigatè ap vini talè konsa."
       >
         <ToggleSetting
-          label="Email aktive"
+          label="Notifikasyon nan aplikasyon an"
+          description="Mèt switch: kloch la sou tablodebò a. Lè li OFF, ou pap resevwa alèt tretman, konsiltasyon, fowòm, ni repons sipò."
           value={prefs.email_notifications}
           commit={commitPref('email_notifications')}
         />
         <ToggleSetting
-          label="Notifikasyon push"
-          description="Sou navigatè (lè w ouvri tablodebò a)."
+          label="Notifikasyon push sou navigatè"
+          description="Resevwa yon alèt menm lè tablodebò a fèmen."
           value={prefs.push_notifications}
           commit={commitPref('push_notifications')}
+          comingSoon
         />
         <ToggleSetting
-          label="Konsèy jou a pa email"
-          description="Resevwa konsèy plant la chak maten."
+          label="Konsèy plant chak jou pa imèl"
+          description="Resevwa konsèy plant la chak maten nan bwat imèl ou."
           value={prefs.daily_advice_email}
           commit={commitPref('daily_advice_email')}
+          comingSoon
         />
         <ToggleSetting
-          label="Email lè ou debloke yon badj"
+          label="Imèl lè ou debloke yon badj"
           value={prefs.badge_unlock_email}
           commit={commitPref('badge_unlock_email')}
+          comingSoon
         />
         <ToggleSetting
-          label="Rezime semèn pa email"
+          label="Rezime semèn pa imèl"
           description="Yon koudèy sou pwogrè ou chak dimanch maten."
           value={prefs.weekly_summary_email}
           commit={commitPref('weekly_summary_email')}
+          comingSoon
         />
         <TimeSetting
           label="Èdtan rapèl"
           description="Lè nou voye rapèl pou note glikemi ak fini tach yo."
           value={prefs.reminder_time}
+          comingSoon
           commit={commitPref('reminder_time')}
         />
       </SettingsSection>
