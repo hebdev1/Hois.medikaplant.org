@@ -15,7 +15,6 @@ export const dynamic = 'force-dynamic';
 type PrefRow = Database['public']['Tables']['user_preferences']['Row'];
 type ProfileRow = Database['public']['Tables']['profiles']['Row'];
 type MedicalRow = Database['public']['Tables']['user_medical_info']['Row'];
-type ConsultationRow = Database['public']['Tables']['consultations']['Row'];
 
 const PLAN_LABELS: Record<string, string> = {
   basic: 'Hoïs Bazilik',
@@ -118,7 +117,6 @@ export default async function SettingsPage() {
     activeSubResult,
     pastSubsResult,
     paymentsResult,
-    consultationsResult,
     unreadCountResult,
   ] = await Promise.all([
     supabase.from('profiles').select('*').eq('id', user.id).maybeSingle(),
@@ -152,12 +150,6 @@ export default async function SettingsPage() {
       .eq('user_id', user.id)
       .order('start_date', { ascending: false })
       .limit(50),
-    supabase
-      .from('consultations')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('scheduled_at', { ascending: false })
-      .limit(20),
     supabase.rpc('user_unread_notifications_count', { uid: user.id }),
   ]);
 
@@ -239,8 +231,6 @@ export default async function SettingsPage() {
 
   const pastSubscriptions = (pastSubsResult.data ?? []) as PastSubscription[];
   const payments = (paymentsResult.data ?? []) as PaymentRecord[];
-  const consultations = (consultationsResult.data ?? []) as ConsultationRow[];
-
   const userName =
     profile.full_name ||
     [profile.first_name, profile.last_name].filter(Boolean).join(' ') ||
@@ -284,7 +274,6 @@ export default async function SettingsPage() {
           medical={medical}
           subscription={subscription}
           pastSubscriptions={pastSubscriptions}
-          consultations={consultations}
           payments={payments}
         />
       </div>

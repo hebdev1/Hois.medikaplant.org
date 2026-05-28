@@ -24,7 +24,6 @@ import PlanCard, {
   type PastSubscription,
 } from '@/components/dashboard/plan-card';
 import PasswordSection from '@/components/dashboard/password-section';
-import ConsultationsPanel from '@/components/dashboard/consultations-panel';
 import PaymentHistoryPanel, {
   type PaymentRecord,
 } from '@/components/dashboard/payment-history-panel';
@@ -41,7 +40,6 @@ import type { Database } from '@/types/database';
 type PrefRow = Database['public']['Tables']['user_preferences']['Row'];
 type ProfileRow = Database['public']['Tables']['profiles']['Row'];
 type MedicalRow = Database['public']['Tables']['user_medical_info']['Row'];
-type ConsultationRow = Database['public']['Tables']['consultations']['Row'];
 
 type Props = {
   profile: ProfileRow;
@@ -49,7 +47,6 @@ type Props = {
   medical: MedicalRow;
   subscription: SubscriptionInfo;
   pastSubscriptions: PastSubscription[];
-  consultations: ConsultationRow[];
   payments: PaymentRecord[];
 };
 
@@ -90,7 +87,6 @@ export default function SettingsForm({
   medical: initialMedical,
   subscription,
   pastSubscriptions,
-  consultations,
   payments,
 }: Props) {
   const [profile, setProfile] = React.useState(initialProfile);
@@ -430,9 +426,6 @@ export default function SettingsForm({
           commit={commitMedical('notes')}
         />
       </SettingsSection>
-
-      {/* ── Dosye Konsiltasyon ─────────────────────────────────────────────── */}
-      <ConsultationsPanel initial={consultations} />
 
       {/* ── Sib Sante (preferences) ────────────────────────────────────────── */}
       <SettingsSection
