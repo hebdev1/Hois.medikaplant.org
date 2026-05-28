@@ -160,6 +160,7 @@ export async function updateAdminEmail(
 // ─── Password change ───────────────────────────────────────────────────────
 
 export async function updateAdminPassword(
+  currentPassword: string,
   newPassword: string,
   confirmPassword: string
 ): Promise<{ ok: true } | { ok: false; error: string }> {
@@ -179,9 +180,28 @@ export async function updateAdminPassword(
       error: 'Mete omwen yon lèt ak yon chif nan modpas la.',
     };
   }
+  if (!currentPassword) {
+    return { ok: false, error: 'Tape modpas aktyèl ou.' };
+  }
+  if (currentPassword === newPassword) {
+    return {
+      ok: false,
+      error: 'Nouvo modpas la dwe diferan de modpas aktyèl la.',
+    };
+  }
 
   const auth = await assertAdminSelf();
   if (!auth.ok) return { ok: false, error: auth.error };
+  if (!auth.user.email) return { ok: false, error: 'Ou dwe konekte.' };
+
+  // Re-authenticate (Supabase "Secure password change" requires it).
+  const { error: reauthError } = await auth.supabase.auth.signInWithPassword({
+    email: auth.user.email,
+    password: currentPassword,
+  });
+  if (reauthError) {
+    return { ok: false, error: 'Modpas aktyèl la pa kòrèk.' };
+  }
 
   const { error } = await auth.supabase.auth.updateUser({
     password: newPassword,

@@ -414,6 +414,7 @@ export async function cancelActiveSubscription(): Promise<ProfileResult> {
 // ─── Security: change password ──────────────────────────────────────────────
 
 export async function changePassword(input: {
+  currentPassword: string;
   newPassword: string;
   confirmPassword: string;
 }): Promise<ProfileResult> {
@@ -423,13 +424,37 @@ export async function changePassword(input: {
   if (input.newPassword !== input.confirmPassword) {
     return { ok: false, error: 'Modpas yo pa menm.' };
   }
+  if (!input.currentPassword) {
+    return { ok: false, error: 'Tape modpas aktyèl ou.' };
+  }
+  if (input.currentPassword === input.newPassword) {
+    return {
+      ok: false,
+      error: 'Nouvo modpas la dwe diferan de modpas aktyèl la.',
+    };
+  }
+
   const supabase = createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return { ok: false, error: 'Ou dwe konekte.' };
+  if (!user?.email) return { ok: false, error: 'Ou dwe konekte.' };
 
-  const { error } = await supabase.auth.updateUser({ password: input.newPassword });
+  // Supabase "Secure password change" requires the member to re-prove
+  // their current password. Re-authenticating with signInWithPassword
+  // verifies it AND refreshes the session, which satisfies the
+  // reauthentication requirement before updateUser().
+  const { error: reauthError } = await supabase.auth.signInWithPassword({
+    email: user.email,
+    password: input.currentPassword,
+  });
+  if (reauthError) {
+    return { ok: false, error: 'Modpas aktyèl la pa kòrèk.' };
+  }
+
+  const { error } = await supabase.auth.updateUser({
+    password: input.newPassword,
+  });
   if (error) return { ok: false, error: error.message };
 
   return { ok: true };

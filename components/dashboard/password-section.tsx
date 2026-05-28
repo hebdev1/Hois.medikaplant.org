@@ -8,6 +8,7 @@ type Status = 'idle' | 'saving' | 'success' | 'error';
 
 export default function PasswordSection() {
   const [open, setOpen] = React.useState(false);
+  const [currentPassword, setCurrentPassword] = React.useState('');
   const [newPassword, setNewPassword] = React.useState('');
   const [confirmPassword, setConfirmPassword] = React.useState('');
   const [show, setShow] = React.useState(false);
@@ -15,6 +16,7 @@ export default function PasswordSection() {
   const [error, setError] = React.useState<string | null>(null);
 
   function reset() {
+    setCurrentPassword('');
     setNewPassword('');
     setConfirmPassword('');
     setError(null);
@@ -25,13 +27,18 @@ export default function PasswordSection() {
     e.preventDefault();
     setStatus('saving');
     setError(null);
-    const res = await changePassword({ newPassword, confirmPassword });
+    const res = await changePassword({
+      currentPassword,
+      newPassword,
+      confirmPassword,
+    });
     if (!res.ok) {
       setError(res.error);
       setStatus('error');
       return;
     }
     setStatus('success');
+    setCurrentPassword('');
     setNewPassword('');
     setConfirmPassword('');
     setTimeout(() => {
@@ -94,6 +101,27 @@ export default function PasswordSection() {
 
         {open && (
           <form onSubmit={onSubmit} className="rounded-xl border border-cream-200 bg-cream-50/50 p-4 space-y-3">
+            <div>
+              <label className="text-xs font-semibold text-earth-700">
+                Modpas aktyèl
+              </label>
+              <div className="mt-1 relative">
+                <KeyRound
+                  className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-earth-500"
+                  strokeWidth={2.2}
+                />
+                <input
+                  type={show ? 'text' : 'password'}
+                  value={currentPassword}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                  required
+                  autoComplete="current-password"
+                  className="w-full pl-10 pr-3 py-2 text-sm bg-white border border-cream-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-forest-200 focus:border-forest-300"
+                  placeholder="Modpas ou genyen kounye a"
+                />
+              </div>
+            </div>
+
             <div>
               <label className="text-xs font-semibold text-earth-700">
                 Nouvo modpas
@@ -183,6 +211,7 @@ export default function PasswordSection() {
                 type="submit"
                 disabled={
                   status === 'saving' ||
+                  currentPassword.length === 0 ||
                   newPassword.length < 8 ||
                   newPassword !== confirmPassword
                 }

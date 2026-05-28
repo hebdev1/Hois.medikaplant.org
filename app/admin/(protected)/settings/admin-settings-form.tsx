@@ -339,6 +339,7 @@ function EmailSection({ currentEmail }: { currentEmail: string }) {
 /* ─── Password ─────────────────────────────────────────────────────────── */
 
 function PasswordSection() {
+  const [currentPwd, setCurrentPwd] = React.useState('');
   const [pwd, setPwd] = React.useState('');
   const [confirm, setConfirm] = React.useState('');
   const [showPwd, setShowPwd] = React.useState(false);
@@ -350,12 +351,13 @@ function PasswordSection() {
     setPending(true);
     setError(null);
     setDone(false);
-    const res = await updateAdminPassword(pwd, confirm);
+    const res = await updateAdminPassword(currentPwd, pwd, confirm);
     setPending(false);
     if (!res.ok) {
       setError(res.error);
       return;
     }
+    setCurrentPwd('');
     setPwd('');
     setConfirm('');
     setDone(true);
@@ -366,8 +368,19 @@ function PasswordSection() {
     <Card
       icon={Lock}
       title="Sekirite — chanje modpas"
-      description="Itilize omwen 8 karaktè ak yon melanj lèt + chif. N ap pa mande modpas aktyèl la paske sesyon w deja verifye."
+      description="Tape modpas aktyèl ou pou konfime, epi yon nouvo modpas (omwen 8 karaktè, ak yon melanj lèt + chif)."
     >
+      <div className="mb-3">
+        <input
+          type={showPwd ? 'text' : 'password'}
+          value={currentPwd}
+          onChange={(e) => setCurrentPwd(e.target.value)}
+          placeholder="Modpas aktyèl"
+          disabled={pending}
+          autoComplete="current-password"
+          className="w-full px-3 py-2 text-sm bg-white border border-cream-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-forest-200 focus:border-forest-300 disabled:opacity-60"
+        />
+      </div>
       <div className="grid sm:grid-cols-2 gap-3">
         <div className="relative">
           <input
@@ -409,7 +422,7 @@ function PasswordSection() {
         <button
           type="button"
           onClick={onSave}
-          disabled={pwd.length === 0 || confirm.length === 0 || pending}
+          disabled={currentPwd.length === 0 || pwd.length === 0 || confirm.length === 0 || pending}
           className="inline-flex items-center justify-center gap-1.5 px-4 py-2 text-xs font-semibold bg-forest-700 hover:bg-forest-800 disabled:opacity-50 disabled:cursor-not-allowed text-cream-50 rounded-lg transition"
         >
           {pending && <Loader2 className="w-3.5 h-3.5 animate-spin" strokeWidth={2.2} />}
