@@ -9,6 +9,7 @@ import {
   CalendarClock,
   MessageCircle,
   MessagesSquare,
+  Sparkles,
   Settings as SettingsIcon,
   type LucideIcon,
 } from 'lucide-react';
@@ -44,6 +45,7 @@ export type AdminCapability =
   | 'manage_subscriptions'
   | 'broadcast_notifications'
   | 'manage_consultations'
+  | 'manage_advice'
   | 'manage_self';
 
 /**
@@ -64,6 +66,7 @@ export const ROLE_CAPABILITIES: Record<AdminRole, ReadonlySet<AdminCapability>> 
     'manage_subscriptions',
     'broadcast_notifications',
     'manage_consultations',
+    'manage_advice',
     'manage_self',
   ]),
   admin: new Set<AdminCapability>([
@@ -77,6 +80,7 @@ export const ROLE_CAPABILITIES: Record<AdminRole, ReadonlySet<AdminCapability>> 
     'manage_subscriptions',
     'broadcast_notifications',
     'manage_consultations',
+    'manage_advice',
     'manage_self',
   ]),
   support: new Set<AdminCapability>([
@@ -96,6 +100,7 @@ export const ROLE_CAPABILITIES: Record<AdminRole, ReadonlySet<AdminCapability>> 
     'overview',
     'manage_resources',
     'manage_guides',
+    'manage_advice',
     'broadcast_notifications',
     'manage_self',
   ]),
@@ -151,6 +156,7 @@ export const ADMIN_NAV_LINKS: readonly AdminNavLink[] = [
   { href: '/admin/forum', label: 'Fowòm', icon: MessagesSquare, capability: 'moderate_forum' },
   { href: '/admin/resources', label: 'Resources', icon: FileText, capability: 'manage_resources' },
   { href: '/admin/guides', label: 'Guides', icon: BookOpen, capability: 'manage_guides' },
+  { href: '/admin/advice', label: 'Konsèy jou a', icon: Sparkles, capability: 'manage_advice' },
   { href: '/admin/subscriptions', label: 'Subscriptions', icon: CreditCard, capability: 'manage_subscriptions' },
   { href: '/admin/notifications', label: 'Notifications', icon: Bell, capability: 'broadcast_notifications' },
   { href: '/admin/settings', label: 'Paramèt', icon: SettingsIcon, capability: 'manage_self' },

@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { Flame, ChevronRight, Sparkles, Play, Share2 } from 'lucide-react';
 import ProgressPlant from './progress-plant';
 
@@ -106,10 +107,13 @@ export default function Hero({
             </div>
           </div>
 
-          <button className="mt-5 self-start inline-flex items-center gap-2 bg-gold-400 hover:bg-gold-300 text-forest-900 font-semibold px-5 py-2.5 rounded-full transition shadow-plant">
+          <Link
+            href="/dashboard/programs"
+            className="mt-5 self-start inline-flex items-center gap-2 bg-gold-400 hover:bg-gold-300 text-forest-900 font-semibold px-5 py-2.5 rounded-full transition shadow-plant"
+          >
             Kontinye sesyon jou a
             <ChevronRight className="w-4 h-4" strokeWidth={2.4} />
-          </button>
+          </Link>
         </div>
 
         {/* RIGHT — progress plant */}
