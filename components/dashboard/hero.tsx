@@ -1,6 +1,7 @@
 import Link from 'next/link';
-import { Flame, ChevronRight, Sparkles, Play, Share2 } from 'lucide-react';
+import { Flame, ChevronRight, Sparkles } from 'lucide-react';
 import ProgressPlant from './progress-plant';
+import ShareAdviceButton from './share-advice-button';
 
 type HeroProps = {
   userShortName: string;
@@ -147,16 +148,11 @@ export default function Hero({
         </div>
 
         <div className="flex items-center gap-2 md:flex-col md:items-stretch">
-          <button className="inline-flex items-center gap-2 bg-forest-700 hover:bg-forest-800 text-cream-50 text-sm font-medium px-4 py-2.5 rounded-full transition">
-            <span className="grid place-items-center w-5 h-5 rounded-full bg-gold-400/20">
-              <Play className="w-2.5 h-2.5 fill-gold-300" strokeWidth={0} />
-            </span>
-            Koute (2 min)
-          </button>
-          <button className="inline-flex items-center gap-2 border border-cream-200 hover:border-forest-300 text-earth-700 hover:text-forest-700 text-sm font-medium px-4 py-2.5 rounded-full transition">
-            <Share2 className="w-3.5 h-3.5" strokeWidth={2} />
-            Pataje
-          </button>
+          <ShareAdviceButton
+            bodyHtml={dailyAdvice.bodyHtml}
+            plant={dailyAdvice.plant}
+            date={dailyAdvice.date}
+          />
         </div>
       </article>
     </section>
