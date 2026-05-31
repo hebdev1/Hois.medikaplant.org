@@ -24,6 +24,7 @@ import HealthLineChart from '@/components/dashboard/health-line-chart';
 import { cn } from '@/lib/utils';
 import PrescriptionForm from './prescription-form';
 import TreatmentRow from './treatment-row';
+import PersonalPlanComposer from './personal-plan-composer';
 import type { Database } from '@/types/database';
 
 export const metadata = { title: 'Admin · Pasyan' };
@@ -102,41 +103,57 @@ export default async function AdminPatientPage({
 }) {
   const supabase = createClient();
 
-  const [profileResult, medicalResult, prefsResult, logsResult, treatmentsResult, subsResult] =
-    await Promise.all([
-      supabase.from('profiles').select('*').eq('id', params.userId).maybeSingle(),
-      supabase
-        .from('user_medical_info')
-        .select('*')
-        .eq('user_id', params.userId)
-        .maybeSingle(),
-      supabase
-        .from('user_preferences')
-        .select(
-          'target_blood_sugar_min, target_blood_sugar_max, target_weight_kg, share_progress_with_coach'
-        )
-        .eq('user_id', params.userId)
-        .maybeSingle(),
-      supabase
-        .from('health_logs')
-        .select('*')
-        .eq('user_id', params.userId)
-        .gte('logged_at', new Date(Date.now() - 90 * 86400000).toISOString())
-        .order('logged_at', { ascending: true }),
-      supabase
-        .from('treatment_recommendations')
-        .select('*')
-        .eq('user_id', params.userId)
-        .order('created_at', { ascending: false }),
-      supabase
-        .from('subscriptions')
-        .select('plan, status, start_date, end_date')
-        .eq('user_id', params.userId)
-        .eq('status', 'active')
-        .order('start_date', { ascending: false })
-        .limit(1)
-        .maybeSingle(),
-    ]);
+  const [
+    profileResult,
+    medicalResult,
+    prefsResult,
+    logsResult,
+    treatmentsResult,
+    subsResult,
+    activeProgramResult,
+  ] = await Promise.all([
+    supabase.from('profiles').select('*').eq('id', params.userId).maybeSingle(),
+    supabase
+      .from('user_medical_info')
+      .select('*')
+      .eq('user_id', params.userId)
+      .maybeSingle(),
+    supabase
+      .from('user_preferences')
+      .select(
+        'target_blood_sugar_min, target_blood_sugar_max, target_weight_kg, share_progress_with_coach'
+      )
+      .eq('user_id', params.userId)
+      .maybeSingle(),
+    supabase
+      .from('health_logs')
+      .select('*')
+      .eq('user_id', params.userId)
+      .gte('logged_at', new Date(Date.now() - 90 * 86400000).toISOString())
+      .order('logged_at', { ascending: true }),
+    supabase
+      .from('treatment_recommendations')
+      .select('*')
+      .eq('user_id', params.userId)
+      .order('created_at', { ascending: false }),
+    supabase
+      .from('subscriptions')
+      .select('plan, status, start_date, end_date')
+      .eq('user_id', params.userId)
+      .eq('status', 'active')
+      .order('start_date', { ascending: false })
+      .limit(1)
+      .maybeSingle(),
+    // Active personal/template program (for the plan composer card)
+    supabase
+      .from('user_programs')
+      .select('id, programs(id, name, total_days)')
+      .eq('user_id', params.userId)
+      .eq('is_active', true)
+      .order('started_at', { ascending: false })
+      .limit(1)
+      .maybeSingle(),
+  ]);
 
   const profile = profileResult.data as ProfileRow | null;
   if (!profile) notFound();
@@ -153,7 +170,23 @@ export default async function AdminPatientPage({
   const treatments = (treatmentsResult.data ?? []) as Treatment[];
   const sub = subsResult.data as { plan: string; status: string } | null;
 
+  type ActiveProgramJoin = {
+    id: string;
+    programs: { id: string; name: string; total_days: number } | null;
+  };
+  const activeProgram = activeProgramResult.data as ActiveProgramJoin | null;
+  const activeProgramName = activeProgram?.programs?.name ?? null;
+  let activeProgramTaskCount = 0;
+  if (activeProgram?.programs?.id) {
+    const { count } = await supabase
+      .from('program_tasks')
+      .select('id', { count: 'exact', head: true })
+      .eq('program_id', activeProgram.programs.id);
+    activeProgramTaskCount = count ?? 0;
+  }
+
   const conditions = (medical?.conditions ?? []).filter(Boolean);
+  const healthGoal = medical?.health_goal ?? null;
   const age = calcAge(profile.date_of_birth);
   const fullName =
     profile.full_name ||
@@ -370,6 +403,17 @@ export default async function AdminPatientPage({
           )}
         </ClinicalCard>
       </section>
+
+      {/* Personal Hoïs Plan composer — generated from conditions/goal */}
+      <div className="mb-6">
+        <PersonalPlanComposer
+          userId={params.userId}
+          conditions={conditions}
+          healthGoal={healthGoal}
+          existingProgramName={activeProgramName}
+          existingProgramTaskCount={activeProgramTaskCount}
+        />
+      </div>
 
       {/* Charts */}
       <section className="grid lg:grid-cols-2 gap-5 md:gap-6 mb-6">

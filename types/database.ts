@@ -1459,6 +1459,17 @@ export type Database = {
         Args: { p_thread_id: string; p_body: string }
         Returns: Database["public"]["Tables"]["support_messages"]["Row"]
       }
+      admin_create_personal_program: {
+        Args: {
+          p_user_id: string
+          p_name: string
+          p_variant: string | null
+          p_total_days: number
+          p_plan_required: Database["public"]["Enums"]["plan_type"]
+          p_tasks: unknown
+        }
+        Returns: string
+      }
       create_admin_invite: {
         Args: {
           p_email: string

@@ -216,3 +216,75 @@ export async function deleteTreatment(
   revalidatePath('/dashboard/health');
   return { ok: true };
 }
+
+// ─── Personal Hoïs Plan (admin builds a program per member) ───────────────
+
+export type PersonalPlanTask = {
+  title: string;
+  meta?: string | null;
+  chip_label?: string | null;
+  chip_kind?: 'forest' | 'gold' | 'cream';
+};
+
+export type PersonalPlanInput = {
+  name: string;
+  variant?: string | null;
+  total_days: number;
+  plan_required?: 'basic' | 'premium' | 'vip';
+  tasks: PersonalPlanTask[];
+};
+
+export type PersonalPlanResult =
+  | { ok: true; programId: string }
+  | { ok: false; error: string };
+
+export async function createPersonalProgram(
+  userId: string,
+  input: PersonalPlanInput
+): Promise<PersonalPlanResult> {
+  const auth = await assertAdmin();
+  if (!auth.ok) return { ok: false, error: auth.error };
+
+  const name = input.name.trim();
+  if (name.length < 2) return { ok: false, error: 'Non pwogram nan twò kout.' };
+  if (!Number.isFinite(input.total_days) || input.total_days < 1 || input.total_days > 365) {
+    return { ok: false, error: 'Dire a dwe ant 1 ak 365 jou.' };
+  }
+  const tasks = (input.tasks ?? []).filter(
+    (t) => t.title && t.title.trim().length > 0
+  );
+  if (tasks.length === 0) {
+    return { ok: false, error: 'Ajoute omwen yon tach nan plan an.' };
+  }
+  if (tasks.length > 30) {
+    return { ok: false, error: 'Maks 30 tach pa plan.' };
+  }
+
+  // Normalize tasks for the JSONB payload the RPC ingests.
+  const tasksPayload = tasks.map((t) => ({
+    title: t.title.trim(),
+    meta: t.meta?.trim() || null,
+    chip_label: t.chip_label?.trim() || null,
+    chip_kind: t.chip_kind ?? 'forest',
+  }));
+
+  const { data, error } = await auth.supabase.rpc(
+    'admin_create_personal_program',
+    {
+      p_user_id: userId,
+      p_name: name,
+      p_variant: input.variant?.trim() || null,
+      p_total_days: input.total_days,
+      p_plan_required: input.plan_required ?? 'basic',
+      p_tasks: tasksPayload,
+    }
+  );
+  if (error || !data) {
+    return { ok: false, error: error?.message ?? 'Erè inkoni.' };
+  }
+
+  revalidatePath(`/admin/health/${userId}`);
+  revalidatePath('/dashboard');
+  revalidatePath('/dashboard/programs');
+  return { ok: true, programId: data as string };
+}
