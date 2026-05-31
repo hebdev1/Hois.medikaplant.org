@@ -24,6 +24,7 @@ import { cn } from '@/lib/utils';
 import UserEditor from './user-editor';
 import DangerZone from './danger-zone';
 import DirectNotificationForm from './direct-notification-form';
+import HubspotCard from './hubspot-card';
 import type { Database } from '@/types/database';
 
 export const metadata = { title: 'Admin · Modifye manm' };
@@ -443,6 +444,8 @@ export default async function AdminUserDetailPage({
         {/* ── RIGHT: activity sidebar ───────────────────────────────────────── */}
         <aside className="space-y-5 md:space-y-6 lg:sticky lg:top-6 lg:self-start min-w-0">
           <DirectNotificationForm userId={profile.id} email={profile.email} />
+
+          <HubspotCard userId={profile.id} email={profile.email} />
 
           {/* Active subscription */}
           <SidePanel

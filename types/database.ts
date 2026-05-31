@@ -249,6 +249,39 @@ export type Database = {
         }
         Relationships: []
       }
+      hubspot_sync_log: {
+        Row: {
+          id: string
+          user_id: string | null
+          direction: 'push' | 'pull'
+          hubspot_contact_id: string | null
+          status: 'ok' | 'error' | 'skipped'
+          detail: string | null
+          triggered_by: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id?: string | null
+          direction: 'push' | 'pull'
+          hubspot_contact_id?: string | null
+          status: 'ok' | 'error' | 'skipped'
+          detail?: string | null
+          triggered_by?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string | null
+          direction?: 'push' | 'pull'
+          hubspot_contact_id?: string | null
+          status?: 'ok' | 'error' | 'skipped'
+          detail?: string | null
+          triggered_by?: string | null
+          created_at?: string
+        }
+        Relationships: []
+      }
       contact_messages: {
         Row: {
           id: string

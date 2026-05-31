@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
 import { emailNotifyMember } from '@/lib/email/notify';
+import { syncMemberToHubspot } from '@/lib/hubspot/sync';
 import type { Database } from '@/types/database';
 
 type ProfileUpdate = Database['public']['Tables']['profiles']['Update'];
@@ -237,6 +238,11 @@ export async function setUserPlan(
   revalidatePath(`/admin/users/${userId}`);
   revalidatePath('/admin/users');
   revalidatePath('/admin/subscriptions');
+
+  // Push the new plan to HubSpot CRM. Best-effort: never blocks the
+  // plan change if HubSpot is down or the token isn't set yet.
+  void syncMemberToHubspot(auth.supabase, userId, auth.user.id);
+
   return { ok: true, profile: updated as ProfileRow };
 }
 
@@ -656,4 +662,33 @@ export async function adminDeleteUser(
 
   revalidatePath('/admin/users');
   return { ok: true };
+}
+
+// ─── HubSpot — manual sync trigger from /admin/users/[id] ────────────────
+
+export type HubspotSyncActionResult =
+  | { ok: true; contactId: string; created: boolean }
+  | { ok: false; error: string };
+
+export async function syncMemberHubspot(
+  userId: string
+): Promise<HubspotSyncActionResult> {
+  const auth = await assertAdmin();
+  if (!auth.ok) return { ok: false, error: auth.error };
+
+  const res = await syncMemberToHubspot(auth.supabase, userId, auth.user.id);
+  if (res.ok) {
+    revalidatePath(`/admin/users/${userId}`);
+    return { ok: true, contactId: res.contactId, created: res.created };
+  }
+  if (res.status === 'skipped') {
+    const msg =
+      res.reason === 'no_token'
+        ? 'HUBSPOT_PRIVATE_APP_TOKEN poko konfigire nan env Vercel la.'
+        : res.reason === 'no_email'
+          ? 'Manm sa pa gen yon imèl pou voye nan HubSpot.'
+          : res.reason;
+    return { ok: false, error: msg };
+  }
+  return { ok: false, error: res.error };
 }
