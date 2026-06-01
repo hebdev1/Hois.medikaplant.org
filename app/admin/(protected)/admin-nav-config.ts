@@ -10,6 +10,7 @@ import {
   MessageCircle,
   MessagesSquare,
   Sparkles,
+  Link2,
   Settings as SettingsIcon,
   type LucideIcon,
 } from 'lucide-react';
@@ -46,6 +47,7 @@ export type AdminCapability =
   | 'broadcast_notifications'
   | 'manage_consultations'
   | 'manage_advice'
+  | 'view_hubspot'
   | 'manage_self';
 
 /**
@@ -67,6 +69,7 @@ export const ROLE_CAPABILITIES: Record<AdminRole, ReadonlySet<AdminCapability>> 
     'broadcast_notifications',
     'manage_consultations',
     'manage_advice',
+    'view_hubspot',
     'manage_self',
   ]),
   admin: new Set<AdminCapability>([
@@ -81,6 +84,7 @@ export const ROLE_CAPABILITIES: Record<AdminRole, ReadonlySet<AdminCapability>> 
     'broadcast_notifications',
     'manage_consultations',
     'manage_advice',
+    'view_hubspot',
     'manage_self',
   ]),
   support: new Set<AdminCapability>([
@@ -158,6 +162,7 @@ export const ADMIN_NAV_LINKS: readonly AdminNavLink[] = [
   { href: '/admin/guides', label: 'Guides', icon: BookOpen, capability: 'manage_guides' },
   { href: '/admin/advice', label: 'Konsèy jou a', icon: Sparkles, capability: 'manage_advice' },
   { href: '/admin/subscriptions', label: 'Subscriptions', icon: CreditCard, capability: 'manage_subscriptions' },
+  { href: '/admin/hubspot', label: 'HubSpot CRM', icon: Link2, capability: 'view_hubspot' },
   { href: '/admin/notifications', label: 'Notifications', icon: Bell, capability: 'broadcast_notifications' },
   { href: '/admin/settings', label: 'Paramèt', icon: SettingsIcon, capability: 'manage_self' },
 ];
