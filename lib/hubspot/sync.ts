@@ -1,6 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '@/types/database';
-import { upsertContactByEmail } from './client';
+import { upsertContactByEmail, upsertContactById } from './client';
 
 /**
  * Pull all the HubSpot-relevant data for a member out of Supabase and
@@ -28,10 +28,13 @@ export async function syncMemberToHubspot(
   userId: string,
   triggeredBy: string | null = null
 ): Promise<SyncResult> {
-  // 1. Gather data
+  // 1. Gather data — include the cached HubSpot id (if any) so we can
+  //    skip the search round-trip when the link is already established.
   const { data: profileRow } = await supabase
     .from('profiles')
-    .select('email, first_name, last_name, phone, plan, role, admin_role, created_at')
+    .select(
+      'email, first_name, last_name, phone, plan, role, admin_role, created_at, hubspot_contact_id'
+    )
     .eq('id', userId)
     .maybeSingle();
   const profile = profileRow as {
@@ -43,6 +46,7 @@ export async function syncMemberToHubspot(
     role: 'user' | 'admin';
     admin_role: string | null;
     created_at: string;
+    hubspot_contact_id: string | null;
   } | null;
 
   if (!profile?.email) {
@@ -90,8 +94,14 @@ export async function syncMemberToHubspot(
     properties.hois_admin_role = profile.admin_role ?? 'admin';
   }
 
-  // 3. Push
-  const res = await upsertContactByEmail(profile.email, properties);
+  // 3. Push. Use the cached id when we have it (fast path — one PATCH),
+  //    otherwise upsertContactByEmail searches then creates/updates.
+  const res = profile.hubspot_contact_id
+    ? await upsertContactById(profile.hubspot_contact_id, {
+        email: profile.email,
+        ...properties,
+      })
+    : await upsertContactByEmail(profile.email, properties);
   if (!res.ok) {
     if (res.status === 'skipped') {
       await logSync(supabase, {
@@ -111,6 +121,16 @@ export async function syncMemberToHubspot(
       triggered_by: triggeredBy,
     });
     return { ok: false, status: 'error', error: res.error };
+  }
+
+  // Cache the HubSpot id on the profile if we don't already have it
+  // (first successful sync, or recovery after a manual unlink). Skip
+  // the write when it's already correct to avoid useless DB churn.
+  if (profile.hubspot_contact_id !== res.data.id) {
+    await supabase
+      .from('profiles')
+      .update({ hubspot_contact_id: res.data.id })
+      .eq('id', userId);
   }
 
   await logSync(supabase, {

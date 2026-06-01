@@ -204,6 +204,46 @@ export async function upsertContactByEmail(
 }
 
 /**
+ * Update an existing contact by its HubSpot id. Faster than
+ * upsertContactByEmail when the caller already knows the id (cached
+ * on profiles.hubspot_contact_id after the first successful push).
+ * Skips the search round-trip entirely.
+ */
+export async function upsertContactById(
+  contactId: string,
+  properties: Record<string, string | number | null | undefined>
+): Promise<HubspotResult<{ id: string; created: boolean }>> {
+  const cleanProps: Record<string, string> = {};
+  for (const [k, v] of Object.entries(properties)) {
+    if (v !== null && v !== undefined && String(v).length > 0) {
+      cleanProps[k] = String(v);
+    }
+  }
+  const r = await hubspotFetch(
+    `/crm/v3/objects/contacts/${contactId}`,
+    {
+      method: 'PATCH',
+      body: JSON.stringify({ properties: cleanProps }),
+    }
+  );
+  if (!r.ok) {
+    return r.reason === 'no_token'
+      ? { ok: false, status: 'skipped', reason: 'no_token' }
+      : { ok: false, status: 'error', error: r.error };
+  }
+  if (!r.res.ok) {
+    const txt = await r.res.text().catch(() => '');
+    return {
+      ok: false,
+      status: 'error',
+      error: `HubSpot ${r.res.status}: ${txt.slice(0, 240)}`,
+      httpStatus: r.res.status,
+    };
+  }
+  return { ok: true, data: { id: contactId, created: false } };
+}
+
+/**
  * Pull: fetch up to 5 most-recent deals associated with a contact.
  * Used by the admin panel to show a member's HubSpot deal pipeline.
  */

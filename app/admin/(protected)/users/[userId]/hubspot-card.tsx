@@ -1,4 +1,4 @@
-import { ExternalLink, AlertCircle, CheckCircle2, Clock } from 'lucide-react';
+import { ExternalLink, AlertCircle, CheckCircle2, Clock, Link2 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import {
   getContactByEmail,
@@ -24,6 +24,17 @@ export default async function HubspotCard({
   email: string;
 }) {
   const supabase = createClient();
+
+  // Cached HubSpot id (stable 1-to-1 link kept on the profile after
+  // the first successful push).
+  const { data: profileRow } = await supabase
+    .from('profiles')
+    .select('hubspot_contact_id')
+    .eq('id', userId)
+    .maybeSingle();
+  const cachedContactId =
+    (profileRow as { hubspot_contact_id: string | null } | null)
+      ?.hubspot_contact_id ?? null;
 
   // Last sync (admin RLS lets this read)
   const { data: lastLogRaw } = await supabase
@@ -73,6 +84,18 @@ export default async function HubspotCard({
         </div>
         <HubspotSyncButton userId={userId} />
       </header>
+
+      {cachedContactId && (
+        <div className="mb-3 rounded-lg bg-[#ff7a59]/5 border border-[#ff7a59]/20 px-3 py-2 text-[11px] text-earth-700 inline-flex items-center gap-1.5">
+          <Link2 className="w-3 h-3 text-[#ff7a59]" strokeWidth={2.4} />
+          <span>Konekte ak HubSpot:</span>
+          <code className="font-mono text-ink">{cachedContactId}</code>
+          <span className="text-earth-500">· Supabase ID:</span>
+          <code className="font-mono text-earth-500 text-[10px]">
+            {userId.slice(0, 8)}…
+          </code>
+        </div>
+      )}
 
       {tokenMissing && (
         <div className="rounded-xl bg-amber-50 border border-amber-200 px-3 py-2 text-sm text-amber-900 flex items-start gap-2 mb-3">

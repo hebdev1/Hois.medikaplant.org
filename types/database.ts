@@ -703,6 +703,7 @@ export type Database = {
           role: Database["public"]["Enums"]["user_role"]
           admin_role: 'super_admin' | 'admin' | 'support' | 'moderator' | 'content' | null
           support_persona_name: string | null
+          hubspot_contact_id: string | null
           suspended: boolean
           updated_at: string
         }
@@ -730,6 +731,7 @@ export type Database = {
           role?: Database["public"]["Enums"]["user_role"]
           admin_role?: 'super_admin' | 'admin' | 'support' | 'moderator' | 'content' | null
           support_persona_name?: string | null
+          hubspot_contact_id?: string | null
           suspended?: boolean
           updated_at?: string
         }
@@ -757,6 +759,7 @@ export type Database = {
           role?: Database["public"]["Enums"]["user_role"]
           admin_role?: 'super_admin' | 'admin' | 'support' | 'moderator' | 'content' | null
           support_persona_name?: string | null
+          hubspot_contact_id?: string | null
           suspended?: boolean
           updated_at?: string
         }
