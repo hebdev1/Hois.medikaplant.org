@@ -15,6 +15,7 @@ import {
   LogOut,
   X,
   MessagesSquare,
+  Award,
   type LucideIcon,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -44,6 +45,7 @@ const NAV_ITEMS: readonly NavItem[] = [
   { href: '/dashboard/resources', label: 'Telechajman', icon: Download, badge: '12' },
   { href: '/dashboard/health', label: 'Swivi Sante', icon: Activity },
   { href: '/dashboard/guides', label: 'Gid & Konsèy', icon: BookOpen },
+  { href: '/dashboard/badges', label: 'Badj mwen yo', icon: Award },
   { href: '/dashboard/forum', label: 'Fowòm', icon: MessagesSquare, badge: 'NEW' },
   { href: '/dashboard/support', label: 'Sipò', icon: LifeBuoy },
   { href: '/dashboard/settings', label: 'Kont mwen', icon: UserCircle },

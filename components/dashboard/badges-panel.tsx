@@ -45,7 +45,7 @@ export default function BadgesPanel({
           </p>
         </div>
         <Link
-          href="/dashboard/settings"
+          href="/dashboard/badges"
           className="inline-flex items-center gap-1 text-xs font-semibold text-forest-700 hover:text-forest-800 transition shrink-0"
         >
           Wè tout

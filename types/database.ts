@@ -45,6 +45,7 @@ export type Database = {
           created_at: string
           criteria_metric: string
           criteria_threshold: number
+          description: string | null
           display_order: number
           icon: string
           id: string
@@ -57,6 +58,7 @@ export type Database = {
           created_at?: string
           criteria_metric?: string
           criteria_threshold?: number
+          description?: string | null
           display_order?: number
           icon?: string
           id?: string
@@ -69,6 +71,7 @@ export type Database = {
           created_at?: string
           criteria_metric?: string
           criteria_threshold?: number
+          description?: string | null
           display_order?: number
           icon?: string
           id?: string

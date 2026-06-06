@@ -11,6 +11,7 @@ import {
   MessagesSquare,
   Sparkles,
   Link2,
+  Award,
   Settings as SettingsIcon,
   type LucideIcon,
 } from 'lucide-react';
@@ -47,6 +48,7 @@ export type AdminCapability =
   | 'broadcast_notifications'
   | 'manage_consultations'
   | 'manage_advice'
+  | 'manage_badges'
   | 'view_hubspot'
   | 'manage_self';
 
@@ -69,6 +71,7 @@ export const ROLE_CAPABILITIES: Record<AdminRole, ReadonlySet<AdminCapability>> 
     'broadcast_notifications',
     'manage_consultations',
     'manage_advice',
+    'manage_badges',
     'view_hubspot',
     'manage_self',
   ]),
@@ -84,6 +87,7 @@ export const ROLE_CAPABILITIES: Record<AdminRole, ReadonlySet<AdminCapability>> 
     'broadcast_notifications',
     'manage_consultations',
     'manage_advice',
+    'manage_badges',
     'view_hubspot',
     'manage_self',
   ]),
@@ -105,6 +109,7 @@ export const ROLE_CAPABILITIES: Record<AdminRole, ReadonlySet<AdminCapability>> 
     'manage_resources',
     'manage_guides',
     'manage_advice',
+    'manage_badges',
     'broadcast_notifications',
     'manage_self',
   ]),
@@ -161,6 +166,7 @@ export const ADMIN_NAV_LINKS: readonly AdminNavLink[] = [
   { href: '/admin/resources', label: 'Resources', icon: FileText, capability: 'manage_resources' },
   { href: '/admin/guides', label: 'Guides', icon: BookOpen, capability: 'manage_guides' },
   { href: '/admin/advice', label: 'Konsèy jou a', icon: Sparkles, capability: 'manage_advice' },
+  { href: '/admin/badges', label: 'Badj', icon: Award, capability: 'manage_badges' },
   { href: '/admin/subscriptions', label: 'Subscriptions', icon: CreditCard, capability: 'manage_subscriptions' },
   { href: '/admin/hubspot', label: 'HubSpot CRM', icon: Link2, capability: 'view_hubspot' },
   { href: '/admin/notifications', label: 'Notifications', icon: Bell, capability: 'broadcast_notifications' },
