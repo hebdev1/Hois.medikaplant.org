@@ -6,6 +6,9 @@ import { usePathname } from 'next/navigation';
 import { Leaf, Menu, X, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ADMIN_NAV_LINKS } from './admin-nav-config';
+import AdminNotificationBell, {
+  type AdminBellChannel,
+} from './admin-notification-bell';
 import { adminSignOut } from '../login/actions';
 
 type Props = {
@@ -20,6 +23,12 @@ type Props = {
    */
   visibleHrefs: string[];
   roleLabel: string;
+  /**
+   * Realtime bell channels this admin can see. When empty (e.g. a role
+   * without any inbox-style capability) the bell button is omitted so the
+   * mobile strip stays tight.
+   */
+  bellChannels: AdminBellChannel[];
 };
 
 /**
@@ -38,6 +47,7 @@ export default function AdminMobileNav({
   initials,
   visibleHrefs,
   roleLabel,
+  bellChannels,
 }: Props) {
   const pathname = usePathname();
   const [open, setOpen] = React.useState(false);
@@ -101,6 +111,10 @@ export default function AdminMobileNav({
             </span>
           </span>
         </Link>
+
+        {bellChannels.length > 0 && (
+          <AdminNotificationBell channels={bellChannels} />
+        )}
 
         <form action={adminSignOut}>
           <button

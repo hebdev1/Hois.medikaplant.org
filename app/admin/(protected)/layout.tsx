@@ -5,10 +5,14 @@ import { Leaf, LogOut } from 'lucide-react';
 import { adminSignOut } from '../login/actions';
 import {
   navLinksForRole,
+  hasCapability,
   ADMIN_ROLE_LABEL,
   type AdminRole,
 } from './admin-nav-config';
 import AdminMobileNav from './admin-mobile-nav';
+import AdminNotificationBell, {
+  type AdminBellChannel,
+} from './admin-notification-bell';
 
 export const dynamic = 'force-dynamic';
 
@@ -51,6 +55,21 @@ export default async function AdminProtectedLayout({
     ? ADMIN_ROLE_LABEL[profile.admin_role]
     : 'Administratè';
 
+  // Which categories the bell should aggregate, derived from this admin's
+  // capabilities — we never surface a channel they cannot act on (e.g. a
+  // moderator who can't see contact messages would only get the support
+  // channel).
+  const bellChannels: AdminBellChannel[] = [];
+  if (hasCapability(profile.admin_role, 'manage_contact')) {
+    bellChannels.push('contact');
+  }
+  if (hasCapability(profile.admin_role, 'manage_consultations')) {
+    bellChannels.push('consultations');
+  }
+  if (hasCapability(profile.admin_role, 'reply_support')) {
+    bellChannels.push('support');
+  }
+
   return (
     <div className="min-h-screen bg-slate-50 lg:flex">
       {/* ── Mobile-only top strip + drawer (hidden lg+) ──────────────── */}
@@ -59,6 +78,7 @@ export default async function AdminProtectedLayout({
         initials={initials}
         visibleHrefs={links.map((l) => l.href)}
         roleLabel={roleLabel}
+        bellChannels={bellChannels}
       />
 
       {/* ── Desktop sidebar (hidden below lg) ────────────────────────── */}
@@ -119,7 +139,15 @@ export default async function AdminProtectedLayout({
         </div>
       </aside>
 
-      <div className="flex-1 min-w-0">{children}</div>
+      <div className="flex-1 min-w-0">
+        {/* ── Desktop topbar (hidden below lg) ─────────────────────── */}
+        {bellChannels.length > 0 && (
+          <header className="hidden lg:flex items-center justify-end gap-3 px-6 lg:px-10 py-3 bg-slate-50/85 backdrop-blur-md border-b border-cream-200 sticky top-0 z-20">
+            <AdminNotificationBell channels={bellChannels} />
+          </header>
+        )}
+        {children}
+      </div>
     </div>
   );
 }
