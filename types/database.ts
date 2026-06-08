@@ -295,7 +295,8 @@ export type Database = {
           subject: string
           message: string
           topic: string
-          status: 'new' | 'read' | 'responded' | 'archived'
+          status: 'new' | 'responded' | 'archived'
+          response_body: string | null
           responded_by: string | null
           responded_at: string | null
           created_at: string
@@ -309,7 +310,8 @@ export type Database = {
           subject: string
           message: string
           topic?: string
-          status?: 'new' | 'read' | 'responded' | 'archived'
+          status?: 'new' | 'responded' | 'archived'
+          response_body?: string | null
           responded_by?: string | null
           responded_at?: string | null
           created_at?: string
@@ -323,7 +325,8 @@ export type Database = {
           subject?: string
           message?: string
           topic?: string
-          status?: 'new' | 'read' | 'responded' | 'archived'
+          status?: 'new' | 'responded' | 'archived'
+          response_body?: string | null
           responded_by?: string | null
           responded_at?: string | null
           created_at?: string
