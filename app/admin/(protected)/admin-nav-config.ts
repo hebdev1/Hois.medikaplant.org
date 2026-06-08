@@ -6,7 +6,6 @@ import {
   Bell,
   BookOpen,
   Activity,
-  CalendarClock,
   MessageCircle,
   MessagesSquare,
   Sparkles,
@@ -47,7 +46,6 @@ export type AdminCapability =
   | 'manage_guides'
   | 'manage_subscriptions'
   | 'broadcast_notifications'
-  | 'manage_consultations'
   | 'manage_advice'
   | 'manage_badges'
   | 'manage_contact'
@@ -71,7 +69,6 @@ export const ROLE_CAPABILITIES: Record<AdminRole, ReadonlySet<AdminCapability>> 
     'manage_guides',
     'manage_subscriptions',
     'broadcast_notifications',
-    'manage_consultations',
     'manage_advice',
     'manage_badges',
     'manage_contact',
@@ -88,7 +85,6 @@ export const ROLE_CAPABILITIES: Record<AdminRole, ReadonlySet<AdminCapability>> 
     'manage_guides',
     'manage_subscriptions',
     'broadcast_notifications',
-    'manage_consultations',
     'manage_advice',
     'manage_badges',
     'manage_contact',
@@ -99,7 +95,6 @@ export const ROLE_CAPABILITIES: Record<AdminRole, ReadonlySet<AdminCapability>> 
     'overview',
     'manage_users',
     'reply_support',
-    'manage_consultations',
     'manage_contact',
     'manage_self',
   ]),
@@ -167,7 +162,6 @@ export const ADMIN_NAV_LINKS: readonly AdminNavLink[] = [
   { href: '/admin/health', label: 'Swivi Sante', icon: Activity, capability: 'view_health' },
   { href: '/admin/support', label: 'Sipò chat', icon: MessageCircle, capability: 'reply_support' },
   { href: '/admin/contact', label: 'Mesaj kontak', icon: Inbox, capability: 'manage_contact' },
-  { href: '/admin/consultations', label: 'Konsiltasyon', icon: CalendarClock, capability: 'manage_consultations' },
   { href: '/admin/forum', label: 'Fowòm', icon: MessagesSquare, capability: 'moderate_forum' },
   { href: '/admin/resources', label: 'Resources', icon: FileText, capability: 'manage_resources' },
   { href: '/admin/guides', label: 'Guides', icon: BookOpen, capability: 'manage_guides' },

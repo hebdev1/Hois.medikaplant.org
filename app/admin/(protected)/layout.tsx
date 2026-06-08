@@ -63,9 +63,6 @@ export default async function AdminProtectedLayout({
   if (hasCapability(profile.admin_role, 'manage_contact')) {
     bellChannels.push('contact');
   }
-  if (hasCapability(profile.admin_role, 'manage_consultations')) {
-    bellChannels.push('consultations');
-  }
   if (hasCapability(profile.admin_role, 'reply_support')) {
     bellChannels.push('support');
   }

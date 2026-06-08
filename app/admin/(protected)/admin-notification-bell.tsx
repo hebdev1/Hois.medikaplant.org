@@ -2,26 +2,24 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Bell, BellOff, Loader2, Inbox, CalendarClock, MessageCircle } from 'lucide-react';
+import { Bell, BellOff, Loader2, Inbox, MessageCircle } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { cn } from '@/lib/utils';
 
 type Counts = {
   contact: number;
-  consultations: number;
   support: number;
 };
 
 /**
- * Real-time bell for the admin chrome. Aggregates three signals an admin
+ * Real-time bell for the admin chrome. Aggregates two signals an admin
  * almost always needs to react to:
  *   1. New contact-form messages (status='new')
- *   2. New consultation requests (status='requested')
- *   3. Open support threads (status='open')
+ *   2. Open support threads (status='open')
  *
- * Strategy: do three small COUNT-only fetches up front, then subscribe to
- * INSERT/UPDATE events on the three source tables via Supabase Realtime.
- * On every change we refetch the affected counter (cheap, server-side
+ * Strategy: do two small COUNT-only fetches up front, then subscribe to
+ * INSERT/UPDATE events on the source tables via Supabase Realtime. On
+ * every change we refetch the affected counter (cheap, server-side
  * count, no row payload). This avoids maintaining a separate admin-events
  * table and keeps the bell honest — what the admin sees is always the
  * live truth.
@@ -30,7 +28,7 @@ type Counts = {
  * with the channels the current admin can act on, so we don't bother
  * showing a category they cannot reach.
  */
-export type AdminBellChannel = 'contact' | 'consultations' | 'support';
+export type AdminBellChannel = 'contact' | 'support';
 
 export default function AdminNotificationBell({
   channels,
@@ -42,7 +40,6 @@ export default function AdminNotificationBell({
   const [loading, setLoading] = React.useState(true);
   const [counts, setCounts] = React.useState<Counts>({
     contact: 0,
-    consultations: 0,
     support: 0,
   });
   const dropdownRef = React.useRef<HTMLDivElement | null>(null);
@@ -60,15 +57,6 @@ export default function AdminNotificationBell({
     setCounts((prev) => ({ ...prev, contact: count ?? 0 }));
   }, [supabase, allowed]);
 
-  const fetchConsults = React.useCallback(async () => {
-    if (!allowed.has('consultations')) return;
-    const { count } = await supabase
-      .from('consultations')
-      .select('id', { count: 'exact', head: true })
-      .eq('status', 'requested');
-    setCounts((prev) => ({ ...prev, consultations: count ?? 0 }));
-  }, [supabase, allowed]);
-
   const fetchSupport = React.useCallback(async () => {
     if (!allowed.has('support')) return;
     const { count } = await supabase
@@ -82,13 +70,13 @@ export default function AdminNotificationBell({
   React.useEffect(() => {
     let cancelled = false;
     (async () => {
-      await Promise.all([fetchContact(), fetchConsults(), fetchSupport()]);
+      await Promise.all([fetchContact(), fetchSupport()]);
       if (!cancelled) setLoading(false);
     })();
     return () => {
       cancelled = true;
     };
-  }, [fetchContact, fetchConsults, fetchSupport]);
+  }, [fetchContact, fetchSupport]);
 
   // ── Realtime subscriptions ────────────────────────────────────────────────
   React.useEffect(() => {
@@ -108,22 +96,6 @@ export default function AdminNotificationBell({
         () => {
           // Status flips (new → responded → archived) all change the count.
           fetchContact();
-        }
-      );
-    }
-    if (allowed.has('consultations')) {
-      channel.on(
-        'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'consultations' },
-        () => {
-          fetchConsults();
-        }
-      );
-      channel.on(
-        'postgres_changes',
-        { event: 'UPDATE', schema: 'public', table: 'consultations' },
-        () => {
-          fetchConsults();
         }
       );
     }
@@ -148,7 +120,7 @@ export default function AdminNotificationBell({
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [supabase, allowed, fetchContact, fetchConsults, fetchSupport]);
+  }, [supabase, allowed, fetchContact, fetchSupport]);
 
   // ── Click-outside to close ────────────────────────────────────────────────
   React.useEffect(() => {
@@ -167,14 +139,13 @@ export default function AdminNotificationBell({
   React.useEffect(() => {
     function onFocus() {
       fetchContact();
-      fetchConsults();
       fetchSupport();
     }
     window.addEventListener('focus', onFocus);
     return () => window.removeEventListener('focus', onFocus);
-  }, [fetchContact, fetchConsults, fetchSupport]);
+  }, [fetchContact, fetchSupport]);
 
-  const total = counts.contact + counts.consultations + counts.support;
+  const total = counts.contact + counts.support;
   const hasUnread = total > 0;
 
   return (
@@ -268,19 +239,6 @@ export default function AdminNotificationBell({
                     href="/admin/contact?tab=new"
                     count={counts.contact}
                     tone="rose"
-                    onClick={() => setOpen(false)}
-                  />
-                )}
-                {allowed.has('consultations') && counts.consultations > 0 && (
-                  <BellRow
-                    icon={
-                      <CalendarClock className="w-4 h-4" strokeWidth={2.2} />
-                    }
-                    title="Konsiltasyon mande"
-                    body={`${counts.consultations} demann ki bezwen pwograme.`}
-                    href="/admin/consultations"
-                    count={counts.consultations}
-                    tone="amber"
                     onClick={() => setOpen(false)}
                   />
                 )}

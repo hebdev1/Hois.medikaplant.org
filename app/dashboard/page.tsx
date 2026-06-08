@@ -13,7 +13,9 @@ import ShopSlider from '@/components/dashboard/shop-slider';
 import TreatmentsSection, {
   type Treatment,
 } from '@/components/dashboard/treatments-section';
-import ConsultationsPanel from '@/components/dashboard/consultations-panel';
+// Consultations: bookings now happen on medikaplantshop.com/consultation.
+// The CTA panel still ships on /dashboard/health; this page no longer
+// renders it (the health page is the canonical home for care content).
 import OnboardingBlock from '@/components/dashboard/blocks/onboarding-block';
 import HoisReflectionBlock from '@/components/dashboard/blocks/hois-reflection-block';
 import AdaptiveMetrics from '@/components/dashboard/blocks/adaptive-metrics';
@@ -23,8 +25,6 @@ import {
   type BlockId,
 } from '@/lib/dashboard/personalization';
 import type { BadgeIcon, TaskChipKind, Database } from '@/types/database';
-
-type ConsultationRow = Database['public']['Tables']['consultations']['Row'];
 
 const PLAN_LABELS: Record<string, string> = {
   basic: 'Hoïs Bazilik',
@@ -84,7 +84,6 @@ export default async function DashboardHome({
     resourcesResult,
     healthLogsResult,
     treatmentsResult,
-    consultationsResult,
     adviceResult,
     productResult,
     streakResult,
@@ -131,12 +130,6 @@ export default async function DashboardHome({
       .eq('user_id', user.id)
       .order('created_at', { ascending: false })
       .limit(10),
-    supabase
-      .from('consultations')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('created_at', { ascending: false })
-      .limit(20),
     supabase
       .from('daily_advice')
       .select('*')
@@ -285,7 +278,6 @@ export default async function DashboardHome({
   const realLogCount = healthLogs.length;
 
   const treatments = (treatmentsResult.data ?? []) as Treatment[];
-  const consultations = (consultationsResult.data ?? []) as ConsultationRow[];
 
   // ---- Daily totals ----
   const doneToday = tasks.filter((t) => t.done).length;
@@ -390,7 +382,6 @@ export default async function DashboardHome({
         }}
       />
     ) : null,
-    consultations: <ConsultationsPanel initial={consultations} />,
     checklist: <ChecklistPanel initialTasks={tasks} />,
     treatments: <TreatmentsSection treatments={treatments} />,
     badges: <BadgesPanel badges={badges} level={level} levelName={levelName} />,

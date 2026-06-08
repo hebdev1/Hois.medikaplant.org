@@ -19,7 +19,6 @@ export type BlockId =
   | 'hero'
   | 'hois'
   | 'metrics'
-  | 'consultations'
   | 'checklist'
   | 'treatments'
   | 'badges'
@@ -140,13 +139,6 @@ export function orderedBlocks(ctx: DashboardContext): BlockId[] {
       id: 'metrics',
       show: ctx.primaryMetric !== null && ctx.lifecycle !== 'new',
       weight: 20,
-    },
-
-    // Consultations float to the top for VIP, mid for premium, low for basic.
-    {
-      id: 'consultations',
-      show: true,
-      weight: ctx.plan === 'vip' ? 22 : ctx.plan === 'premium' ? 42 : 72,
     },
 
     { id: 'checklist', show: ctx.hasProgram, weight: 30 },

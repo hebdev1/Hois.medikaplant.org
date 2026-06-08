@@ -35,7 +35,6 @@ type Medical = Database['public']['Tables']['user_medical_info']['Row'];
 type Prefs = Database['public']['Tables']['user_preferences']['Row'];
 type Subscription = Database['public']['Tables']['subscriptions']['Row'];
 type HealthLog = Database['public']['Tables']['health_logs']['Row'];
-type Consultation = Database['public']['Tables']['consultations']['Row'];
 type Treatment = Database['public']['Tables']['treatment_recommendations']['Row'];
 type Notif = Database['public']['Tables']['notifications']['Row'];
 
@@ -182,7 +181,6 @@ export default async function AdminUserDetailPage({
     subsResult,
     activeSubResult,
     logsResult,
-    consultsResult,
     treatmentsResult,
     notifsResult,
   ] = await Promise.allSettled([
@@ -206,12 +204,6 @@ export default async function AdminUserDetailPage({
       .eq('user_id', params.userId)
       .order('logged_at', { ascending: false })
       .limit(6),
-    supabase
-      .from('consultations')
-      .select('id, scheduled_at, status, type, consultant_name, topic')
-      .eq('user_id', params.userId)
-      .order('scheduled_at', { ascending: false })
-      .limit(4),
     supabase
       .from('treatment_recommendations')
       .select('id, title, kind, status, created_at, read_at')
@@ -255,13 +247,6 @@ export default async function AdminUserDetailPage({
           | 'notes'
         >[])
       : [];
-  const consults =
-    consultsResult.status === 'fulfilled'
-      ? ((consultsResult.value.data ?? []) as Pick<
-          Consultation,
-          'id' | 'scheduled_at' | 'status' | 'type' | 'consultant_name' | 'topic'
-        >[])
-      : [];
   const treatments =
     treatmentsResult.status === 'fulfilled'
       ? ((treatmentsResult.value.data ?? []) as Pick<
@@ -290,7 +275,6 @@ export default async function AdminUserDetailPage({
 
   const stats = {
     logs: recentLogs.length,
-    consults: consults.length,
     activeTreatments: treatments.filter((t) => t.status === 'active').length,
   };
 
@@ -388,12 +372,6 @@ export default async function AdminUserDetailPage({
             label="Mezi resan"
             value={`${stats.logs}`}
             tone="bg-forest-100 text-forest-700"
-          />
-          <QuickStat
-            icon={Stethoscope}
-            label="Konsiltasyon"
-            value={`${stats.consults}`}
-            tone="bg-teal-100 text-teal-700"
           />
           <QuickStat
             icon={Pill}
@@ -558,36 +536,6 @@ export default async function AdminUserDetailPage({
               </ul>
             )}
           </SidePanel>
-
-          {/* Consultations */}
-          {consults.length > 0 && (
-            <SidePanel
-              icon={Stethoscope}
-              title="Konsiltasyon"
-              iconTone="bg-teal-100 text-teal-700"
-            >
-              <ul className="space-y-2">
-                {consults.map((c) => (
-                  <li
-                    key={c.id}
-                    className="flex items-baseline justify-between gap-2 text-xs"
-                  >
-                    <div className="min-w-0 flex-1">
-                      <div className="font-semibold text-ink truncate">
-                        {c.consultant_name}
-                      </div>
-                      <div className="text-[10px] text-earth-500 truncate">
-                        {c.topic ?? c.type}
-                      </div>
-                    </div>
-                    <span className="text-[10px] text-earth-500 shrink-0">
-                      {formatDateTime(c.scheduled_at)}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </SidePanel>
-          )}
 
           {/* Treatments recap */}
           {treatments.length > 0 && (

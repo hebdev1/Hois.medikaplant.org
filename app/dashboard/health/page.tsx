@@ -25,7 +25,6 @@ import TreatmentsSection, {
 import ConsultationsPanel from '@/components/dashboard/consultations-panel';
 import type { Database } from '@/types/database';
 
-type ConsultationRow = Database['public']['Tables']['consultations']['Row'];
 
 export const metadata = { title: 'Swivi Sante' };
 export const dynamic = 'force-dynamic';
@@ -109,7 +108,6 @@ export default async function HealthPage({
     logsResult,
     medicalResult,
     treatmentsResult,
-    consultationsResult,
     unreadCountResult,
   ] = await Promise.all([
     supabase
@@ -141,12 +139,6 @@ export default async function HealthPage({
       .eq('user_id', user.id)
       .order('created_at', { ascending: false })
       .limit(50),
-    supabase
-      .from('consultations')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('created_at', { ascending: false })
-      .limit(20),
     supabase.rpc('user_unread_notifications_count', { uid: user.id }),
   ]);
 
@@ -159,7 +151,6 @@ export default async function HealthPage({
   const healthGoal = medicalRow?.health_goal ?? null;
   const healthGoalOther = medicalRow?.health_goal_other ?? null;
   const treatments = (treatmentsResult.data ?? []) as Treatment[];
-  const consultations = (consultationsResult.data ?? []) as ConsultationRow[];
 
   // Default the active metric to whichever metric maps to the user's first
   // matching condition — so a diabetic user lands on "Sik nan san" by
@@ -440,11 +431,10 @@ export default async function HealthPage({
           <TreatmentsSection treatments={treatments} />
         </div>
 
-        {/* Consultations — moved here from settings: members request, an
-            admin schedules + follows up. Lives on the health page since
-            it's part of the care journey, not account settings. */}
+        {/* Consultations — bookings now happen on
+            medikaplantshop.com/consultation. Panel is a pure outbound CTA. */}
         <div className="mt-6">
-          <ConsultationsPanel initial={consultations} />
+          <ConsultationsPanel />
         </div>
       </div>
     </>

@@ -615,84 +615,8 @@ export async function deleteAccount(): Promise<
 }
 
 // ─── Consultations ─────────────────────────────────────────────────────────
-
-type ConsultationInsert = Database['public']['Tables']['consultations']['Insert'];
-type ConsultationRow = Database['public']['Tables']['consultations']['Row'];
-
-const CONSULTATION_TYPES = ['video', 'in_person', 'audio', 'written'] as const;
-
-/**
- * Members no longer book the date/time themselves — they submit a
- * REQUEST with the topic + preferred type (+ optional preferred
- * timeframe note), and the admin picks the actual scheduled_at later
- * from /admin/consultations. The row lands with status='requested'.
- */
-export async function createConsultation(input: {
-  type: (typeof CONSULTATION_TYPES)[number];
-  topic: string;
-  /** Free-text "I prefer Tuesday afternoons" — stored in notes for now. */
-  preferred_timeframe?: string | null;
-}): Promise<{ ok: true; consultation: ConsultationRow } | { ok: false; error: string }> {
-  const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return { ok: false, error: 'Ou dwe konekte.' };
-
-  if (!CONSULTATION_TYPES.includes(input.type)) {
-    return { ok: false, error: 'Tip konsiltasyon pa valid.' };
-  }
-  const topic = input.topic.trim();
-  if (topic.length < 4) {
-    return { ok: false, error: 'Dekri sijè konsiltasyon an pi byen (omwen 4 karaktè).' };
-  }
-  if (topic.length > 1000) {
-    return { ok: false, error: 'Sijè a twò long (maks 1000 karaktè).' };
-  }
-  const timeframe = input.preferred_timeframe?.trim() || null;
-
-  const insert: ConsultationInsert = {
-    user_id: user.id,
-    consultant_name: null,
-    type: input.type,
-    status: 'requested',
-    scheduled_at: null,
-    duration_minutes: 30,
-    topic,
-    notes: timeframe ? `Tan ki pi bon: ${timeframe}` : null,
-  };
-
-  const { data, error } = await supabase
-    .from('consultations')
-    .insert(insert)
-    .select('*')
-    .single();
-  if (error || !data) return { ok: false, error: error?.message ?? 'Erè inkoni.' };
-
-  revalidatePath('/dashboard/settings');
-  revalidatePath('/admin/consultations');
-  return { ok: true, consultation: data as ConsultationRow };
-}
-
-export async function cancelConsultation(
-  id: string
-): Promise<{ ok: true } | { ok: false; error: string }> {
-  const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return { ok: false, error: 'Ou dwe konekte.' };
-
-  // Users can cancel both requested and scheduled appointments.
-  const { error } = await supabase
-    .from('consultations')
-    .update({ status: 'cancelled' })
-    .eq('id', id)
-    .eq('user_id', user.id)
-    .in('status', ['requested', 'scheduled']);
-  if (error) return { ok: false, error: error.message };
-
-  revalidatePath('/dashboard/settings');
-  revalidatePath('/admin/consultations');
-  return { ok: true };
-}
+//
+// Removed. Bookings now happen on medikaplantshop.com/consultation, so the
+// dashboard no longer creates/cancels consultation rows. The `consultations`
+// table itself stays in the DB for the historical record (no destructive
+// migration).
