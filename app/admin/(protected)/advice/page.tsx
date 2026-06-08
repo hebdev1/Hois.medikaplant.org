@@ -62,8 +62,8 @@ export default async function AdminAdvicePage() {
         </h1>
         <p className="mt-2 text-sm text-earth-600 max-w-2xl">
           Yo parèt sou tablodebò manm yo nan kat "Konsèy jou a". Yon konsèy
-          pa jou — si dat la pase, manm nan wè dènye ki te pibliye a. Ou ka
-          pwograme konsèy yo davans (dat nan fiti).
+          pa jou  si dat la pase, manm nan wè dènye ki te pibliye a. Ou ka
+          pwograme konsèy yo davans (nan yon pwochen dat ).
         </p>
       </header>
 
