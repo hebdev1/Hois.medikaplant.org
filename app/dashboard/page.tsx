@@ -9,7 +9,7 @@ import BadgesPanel, {
   type DashboardBadge,
 } from '@/components/dashboard/badges-panel';
 import DownloadsPanel from '@/components/dashboard/downloads-panel';
-import UpsellCard from '@/components/dashboard/upsell-card';
+import ShopSlider from '@/components/dashboard/shop-slider';
 import TreatmentsSection, {
   type Treatment,
 } from '@/components/dashboard/treatments-section';
@@ -310,29 +310,13 @@ export default async function DashboardHome({
     'Jodi a, evite <em>sik rafine a</em>. Bwè plis dlo, e prepare yon tas tizan <em>mounn-bwa</em> apre manje midi pou ekilibre glikemi an.';
   const advicePlant = advice?.plant_name ?? 'Mounn-bwa — Cnidoscolus chayamansa';
 
-  // ---- Featured product ----
-  const product = productResult.data as
-    | {
-        name: string;
-        tagline: string | null;
-        botanical: string | null;
-        price: number;
-        old_price: number | null;
-        currency: string;
-        shipping_note: string | null;
-      }
-    | null;
-  const currencySymbol = (c: string) =>
-    c === 'USD' ? '$' : c === 'HTG' ? 'G' : '€';
-  const upsellPrice = product
-    ? `${currencySymbol(product.currency)} ${product.price.toFixed(2)}`
-    : '€ 24.90';
-  const upsellOldPrice =
-    product && product.old_price
-      ? `${currencySymbol(product.currency)} ${product.old_price.toFixed(2)}`
-      : undefined;
-
   // ---- Identity ----
+  // Note: the legacy `products` table fetch above (productResult) is kept
+  // for now in case we revive a DB-driven featured product. The new
+  // ShopSlider component embeds a curated list of medikaplantshop.com
+  // products directly — no DB roundtrip needed for the shop carousel.
+  void productResult;
+
   const userName = profile?.full_name || profile?.email?.split('@')[0] || 'Manm';
   const shortName = userName.split(' ')[0];
   const planLabel = profile ? PLAN_LABELS[profile.plan] : 'Hoïs Bazilik';
@@ -411,21 +395,7 @@ export default async function DashboardHome({
     treatments: <TreatmentsSection treatments={treatments} />,
     badges: <BadgesPanel badges={badges} level={level} levelName={levelName} />,
     downloads: <DownloadsPanel resources={resourcesResult.data ?? []} />,
-    upsell: (
-      <UpsellCard
-        productName={product?.name ?? 'Hois Detox Plus'}
-        tagline={
-          product?.tagline ??
-          'Yon booste pou plan ou — mounn-bwa konsantre + ekstra jenjanm pou ekilibre sik la pi vit.'
-        }
-        botanical={
-          product?.botanical ?? 'Cnidoscolus chayamansa × Zingiber officinale'
-        }
-        price={upsellPrice}
-        oldPrice={upsellOldPrice}
-        shippingNote={product?.shipping_note ?? 'Livrezon gratis · Pòtoprens'}
-      />
-    ),
+    upsell: <ShopSlider />,
   };
 
   const blocks = orderedBlocks(ctx);
