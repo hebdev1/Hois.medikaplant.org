@@ -407,7 +407,11 @@ export default async function DashboardHome({
         userCondition={`${planLabel} · Niv. ${level} ${levelName}`}
         unreadCount={unreadCount}
       />
-      <div className="p-5 md:p-8 lg:p-10 max-w-[1320px] grid gap-5 md:gap-6">
+      {/* Single-column grid with minmax(0,1fr) — without the 0 lower
+          bound, a grid item's intrinsic min-size defaults to auto, which
+          lets a child like the shop slider's horizontal flex strip
+          balloon the column wider than the viewport. */}
+      <div className="p-5 md:p-8 lg:p-10 max-w-[1320px] grid grid-cols-[minmax(0,1fr)] gap-5 md:gap-6 overflow-x-hidden">
         {justSubscribedPlan && (
           <div className="rounded-2xl border border-forest-200 bg-forest-50 px-5 py-4 flex items-start gap-3">
             <span className="grid place-items-center w-10 h-10 rounded-xl bg-forest-100 text-forest-700 shrink-0">
@@ -425,7 +429,11 @@ export default async function DashboardHome({
         )}
 
         {blocks.map((id) =>
-          blockNodes[id] ? <div key={id}>{blockNodes[id]}</div> : null
+          blockNodes[id] ? (
+            <div key={id} className="min-w-0">
+              {blockNodes[id]}
+            </div>
+          ) : null
         )}
       </div>
     </>
