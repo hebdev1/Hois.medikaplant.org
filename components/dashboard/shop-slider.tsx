@@ -130,7 +130,13 @@ export default function ShopSlider() {
   }
 
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-forest-800 to-forest-900 text-cream-50 border border-forest-700 rounded-2xl p-5 md:p-6 shadow-hero">
+    // Outer wrapper guarantees the slider can NEVER push the dashboard
+    // wider than its column: min-w-0 lets it shrink inside a grid cell,
+    // overflow-hidden caps any pixel that leaks out of the scroller
+    // (notably the absolute-positioned arrow buttons + protruding cards
+    // on mobile).
+    <div className="relative min-w-0 w-full overflow-hidden rounded-2xl">
+      <section className="relative overflow-hidden bg-gradient-to-br from-forest-800 to-forest-900 text-cream-50 border border-forest-700 rounded-2xl p-5 md:p-6 shadow-hero">
       <div
         className="absolute -top-12 -right-10 w-64 h-64 bg-gold-400/15 rounded-full blur-3xl pointer-events-none"
         aria-hidden
@@ -167,11 +173,14 @@ export default function ShopSlider() {
         </a>
       </header>
 
-      {/* Scroller */}
-      <div className="relative z-10">
+      {/* Scroller — relative parent has its own overflow-hidden so the
+          absolutely-positioned arrow buttons (which sit just inside the
+          edges) and the protruding right-most card can never widen the
+          outer section. */}
+      <div className="relative z-10 min-w-0 overflow-hidden">
         <div
           ref={scrollerRef}
-          className="flex gap-3 md:gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-2 -mx-1 px-1
+          className="flex gap-3 md:gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-2
                      [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           aria-label="Pwodwi MedikaPlant"
         >
@@ -180,13 +189,15 @@ export default function ShopSlider() {
           ))}
         </div>
 
-        {/* Arrows (desktop only; mobile users swipe) */}
+        {/* Arrows (desktop only; mobile users swipe). Positive insets so
+            the buttons live inside the section padding and never get
+            clipped by the wrapper's overflow-hidden. */}
         <button
           type="button"
           aria-label="Glise alagoch"
           onClick={() => scrollBy(-1)}
           disabled={!canScrollLeft}
-          className={`hidden md:grid absolute -left-2 top-1/2 -translate-y-1/2 place-items-center w-9 h-9 rounded-full bg-cream-50 text-forest-900 shadow-lg border border-cream-200 transition ${
+          className={`hidden md:grid absolute left-1 top-1/2 -translate-y-1/2 place-items-center w-9 h-9 rounded-full bg-cream-50 text-forest-900 shadow-lg border border-cream-200 transition ${
             canScrollLeft
               ? 'opacity-100 hover:scale-110'
               : 'opacity-0 pointer-events-none'
@@ -199,7 +210,7 @@ export default function ShopSlider() {
           aria-label="Glise adwat"
           onClick={() => scrollBy(1)}
           disabled={!canScrollRight}
-          className={`hidden md:grid absolute -right-2 top-1/2 -translate-y-1/2 place-items-center w-9 h-9 rounded-full bg-cream-50 text-forest-900 shadow-lg border border-cream-200 transition ${
+          className={`hidden md:grid absolute right-1 top-1/2 -translate-y-1/2 place-items-center w-9 h-9 rounded-full bg-cream-50 text-forest-900 shadow-lg border border-cream-200 transition ${
             canScrollRight
               ? 'opacity-100 hover:scale-110'
               : 'opacity-0 pointer-events-none'
@@ -209,6 +220,7 @@ export default function ShopSlider() {
         </button>
       </div>
     </section>
+    </div>
   );
 }
 
