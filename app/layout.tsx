@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Poppins, Playfair_Display, Lora, DM_Sans } from 'next/font/google';
 import './globals.css';
+import TranslateSwitcher from '@/components/translate-switcher';
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -69,7 +70,10 @@ export default function RootLayout({
       lang="ht"
       className={`${poppins.variable} ${playfair.variable} ${lora.variable} ${dmSans.variable}`}
     >
-      <body className="font-sans antialiased bg-white text-ink">{children}</body>
+      <body className="font-sans antialiased bg-white text-ink">
+        {children}
+        <TranslateSwitcher />
+      </body>
     </html>
   );
 }

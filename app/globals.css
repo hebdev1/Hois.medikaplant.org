@@ -34,6 +34,40 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+/* ─────────────────────────────────────────────────────────────────────────
+ * Google Translate widget overrides.
+ *
+ * The widget injects a banner at the top of <body> and pushes the rest of
+ * the page down — terrible UX. These rules:
+ *   • Hide every visible piece of Google's injected chrome (banner,
+ *     tooltip iframe, status balloon).
+ *   • Lock body to top: 0 so the page can't be pushed down.
+ *   • Prevent the dotted underline Google paints under translated nodes.
+ *
+ * The custom switcher (components/translate-switcher.tsx) still drives
+ * the underlying .goog-te-combo programmatically, so translation works
+ * — only the default UI is hidden.
+ * ───────────────────────────────────────────────────────────────────────── */
+body {
+  top: 0 !important;
+}
+.goog-te-banner-frame.skiptranslate,
+.skiptranslate > iframe,
+#goog-gt-tt,
+.goog-te-balloon-frame,
+.goog-tooltip,
+.goog-tooltip:hover {
+  display: none !important;
+  visibility: hidden !important;
+}
+.goog-text-highlight {
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+font[style*="vertical-align: inherit"] {
+  font-family: inherit !important;
+}
+
 a {
   color: inherit;
   text-decoration: none;
