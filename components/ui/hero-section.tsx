@@ -7,44 +7,51 @@ import { ArcGalleryHero } from './arc-gallery-hero-component';
 // ───────────────────────────────────────────────────────────────────────────
 // MedikaPlant landing hero — Arc Gallery variant.
 //
-// Twelve curated Unsplash photos (plants, herbs, tea, wellness) form a
-// semicircle at the top of the section. Headline + subtitle in Kreyòl,
-// brand-themed CTAs route to the existing checkout + pricing anchor.
+// Twelve curated photos themed around naturopathy + herbal medicine
+// (mortar & pestle, fresh herbs, homeopathy globules, acupuncture, hands
+// with sage, etc.) form a semicircle at the top of the section. Headline +
+// subtitle in Kreyòl, brand-themed CTAs route to the existing checkout +
+// pricing anchor.
 //
-// Image strategy: pick photos that already convey the platform's pillars —
-// herbal medicine, tea/brews, leaves, nature — so the visual carries the
-// promise before any words are read. Images go through Unsplash's CDN with
-// `w=400&q=80&fit=crop` so they're small enough for a fast initial paint.
+// Source: Pexels (free, hot-linkable CDN). We size each photo to w=400 via
+// Pexels' on-the-fly URL params so the arc loads fast on mobile. We
+// considered Shutterstock + Pixabay too — Shutterstock blocks hot-linking
+// (their CDN serves watermarked previews to unauthenticated requests) and
+// Pixabay's search page returns 403 to scrapers, so Pexels is the lone
+// open CDN that works without an API key. If we want even more diversity
+// later, switch to authenticated Pixabay API.
 // ───────────────────────────────────────────────────────────────────────────
 
+const PX = '?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop';
+
 const HERO_IMAGES = [
-  'https://images.unsplash.com/photo-1505578360635-fbf6d97ed4ae?q=80&w=400&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1471864190281-a93a3070b6de?q=80&w=400&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1465379944081-7f47de8d74ac?q=80&w=400&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1502230831726-fe5549140034?q=80&w=400&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1490750967868-88aa4486c946?q=80&w=400&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1466637574441-749b8f19452f?q=80&w=400&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1467043237213-65f2da53396f?q=80&w=400&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1496449903678-68ddcb189a24?q=80&w=400&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?q=80&w=400&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1470081636430-b65dec22f7ec?q=80&w=400&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1471193945509-9ad0617afabf?q=80&w=400&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1444858345346-58bbac263b59?q=80&w=400&auto=format&fit=crop',
+  `https://images.pexels.com/photos/163186/globuli-medical-bless-you-homeopathy-163186.jpeg${PX}`,
+  `https://images.pexels.com/photos/105028/pexels-photo-105028.jpeg${PX}`,
+  `https://images.pexels.com/photos/7523449/pexels-photo-7523449.jpeg${PX}`,
+  `https://images.pexels.com/photos/8391429/pexels-photo-8391429.jpeg${PX}`,
+  `https://images.pexels.com/photos/7615621/pexels-photo-7615621.jpeg${PX}`,
+  `https://images.pexels.com/photos/6850901/pexels-photo-6850901.jpeg${PX}`,
+  `https://images.pexels.com/photos/5480091/pexels-photo-5480091.jpeg${PX}`,
+  `https://images.pexels.com/photos/5480036/pexels-photo-5480036.jpeg${PX}`,
+  `https://images.pexels.com/photos/7526026/pexels-photo-7526026.jpeg${PX}`,
+  `https://images.pexels.com/photos/7526062/pexels-photo-7526062.jpeg${PX}`,
+  `https://images.pexels.com/photos/6076150/pexels-photo-6076150.jpeg${PX}`,
+  `https://images.pexels.com/photos/7615466/pexels-photo-7615466.jpeg${PX}`,
 ];
 
 const IMAGE_ALTS = [
-  'Plant medicine ingredients',
-  'Èrboris hand-grinding herbs',
-  'Mortar and pestle with herbs',
-  'Cup of herbal tea',
-  'Fresh lavender',
-  'Healing herbs',
-  'Forest plants',
-  'Herbal flat lay',
-  'Plant-based tea ritual',
-  'Green leaves close-up',
-  'Mint plant',
-  'Forest light through trees',
+  'Lavande + globil omeyopatik',
+  'Mòtye nan mab ak fèy sou yon tab bwa',
+  'Plant zòti (ortie) frè ak gout dlo',
+  'Èrboris k ap prepare fèy ak yon gout esansyèl',
+  'Konplèman natirèl ak fèy ginkgo sou mab',
+  'Men ki kenbe fèy lasaj frè',
+  'Mòtye ak fèy seche pou yon swen natirèl',
+  'Èrboris k ap moulen engredyan ak peta fèy',
+  'Engredyan remèd natirèl: mòtye, fyòl, fèy',
+  'Fèy esansyèl ak mòtye sou yon fon jòn',
+  'Akiponktirè k ap fè yon swen',
+  'Fèy, jenjanm ak konplèman natirèl sou mab',
 ];
 
 export default function HeroSection() {
