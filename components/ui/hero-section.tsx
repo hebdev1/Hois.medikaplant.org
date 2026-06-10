@@ -87,13 +87,13 @@ export default function HeroSection() {
         title={
           <>
             Geri ak <span className="text-brand-600">fòs lanati</span>,
-            <br className="hidden sm:block" /> viv ak lasajès Hoïs.
+            <br className="hidden sm:block" /> Viv ak lasajès zansèt yo.
           </>
         }
-        subtitle="MedikaPlant pote pou ou remèd fèy, konsiltasyon natiropatik, ak yon kominote VIP ki rasin nan medsin tradisyonèl ayisyen — pou pran swen kò ou, lespri ou, ak nanm ou."
+        subtitle="Medikaplant pote pou ou remèd fèy, konsiltasyon natiropatik, ak yon kominote VIP ki rasinen nan medsin tradisyonèl ayisyen  pou ede w pran swen kò w, lespri w, ak nanm ou."
         ctas={[
-          { label: 'Kòmanse Vwayaj ou', href: '#pri', variant: 'primary' },
-          { label: 'Dekouvri Pwodui yo', href: '#pwodui', variant: 'secondary' },
+          { label: 'Kòmanse Vwayaj pa w', href: '#pri', variant: 'primary' },
+          { label: 'Dekouvri avantaj yo', href: '#pwodui', variant: 'secondary' },
         ]}
       />
     </section>
