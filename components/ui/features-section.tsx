@@ -28,7 +28,7 @@ const FEATURES = [
   },
   {
     icon: Moon,
-    title: 'Sèvo, Sante Mantal ak Rekiperasyon',
+    title: 'Sèvo & Sante Mantal',
     body: 'Yon espas espesyalize pou sipòte memwa, konsantrasyon, detant ak sante mantal, rezilyans emosyonèl, ak rekiperasyon apre peryòd estrès, fatig mantal, depresyon oswa lòt defi ki afekte byennèt sikolojik.',
     accent: 'bg-violet-100 text-violet-700',
   },
