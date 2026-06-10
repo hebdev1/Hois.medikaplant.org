@@ -89,8 +89,8 @@ const ITEMS: {
       'Konekte ak Pwisans Granmèt Souf la pou louvri je w, ede w pa dewoute, epi atenn dimansyon pèsonèl Limyè a.',
   },
   {
-    id: 'kominote',
-    label: 'Kominote Hoïs',
+    id: 'Zewo degre Mistik',
+    label: 'Zewo degre Mistik',
     icon: Users,
     image:
       'https://images.unsplash.com/photo-1529390079861-591de354faf5?q=80&w=1200',
@@ -98,13 +98,13 @@ const ITEMS: {
       'Rantre nan lakou HOÏS-Medikaplant. Yon kominote ki transfòme tèt yo chak jou kòm ajan limyè pou amelyore kondisyon lavi lòt.',
   },
   {
-    id: 'tradisyon',
-    label: 'Tradisyon Ayisyen',
+    id: 'Elokans Yanki Atakoye',
+    label: 'Elokans Yanki Atakoye',
     icon: BookOpen,
     image:
       'https://images.unsplash.com/photo-1611078489935-0cb964de46d6?q=80&w=1200',
     description:
-      'Konesans plant medisinal transmèt soti jenerasyon an jenerasyon. Yon eritaj Hoïs Inivèsite ap prezève epi pataje.',
+      'Elokans Yanki Atakoye se etensèl limyè k ap briye, yon limyè ki domine plizyè espas ak plizyè plan,Se pakou yon moun eksepsyonèl ki make tan ak espas atravè zèv limyè li ak fason li ede lòt moun fè elevasyon espirityèl. ',
   },
 ];
 
