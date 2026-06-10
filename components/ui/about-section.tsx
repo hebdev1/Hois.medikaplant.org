@@ -5,7 +5,7 @@ const PILLARS = [
   {
     icon: Leaf,
     title: 'Tradisyon & Syans',
-    body: 'yon patrimwàn nou dwe transmèt de jenerasyon an jenerasyon. Nou mete ansanm rechèch syantifik ak medsin tradisyonèl pou ofri yon apwòch ki chita sou konesans ak eksperyans.',
+    body: 'Nou mete ansanm rechèch syantifik ak medsin tradisyonèl pou ofri yon apwòch ki chita sou konesans ak eksperyans.',
   },
   {
     icon: Heart,
