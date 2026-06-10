@@ -4,18 +4,18 @@ import { Leaf, Heart, Globe } from 'lucide-react';
 const PILLARS = [
   {
     icon: Leaf,
-    title: 'Tradisyon',
-    body: 'Konesans plant medisinal Ayisyen, transmèt soti jenerasyon an jenerasyon.',
+    title: 'Tradisyon & Syans',
+    body: 'Konesans sou plant medsinal ayisyen yo, yon patrimwàn nou dwe transmèt de jenerasyon an jenerasyon. Nou mete ansanm rechèch syantifik ak medsin tradisyonèl pou ofri yon apwòch ki chita sou konesans ak eksperyans.',
   },
   {
     icon: Heart,
     title: 'Bonjan Swen',
-    body: 'Yon apwòch holistik ki konekte sante kò, lespri, ak nanm ou.',
+    body: 'Yon apwòch olistik ki pran an konsiderasyon kò w, lespri w, ak nanm ou pou ankouraje yon byennèt ki pi konplè.',
   },
   {
     icon: Globe,
     title: 'Kominote',
-    body: "Yon rezo manm ki sipòte youn lòt atravè peyi D'Ayiti ak dyaspora a.",
+    body: "Yon rezo manm solid ki sipòte youn lòt, pataje konesans, epi grandi ansanm atravè lemond anjeneral, patikilyèman an Ayiti ak dyaspora ayisyen an.",
   },
 ];
 
@@ -58,13 +58,13 @@ export default function AboutSection() {
           {/* RIGHT — copy */}
           <div>
             <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-100 text-brand-700 text-sm font-medium mb-4">
-              Sou MedikaPlant
+              Sou Hoïs Inivèsite
             </span>
             <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-ink leading-tight">
               Yon pon ant <span className="text-brand-600">tradisyon</span> ak modènite
             </h2>
             <p className="mt-5 text-ink-muted text-base md:text-lg leading-relaxed">
-             Hoïs Inivèsite a fonde pa MedikaPlant  pou prezève ak pataje konesans medsin tradisyonèl Ayisyen an. Nou konekte plant ki te toujou geri ak yon platfòm modèn pou edike, swiv, ak akonpaye chak manm nan vwayaj byennèt yo.
+             Hoïs Inivèsite se yon inisyativ Medikaplant ki fèt pou prezève, valorize, epi pataje konesans medsin tradisyonèl ayisyen an. Nou mete ansanm sajès zansèt yo ak zouti modèn pou edike, akonpaye, epi ede chak manm suiv pwogrè yo nan vwayaj byennèt, devlopman pèsonèl, ak sante olistik yo.
             </p>
 
             <div className="mt-8 grid sm:grid-cols-3 gap-4">
