@@ -95,7 +95,7 @@ const ITEMS: {
     image:
       'https://images.unsplash.com/photo-1529390079861-591de354faf5?q=80&w=1200',
     description:
-      'Se yon etap ou kreye lè w deside dezaprann tout sa w te mal aprann, dekonstwi sa ki dwe dekonstwi, epi demistifye tèt ou pou w fè yon tabula rasa. Se lè sa a ou pare pou kiltive Limyè a.',
+      'Dezaprann, dekonstwi ak demistifye tèt ou,  fè yon tabula rasa. Se lè sa a ou pare pou kiltive Limyè a.',
   },
   {
     id: 'Elokans Yanki Atakoye',
@@ -104,7 +104,7 @@ const ITEMS: {
     image:
       'https://images.unsplash.com/photo-1611078489935-0cb964de46d6?q=80&w=1200',
     description:
-      'Elokans Yanki Atakoye se etensèl limyè k ap briye, yon limyè ki domine plizyè espas ak plizyè plan,Se pakou yon moun eksepsyonèl ki make tan ak espas atravè zèv limyè li ak fason li ede lòt moun fè elevasyon espirityèl. ',
+      'Elokans Yanki Atakoye se etensèl limyè k ap briye, yon limyè ki domine plizyè espas ak plizyè plan. ',
   },
 ];
 
