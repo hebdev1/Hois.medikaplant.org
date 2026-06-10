@@ -28,7 +28,7 @@ const TESTIMONIALS: Testimonial[] = [
     name: 'Nadine Pierre',
     city: 'Miami',
     plan: 'Hoïs Bazilik',
-    body: 'M te fè dyaspora pou twò lontan. Hoïs konekte m ak rasin mwen — remèd fèy yo travay tankou yo te dwe.',
+    body: 'Mwen pase twòp tan nan dyaspora a. Hoïs konekte m ak rasin mwen remèd fèy yo travay jan sa dwe fèt.',
     avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=200&q=80',
   },
 ];
@@ -42,7 +42,7 @@ export default function TestimonialsSection() {
             Temwayaj
           </span>
           <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-ink">
-            Sa manm yo <span className="text-brand-600">ap di</span> sou Hoïs
+            Sa manm yo <span className="text-brand-600"> di </span> sou Hoïs
           </h2>
         </div>
 
