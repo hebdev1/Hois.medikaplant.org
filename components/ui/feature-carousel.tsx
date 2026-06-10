@@ -311,7 +311,7 @@ export function FeatureCarousel() {
                   >
                     <div className="w-2 h-2 rounded-full bg-white shadow-[0_0_10px_white] animate-pulse" />
                     <span className="text-white/80 text-[10px] font-semibold uppercase tracking-[0.3em] font-mono">
-                      Pakou HOÏS
+                       HOÏS
                     </span>
                   </div>
                 </motion.div>
