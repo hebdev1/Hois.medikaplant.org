@@ -77,7 +77,7 @@ const RESOURCES: Resource[] = [
   {
     href: '/kontak',
     title: 'Kontak',
-    desc: 'Voye nou yon mesaj — yon admin ap reponn ou.',
+    desc: 'Ekri nou epi yon admin ap reponn ou.',
     icon: <MessageCircle className="h-5 w-5" strokeWidth={1.8} />,
   },
   {
@@ -169,10 +169,10 @@ export default function PromoteHeader() {
             Nouvo
           </span>
           <span className="text-ink-muted hidden sm:inline">
-            Plan Hoïs VIP 2026 ouvè — vin manm jodi a ak premye redwiksyon yo.
+            Vin enskri kòm manb jodi a pou w ka tou benefisye nan rabè sa a.
           </span>
           <span className="text-ink-muted sm:hidden">
-            Plan Hoïs VIP 2026 ouvè
+            Platfòm Hoïs VIP a ouvè
           </span>
           <Link
             href="#pri"
