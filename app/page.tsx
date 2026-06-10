@@ -1,4 +1,4 @@
-import Navbar from '@/components/ui/navbar';
+import PromoteHeader from '@/components/ui/promote-header';
 import HeroSection from '@/components/ui/hero-section';
 import FeaturesSection from '@/components/ui/features-section';
 import AboutSection from '@/components/ui/about-section';
@@ -11,7 +11,7 @@ import Footer from '@/components/ui/footer';
 export default function HomePage() {
   return (
     <main className="min-h-screen bg-white">
-      <Navbar />
+      <PromoteHeader />
       <HeroSection />
       <FeaturesSection />
       <AboutSection />
