@@ -95,7 +95,7 @@ const ITEMS: {
     image:
       'https://images.unsplash.com/photo-1529390079861-591de354faf5?q=80&w=1200',
     description:
-      'Rantre nan lakou HOÏS-Medikaplant. Yon kominote ki transfòme tèt yo chak jou kòm ajan limyè pou amelyore kondisyon lavi lòt.',
+      'Se yon etap ou kreye lè w deside dezaprann tout sa w te mal aprann, dekonstwi sa ki dwe dekonstwi, epi demistifye tèt ou pou w fè yon tabula rasa. Se lè sa a ou pare pou kiltive Limyè a, Se travay pou rebati lavi w sou vèti, prensip Limyè yo, ak respè pou Bondye Mèt Mond lan, Granmèt Souf la, Sèl Li Ki Ba Gen Sou Tèt la.',
   },
   {
     id: 'Elokans Yanki Atakoye',
