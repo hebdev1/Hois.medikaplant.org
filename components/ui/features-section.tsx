@@ -4,38 +4,39 @@ import { Leaf, Droplet, HeartPulse, Brain, Moon, Sun } from 'lucide-react';
 const FEATURES = [
   {
     icon: Leaf,
-    title: 'Remèd Fèy Otantik',
-    body: 'Plis pase 200 fòmil ki soti dirèkteman nan tradisyon medsin Ayisyen, dokimante ak yon konsèy ekspè.',
+    title: 'Bon Remèd Natirèl',
+    body: 'Plis pase 400 dòz ak fòmil ki sòti dirèkteman nan Medsin Tradisyonèl Ayisyen an, byen dokimante ak bon jan konsèy ekspè plis evidans syantifik',
     accent: 'bg-emerald-100 text-emerald-700',
   },
   {
     icon: HeartPulse,
-    title: 'Swivi Sante Pèsonèl',
-    body: 'Anrejistre tansyon w, To sik , ak pwa ou. Dashboard la edew swiv pwogrè ou ak grafik klè chak semèn.',
+    title: 'Swivi Sante Pèsonalize',
+    body: 'Anrejistre tansyon w, nivo sik ou, ak pwa w. Dachbòd a ap ede w suiv pwogrè w ak grafik klè chak semèn pou w ka pi byen kontwole sante w.',
     accent: 'bg-rose-100 text-rose-700',
   },
   {
     icon: Brain,
-    title: 'Mantò Espirityèl',
-    body: 'Konvèsasyon pwofon ak Vye Ewòl. Konsiltasyon konfidansyèl pou byennèt lespri ou.',
+    title: 'Gid Espirityèl',
+    body: 'Prezantasyon odyovizyèl, salon, bat bouch VIP, ak konvèsasyon pwofon sou espirityalite, mounite, linivè, egzistans, ak lòt sijè transandantal atravè pakou Hoïs la. Konsiltasyon konfidansyèl pou ede w jwenn plis klète, ekilib, ak byennèt mantal ak espirityèl.',
     accent: 'bg-indigo-100 text-indigo-700',
   },
   {
     icon: Droplet,
     title: 'Konsiltasyon Natiropatik',
-    body: 'Pwofesyonèl sètifye Hoïs evalye kondisyon ou ak yon apwòch ki konekte kò, lespri, ak anviwònman.',
+    body: 'Pwofesyonèl sètifye Hoïs yo evalye malèz ou yo epi gide w ak yon apwòch olistik ki pran an konsiderasyon kò w, lespri w, ak anviwònman w.',
     accent: 'bg-sky-100 text-sky-700',
   },
   {
     icon: Moon,
-    title: 'Sòmèy ak Rekiperasyon',
-    body: 'Pwogram odyo pou sòmèy pwofon ak meditasyon binoral — adapte pou diferan kondisyon sante.',
+    title: 'Sèvo, Sante Mantal ak Rekiperasyon',
+    body: '
+Yon espas espesyalize pou sipòte memwa, konsantrasyon, detant ak sante mantal, rezilyans emosyonèl, ak rekiperasyon apre peryòd estrès, fatig mantal, depresyon oswa lòt defi ki afekte byennèt sikolojik.',
     accent: 'bg-violet-100 text-violet-700',
   },
   {
     icon: Sun,
-    title: 'Kominote Vivan',
-    body: 'Salon, prezantasyon, fòmasyon gratis nan gwoup Hoïs VIP. Konekte ak lòt manm ki gen menm vizyon ak ou.',
+    title: 'Lakou Hoïs',
+    body: 'Yon kominote dinamik kote w ap jwenn salon, prezantasyon, ak fòmasyon gratis nan gwoup VIP Hoïs la. Se yon espas kote w ka konekte ak lòt manm ki pataje menm vizyon an epi k ap chèche limyè pou dekouvri ak pi byen konprann sans ak misyon lavi yo.',
     accent: 'bg-amber-100 text-amber-700',
   },
 ];
@@ -49,10 +50,10 @@ export default function FeaturesSection() {
             Sa nou ofri w
           </span>
           <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-ink">
-            Tout sa ou bezwen pou yon <span className="text-brand-600">vi an sante</span>
+            Tout sa ou bezwen pou w  <span className="text-brand-600">viv lavi w an sante</span>
           </h2>
           <p className="mt-5 text-base md:text-lg text-ink-muted leading-relaxed">
-            Yon platfòm konplè ki kominike medsin tradisyonèl ayisyen ak teknoloji modèn pou ba ou yon eksperyans byennèt san parèy.
+            Yon platfòm konplè ki marye medsin tradisyonèl ayisyen ak teknoloji modèn pou ofri w yon eksperyans byennèt san parèy.
           </p>
         </div>
 
