@@ -16,7 +16,7 @@ import {
   Sparkles,
   type LucideIcon,
 } from 'lucide-react';
-import Navbar from '@/components/ui/navbar';
+import PromoteHeader from '@/components/ui/promote-header';
 import Footer from '@/components/ui/footer';
 
 export const metadata = {
@@ -61,7 +61,7 @@ const SECTIONS = [
 export default function KonfidansyalitePage() {
   return (
     <main className="min-h-screen bg-white">
-      <Navbar />
+      <PromoteHeader />
 
       {/* ── HERO ──────────────────────────────────────────────────────────── */}
       <section className="relative overflow-hidden bg-gradient-to-b from-brand-50/60 via-white to-white">

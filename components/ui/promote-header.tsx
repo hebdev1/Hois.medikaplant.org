@@ -91,6 +91,20 @@ const RESOURCES: Resource[] = [
 export default function PromoteHeader() {
   const pathname = usePathname() ?? '/';
   const [open, setOpen] = React.useState(false);
+  const [scrolled, setScrolled] = React.useState(false);
+
+  // Track scroll position so we can ramp the header's frosted-glass
+  // effect after the user moves past the announcement bar. A single
+  // boolean (>8px) is enough — we don't need pixel-precise interpolation
+  // because the CSS transitions smooth the visual jump.
+  React.useEffect(() => {
+    function onScroll() {
+      setScrolled(window.scrollY > 8);
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   // Close drawer on route change, ESC, scroll lock while open. All
   // gated by `open` so we don't pile listeners on an idle nav.
@@ -170,19 +184,38 @@ export default function PromoteHeader() {
         </div>
       </div>
 
-      {/* Sticky main header */}
+      {/* Sticky main header.
+          Two layers of dynamic frosted-glass effect on scroll:
+            • `backdrop-blur-xl` (vs. `backdrop-blur-md` at rest) gives a
+              deeper, more cinematic blur once the user moves past hero.
+            • Opacity drops from 60→55 so a hint of the scrolling content
+              shows through, plus a soft shadow + saturated edge color
+              produce real depth (not just a flat white pill).
+          We animate every transition so the swap is silky, never jumpy. */}
       <header
         className={[
-          'sticky top-0 z-50 w-full backdrop-blur',
-          'bg-white/85 supports-[backdrop-filter]:bg-white/60',
-          'border-b border-cream-200',
+          'sticky top-0 z-50 w-full transition-all duration-300 ease-out',
+          'border-b',
+          scrolled
+            ? 'backdrop-blur-xl backdrop-saturate-150 bg-white/70 supports-[backdrop-filter]:bg-white/55 border-cream-300/80 shadow-[0_8px_30px_rgb(0,0,0,0.06)]'
+            : 'backdrop-blur-md bg-white/85 supports-[backdrop-filter]:bg-white/60 border-cream-200',
         ].join(' ')}
       >
         {/* Subtle gradient hairline under the bar for depth */}
         <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-cream-300 to-transparent" />
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex h-14 md:h-16 items-center justify-between gap-3">
-            {/* Left: burger + brand + desktop nav */}
+          {/* Three-column grid: brand (auto) | centered nav (1fr) | CTAs (auto).
+              Using grid instead of flex justify-between guarantees the nav
+              stays visually centered regardless of how wide the brand or
+              CTA clusters grow.
+              Height shrinks slightly when scrolled for a "compact mode" feel. */}
+          <div
+            className={[
+              'grid grid-cols-[auto_1fr_auto] items-center gap-3 transition-[height] duration-300',
+              scrolled ? 'h-12 md:h-14' : 'h-14 md:h-16',
+            ].join(' ')}
+          >
+            {/* Left: burger + brand */}
             <div className="flex items-center gap-2">
               {/* Mobile burger */}
               <button
@@ -235,78 +268,82 @@ export default function PromoteHeader() {
                 </span>
               </Link>
 
-              {/* Desktop Nav */}
-              <nav className="hidden md:flex items-center gap-1 ml-3">
-                {NAV.map((item) => (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    aria-current={isActive(item.href) ? 'page' : undefined}
-                    className={desktopLink(isActive(item.href))}
-                  >
-                    {item.label}
-                  </Link>
-                ))}
+            </div>
 
-                {/* Resources hover panel */}
-                <div className="relative group">
-                  <button type="button" className={desktopLink(false)}>
-                    Resous
-                  </button>
+            {/* CENTER: Desktop nav. justify-self-center anchors the nav to
+                the grid cell's center; the cell itself takes 1fr so the
+                cluster sits exactly between brand + CTAs no matter what
+                widths they have. */}
+            <nav className="hidden md:flex justify-self-center items-center gap-1">
+              {NAV.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  aria-current={isActive(item.href) ? 'page' : undefined}
+                  className={desktopLink(isActive(item.href))}
+                >
+                  {item.label}
+                </Link>
+              ))}
+
+              {/* Resources hover panel */}
+              <div className="relative group">
+                <button type="button" className={desktopLink(false)}>
+                  Resous
+                </button>
+                <div
+                  className={[
+                    'pointer-events-none absolute left-1/2 top-full z-40 -translate-x-1/2 pt-2 opacity-0 transition',
+                    'group-hover:pointer-events-auto group-hover:opacity-100',
+                    'group-focus-within:pointer-events-auto group-focus-within:opacity-100',
+                  ].join(' ')}
+                >
                   <div
                     className={[
-                      'pointer-events-none absolute left-1/2 top-full z-40 -translate-x-1/2 pt-2 opacity-0 transition',
-                      'group-hover:pointer-events-auto group-hover:opacity-100',
-                      'group-focus-within:pointer-events-auto group-focus-within:opacity-100',
+                      'max-w-[calc(100vw-2rem)] sm:w-[520px] rounded-xl border border-cream-200 bg-white/95 p-3 shadow-xl',
+                      'backdrop-blur supports-[backdrop-filter]:bg-white/80',
                     ].join(' ')}
                   >
-                    <div
-                      className={[
-                        'max-w-[calc(100vw-2rem)] sm:w-[520px] rounded-xl border border-cream-200 bg-white/95 p-3 shadow-xl',
-                        'backdrop-blur supports-[backdrop-filter]:bg-white/80',
-                      ].join(' ')}
-                    >
-                      <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                        {RESOURCES.map((r) => (
-                          <li key={r.href}>
-                            <Link
-                              href={r.href}
-                              className={[
-                                'flex items-start gap-3 rounded-lg p-3 transition',
-                                'hover:bg-cream-50',
-                                'border border-transparent hover:border-cream-300',
-                              ].join(' ')}
-                            >
-                              <div className="mt-0.5 text-brand-700">
-                                {r.icon}
+                    <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      {RESOURCES.map((r) => (
+                        <li key={r.href}>
+                          <Link
+                            href={r.href}
+                            className={[
+                              'flex items-start gap-3 rounded-lg p-3 transition',
+                              'hover:bg-cream-50',
+                              'border border-transparent hover:border-cream-300',
+                            ].join(' ')}
+                          >
+                            <div className="mt-0.5 text-brand-700">
+                              {r.icon}
+                            </div>
+                            <div className="min-w-0">
+                              <div className="truncate text-sm font-semibold text-ink">
+                                {r.title}
                               </div>
-                              <div className="min-w-0">
-                                <div className="truncate text-sm font-semibold text-ink">
-                                  {r.title}
-                                </div>
-                                <p className="mt-0.5 line-clamp-2 text-xs text-ink-muted">
-                                  {r.desc}
-                                </p>
-                              </div>
-                            </Link>
-                          </li>
-                        ))}
-                      </ul>
-                      <div className="mt-3 rounded-lg border border-cream-200 bg-brand-50/40 p-2 text-xs text-ink-muted">
-                        Manm? Konekte sou{' '}
-                        <Link
-                          href="/auth/login"
-                          className="text-brand-700 underline font-medium"
-                        >
-                          panèl ou
-                        </Link>{' '}
-                        pou jwenn gid plant, fowòm, ak konsèy jou a.
-                      </div>
+                              <p className="mt-0.5 line-clamp-2 text-xs text-ink-muted">
+                                {r.desc}
+                              </p>
+                            </div>
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                    <div className="mt-3 rounded-lg border border-cream-200 bg-brand-50/40 p-2 text-xs text-ink-muted">
+                      Manm? Konekte sou{' '}
+                      <Link
+                        href="/auth/login"
+                        className="text-brand-700 underline font-medium"
+                      >
+                        panèl ou
+                      </Link>{' '}
+                      pou jwenn gid plant, fowòm, ak konsèy jou a.
                     </div>
                   </div>
                 </div>
-              </nav>
-            </div>
+              </div>
+            </nav>
 
             {/* Right: CTAs (desktop) */}
             <div className="hidden items-center gap-2 md:flex">
