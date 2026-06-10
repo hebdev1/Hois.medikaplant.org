@@ -63,7 +63,7 @@ export default function HoisSection() {
             <em className="text-amber-700 not-italic font-semibold">
               « Ekla Limyè »
             </em>
-            . Eksplore uit konsèp ki fonde pakou Hoïs la.
+            . HOÏS se yon mo sakre ki vle di « Limyè » ak « Ekla Limyè ». Eksplore uit konsèp fondalnatal nan pakou Hoïs la.
           </p>
         </div>
 
