@@ -41,7 +41,7 @@ const ITEMS: {
     image:
       'https://images.unsplash.com/photo-1473773508845-188df298d2d1?q=80&w=1200',
     description:
-      'HOÏS se yon mo sakre ki vle di « Limyè », « Ekla Limyè ». Reprezante pwisans Limyè a nan yon mond ki gen fènwa.',
+      'HOÏS se yon mo sakre ki vle di  « Limyè », « Ekla Limyè ». Eksplore uit konsèp fondalnatal nan pakou Hoïs la',
   },
   {
     id: 'zev-limye',
