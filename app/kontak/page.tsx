@@ -19,7 +19,7 @@ import ContactForm from './contact-form';
 export const metadata = {
   title: 'Kontak · MedikaPlant Hoïs Inivèsite',
   description:
-    'Kontakte ekip MedikaPlant Hoïs Inivèsite — sipò manm, patenarya, oswa konsiltasyon plant santiniye.',
+    'Kontakte ekip sipò Hoïs MedikaPlant Inivèsite pou patenarya, oswa konsiltasyon sou plant elatriye...',
 };
 // Force dynamic — the form posts to a server action that reads cookies
 // (to attach the optional user_id). Static pre-rendering tries to run
@@ -37,15 +37,15 @@ const CHANNELS = [
   {
     icon: Phone,
     label: 'Telefòn / WhatsApp',
-    value: '+509 4848 4848',
-    href: 'tel:+50948484848',
+    value: '+1 954 569 0705',
+    href: 'tel:+19545690705',
     tone: 'bg-amber-50 text-amber-700',
   },
   {
     icon: MapPin,
     label: 'Adrès',
-    value: 'Delmas 31, Pòtoprens',
-    href: 'https://maps.google.com/?q=Delmas+31+Port-au-Prince',
+    value: '1823 S. DIXIE HIGHWAY POMPANO BEACH, FL 33060',
+    href: 'https://www.google.com/maps/search/?api=1&query=1823+S+Dixie+Highway+Pompano+Beach+FL+33060',
     tone: 'bg-rose-50 text-rose-700',
   },
   {
@@ -63,8 +63,8 @@ const FAQS = [
     a: 'Pi souvan, mwens ke 24 èdtan pandan jou semèn. Sipò ijan: itilize chat sipò a nan panel ou si w deja manm.',
   },
   {
-    q: 'Èske mwen ka jwenn yon konsiltasyon plant an pèsòn?',
-    a: 'Wi — bouton "Mande yon konsiltasyon" nan paramèt kont ou kreye yon demann; yon èrboris ap kontakte w pou pwograme dat ak fòma (vidyo, telefòn, oswa an pèsòn).',
+    q: 'Èske mwen ka jwenn yon konsiltasyon an pèsòn?',
+    a: 'Wi — bouton "Mande yon konsiltasyon" nan paramèt kont ou kreye yon demann; yon Gid ap kontakte w pou pwograme dat ak fòma (vidyo, telefòn, oswa an pèsòn).',
   },
   {
     q: 'Èske paj sa pou demann anonim?',
@@ -72,7 +72,7 @@ const FAQS = [
   },
   {
     q: 'Mwen vle anile yon kont — kijan?',
-    a: 'Konekte → /dashboard/settings → bòt anba "Dosye konsiltasyon" → bouton "Anile abònman". Si w pa konekte, voye yon mesaj la a ak sijè "Anile kont".',
+    a: 'Konekte → /dashboard/settings → bòt anba "Dosye konsiltasyon" → bouton "Anile abònman". Si w pa konekte, voye mesaj la a ak sijè "Anile kont".',
   },
 ];
 
@@ -121,8 +121,8 @@ export default function KontakPage() {
             </h1>
             <p className="mt-6 text-lg md:text-xl text-ink-muted leading-relaxed max-w-2xl">
               Yon kesyon sou yon plant, sou kont ou, oswa yon pwopozisyon
-              patenarya? Voye mesaj la a — yon moun nan ekip la ap reponn ou
-              nan mwens ke 24 èdtan pandan jou semèn.
+              patenarya? Voye mesaj la a  yon manb nan ekip la ap reponn ou
+              nan mwens ke 24 èdtan.
             </p>
           </div>
         </div>
@@ -182,8 +182,8 @@ export default function KontakPage() {
                 <span className="text-brand-600">pa gen alè pèdi</span>
               </h2>
               <p className="mt-4 text-ink-muted leading-relaxed max-w-xl">
-                Pi byen w eksplike sa w bezwen an, pi rapid ekip nou ap ka voye
-                yon repons konplè. Tout chan ki gen <span className="text-rose-600">*</span>{' '}
+                PI byen w Eksplike sa w bezwen an, pi rapid ekip nou an ap ka voye
+                yon repons konplè pou ou. Tout chan ki gen <span className="text-rose-600">*</span>{' '}
                 obligatwa.
               </p>
 
