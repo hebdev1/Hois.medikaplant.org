@@ -64,7 +64,7 @@ const FAQS = [
   },
   {
     q: 'Èske mwen ka jwenn yon konsiltasyon an pèsòn?',
-    a: 'Wi — bouton "Mande yon konsiltasyon" nan paramèt kont ou kreye yon demann; yon Gid ap kontakte w pou pwograme dat ak fòma (vidyo, telefòn, oswa an pèsòn).',
+    a: 'Wi  bouton "Mande yon konsiltasyon" nan paramèt kont ou kreye yon demann; yon Gid ap kontakte w pou pwograme dat ak fòma (vidyo, telefòn, oswa an pèsòn).',
   },
   {
     q: 'Èske paj sa pou demann anonim?',
@@ -116,7 +116,7 @@ export default function KontakPage() {
               Kontak
             </span>
             <h1 className="font-display text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight text-ink leading-[1.05]">
-              N ap koute w —{' '}
+              N ap koute w {' '}
               <span className="text-brand-600">ekri nou</span>.
             </h1>
             <p className="mt-6 text-lg md:text-xl text-ink-muted leading-relaxed max-w-2xl">
@@ -175,15 +175,15 @@ export default function KontakPage() {
             <div>
               <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent/10 text-accent text-sm font-medium mb-4">
                 <Sparkles className="w-3.5 h-3.5" strokeWidth={2.4} />
-                Voye yon mesaj
+                Voye mesaj ou
               </span>
               <h2 className="font-display text-3xl md:text-4xl font-bold tracking-tight text-ink leading-tight">
                 Yon fòm, yon repons,{' '}
-                <span className="text-brand-600">pa gen alè pèdi</span>
+                <span className="text-brand-600">pa gen pèdi tan</span>
               </h2>
               <p className="mt-4 text-ink-muted leading-relaxed max-w-xl">
-                PI byen w Eksplike sa w bezwen an, pi rapid ekip nou an ap ka voye
-                yon repons konplè pou ou. Tout chan ki gen <span className="text-rose-600">*</span>{' '}
+                Plis ou byen eksplike sa w bezwen an, se pi rapid ekip nou an ap ka voye yon repons konplè ba ou. 
+                Ranpli tout kazye yo ki gen ti etwal (*) obligatwa a. <span className="text-rose-600">*</span>{' '}
                 obligatwa.
               </p>
 
