@@ -42,7 +42,7 @@ const PILLARS = [
 
 const TIMELINE = [
   {
-    year: '2018',
+    year: '2019',
     title: 'Premye atizan plant lan',
     body:
       'MedikaPlant kòmanse ak yon ti boutik atizanal pou plant santiniye ki dispoze nan kominote Pòtoprens.',
@@ -94,19 +94,19 @@ export default function IstwaNouPage() {
           <div className="max-w-3xl">
             <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-100 text-brand-700 text-sm font-medium mb-5">
               <Sparkles className="w-3.5 h-3.5" strokeWidth={2.4} />
-              Itwa nou
+              Misyon Ak Vizyon Nou 
             </span>
             <h1 className="font-display text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight text-ink leading-[1.05]">
-              Yon plant te <span className="text-brand-600">geri</span> yon timoun.
+              Misyon Ak <span className="text-brand-600">Vizyon nou</span>
               <br />
-              Apre sa, tout rès la te kòmanse.
+              
             </h1>
             <p className="mt-6 text-lg md:text-xl text-ink-muted leading-relaxed max-w-2xl">
-              MedikaPlant fonde nan zèl atizanal — nan kèk pòt-fenèt nan Pòtoprens
-              kote yon grann te wè ti pitit-pitit li geri ak yon mougri li
-              prepare. Jodi a, Hoïs Inivèsite a se yon kominote dijital ki
-              konekte manm an Ayiti ak dyaspora a, men menm kè natiropatik la
-              toujou bat anndan.
+              Tout moun merite viv laj tèrès yo, sa vle di, kantite tan yo te vini fè isiba pandan pasaj yo isiba san maladi ak move kou malè pa voye yo ale anvan lè. 
+              Plant yo gen pwopriyete ak pouvwa medisinal ak pwotektè sa nan yo. 
+              Se konnen pou n aprann konnen, metrize ak manipile zouti lanati yo pou byen pou lavi kontinye fleri. 
+              Misyon sakre Medikaplant se ede nan aprantisaj ak transfè konesans sa pou materyalize zèv Limyè a sou latè.
+              Medikaplant se yon platfòm edikatif ak enfòmasyonèl sou plant ki nan lanati. Ansanm n ap dekouvri byenfè ak sekrè plant pou pwotoje lavi.
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-3">
               <Link
