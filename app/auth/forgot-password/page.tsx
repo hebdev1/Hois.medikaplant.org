@@ -2,6 +2,13 @@ import Link from 'next/link';
 import ForgotPasswordForm from './forgot-password-form';
 
 export const metadata = { title: 'Bliye modpas' };
+// Render at request time, never at build time. The form mounts a Supabase
+// browser client that needs NEXT_PUBLIC_SUPABASE_URL + ANON_KEY — those
+// may not exist during the static-generation phase on hosts like
+// Hostinger where the build runs before env vars are injected. Marking
+// the route dynamic keeps the build green and pushes the env-var check
+// to runtime, where the values are guaranteed to be present.
+export const dynamic = 'force-dynamic';
 
 export default function ForgotPasswordPage() {
   return (

@@ -2,6 +2,10 @@ import Link from 'next/link';
 import ResetPasswordForm from './reset-password-form';
 
 export const metadata = { title: 'Chwazi nouvo modpas' };
+// Skip static generation — see note in /auth/forgot-password/page.tsx.
+// The form needs the Supabase browser client at runtime, and the build
+// step shouldn't try to instantiate it ahead of time.
+export const dynamic = 'force-dynamic';
 
 export default function ResetPasswordPage() {
   return (
