@@ -60,7 +60,7 @@ const CHANNELS = [
 const FAQS = [
   {
     q: 'Konbyen tan li pran pou nou reponn?',
-    a: 'Pi souvan, mwens ke 24 èdtan pandan jou semèn. Sipò ijan: itilize chat sipò a nan panel ou si w deja manm.',
+    a: 'Pi souvan, mwens ke 24 èdtan. Sipò ijan: itilize chat sipò a nan panel ou si w deja manm.',
   },
   {
     q: 'Èske mwen ka jwenn yon konsiltasyon an pèsòn?',
@@ -183,7 +183,7 @@ export default function KontakPage() {
               </h2>
               <p className="mt-4 text-ink-muted leading-relaxed max-w-xl">
                 Plis ou byen eksplike sa w bezwen an, se pi rapid ekip nou an ap ka voye yon repons konplè ba ou. 
-                Ranpli tout kazye yo ki gen ti etwal (*) obligatwa a. <span className="text-rose-600">*</span>{' '}
+                Ranpli tout kazye yo ki gen ti etwal obligatwa a. <span className="text-rose-600">*</span>{' '}
                 obligatwa.
               </p>
 
@@ -200,11 +200,11 @@ export default function KontakPage() {
                 />
                 <Leaf className="w-7 h-7 text-brand-300 relative" strokeWidth={2.2} />
                 <h3 className="relative mt-4 font-display text-xl md:text-2xl font-bold leading-tight">
-                  Ou deja manm? Itilize chat sipò a
+                  Ou deja manb? Itilize chat sipò a
                 </h3>
                 <p className="relative mt-2 text-sm text-white/75 leading-relaxed">
-                  Sipò an direk pi rapid pase imèl. Konekte nan kont ou epi
-                  louvri paj sipò a.
+                  Kontakte nou pa imèl yon manb nan ekip nou an ap ede w epi n ap reponn ou pi vit posib, 
+                  oubyen kreye kont pouw gen yon asistans rapid.
                 </p>
                 <Link
                   href="/dashboard/support"
