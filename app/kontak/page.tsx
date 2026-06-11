@@ -204,7 +204,7 @@ export default function KontakPage() {
                 </h3>
                 <p className="relative mt-2 text-sm text-white/75 leading-relaxed">
                   Sipò an direk pi rapid pase imèl. Konekte nan kont ou epi
-                  louvre kloch lan oswa paj sipò a.
+                  louvri paj sipò a.
                 </p>
                 <Link
                   href="/dashboard/support"
@@ -222,13 +222,13 @@ export default function KontakPage() {
                   </span>
                   <div>
                     <div className="text-[10px] font-bold uppercase tracking-wider text-brand-700">
-                      Pòtoprens
+                      Etazini
                     </div>
                     <h3 className="font-display text-lg font-bold text-ink mt-1">
                       Biwo prensipal
                     </h3>
                     <p className="text-sm text-ink-muted mt-1.5 leading-relaxed">
-                      Delmas 31, Pòtoprens, Ayiti
+                      1823 S. DIXIE HIGHWAY POMPANO BEACH, FL 33060
                     </p>
                     <p className="text-xs text-ink-muted mt-1">
                       Lendi → Vandredi · 8h – 17h
@@ -274,7 +274,7 @@ export default function KontakPage() {
               Kesyon rapid
             </span>
             <h2 className="font-display text-3xl md:text-5xl font-bold tracking-tight text-ink leading-tight">
-              Repons rapid avan w voye yon mesaj
+              Repons rapid
             </h2>
           </div>
 
