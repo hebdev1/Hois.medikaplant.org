@@ -14,23 +14,23 @@ import Footer from '@/components/ui/footer';
 import { Features } from '@/components/ui/features-4';
 
 export const metadata = {
-  title: 'Itwa nou · MedikaPlant Hoïs Inivèsite',
+  title: 'Misyon Ak Vizyon nou · MedikaPlant Hoïs Inivèsite',
   description:
-    'Konnen istwa MedikaPlant Hoïs Inivèsite — yon pon ant medsin tradisyonèl Ayisyen ak teknoloji modèn pou byennèt total.',
+    'Misyon ak vizyon Hoïs Inivèsite se yon pon ant medsin tradisyonèl Ayisyen an ak teknoloji modèn pou byennèt total.',
 };
 
 const PILLARS = [
   {
     icon: Sprout,
-    title: 'Rasin Ayisyèn',
+    title: 'Rasin Ayisyen',
     body:
-      'Tout plant nou pale sou yo soti nan tradisyon Ayisyèn ak Karayib la — pa gen yon konesans ki vin sot yon lòt kote.',
+      'Tout plant nou pale sou yo soti nan tradisyon Ayisyèn ak Karayib la  pa gen yon konesans ki vin sot yon lòt kote.',
   },
   {
     icon: Mountain,
     title: 'Respè pou Granmèt',
     body:
-      'HOÏS la se yon pilye santral: nou onore Granmèt ki kreye tout plant yo epi nou aprann pasyans nan men li.',
+      'HOÏS la se yon pilye santral: nou onore Granmèt souf la ki kreye tout plant yo epi nou aprann pasyans nan men li.',
   },
   {
     icon: Users,
