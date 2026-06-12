@@ -325,62 +325,141 @@ function brandedTemplate({
 </html>`;
 }
 
+// ───────────────────────────────────────────────────────────────────────────
+// Diagnostic GET — hit /api/auth/send-email?debug=<token> in a browser to
+// see which env vars are configured without revealing their values. The
+// debug token is the FIRST 8 CHARACTERS of SUPABASE_AUTH_HOOK_SECRET so
+// only someone who already has the secret can read it. If the secret is
+// missing entirely, the endpoint stays public BUT only reveals missing-
+// flag booleans — no value, no length, no hint at the real secret.
+// ───────────────────────────────────────────────────────────────────────────
+export async function GET(req: NextRequest) {
+  const expectedToken = (process.env.SUPABASE_AUTH_HOOK_SECRET || '')
+    .replace(/^v1,/, '')
+    .replace(/^whsec_/, '')
+    .slice(0, 8);
+  const provided = new URL(req.url).searchParams.get('debug') ?? '';
+  const authorized = expectedToken.length > 0 && provided === expectedToken;
+
+  const status = {
+    SUPABASE_AUTH_HOOK_SECRET: !!process.env.SUPABASE_AUTH_HOOK_SECRET,
+    RESEND_API_KEY: !!process.env.RESEND_API_KEY,
+    EMAIL_FROM: !!process.env.EMAIL_FROM,
+    NEXT_PUBLIC_SUPABASE_URL: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
+    CONTACT_REPLY_TO: !!process.env.CONTACT_REPLY_TO,
+  };
+  const result: Record<string, unknown> = { ok: true, env: status };
+
+  if (authorized) {
+    // Authorized callers see the FORMAT of EMAIL_FROM so they can spot
+    // typos like a missing angle bracket without us echoing the raw value.
+    const from = process.env.EMAIL_FROM ?? '';
+    result.emailFromShape = {
+      length: from.length,
+      hasName: from.includes('<') && from.includes('>'),
+      hasAtSign: from.includes('@'),
+      preview: from.slice(0, 4) + '…' + from.slice(-12),
+    };
+  }
+
+  return NextResponse.json(result);
+}
+
 export async function POST(req: NextRequest) {
-  let bodyText: string;
   try {
-    bodyText = await req.text();
-  } catch {
-    return NextResponse.json(
-      { error: 'cannot_read_body' },
-      { status: 400 }
+    let bodyText: string;
+    try {
+      bodyText = await req.text();
+    } catch (e) {
+      console.error('[send-email] cannot read body', e);
+      return NextResponse.json(
+        { error: 'cannot_read_body' },
+        { status: 400 }
+      );
+    }
+
+    // Signature verification — short-circuit before parsing JSON so an
+    // unauthenticated caller never gets a chance to influence our state.
+    const verified = verifySignature(bodyText, req.headers);
+    if (!verified.ok) {
+      console.error('[send-email] signature verification failed:', verified.reason);
+      return NextResponse.json(
+        { error: verified.reason },
+        { status: 401 }
+      );
+    }
+
+    let payload: SupabaseEmailHookPayload;
+    try {
+      payload = JSON.parse(bodyText) as SupabaseEmailHookPayload;
+    } catch (e) {
+      console.error('[send-email] invalid JSON', e);
+      return NextResponse.json(
+        { error: 'invalid_json' },
+        { status: 400 }
+      );
+    }
+    if (!payload?.user?.email || !payload?.email_data?.email_action_type) {
+      console.error(
+        '[send-email] missing required fields. Got keys:',
+        Object.keys(payload || {}),
+        'user keys:',
+        Object.keys(payload?.user || {}),
+        'email_data keys:',
+        Object.keys(payload?.email_data || {})
+      );
+      return NextResponse.json(
+        { error: 'missing_required_fields' },
+        { status: 400 }
+      );
+    }
+
+    // eslint-disable-next-line no-console
+    console.log(
+      '[send-email] sending',
+      payload.email_data.email_action_type,
+      'to',
+      payload.user.email
     );
-  }
 
-  // Signature verification — short-circuit before parsing JSON so an
-  // unauthenticated caller never gets a chance to influence our state.
-  const verified = verifySignature(bodyText, req.headers);
-  if (!verified.ok) {
+    const { subject, html } = renderEmail(payload);
+
+    const result = await sendEmail({
+      to: payload.user.email,
+      subject,
+      html,
+      replyTo:
+        process.env.CONTACT_REPLY_TO || process.env.EMAIL_FROM || undefined,
+    });
+
+    if (!result.ok) {
+      // Loud server log so operators can see the actual Resend message in
+      // the Hostinger/Vercel runtime logs. Surface the message in the
+      // response body too — Supabase shows only the status code in the
+      // UI but the body still lands in their hook delivery log.
+      console.error('[send-email] Resend failed:', result.error);
+      return NextResponse.json(
+        {
+          error: {
+            message: result.error,
+            http_code: 500,
+            hint: result.error.includes('verify a domain')
+              ? 'Resend sandbox: you can only send to the email registered on your Resend account. Verify a custom domain in Resend → Domains and set EMAIL_FROM to use it.'
+              : undefined,
+          },
+        },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (e) {
+    // Last-resort catch so an unhandled crash doesn't leak a stack trace
+    // through Supabase's hook delivery UI. Still log it for diagnosis.
+    console.error('[send-email] unexpected error', e);
     return NextResponse.json(
-      { error: verified.reason },
-      { status: 401 }
-    );
-  }
-
-  let payload: SupabaseEmailHookPayload;
-  try {
-    payload = JSON.parse(bodyText) as SupabaseEmailHookPayload;
-  } catch {
-    return NextResponse.json(
-      { error: 'invalid_json' },
-      { status: 400 }
-    );
-  }
-  if (!payload?.user?.email || !payload?.email_data?.email_action_type) {
-    return NextResponse.json(
-      { error: 'missing_required_fields' },
-      { status: 400 }
-    );
-  }
-
-  const { subject, html } = renderEmail(payload);
-
-  const result = await sendEmail({
-    to: payload.user.email,
-    subject,
-    html,
-    replyTo:
-      process.env.CONTACT_REPLY_TO || process.env.EMAIL_FROM || undefined,
-  });
-
-  if (!result.ok) {
-    // Supabase docs say: respond with a non-2xx + an `error` payload to
-    // signal a permanent failure (Supabase won't retry). Resend errors
-    // are usually permanent (auth, domain) so we surface them up.
-    return NextResponse.json(
-      { error: { message: result.error, http_code: 500 } },
+      { error: (e as Error).message ?? 'unexpected' },
       { status: 500 }
     );
   }
-
-  return NextResponse.json({ success: true });
 }
