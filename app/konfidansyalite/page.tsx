@@ -379,7 +379,7 @@ export default function KonfidansyalitePage() {
                   <li>
                     <strong>Fòm kontak:</strong>{' '}
                     <Link href="/kontak" className="text-brand-700 hover:underline">
-                      hois-medikaplant.vercel.app/kontak
+                      hoismedikaplant.com/kontak
                     </Link>{' '}
                     — chwazi sijè "Sipò manm"
                   </li>

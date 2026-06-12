@@ -626,7 +626,7 @@ export async function inviteAdmin(
   // copy-paste URL still works in dev when the env var isn't set.
   const origin =
     process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ??
-    'https://hois-medikaplant.vercel.app';
+    'https://hoismedikaplant.com';
   const invite_url = `${origin}/admin/accept-invite/${row.token}`;
 
   revalidatePath('/admin/users');

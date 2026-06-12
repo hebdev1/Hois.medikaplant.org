@@ -138,7 +138,7 @@ export default async function ReceiptPage({
                 </div>
               </div>
               <div className="text-[11px] text-earth-600 leading-relaxed">
-                hois.medikaplant.org<br />
+                hoismedikaplant.com<br />
                 hello@medikaplant.org<br />
                 Pòtoprens, Ayiti
               </div>

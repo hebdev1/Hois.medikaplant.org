@@ -27,7 +27,7 @@ export default function ShareAdviceButton({
   function buildShareText() {
     const plainBody = stripHtml(bodyHtml).trim();
     const url =
-      typeof window !== 'undefined' ? window.location.origin : 'https://hois-medikaplant.vercel.app';
+      typeof window !== 'undefined' ? window.location.origin : 'https://hoismedikaplant.com';
     return `🌿 Konsèy plant jou a — ${date}\n\n${plainBody}\n\n${plant}\n\n${url}`;
   }
 

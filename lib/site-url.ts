@@ -11,8 +11,8 @@
  *
  * Resolution order:
  *   1. `NEXT_PUBLIC_SITE_URL` — explicit canonical override (recommended).
- *      Set this in Vercel project settings to
- *      `https://hois-medikaplant.vercel.app`.
+ *      Set this in your hosting platform's settings to
+ *      `https://hoismedikaplant.com`.
  *   2. `NEXT_PUBLIC_VERCEL_URL` — Vercel-provided per-deployment URL
  *      (no scheme prefix; we add `https://`).
  *   3. `window.location.origin` — last-resort client-side fallback.
@@ -23,7 +23,7 @@
  * the path directly: `${getSiteUrl()}/auth/reset-password`.
  */
 
-const PRODUCTION_FALLBACK = 'https://hois-medikaplant.vercel.app';
+const PRODUCTION_FALLBACK = 'https://hoismedikaplant.com';
 
 function stripTrailingSlash(url: string): string {
   return url.endsWith('/') ? url.slice(0, -1) : url;

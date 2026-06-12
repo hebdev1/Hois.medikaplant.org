@@ -3,7 +3,7 @@ import { sendEmail } from './resend';
 
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ??
-  'https://hois-medikaplant.vercel.app';
+  'https://hoismedikaplant.com';
 
 type NotifyOpts = {
   subject: string;

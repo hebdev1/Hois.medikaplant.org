@@ -53,7 +53,7 @@ export const metadata: Metadata = {
     title: 'MedikaPlant — Hoïs Inivèsite',
     description:
       'Plant-based wellness, naturopathic remedies, and a VIP community rooted in Haitian tradition.',
-    url: 'https://hois.medikaplant.org',
+    url: 'https://hoismedikaplant.com',
     siteName: 'MedikaPlant',
     locale: 'ht_HT',
     type: 'website',
