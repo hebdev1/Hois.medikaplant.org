@@ -58,12 +58,27 @@ type SupabaseEmailHookPayload = {
   };
 };
 
+function safeEqual(a: string, b: string): boolean {
+  // Pad to equal length so timingSafeEqual doesn't throw on mismatched
+  // sizes (which would itself be a timing oracle).
+  const aBuf = Buffer.from(a);
+  const bBuf = Buffer.from(b);
+  if (aBuf.length !== bBuf.length) {
+    // Still touch a comparable buffer so timing remains constant.
+    timingSafeEqual(aBuf, Buffer.alloc(aBuf.length));
+    return false;
+  }
+  return timingSafeEqual(aBuf, bBuf);
+}
+
 function verifySignature(
   body: string,
   headers: Headers
 ): { ok: true } | { ok: false; reason: string } {
   const rawSecret = process.env.SUPABASE_AUTH_HOOK_SECRET ?? '';
-  // Supabase prefixes secrets with `v1,whsec_` — strip both off.
+  // Supabase prefixes secrets with `v1,whsec_` — strip both off so the
+  // same env var value works whether the user pasted the full versioned
+  // form or just the base64 inner part.
   const secret = rawSecret
     .replace(/^v1,/, '')
     .replace(/^whsec_/, '');
@@ -71,6 +86,20 @@ function verifySignature(
     return { ok: false, reason: 'hook_secret_not_configured' };
   }
 
+  // ── Path A: simple Bearer token (Supabase "HTTPS only" auth hooks) ──
+  // Newer Supabase auth-hook UI doesn't sign payloads — it just sends
+  // `Authorization: Bearer <secret>`. Accept that when it matches the
+  // configured secret (compared timing-safely).
+  const auth = headers.get('authorization') ?? '';
+  if (auth.toLowerCase().startsWith('bearer ')) {
+    const token = auth.slice(7).trim();
+    if (safeEqual(token, secret) || safeEqual(token, rawSecret)) {
+      return { ok: true };
+    }
+    return { ok: false, reason: 'invalid_bearer_token' };
+  }
+
+  // ── Path B: Standard Webhooks HMAC signature ──────────────────────────
   const id = headers.get('webhook-id');
   const timestamp = headers.get('webhook-timestamp');
   const signatureHeader = headers.get('webhook-signature');
@@ -78,16 +107,14 @@ function verifySignature(
     return { ok: false, reason: 'missing_webhook_headers' };
   }
 
-  // Standard Webhooks: signed_payload = `${id}.${timestamp}.${body}`
   const signedPayload = `${id}.${timestamp}.${body}`;
   const secretBytes = Buffer.from(secret, 'base64');
   const expected = createHmac('sha256', secretBytes)
     .update(signedPayload)
     .digest('base64');
 
-  // The header is space-separated `v1,<sig> v1,<sig2>` — any version 1
-  // signature that matches is acceptable. timingSafeEqual prevents
-  // timing-based comparison leaks.
+  // `webhook-signature` is space-separated `v1,<sig> v1,<sig2>` — any
+  // version-1 signature that matches is acceptable.
   const candidates = signatureHeader
     .split(' ')
     .map((s) => s.trim())
@@ -95,15 +122,7 @@ function verifySignature(
     .map((s) => s.slice(3));
 
   for (const candidate of candidates) {
-    try {
-      const a = Buffer.from(candidate);
-      const b = Buffer.from(expected);
-      if (a.length === b.length && timingSafeEqual(a, b)) {
-        return { ok: true };
-      }
-    } catch {
-      /* malformed candidate, try next */
-    }
+    if (safeEqual(candidate, expected)) return { ok: true };
   }
   return { ok: false, reason: 'invalid_signature' };
 }
