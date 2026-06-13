@@ -13,6 +13,7 @@ import {
   Award,
   Inbox,
   Layers,
+  CalendarRange,
   Settings as SettingsIcon,
   type LucideIcon,
 } from 'lucide-react';
@@ -51,6 +52,7 @@ export type AdminCapability =
   | 'manage_badges'
   | 'manage_contact'
   | 'view_segments'
+  | 'manage_programs'
   | 'view_hubspot'
   | 'manage_self';
 
@@ -75,6 +77,7 @@ export const ROLE_CAPABILITIES: Record<AdminRole, ReadonlySet<AdminCapability>> 
     'manage_badges',
     'manage_contact',
     'view_segments',
+    'manage_programs',
     'view_hubspot',
     'manage_self',
   ]),
@@ -92,6 +95,7 @@ export const ROLE_CAPABILITIES: Record<AdminRole, ReadonlySet<AdminCapability>> 
     'manage_badges',
     'manage_contact',
     'view_segments',
+    'manage_programs',
     'view_hubspot',
     'manage_self',
   ]),
@@ -164,6 +168,7 @@ export const ADMIN_NAV_LINKS: readonly AdminNavLink[] = [
   { href: '/admin', label: 'Overview', icon: LayoutDashboard, capability: 'overview' },
   { href: '/admin/users', label: 'Users', icon: Users, capability: 'manage_users' },
   { href: '/admin/segments', label: 'Segman maladi', icon: Layers, capability: 'view_segments' },
+  { href: '/admin/programs', label: 'Plan + Tach 1-30', icon: CalendarRange, capability: 'manage_programs' },
   { href: '/admin/health', label: 'Swivi Sante', icon: Activity, capability: 'view_health' },
   { href: '/admin/support', label: 'Sipò chat', icon: MessageCircle, capability: 'reply_support' },
   { href: '/admin/contact', label: 'Mesaj kontak', icon: Inbox, capability: 'manage_contact' },

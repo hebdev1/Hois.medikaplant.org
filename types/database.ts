@@ -834,6 +834,7 @@ export type Database = {
           chip_label: string | null
           condition_tags: string[]
           created_at: string
+          day_number: number
           id: string
           meta: string | null
           order_index: number
@@ -845,6 +846,7 @@ export type Database = {
           chip_label?: string | null
           condition_tags?: string[]
           created_at?: string
+          day_number?: number
           id?: string
           meta?: string | null
           order_index: number
@@ -856,6 +858,7 @@ export type Database = {
           chip_label?: string | null
           condition_tags?: string[]
           created_at?: string
+          day_number?: number
           id?: string
           meta?: string | null
           order_index?: number

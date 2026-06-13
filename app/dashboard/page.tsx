@@ -190,12 +190,26 @@ export default async function DashboardHome({
   const activeProgram = activeProgramResult.data as ActiveProgramRow | null;
   const programId = activeProgram?.programs?.id;
 
+  // Compute which day of the program the member is on. The dashboard
+  // shows tasks scheduled for exactly that day so a new enrollee sees
+  // day-1 the moment they sign up and progresses one day at a time. We
+  // clamp at total_days so members who finished the program don't get
+  // an out-of-range query.
+  const programTotalDays = activeProgram?.programs?.total_days ?? 30;
+  let currentDay = 1;
+  if (activeProgram?.started_at) {
+    const startMs = new Date(activeProgram.started_at).getTime();
+    const elapsedDays = Math.floor((Date.now() - startMs) / 86_400_000);
+    currentDay = Math.max(1, Math.min(programTotalDays, elapsedDays + 1));
+  }
+
   const [tasksResult, completionsResult] = await Promise.all([
     programId
       ? supabase
           .from('program_tasks')
           .select('*')
           .eq('program_id', programId)
+          .eq('day_number', currentDay)
           .order('order_index', { ascending: true })
       : Promise.resolve({
           data: [] as Array<{
@@ -206,6 +220,7 @@ export default async function DashboardHome({
             chip_kind: string;
             order_index: number;
             condition_tags: string[] | null;
+            day_number: number;
           }>,
           error: null,
         }),
@@ -226,18 +241,18 @@ export default async function DashboardHome({
   };
   const allProgramTasks = (tasksResult.data ?? []) as RawTask[];
 
-  // Personalize the daily checklist by member condition. The rule:
-  //   • a task with empty condition_tags is general — shown to everyone
-  //   • a task with tags is shown only when at least one of its tags
-  //     appears in the member's conditions array
-  // This way the same program can ship both shared daily habits and
-  // condition-specific suggestions without cloning the program per
-  // condition. The filter runs in JS over the already-loaded task list
-  // (which is small — a single program's tasks) to avoid a second
-  // sequential DB roundtrip for the conditions JOIN.
+  // Condition-aware filter on top of the day-level query. Rule:
+  //   • Tasks with empty condition_tags are general — shown to everyone.
+  //   • Tasks with tags appear only when at least one tag is in the
+  //     member's conditions array.
+  //   • Brand-new members who haven't filled their profile yet get the
+  //     full list back so the dashboard isn't blank on day 1 — they see
+  //     everything until they declare a condition that narrows it.
+  const hasConditions = conditionSet.size > 0;
   const programTasks = allProgramTasks.filter((t) => {
     const tags = t.condition_tags ?? [];
     if (tags.length === 0) return true;
+    if (!hasConditions) return true;
     return tags.some((tag) => conditionSet.has(tag));
   });
 
