@@ -376,6 +376,7 @@ export type Database = {
         Row: {
           audio_url: string | null
           body_html: string
+          condition_tags: string[]
           created_at: string
           created_by: string | null
           duration_seconds: number | null
@@ -387,6 +388,7 @@ export type Database = {
         Insert: {
           audio_url?: string | null
           body_html: string
+          condition_tags?: string[]
           created_at?: string
           created_by?: string | null
           duration_seconds?: number | null
@@ -398,6 +400,7 @@ export type Database = {
         Update: {
           audio_url?: string | null
           body_html?: string
+          condition_tags?: string[]
           created_at?: string
           created_by?: string | null
           duration_seconds?: number | null
@@ -862,6 +865,7 @@ export type Database = {
         Row: {
           accent_color: string
           active: boolean
+          condition_tags: string[]
           created_at: string
           description: string | null
           hero_color: string | null
@@ -879,6 +883,7 @@ export type Database = {
         Insert: {
           accent_color?: string
           active?: boolean
+          condition_tags?: string[]
           created_at?: string
           description?: string | null
           hero_color?: string | null
@@ -896,6 +901,7 @@ export type Database = {
         Update: {
           accent_color?: string
           active?: boolean
+          condition_tags?: string[]
           created_at?: string
           description?: string | null
           hero_color?: string | null

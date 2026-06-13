@@ -130,13 +130,18 @@ export default async function DashboardHome({
       .eq('user_id', user.id)
       .order('created_at', { ascending: false })
       .limit(10),
+    // Pull the 10 most-recent published advice rows. We filter
+    // client-side to prefer the most recent one whose condition_tags
+    // overlap with this member's conditions, falling back to the most
+    // recent general advice (empty tags) when none match. Doing this
+    // here keeps the query cheap (≤10 small rows) and lets us avoid a
+    // second sequential roundtrip.
     supabase
       .from('daily_advice')
       .select('*')
       .lte('publish_date', today)
       .order('publish_date', { ascending: false })
-      .limit(1)
-      .maybeSingle(),
+      .limit(10),
     supabase
       .from('products')
       .select('*')
@@ -293,10 +298,28 @@ export default async function DashboardHome({
     dayOfPlan = Math.max(1, Math.min(totalDays, elapsedDays));
   }
 
-  // ---- Daily advice ----
-  const advice = adviceResult.data as
-    | { body_html: string; plant_name: string | null; publish_date: string; duration_seconds: number | null }
-    | null;
+  // ---- Daily advice (condition-aware) ─────────────────────────────────
+  // Pick the most recent advice whose condition_tags overlap with this
+  // member's conditions. If nothing matches, fall back to the most
+  // recent general advice (empty condition_tags array). The list is
+  // already ordered desc by publish_date so a linear scan returns the
+  // newest match first.
+  type AdviceRow = {
+    body_html: string;
+    plant_name: string | null;
+    publish_date: string;
+    duration_seconds: number | null;
+    condition_tags: string[] | null;
+  };
+  const adviceCandidates = (adviceResult.data ?? []) as AdviceRow[];
+  const conditionSet = new Set(conditions);
+  const matchedAdvice = adviceCandidates.find((a) =>
+    (a.condition_tags ?? []).some((t) => conditionSet.has(t))
+  );
+  const generalAdvice = adviceCandidates.find(
+    (a) => !a.condition_tags || a.condition_tags.length === 0
+  );
+  const advice = matchedAdvice ?? generalAdvice ?? adviceCandidates[0] ?? null;
   const adviceBody =
     advice?.body_html ??
     'Jodi a, evite <em>sik rafine a</em>. Bwè plis dlo, e prepare yon tas tizan <em>mounn-bwa</em> apre manje midi pou ekilibre glikemi an.';
