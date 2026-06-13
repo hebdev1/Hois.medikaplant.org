@@ -832,6 +832,7 @@ export type Database = {
         Row: {
           chip_kind: string
           chip_label: string | null
+          condition_tags: string[]
           created_at: string
           id: string
           meta: string | null
@@ -842,6 +843,7 @@ export type Database = {
         Insert: {
           chip_kind?: string
           chip_label?: string | null
+          condition_tags?: string[]
           created_at?: string
           id?: string
           meta?: string | null
@@ -852,6 +854,7 @@ export type Database = {
         Update: {
           chip_kind?: string
           chip_label?: string | null
+          condition_tags?: string[]
           created_at?: string
           id?: string
           meta?: string | null

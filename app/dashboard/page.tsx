@@ -168,6 +168,10 @@ export default async function DashboardHome({
     health_goal: string | null;
   } | null;
   const conditions = (medical?.conditions ?? []).filter(Boolean);
+  // Hoisted once and reused by both the daily-task filter and the
+  // condition-aware advice picker below — avoids constructing the same
+  // Set twice per render.
+  const conditionSet = new Set(conditions);
   const healthGoal = medical?.health_goal ?? null;
 
   type ActiveProgramRow = {
@@ -201,6 +205,7 @@ export default async function DashboardHome({
             chip_label: string | null;
             chip_kind: string;
             order_index: number;
+            condition_tags: string[] | null;
           }>,
           error: null,
         }),
@@ -211,13 +216,31 @@ export default async function DashboardHome({
       .eq('completion_date', today),
   ]);
 
-  const programTasks = (tasksResult.data ?? []) as Array<{
+  type RawTask = {
     id: string;
     title: string;
     meta: string | null;
     chip_label: string | null;
     chip_kind: string;
-  }>;
+    condition_tags: string[] | null;
+  };
+  const allProgramTasks = (tasksResult.data ?? []) as RawTask[];
+
+  // Personalize the daily checklist by member condition. The rule:
+  //   • a task with empty condition_tags is general — shown to everyone
+  //   • a task with tags is shown only when at least one of its tags
+  //     appears in the member's conditions array
+  // This way the same program can ship both shared daily habits and
+  // condition-specific suggestions without cloning the program per
+  // condition. The filter runs in JS over the already-loaded task list
+  // (which is small — a single program's tasks) to avoid a second
+  // sequential DB roundtrip for the conditions JOIN.
+  const programTasks = allProgramTasks.filter((t) => {
+    const tags = t.condition_tags ?? [];
+    if (tags.length === 0) return true;
+    return tags.some((tag) => conditionSet.has(tag));
+  });
+
   const completedTaskIds = new Set(
     ((completionsResult.data ?? []) as Array<{ task_id: string }>).map(
       (c) => c.task_id
@@ -312,7 +335,6 @@ export default async function DashboardHome({
     condition_tags: string[] | null;
   };
   const adviceCandidates = (adviceResult.data ?? []) as AdviceRow[];
-  const conditionSet = new Set(conditions);
   const matchedAdvice = adviceCandidates.find((a) =>
     (a.condition_tags ?? []).some((t) => conditionSet.has(t))
   );
