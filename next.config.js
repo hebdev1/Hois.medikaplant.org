@@ -29,12 +29,16 @@
 //     identical between Vercel + Hostinger + local dev.
 // ───────────────────────────────────────────────────────────────────────────
 const nextConfig = {
-  // Standalone output mode — required for reliable Hostinger deploys.
-  // The build emits `.next/standalone/server.js`; the start command
-  // should be `node .next/standalone/server.js`. We also keep
-  // `npm start` working (next start) so local production previews are
-  // unaffected.
-  output: 'standalone',
+  // NB: we tried output: 'standalone' for one deploy and got 503s on
+  // Hostinger because the panel's pre-baked start command was still
+  // `next start`, which doesn't know how to serve the standalone
+  // bundle's relocated chunks. Keep the default output mode and let
+  // `npm start` (which proxies to `next start`) do the right thing
+  // against `.next/`. Re-enabling standalone is fine later IF you also
+  // change Hostinger's start command to
+  //   node .next/standalone/server.js
+  // and copy `public/` + `.next/static/` into `.next/standalone/`
+  // after each build (a postbuild script).
 
   reactStrictMode: true,
   poweredByHeader: false,
