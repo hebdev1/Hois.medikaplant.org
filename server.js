@@ -24,6 +24,42 @@ const { parse } = require('url');
 const fs = require('fs');
 const next = require('next');
 
+// ── Boot-time env var check ─────────────────────────────────────────────
+// Print a loud table of what's set vs missing before Next.js gets a
+// chance to crash silently. Hostinger's panel surfaces stdout in the
+// Application Logs tab, so this is the cheapest possible "what's wrong"
+// for the operator. We don't ABORT on missing — Next.js may still serve
+// pages that don't depend on those env vars — but the warning is the
+// first thing the operator sees.
+const REQUIRED_ENV = [
+  'NEXT_PUBLIC_SUPABASE_URL',
+  'NEXT_PUBLIC_SUPABASE_ANON_KEY',
+  'NEXT_PUBLIC_SITE_URL',
+];
+const OPTIONAL_ENV = [
+  'RESEND_API_KEY',
+  'EMAIL_FROM',
+  'SUPABASE_AUTH_HOOK_SECRET',
+  'SUPABASE_SERVICE_ROLE_KEY',
+  'HUBSPOT_PRIVATE_APP_TOKEN',
+];
+const missing = REQUIRED_ENV.filter((k) => !process.env[k]);
+const optMissing = OPTIONAL_ENV.filter((k) => !process.env[k]);
+console.log(
+  `[boot] Node ${process.version} · env: ` +
+    `${REQUIRED_ENV.length - missing.length}/${REQUIRED_ENV.length} required, ` +
+    `${OPTIONAL_ENV.length - optMissing.length}/${OPTIONAL_ENV.length} optional`
+);
+if (missing.length) {
+  console.warn(`[boot] ⚠ Missing REQUIRED env vars: ${missing.join(', ')}`);
+  console.warn(
+    '[boot]   ↳ pages that read these will return 500 until they are set'
+  );
+}
+if (optMissing.length) {
+  console.log(`[boot] ℹ Missing optional env vars: ${optMissing.join(', ')}`);
+}
+
 const port = parseInt(process.env.PORT || '3000', 10);
 const rawHost = process.env.HOSTNAME || '';
 
