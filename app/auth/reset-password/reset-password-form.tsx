@@ -43,8 +43,42 @@ export default function ResetPasswordForm() {
       }
     });
 
-    // Also check current state — if Supabase already parsed the hash before
-    // we attached the listener, we want to mark ready immediately.
+    // Path A — direct-link flow from the custom email hook. The button
+    // in the email now sends users to this page with token_hash + type
+    // in the query string; we exchange them for a session via verifyOtp
+    // so the rest of this component can call updateUser() against a real
+    // recovery session. Falling back to the legacy hash-based flow
+    // (Path B) is automatic if these params aren't present.
+    const params = new URLSearchParams(window.location.search);
+    const tokenHash = params.get('token_hash');
+    const type = params.get('type');
+    if (tokenHash && (type === 'recovery' || type === 'magiclink')) {
+      supabase.auth
+        .verifyOtp({ token_hash: tokenHash, type })
+        .then(({ data, error }) => {
+          if (!alive) return;
+          if (error || !data.session) {
+            setSession({ kind: 'no-session' });
+            return;
+          }
+          setSession({ kind: 'ready' });
+          // Strip the token from the URL so a refresh doesn't try to
+          // re-verify (which would fail — tokens are single-use).
+          if (window.history.replaceState) {
+            window.history.replaceState(null, '', window.location.pathname);
+          }
+        });
+      return () => {
+        alive = false;
+        sub.subscription.unsubscribe();
+      };
+    }
+
+    // Path B — legacy hash-based flow. Used for any bookmarked/in-flight
+    // links from before the direct-link migration. Supabase's client
+    // parses the hash automatically; we just need to wait for the
+    // resulting SIGNED_IN / PASSWORD_RECOVERY event or check the existing
+    // session if it already landed.
     supabase.auth.getSession().then(({ data }) => {
       if (!alive) return;
       if (data.session) {

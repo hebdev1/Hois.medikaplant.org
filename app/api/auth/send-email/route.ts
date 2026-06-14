@@ -253,19 +253,26 @@ function renderEmail(
 /** Build the verification URL Supabase wants the user to click. */
 function buildVerifyUrl(payload: SupabaseEmailHookPayload): string {
   const { email_data } = payload;
-  // We let Supabase handle the OTP verification itself by hitting their
-  // /verify endpoint — that endpoint then bounces the user to our
-  // redirect_to with the recovery token in the URL hash. Doing it this way
-  // means the link expires/single-use semantics are managed by Supabase,
-  // not by us.
-  const base = (
-    process.env.NEXT_PUBLIC_SUPABASE_URL ||
-    'https://kmzmtuthwssyuoklmydy.supabase.co'
-  ).replace(/\/$/, '');
-  const url = new URL(`${base}/auth/v1/verify`);
-  url.searchParams.set('token', email_data.token_hash);
+  // Direct-link strategy (replaces the old bounce through Supabase's
+  // /auth/v1/verify endpoint):
+  //
+  //   • The button in the email points STRAIGHT at our app route
+  //     (email_data.redirect_to) with the token_hash + type as query
+  //     params. The landing page calls supabase.auth.verifyOtp() to
+  //     exchange the token for a session.
+  //
+  //   • Why: Supabase's /verify endpoint rewrites unknown redirect_to
+  //     values to the configured Site URL — so any tiny mismatch in
+  //     the Redirect URLs allow-list (missing /**, trailing slash, etc.)
+  //     drops users on the homepage instead of /auth/reset-password.
+  //     Linking directly removes that whole class of misconfiguration.
+  //
+  //   • Single-use semantics are still enforced by Supabase since we
+  //     use verifyOtp() on the receiving end, which marks the token
+  //     consumed exactly like /verify would.
+  const url = new URL(email_data.redirect_to);
+  url.searchParams.set('token_hash', email_data.token_hash);
   url.searchParams.set('type', email_data.email_action_type);
-  url.searchParams.set('redirect_to', email_data.redirect_to);
   return url.toString();
 }
 
