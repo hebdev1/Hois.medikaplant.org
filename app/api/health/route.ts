@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
 
 // ───────────────────────────────────────────────────────────────────────────
 // Health endpoint.
@@ -37,24 +36,49 @@ async function pingSupabase(): Promise<
   { ok: true; latencyMs: number } | { ok: false; error: string }
 > {
   const start = Date.now();
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!supabaseUrl || !anonKey) {
+    return { ok: false, error: 'env_vars_missing' };
+  }
+
+  // We probe Supabase's PostgREST root with a plain fetch + abort
+  // controller rather than going through the SSR helper:
+  //
+  //   • The SSR helper needs cookies() and runs RLS queries — both of
+  //     which can return empty-message errors for an anonymous probe,
+  //     producing the {"ok":false,"error":""} we just saw in prod.
+  //   • The REST root returns 200 with a minimal JSON body any time
+  //     Supabase is reachable; no RLS, no auth wrangling, no table
+  //     dependency. This is the canonical "is Supabase up?" check.
+  //   • AbortController gives us a hard 2s ceiling so a Supabase outage
+  //     can't hang the healthcheck and trigger LSWS to mark the app
+  //     unhealthy.
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 2000);
   try {
-    const supabase = createClient();
-    // Race the query against a 2s timeout so a Supabase outage doesn't
-    // hang the entire healthcheck and cause LSWS to flag us as down.
-    const queryPromise = supabase
-      .from('profiles')
-      .select('id', { count: 'exact', head: true });
-    const timeoutPromise = new Promise<never>((_, reject) =>
-      setTimeout(() => reject(new Error('supabase_timeout_2s')), 2000)
-    );
-    const { error } = (await Promise.race([
-      queryPromise,
-      timeoutPromise,
-    ])) as { error: { message: string } | null };
-    if (error) return { ok: false, error: error.message };
+    const res = await fetch(`${supabaseUrl.replace(/\/$/, '')}/rest/v1/`, {
+      method: 'GET',
+      headers: {
+        apikey: anonKey,
+        Authorization: `Bearer ${anonKey}`,
+      },
+      signal: controller.signal,
+      cache: 'no-store',
+    });
+    clearTimeout(timeout);
+    if (!res.ok) {
+      return { ok: false, error: `supabase_http_${res.status}` };
+    }
     return { ok: true, latencyMs: Date.now() - start };
   } catch (e) {
-    return { ok: false, error: (e as Error).message };
+    clearTimeout(timeout);
+    const err = e as Error;
+    const reason =
+      err.name === 'AbortError'
+        ? 'supabase_timeout_2s'
+        : err.message || err.name || 'unknown_error';
+    return { ok: false, error: reason };
   }
 }
 
