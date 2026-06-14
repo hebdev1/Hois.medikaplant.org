@@ -253,24 +253,35 @@ function renderEmail(
 /** Build the verification URL Supabase wants the user to click. */
 function buildVerifyUrl(payload: SupabaseEmailHookPayload): string {
   const { email_data } = payload;
-  // Direct-link strategy (replaces the old bounce through Supabase's
-  // /auth/v1/verify endpoint):
+
+  // We deliberately IGNORE email_data.redirect_to here. Supabase
+  // silently rewrites any redirect_to that isn't on the Redirect URLs
+  // allow-list back to the bare Site URL — so `redirectTo:
+  // siteUrl('/auth/reset-password')` from the client comes through to
+  // the hook as just `https://hoismedikaplant.com/`, which would land
+  // users on the homepage instead of the form they need.
   //
-  //   • The button in the email points STRAIGHT at our app route
-  //     (email_data.redirect_to) with the token_hash + type as query
-  //     params. The landing page calls supabase.auth.verifyOtp() to
-  //     exchange the token for a session.
-  //
-  //   • Why: Supabase's /verify endpoint rewrites unknown redirect_to
-  //     values to the configured Site URL — so any tiny mismatch in
-  //     the Redirect URLs allow-list (missing /**, trailing slash, etc.)
-  //     drops users on the homepage instead of /auth/reset-password.
-  //     Linking directly removes that whole class of misconfiguration.
-  //
-  //   • Single-use semantics are still enforced by Supabase since we
-  //     use verifyOtp() on the receiving end, which marks the token
-  //     consumed exactly like /verify would.
-  const url = new URL(email_data.redirect_to);
+  // Pinning the target path here per email_action_type makes the link
+  // correct even if the operator never touches the Supabase Redirect
+  // URLs panel. The token_hash + type query params are exchanged for
+  // a session on the landing page via supabase.auth.verifyOtp(), which
+  // enforces the same single-use semantics that /auth/v1/verify would.
+  const siteUrl = (
+    process.env.NEXT_PUBLIC_SITE_URL || 'https://hoismedikaplant.com'
+  ).replace(/\/$/, '');
+
+  const pathByAction: Record<string, string> = {
+    recovery: '/auth/reset-password',
+    magiclink: '/auth/login',
+    signup: '/auth/login',
+    invite: '/auth/login',
+    email_change: '/dashboard/settings',
+    email_change_new: '/dashboard/settings',
+    reauthentication: '/dashboard',
+  };
+  const targetPath = pathByAction[email_data.email_action_type] ?? '/';
+
+  const url = new URL(`${siteUrl}${targetPath}`);
   url.searchParams.set('token_hash', email_data.token_hash);
   url.searchParams.set('type', email_data.email_action_type);
   return url.toString();
