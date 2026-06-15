@@ -6,12 +6,24 @@ import { createClient } from '@/lib/supabase/client';
 import { siteUrl } from '@/lib/site-url';
 import { User, Mail, Lock, Loader2, CheckCircle2 } from 'lucide-react';
 
+import { recordReferralSignup } from './record-referral-action';
+
 export default function SignupForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectParam = searchParams.get('redirect');
   const planParam = (searchParams.get('plan') as 'basic' | 'premium' | 'vip' | null) ?? null;
+  // Referral code rides through both the URL (?ref=) and a cookie so the
+  // code survives if the visitor wanders off to read /klas or /istwa-nou
+  // and comes back via the navbar instead of the original invite link.
+  const refParam = searchParams.get('ref');
   const supabase = createClient();
+
+  React.useEffect(() => {
+    if (refParam) {
+      document.cookie = `mkp_ref=${encodeURIComponent(refParam)}; path=/; max-age=2592000`; // 30d
+    }
+  }, [refParam]);
 
   const [fullName, setFullName] = React.useState('');
   const [email, setEmail] = React.useState('');
@@ -54,6 +66,27 @@ export default function SignupForm() {
     }
 
     if (data.session) {
+      // Best-effort referral capture — silent failure is fine; the new
+      // member shouldn't be blocked from continuing to checkout if the
+      // referrer code happens to be invalid.
+      const code =
+        refParam ||
+        document.cookie
+          .split(';')
+          .map((c) => c.trim())
+          .find((c) => c.startsWith('mkp_ref='))
+          ?.split('=')[1];
+      if (code) {
+        try {
+          await recordReferralSignup({
+            code: decodeURIComponent(code),
+            refereeEmail: email,
+          });
+        } catch {
+          /* swallow — referral is a nice-to-have */
+        }
+      }
+
       router.push(postSignupDestination);
       router.refresh();
     }

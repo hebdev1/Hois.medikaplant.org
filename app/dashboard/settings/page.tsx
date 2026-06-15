@@ -2,6 +2,8 @@ import { Settings, AlertCircle } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import Topbar from '@/components/dashboard/topbar';
 import SettingsForm from './settings-form';
+import ReferralSection from '@/components/dashboard/referral-section';
+import { buildReferralUrl, codeForUser } from '@/lib/referral';
 import type {
   SubscriptionInfo,
   PastSubscription,
@@ -240,6 +242,46 @@ export default async function SettingsPage() {
   const planLabel = PLAN_LABELS[profile.plan] ?? 'Hoïs Bazilik';
   const unreadCount = (unreadCountResult.data as number | null) ?? 0;
 
+  // ─── Referral stats ────────────────────────────────────────────────────
+  // Best-effort: failures shouldn't break the settings page, so we wrap
+  // the pair of small reads in Promise.all + default to empty counts.
+  // The cast through `unknown as ReturnType…` is because referrals and
+  // subscription_credits are too new to be in the generated types yet —
+  // a regenerate will drop the cast.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const sb = supabase as any;
+  const [{ data: referralsRaw }, { data: creditsRaw }] = await Promise.all([
+    sb
+      .from('referrals')
+      .select('referee_email, signed_up_at')
+      .eq('referrer_user_id', user.id)
+      .order('created_at', { ascending: false })
+      .limit(10),
+    sb
+      .from('subscription_credits')
+      .select('id, consumed_at')
+      .eq('user_id', user.id),
+  ]);
+  const refRows = (referralsRaw ?? []) as Array<{
+    referee_email: string;
+    signed_up_at: string | null;
+  }>;
+  const credRows = (creditsRaw ?? []) as Array<{
+    id: string;
+    consumed_at: string | null;
+  }>;
+  const referralStats = {
+    link: buildReferralUrl(user.id),
+    code: codeForUser(user.id),
+    signedUpCount: refRows.filter((r) => r.signed_up_at).length,
+    pendingCreditCount: credRows.filter((c) => !c.consumed_at).length,
+    consumedCreditCount: credRows.filter((c) => c.consumed_at).length,
+    recent: refRows.slice(0, 5).map((r) => ({
+      email: r.referee_email,
+      signed_up_at: r.signed_up_at,
+    })),
+  };
+
   return (
     <>
       <Topbar
@@ -268,6 +310,12 @@ export default async function SettingsPage() {
             <span>{healingNotice}</span>
           </div>
         )}
+
+        {/* Referral / Envite zanmi panel — placed above the long settings
+            form so it stays discoverable without scrolling. */}
+        <div className="mb-6">
+          <ReferralSection stats={referralStats} />
+        </div>
 
         <SettingsForm
           profile={profile}

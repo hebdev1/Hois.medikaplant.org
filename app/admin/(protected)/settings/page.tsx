@@ -1,5 +1,12 @@
+import Link from 'next/link';
 import { redirect } from 'next/navigation';
-import { Settings as SettingsIcon, Shield } from 'lucide-react';
+import {
+  Settings as SettingsIcon,
+  Shield,
+  UserPlus,
+  ArrowRight,
+  Mail,
+} from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import {
   ADMIN_ROLE_LABEL,
@@ -101,6 +108,39 @@ export default async function AdminSettingsPage() {
           </div>
         </div>
       </section>
+
+      {/* Envite admin — surfaces the existing /admin/users/new flow inline
+          so a super_admin can spin up new staff invites without hunting
+          for it in the Users area. Restricted to super_admin since the
+          invite flow already gates on that role server-side. */}
+      {adminRole === 'super_admin' && (
+        <section className="bg-white border border-cream-200 rounded-2xl p-5 md:p-6 shadow-card mb-6">
+          <header className="flex items-start justify-between gap-3 flex-wrap mb-3">
+            <div>
+              <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-violet-100 text-violet-800 text-[10px] font-bold uppercase tracking-wider mb-2">
+                <UserPlus className="w-3 h-3" strokeWidth={2.4} />
+                Envite yon admin
+              </div>
+              <h2 className="font-display text-lg font-bold text-ink">
+                Ajoute yon manm nan ekip admin lan
+              </h2>
+              <p className="text-sm text-earth-600 mt-1 max-w-lg leading-relaxed">
+                Envite yon kòlèg pou yon wòl espesifik (modèratè, sipò,
+                editè kontni). Yo resevwa yon imèl ak yon lyen pèsonèl pou
+                kreye kont yo + chwazi modpas.
+              </p>
+            </div>
+            <Link
+              href="/admin/users/new"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-forest-700 hover:bg-forest-800 text-cream-50 text-sm font-semibold transition shrink-0"
+            >
+              <Mail className="w-3.5 h-3.5" strokeWidth={2.4} />
+              Voye yon envitasyon
+              <ArrowRight className="w-3.5 h-3.5" strokeWidth={2.4} />
+            </Link>
+          </header>
+        </section>
+      )}
 
       <AdminSettingsForm
         initial={{
