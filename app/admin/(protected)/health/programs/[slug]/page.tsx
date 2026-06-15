@@ -78,7 +78,7 @@ export default async function AdminProgramSchedulerPage({
   return (
     <div className="p-5 md:p-8 lg:p-10 max-w-[1280px] mx-auto">
       <Link
-        href="/admin/programs"
+        href="/admin/health?tab=programs"
         className="inline-flex items-center gap-1 text-xs font-semibold text-earth-600 hover:text-forest-700 transition mb-5"
       >
         <ChevronLeft className="w-3.5 h-3.5" strokeWidth={2.4} />

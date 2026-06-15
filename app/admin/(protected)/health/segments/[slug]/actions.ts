@@ -83,7 +83,7 @@ export async function broadcastToSegment(input: {
     return { ok: false, error: error.message };
   }
 
-  revalidatePath(`/admin/segments/${input.slug}`);
+  revalidatePath(`/admin/health/segments/${input.slug}`);
   revalidatePath('/admin/notifications');
   return { ok: true, delivered: count ?? userIds.length };
 }

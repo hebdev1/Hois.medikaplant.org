@@ -167,8 +167,9 @@ export type AdminNavLink = {
 export const ADMIN_NAV_LINKS: readonly AdminNavLink[] = [
   { href: '/admin', label: 'Overview', icon: LayoutDashboard, capability: 'overview' },
   { href: '/admin/users', label: 'Users', icon: Users, capability: 'manage_users' },
-  { href: '/admin/segments', label: 'Segman maladi', icon: Layers, capability: 'view_segments' },
-  { href: '/admin/programs', label: 'Plan + Tach 1-30', icon: CalendarRange, capability: 'manage_programs' },
+  // Swivi Sante now hosts all three care sub-views (Pasyan, Segman, Plan)
+  // under tabs at /admin/health?tab=… — keeps the sidebar tight and
+  // mirrors how operators think about the work (one care workspace).
   { href: '/admin/health', label: 'Swivi Sante', icon: Activity, capability: 'view_health' },
   { href: '/admin/support', label: 'Sipò chat', icon: MessageCircle, capability: 'reply_support' },
   { href: '/admin/contact', label: 'Mesaj kontak', icon: Inbox, capability: 'manage_contact' },

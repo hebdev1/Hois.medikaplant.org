@@ -83,7 +83,7 @@ export default async function SegmentDetailPage({
   return (
     <div className="p-5 md:p-8 lg:p-10 max-w-[1200px] mx-auto">
       <Link
-        href="/admin/segments"
+        href="/admin/health?tab=segments"
         className="inline-flex items-center gap-1 text-xs font-semibold text-earth-600 hover:text-forest-700 transition mb-5"
       >
         <ChevronLeft className="w-3.5 h-3.5" strokeWidth={2.4} />

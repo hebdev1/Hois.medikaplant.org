@@ -117,7 +117,7 @@ export async function createProgramTask(input: {
     .single();
   if (error || !data) return { ok: false, error: error?.message ?? 'Erè inkoni.' };
 
-  revalidatePath(`/admin/programs/${input.programSlug}`);
+  revalidatePath(`/admin/health/programs/${input.programSlug}`);
   return { ok: true, task: data as ProgramTaskRow };
 }
 
@@ -155,7 +155,7 @@ export async function updateProgramTask(input: {
     .single();
   if (error || !data) return { ok: false, error: error?.message ?? 'Erè inkoni.' };
 
-  revalidatePath(`/admin/programs/${input.programSlug}`);
+  revalidatePath(`/admin/health/programs/${input.programSlug}`);
   return { ok: true, task: data as ProgramTaskRow };
 }
 
@@ -172,6 +172,6 @@ export async function deleteProgramTask(input: {
     .eq('id', input.taskId);
   if (error) return { ok: false, error: error.message };
 
-  revalidatePath(`/admin/programs/${input.programSlug}`);
+  revalidatePath(`/admin/health/programs/${input.programSlug}`);
   return { ok: true };
 }
