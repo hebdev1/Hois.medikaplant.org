@@ -11,6 +11,7 @@ import {
   AlertCircle,
 } from 'lucide-react';
 import { exportUserData, deleteAccount } from '@/app/dashboard/settings/actions';
+import { buildUserExportPdf } from '@/lib/pdf/user-export';
 
 export default function DangerZonePanel() {
   return (
@@ -50,20 +51,20 @@ function ExportRow() {
       setStatus('error');
       return;
     }
-    // Stream JSON to the browser as a download
-    const blob = new Blob([JSON.stringify(res.data, null, 2)], {
-      type: 'application/json',
-    });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = res.filename;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-    setStatus('success');
-    setTimeout(() => setStatus('idle'), 2600);
+    // The server returns a JSON blob; we render it into a branded PDF
+    // client-side so the dependency stays out of the server bundle and
+    // the user gets a document they can hand to a clinician.
+    try {
+      const filename = res.filename.replace(/\.json$/, '.pdf');
+      buildUserExportPdf(res.data, filename);
+      setStatus('success');
+      setTimeout(() => setStatus('idle'), 2600);
+    } catch (e) {
+      setError(
+        e instanceof Error ? e.message : 'PDF la pa rive jenere. Eseye ankò.'
+      );
+      setStatus('error');
+    }
   }
 
   return (
@@ -72,9 +73,10 @@ function ExportRow() {
         <div>
           <div className="text-sm font-semibold text-ink">Telechaje tout done m</div>
           <div className="text-xs text-earth-600 mt-0.5 max-w-xl">
-            Yon fichye JSON ki gen pwofil ou, preferans, enfòmasyon medikal,
-            sibskripsyon, log sante, konsiltasyon, ak pwogrè ou. Konfòmite ak
-            dwa GDPR ak pòtabilite done.
+            Yon fichye PDF byen prezante ki gen pwofil ou, preferans,
+            enfòmasyon medikal, sibskripsyon, log sante, konsiltasyon, ak
+            pwogrè ou. Bon pou kenbe arkiv pèsonèl oswa pataje ak yon
+            doktè. Konfòmite ak dwa GDPR.
           </div>
         </div>
         <button
@@ -88,7 +90,7 @@ function ExportRow() {
           ) : (
             <Download className="w-3.5 h-3.5" strokeWidth={2.2} />
           )}
-          Telechaje JSON
+          Telechaje PDF
         </button>
       </div>
       {status === 'success' && (

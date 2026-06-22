@@ -601,6 +601,9 @@ export async function exportUserData(): Promise<
   };
 
   const stamp = new Date().toISOString().slice(0, 10);
+  // Filename suffix gets swapped to .pdf by the client (danger-zone-panel)
+  // before the PDF builder saves it. We still emit a .json name here so
+  // any caller that *does* want raw JSON sees a sensible filename.
   return {
     ok: true,
     filename: `medikaplant-export-${stamp}.json`,
