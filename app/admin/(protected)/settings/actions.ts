@@ -234,13 +234,66 @@ export async function updateAdminNotificationPreference(
   const auth = await assertAdminSelf();
   if (!auth.ok) return { ok: false, error: auth.error };
 
-  const { error } = await auth.supabase
-    .from('user_preferences')
-    .upsert(
-      { user_id: auth.user.id, [key]: value },
-      { onConflict: 'user_id' }
-    );
-  if (error) return { ok: false, error: error.message };
+  try {
+    const { error } = await auth.supabase
+      .from('user_preferences')
+      .upsert(
+        { user_id: auth.user.id, [key]: value },
+        { onConflict: 'user_id' }
+      );
+    if (error) return { ok: false, error: error.message };
+  } catch (e) {
+    return { ok: false, error: (e as Error).message ?? 'Erè inkoni.' };
+  }
+
+  revalidatePath('/admin/settings');
+  return { ok: true };
+}
+
+// ─── Appearance preferences (accent, density, dark mode, language) ────────
+// Same upsert pattern as notifications; lets admins customize the look of
+// the panel without us forking the user_preferences table.
+const APPEARANCE_KEYS = ['accent', 'density', 'dark_mode', 'language'] as const;
+export type AppearanceKey = (typeof APPEARANCE_KEYS)[number];
+export type AppearanceValue = string | boolean;
+
+export async function updateAdminAppearancePreference(
+  key: AppearanceKey,
+  value: AppearanceValue
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  if (!APPEARANCE_KEYS.includes(key)) {
+    return { ok: false, error: 'Preferans aparans pa otorize.' };
+  }
+
+  // Range-validate each key so a tampered client payload can't write
+  // gibberish into a free-form text column.
+  if (key === 'accent' && !['forest', 'gold', 'both'].includes(value as string)) {
+    return { ok: false, error: 'Koulè aksan pa valid.' };
+  }
+  if (key === 'density' && !['compact', 'regular', 'comfy'].includes(value as string)) {
+    return { ok: false, error: 'Dansite pa valid.' };
+  }
+  if (key === 'language' && !['ht', 'fr', 'en'].includes(value as string)) {
+    return { ok: false, error: 'Lang pa valid.' };
+  }
+  if (key === 'dark_mode' && typeof value !== 'boolean') {
+    return { ok: false, error: 'Valè dark mode pa valid.' };
+  }
+
+  const auth = await assertAdminSelf();
+  if (!auth.ok) return { ok: false, error: auth.error };
+
+  try {
+    const { error } = await auth.supabase
+      .from('user_preferences')
+      .upsert(
+        { user_id: auth.user.id, [key]: value },
+        { onConflict: 'user_id' }
+      );
+    if (error) return { ok: false, error: error.message };
+  } catch (e) {
+    return { ok: false, error: (e as Error).message ?? 'Erè inkoni.' };
+  }
 
   revalidatePath('/admin/settings');
   return { ok: true };

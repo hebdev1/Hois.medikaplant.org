@@ -156,6 +156,16 @@ export default async function AdminSettingsPage() {
             weekly_summary_email: prefs?.weekly_summary_email ?? true,
             badge_unlock_email: prefs?.badge_unlock_email ?? false,
           },
+          appearance: {
+            accent:
+              (prefs?.accent as 'forest' | 'gold' | 'both' | null) ?? 'both',
+            density:
+              (prefs?.density as 'compact' | 'regular' | 'comfy' | null) ??
+              'regular',
+            dark_mode: prefs?.dark_mode ?? false,
+            language:
+              (prefs?.language as 'ht' | 'fr' | 'en' | null) ?? 'ht',
+          },
         }}
       />
     </div>

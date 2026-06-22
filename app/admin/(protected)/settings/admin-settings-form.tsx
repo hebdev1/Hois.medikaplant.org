@@ -12,6 +12,7 @@ import {
   AlertCircle,
   Eye,
   EyeOff,
+  Palette,
   type LucideIcon,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -21,7 +22,10 @@ import {
   updateAdminEmail,
   updateAdminPassword,
   updateAdminNotificationPreference,
+  updateAdminAppearancePreference,
   type NotificationKey,
+  type AppearanceKey,
+  type AppearanceValue,
 } from './actions';
 
 type IdentityField = 'first_name' | 'last_name' | 'phone' | 'bio';
@@ -39,6 +43,12 @@ type InitialState = {
     weekly_summary_email: boolean;
     badge_unlock_email: boolean;
   };
+  appearance: {
+    accent: 'forest' | 'gold' | 'both';
+    density: 'compact' | 'regular' | 'comfy';
+    dark_mode: boolean;
+    language: 'ht' | 'fr' | 'en';
+  };
 };
 
 export default function AdminSettingsForm({ initial }: { initial: InitialState }) {
@@ -52,6 +62,8 @@ export default function AdminSettingsForm({ initial }: { initial: InitialState }
       />
 
       <PersonaSection initialPersona={initial.supportPersonaName} />
+
+      <AppearanceSection initialPrefs={initial.appearance} />
 
       <EmailSection currentEmail={initial.email} />
 
@@ -514,6 +526,209 @@ function NotificationToggle({
     setPending(true);
     setError(null);
     const res = await updateAdminNotificationPreference(field, next);
+    setPending(false);
+    if (!res.ok) {
+      setValue(prev);
+      setError(res.error);
+    }
+  }
+
+  return (
+    <div className="flex items-center justify-between gap-3 py-2 px-3 rounded-xl bg-cream-50/70 border border-cream-200">
+      <div className="flex-1 min-w-0">
+        <div className="text-sm font-semibold text-ink">{label}</div>
+        <div className="text-[11px] text-earth-600 leading-relaxed">{description}</div>
+        {error && (
+          <p className="mt-1 text-[11px] text-rose-700 inline-flex items-center gap-1">
+            <AlertCircle className="w-3 h-3" strokeWidth={2.4} /> {error}
+          </p>
+        )}
+      </div>
+      <button
+        type="button"
+        role="switch"
+        aria-checked={value}
+        onClick={onToggle}
+        disabled={pending}
+        className={cn(
+          'relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full transition-colors disabled:cursor-wait',
+          value ? 'bg-forest-600' : 'bg-cream-200'
+        )}
+      >
+        <span
+          className={cn(
+            'inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform',
+            value ? 'translate-x-5' : 'translate-x-0.5'
+          )}
+        />
+      </button>
+    </div>
+  );
+}
+
+/* ─── Appearance preferences (accent, density, dark mode, language) ────── */
+
+function AppearanceSection({
+  initialPrefs,
+}: {
+  initialPrefs: {
+    accent: 'forest' | 'gold' | 'both';
+    density: 'compact' | 'regular' | 'comfy';
+    dark_mode: boolean;
+    language: 'ht' | 'fr' | 'en';
+  };
+}) {
+  return (
+    <Card
+      icon={Palette}
+      title="Aparans"
+      description="Ajiste koulè, dansite, ak lang panèl admin lan. Chanjman aplike imedyatman pou kont ou."
+    >
+      <div className="space-y-3">
+        <AppearanceRadio
+          field="accent"
+          label="Koulè aksan"
+          initial={initialPrefs.accent}
+          options={[
+            { value: 'forest', label: 'Vèt fèy' },
+            { value: 'gold', label: 'Lò Hoïs' },
+            { value: 'both', label: 'Melanje' },
+          ]}
+        />
+        <AppearanceRadio
+          field="density"
+          label="Dansite mizannpaj"
+          initial={initialPrefs.density}
+          options={[
+            { value: 'compact', label: 'Konpak' },
+            { value: 'regular', label: 'Nòmal' },
+            { value: 'comfy', label: 'Konfò' },
+          ]}
+        />
+        <AppearanceRadio
+          field="language"
+          label="Lang"
+          initial={initialPrefs.language}
+          options={[
+            { value: 'ht', label: 'Kreyòl' },
+            { value: 'fr', label: 'Français' },
+            { value: 'en', label: 'English' },
+          ]}
+        />
+        <AppearanceToggle
+          field="dark_mode"
+          label="Mòd nwa"
+          description="Aktive yon palèt fonse pou pi dou nan zye lannwit."
+          initial={initialPrefs.dark_mode}
+        />
+      </div>
+    </Card>
+  );
+}
+
+function AppearanceRadio<V extends string>({
+  field,
+  label,
+  initial,
+  options,
+}: {
+  field: AppearanceKey;
+  label: string;
+  initial: V;
+  options: Array<{ value: V; label: string }>;
+}) {
+  const [value, setValue] = React.useState<V>(initial);
+  const [pending, setPending] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
+  const [saved, setSaved] = React.useState(false);
+
+  async function onChange(next: V) {
+    const prev = value;
+    setValue(next);
+    setPending(true);
+    setError(null);
+    const res = await updateAdminAppearancePreference(
+      field,
+      next as AppearanceValue
+    );
+    setPending(false);
+    if (!res.ok) {
+      setValue(prev);
+      setError(res.error);
+      return;
+    }
+    setSaved(true);
+    setTimeout(() => setSaved(false), 1600);
+  }
+
+  return (
+    <div className="rounded-xl bg-cream-50/70 border border-cream-200 p-3">
+      <div className="flex items-center justify-between gap-2 mb-2">
+        <div className="text-sm font-semibold text-ink">{label}</div>
+        {saved && (
+          <span className="inline-flex items-center gap-1 text-[10px] text-forest-700">
+            <CheckCircle2 className="w-3 h-3" strokeWidth={2.6} /> Anrejistre
+          </span>
+        )}
+      </div>
+      <div className="flex flex-wrap gap-1.5">
+        {options.map((opt) => {
+          const isActive = value === opt.value;
+          return (
+            <button
+              key={opt.value}
+              type="button"
+              onClick={() => onChange(opt.value)}
+              disabled={pending}
+              className={cn(
+                'inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold transition disabled:opacity-60',
+                isActive
+                  ? 'bg-forest-700 text-cream-50 shadow-sm'
+                  : 'bg-white text-earth-700 border border-cream-200 hover:border-forest-300'
+              )}
+            >
+              {opt.label}
+              {pending && isActive && (
+                <Loader2 className="w-3 h-3 animate-spin" strokeWidth={2.4} />
+              )}
+            </button>
+          );
+        })}
+      </div>
+      {error && (
+        <p className="mt-2 text-[11px] text-rose-700 inline-flex items-center gap-1">
+          <AlertCircle className="w-3 h-3" strokeWidth={2.4} /> {error}
+        </p>
+      )}
+    </div>
+  );
+}
+
+function AppearanceToggle({
+  field,
+  label,
+  description,
+  initial,
+}: {
+  field: AppearanceKey;
+  label: string;
+  description: string;
+  initial: boolean;
+}) {
+  const [value, setValue] = React.useState(initial);
+  const [pending, setPending] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
+
+  async function onToggle() {
+    const prev = value;
+    const next = !prev;
+    setValue(next);
+    setPending(true);
+    setError(null);
+    const res = await updateAdminAppearancePreference(
+      field,
+      next as AppearanceValue
+    );
     setPending(false);
     if (!res.ok) {
       setValue(prev);
