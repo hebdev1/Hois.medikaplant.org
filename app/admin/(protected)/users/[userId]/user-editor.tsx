@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useRouter } from 'next/navigation';
 import {
   SettingsSection,
   ToggleSetting,
@@ -71,6 +72,7 @@ export default function UserEditor({
   medical: MedicalRow;
   preferences: PrefRow;
 }) {
+  const router = useRouter();
   const [profile, setProfile] = React.useState(initialProfile);
   const [medical, setMedical] = React.useState(initialMedical);
   const [prefs, setPrefs] = React.useState(initialPrefs);
@@ -79,10 +81,33 @@ export default function UserEditor({
   React.useEffect(() => setMedical(initialMedical), [initialMedical]);
   React.useEffect(() => setPrefs(initialPrefs), [initialPrefs]);
 
+  // Why all three commit functions both merge the server-returned row AND
+  // re-apply the just-changed (key, value) at the end:
+  //
+  //   Operators reported that after a save the visible toggle/radio would
+  //   sometimes snap back to the previous value. The cause is a race
+  //   between three sources of truth on this page —
+  //     1) the optimistic local state in each control,
+  //     2) the merged-back row from the server action,
+  //     3) the fresh `initialPrefs` Next.js passes after revalidatePath.
+  //   If the server-returned row's column had a stale snapshot or if (3)
+  //   re-mounted the control before (2) wrote, the control's
+  //   `useEffect(setLocal(value), [value])` would yank `local` back to
+  //   whatever value came in as a prop.
+  //
+  //   Pinning [key]:value at the end of the merge guarantees the field we
+  //   just changed is the one the next render sees, regardless of which
+  //   of the three sources "wins". router.refresh() then re-runs the page
+  //   server-side so the next batch of `initialPrefs` matches the DB, and
+  //   the prop-sync useEffect at top of the file becomes a no-op.
+
   function commitProfile<K extends keyof ProfileRow>(key: K) {
     return async (value: ProfileRow[K]) => {
       const res = await adminUpdateProfileField(userId, key, value as never);
-      if (res.ok) setProfile(res.profile);
+      if (res.ok) {
+        setProfile((prev) => ({ ...prev, ...res.profile, [key]: value }));
+        router.refresh();
+      }
       return res;
     };
   }
@@ -90,7 +115,10 @@ export default function UserEditor({
   function commitMedical<K extends keyof MedicalRow>(key: K) {
     return async (value: MedicalRow[K]) => {
       const res = await adminUpdateMedical(userId, key, value as never);
-      if (res.ok) setMedical(res.medical);
+      if (res.ok) {
+        setMedical((prev) => ({ ...prev, ...res.medical, [key]: value }));
+        router.refresh();
+      }
       return res;
     };
   }
@@ -98,7 +126,10 @@ export default function UserEditor({
   function commitPref<K extends keyof PrefRow>(key: K) {
     return async (value: PrefRow[K]) => {
       const res = await adminUpdatePreference(userId, key, value as never);
-      if (res.ok) setPrefs(res.preferences);
+      if (res.ok) {
+        setPrefs((prev) => ({ ...prev, ...res.preferences, [key]: value }));
+        router.refresh();
+      }
       return res;
     };
   }
