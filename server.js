@@ -76,11 +76,16 @@ const tcpHost = isSocket ? '0.0.0.0' : rawHost || '0.0.0.0';
 const app = next({ hostname: tcpHost, port, dev: false });
 const handle = app.getRequestHandler();
 
+const MAX_BIND_ATTEMPTS = 20;
+
 function bindSocketWithRetry(server, socketPath, attempt = 1) {
   // The old process from a previous deploy holds an fd on the socket
-  // file even after we unlinkSync it — listen() then EADDRINUSE's. Retry
-  // a few times with a short backoff so an overlapping restart heals
-  // automatically instead of leaving us 503'd.
+  // file even after we unlinkSync it — listen() then EADDRINUSE's.
+  // Hostinger's process-swap window can leave the old worker holding
+  // the socket for 10-15 seconds during graceful shutdown, so we
+  // retry patiently with a longer total budget. Better to take 20s
+  // to come up than to fall through to TCP (where LSWS can't reach
+  // us) and serve 503 for the whole worker lifetime.
   try {
     fs.unlinkSync(socketPath);
   } catch (_) {
@@ -88,10 +93,12 @@ function bindSocketWithRetry(server, socketPath, attempt = 1) {
   }
   const onError = (err) => {
     server.removeListener('listening', onListening);
-    if (err && err.code === 'EADDRINUSE' && attempt < 6) {
-      const delay = 250 * attempt; // 250ms, 500ms, 750ms, 1s, 1.25s, 1.5s
+    if (err && err.code === 'EADDRINUSE' && attempt < MAX_BIND_ATTEMPTS) {
+      // 1s flat — predictable cadence is easier to read in logs than
+      // a varying backoff, and matches LSWS' typical worker-swap pace.
+      const delay = 1000;
       console.warn(
-        `[boot] socket busy (attempt ${attempt}/6), retrying in ${delay}ms…`
+        `[boot] socket busy (attempt ${attempt}/${MAX_BIND_ATTEMPTS}), retrying in ${delay}ms…`
       );
       setTimeout(
         () => bindSocketWithRetry(server, socketPath, attempt + 1),
@@ -99,10 +106,10 @@ function bindSocketWithRetry(server, socketPath, attempt = 1) {
       );
       return;
     }
-    console.error('[boot] failed to bind socket:', err);
-    // Last-resort fallback: bind TCP so the process at least answers
-    // /api/health and Hostinger can show a useful "process running but
-    // socket unbound" state instead of pure 503.
+    console.error('[boot] failed to bind socket after retries:', err);
+    // Last-resort fallback so the process at least answers /api/health.
+    // LSWS itself only routes to the socket, so this will only help
+    // direct TCP probes (Hostinger's panel + our own monitoring).
     console.warn(
       `[boot] falling back to TCP 0.0.0.0:${port} so health probes can land`
     );
@@ -122,6 +129,46 @@ function bindSocketWithRetry(server, socketPath, attempt = 1) {
   server.once('error', onError);
   server.once('listening', onListening);
   server.listen(socketPath);
+}
+
+// Graceful shutdown — if the next deploy SIGTERMs us, close the HTTP
+// server and unlink the socket so the new worker can bind cleanly
+// instead of fighting us for 20 seconds of EADDRINUSE retries.
+function attachShutdownHandlers(server, socketPath) {
+  const cleanup = (signal) => {
+    console.log(`[boot] received ${signal}, closing server…`);
+    const finish = () => {
+      if (socketPath) {
+        try {
+          fs.unlinkSync(socketPath);
+          console.log('[boot] socket unlinked');
+        } catch (_) {
+          /* fine */
+        }
+      }
+      process.exit(0);
+    };
+    // server.close stops accepting new connections, then fires its
+    // callback once existing ones drain. Force-exit after 5s so a
+    // hung connection can't keep us alive past the deploy window.
+    let exited = false;
+    const forceTimer = setTimeout(() => {
+      if (!exited) {
+        exited = true;
+        console.warn('[boot] force-exit after 5s drain timeout');
+        finish();
+      }
+    }, 5000);
+    server.close(() => {
+      if (!exited) {
+        exited = true;
+        clearTimeout(forceTimer);
+        finish();
+      }
+    });
+  };
+  process.on('SIGTERM', () => cleanup('SIGTERM'));
+  process.on('SIGINT', () => cleanup('SIGINT'));
 }
 
 // Hostinger sometimes restarts the app abruptly (deploy hooks, healthcheck
@@ -146,6 +193,8 @@ app.prepare().then(() => {
       res.end('internal server error');
     }
   });
+
+  attachShutdownHandlers(server, isSocket ? rawHost : null);
 
   if (isSocket) {
     bindSocketWithRetry(server, rawHost);
