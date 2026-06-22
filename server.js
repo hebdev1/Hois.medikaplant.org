@@ -76,6 +76,65 @@ const tcpHost = isSocket ? '0.0.0.0' : rawHost || '0.0.0.0';
 const app = next({ hostname: tcpHost, port, dev: false });
 const handle = app.getRequestHandler();
 
+function bindSocketWithRetry(server, socketPath, attempt = 1) {
+  // The old process from a previous deploy holds an fd on the socket
+  // file even after we unlinkSync it — listen() then EADDRINUSE's. Retry
+  // a few times with a short backoff so an overlapping restart heals
+  // automatically instead of leaving us 503'd.
+  try {
+    fs.unlinkSync(socketPath);
+  } catch (_) {
+    /* fine if it didn't exist */
+  }
+  const onError = (err) => {
+    server.removeListener('listening', onListening);
+    if (err && err.code === 'EADDRINUSE' && attempt < 6) {
+      const delay = 250 * attempt; // 250ms, 500ms, 750ms, 1s, 1.25s, 1.5s
+      console.warn(
+        `[boot] socket busy (attempt ${attempt}/6), retrying in ${delay}ms…`
+      );
+      setTimeout(
+        () => bindSocketWithRetry(server, socketPath, attempt + 1),
+        delay
+      );
+      return;
+    }
+    console.error('[boot] failed to bind socket:', err);
+    // Last-resort fallback: bind TCP so the process at least answers
+    // /api/health and Hostinger can show a useful "process running but
+    // socket unbound" state instead of pure 503.
+    console.warn(
+      `[boot] falling back to TCP 0.0.0.0:${port} so health probes can land`
+    );
+    server.listen(port, '0.0.0.0', () => {
+      console.log(`> Ready on http://0.0.0.0:${port} (TCP fallback)`);
+    });
+  };
+  const onListening = () => {
+    server.removeListener('error', onError);
+    try {
+      fs.chmodSync(socketPath, 0o666);
+    } catch (_) {
+      /* best-effort */
+    }
+    console.log(`> Ready on socket ${socketPath}`);
+  };
+  server.once('error', onError);
+  server.once('listening', onListening);
+  server.listen(socketPath);
+}
+
+// Hostinger sometimes restarts the app abruptly (deploy hooks, healthcheck
+// timeouts). Catch unhandled rejections + exceptions so a transient blip
+// in a third-party SDK call doesn't bring down the entire process and
+// trigger another deploy-restart loop.
+process.on('unhandledRejection', (reason) => {
+  console.error('[boot] unhandledRejection:', reason);
+});
+process.on('uncaughtException', (err) => {
+  console.error('[boot] uncaughtException:', err);
+});
+
 app.prepare().then(() => {
   const server = createServer((req, res) => {
     try {
@@ -89,23 +148,7 @@ app.prepare().then(() => {
   });
 
   if (isSocket) {
-    // Clean up a stale socket file from a previous run; if it's still
-    // there `listen` would EADDRINUSE.
-    try {
-      fs.unlinkSync(rawHost);
-    } catch (_) {
-      /* fine if it didn't exist */
-    }
-    server.listen(rawHost, () => {
-      // LSWS runs as a different uid than our Node process; without this
-      // it can't read/write to the socket and falls back to 503.
-      try {
-        fs.chmodSync(rawHost, 0o666);
-      } catch (_) {
-        /* best-effort */
-      }
-      console.log(`> Ready on socket ${rawHost}`);
-    });
+    bindSocketWithRetry(server, rawHost);
   } else {
     server.listen(port, tcpHost, () => {
       console.log(`> Ready on http://${tcpHost}:${port}`);

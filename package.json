@@ -7,6 +7,7 @@
   },
   "scripts": {
     "dev": "next dev -p 3001",
+    "prebuild": "node -e \"const fs=require('fs');try{fs.rmSync('.next',{recursive:true,force:true});console.log('[prebuild] cleared .next/');}catch(e){console.log('[prebuild] .next/ already clean');}\"",
     "build": "next build",
     "start": "node server.js",
     "start:next": "next start",
