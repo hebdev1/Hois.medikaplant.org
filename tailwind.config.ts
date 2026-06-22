@@ -5,6 +5,10 @@ const config: Config = {
     './app/**/*.{ts,tsx,js,jsx,mdx}',
     './components/**/*.{ts,tsx,js,jsx,mdx}',
   ],
+  // 'class' mode — UserAppearance toggles `.dark` on <html> based on the
+  // dark_mode preference. Using class instead of media so admin/user can
+  // override their system preference.
+  darkMode: 'class',
   theme: {
     extend: {
       fontFamily: {

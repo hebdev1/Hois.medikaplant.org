@@ -112,3 +112,164 @@ html {
 .card-lift:hover {
   transform: translateY(-4px);
 }
+
+/* ─────────────────────────────────────────────────────────────────────────
+ * User-controlled appearance (driven by components/dashboard/user-appearance).
+ *
+ * UserAppearance sets these CSS variables + classes on <html>:
+ *   :root[data-density="compact|regular|comfy"]
+ *   :root[data-radius="square|rounded|pill"]
+ *   :root[data-accent="forest|gold|both"]
+ *   :root[style*="--ui-font-size"]
+ *   .dark         → dark palette
+ *   .reduce-motion → no animations/transitions
+ *   .high-contrast → bumped contrast for readability
+ *
+ * Components don't need to know which mode is active — they style off
+ * normal Tailwind tokens and these rules retune them.
+ * ───────────────────────────────────────────────────────────────────────── */
+
+/* Root font-size — drives rem-based components */
+:root {
+  --ui-font-size: 16px;
+  font-size: var(--ui-font-size);
+}
+
+/* ── Density: tightens or relaxes vertical rhythm inside the dashboard ── */
+:root[data-density='compact'] .p-5,
+:root[data-density='compact'] .p-6,
+:root[data-density='compact'] .p-8 {
+  padding: 0.875rem;
+}
+:root[data-density='compact'] .gap-6,
+:root[data-density='compact'] .gap-5 {
+  gap: 0.875rem;
+}
+:root[data-density='compact'] .mb-6,
+:root[data-density='compact'] .mb-5 {
+  margin-bottom: 0.875rem;
+}
+
+:root[data-density='comfy'] .p-5,
+:root[data-density='comfy'] .p-6 {
+  padding: 1.75rem;
+}
+:root[data-density='comfy'] .gap-5,
+:root[data-density='comfy'] .gap-6 {
+  gap: 1.75rem;
+}
+:root[data-density='comfy'] .mb-5,
+:root[data-density='comfy'] .mb-6 {
+  margin-bottom: 1.75rem;
+}
+
+/* ── Card radius ───────────────────────────────────────────────────────── */
+:root[data-radius='square'] .rounded-xl,
+:root[data-radius='square'] .rounded-2xl,
+:root[data-radius='square'] .rounded-3xl,
+:root[data-radius='square'] .rounded-lg {
+  border-radius: 0.25rem;
+}
+:root[data-radius='pill'] .rounded-xl,
+:root[data-radius='pill'] .rounded-2xl,
+:root[data-radius='pill'] .rounded-lg {
+  border-radius: 1.75rem;
+}
+
+/* ── Reduced motion: nuke animations/transitions where the user opts in ── */
+.reduce-motion *,
+.reduce-motion *::before,
+.reduce-motion *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* ── High contrast: borders darken, links underlined ──────────────────── */
+.high-contrast {
+  --high-contrast-border: #1e3a0f;
+}
+.high-contrast a:not([class*='btn']):not([class*='Button']) {
+  text-decoration: underline;
+}
+.high-contrast .border-cream-200,
+.high-contrast .border-cream-300 {
+  border-color: var(--high-contrast-border) !important;
+}
+.high-contrast .text-earth-600,
+.high-contrast .text-earth-500 {
+  color: #3a2218 !important;
+}
+
+/* ── Accent color overrides ────────────────────────────────────────────── */
+/* When user picks "gold", swap forest accents for gold equivalents on the
+   common surfaces (top-of-page chip, accent text, primary buttons). The
+   selectors target Tailwind utility classes the dashboard pages already use.
+   Anything else keeps the brand palette. */
+:root[data-accent='gold'] .text-forest-700,
+:root[data-accent='gold'] .text-forest-600 {
+  color: #856915 !important;
+}
+:root[data-accent='gold'] .bg-forest-700,
+:root[data-accent='gold'] .bg-forest-600,
+:root[data-accent='gold'] .bg-forest-500 {
+  background-color: #c9a227 !important;
+  color: #1e3a0f !important;
+}
+:root[data-accent='gold'] .bg-forest-100,
+:root[data-accent='gold'] .bg-forest-50 {
+  background-color: #faedc2 !important;
+}
+:root[data-accent='gold'] .border-forest-200,
+:root[data-accent='gold'] .border-forest-300 {
+  border-color: #e0c155 !important;
+}
+
+/* ── Dark mode palette ─────────────────────────────────────────────────── */
+/* The dashboard is built on cream/forest/ink surfaces. Dark mode inverts:
+   cream → ink, white → ink+a, text inkdark → cream. We override the most
+   visible utility classes; the whole codebase doesn't need rewriting. */
+.dark {
+  color-scheme: dark;
+}
+.dark body,
+.dark .bg-cream-50,
+.dark .bg-cream-100 {
+  background-color: #0b0a1a !important;
+  color: #faf6ed !important;
+}
+.dark .bg-white {
+  background-color: #15132a !important;
+  color: #faf6ed !important;
+}
+.dark .bg-cream-200 {
+  background-color: #1c1934 !important;
+}
+.dark .text-ink,
+.dark .text-ink-DEFAULT {
+  color: #faf6ed !important;
+}
+.dark .text-earth-600,
+.dark .text-earth-500,
+.dark .text-earth-700 {
+  color: #b9b3c9 !important;
+}
+.dark .border-cream-200,
+.dark .border-cream-300 {
+  border-color: #2a2649 !important;
+}
+.dark .shadow-card {
+  box-shadow: 0 12px 40px -16px rgba(0, 0, 0, 0.6);
+}
+.dark input,
+.dark select,
+.dark textarea {
+  background-color: #1c1934 !important;
+  color: #faf6ed !important;
+  border-color: #2a2649 !important;
+}
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: #6b6889 !important;
+}

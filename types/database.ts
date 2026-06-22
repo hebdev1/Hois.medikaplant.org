@@ -1439,17 +1439,22 @@ export type Database = {
           accent: string
           allow_research_use: boolean
           badge_unlock_email: boolean
+          card_radius: string
           daily_advice_email: boolean
           daily_water_liters: number
           dark_mode: boolean
           density: string
           email_notifications: boolean
+          font_scale: string
           font_size: number
+          high_contrast: boolean
           language: string
           push_notifications: boolean
+          reduced_motion: boolean
           reminder_time: string
           share_progress_with_coach: boolean
           show_in_vip_list: boolean
+          sidebar_compact: boolean
           target_blood_sugar_max: number
           target_blood_sugar_min: number
           target_weight_kg: number | null
@@ -1462,17 +1467,22 @@ export type Database = {
           accent?: string
           allow_research_use?: boolean
           badge_unlock_email?: boolean
+          card_radius?: string
           daily_advice_email?: boolean
           daily_water_liters?: number
           dark_mode?: boolean
           density?: string
           email_notifications?: boolean
+          font_scale?: string
           font_size?: number
+          high_contrast?: boolean
           language?: string
           push_notifications?: boolean
+          reduced_motion?: boolean
           reminder_time?: string
           share_progress_with_coach?: boolean
           show_in_vip_list?: boolean
+          sidebar_compact?: boolean
           target_blood_sugar_max?: number
           target_blood_sugar_min?: number
           target_weight_kg?: number | null
@@ -1485,17 +1495,22 @@ export type Database = {
           accent?: string
           allow_research_use?: boolean
           badge_unlock_email?: boolean
+          card_radius?: string
           daily_advice_email?: boolean
           daily_water_liters?: number
           dark_mode?: boolean
           density?: string
           email_notifications?: boolean
+          font_scale?: string
           font_size?: number
+          high_contrast?: boolean
           language?: string
           push_notifications?: boolean
+          reduced_motion?: boolean
           reminder_time?: string
           share_progress_with_coach?: boolean
           show_in_vip_list?: boolean
+          sidebar_compact?: boolean
           target_blood_sugar_max?: number
           target_blood_sugar_min?: number
           target_weight_kg?: number | null

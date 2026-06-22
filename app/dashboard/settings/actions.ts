@@ -17,7 +17,12 @@ const ALLOWED_PREF_KEYS: readonly (keyof PrefUpdate)[] = [
   'accent',
   'density',
   'font_size',
+  'font_scale',
   'dark_mode',
+  'reduced_motion',
+  'high_contrast',
+  'sidebar_compact',
+  'card_radius',
   'language',
   'email_notifications',
   'push_notifications',
@@ -35,6 +40,43 @@ const ALLOWED_PREF_KEYS: readonly (keyof PrefUpdate)[] = [
   'allow_research_use',
 ] as const;
 
+// Server-side validation for the discrete-string appearance keys so a bad
+// value can't sneak in via the API and break CSS selectors.
+const ACCENT_VALUES = ['forest', 'gold', 'both'] as const;
+const DENSITY_VALUES = ['compact', 'regular', 'comfy'] as const;
+const RADIUS_VALUES = ['square', 'rounded', 'pill'] as const;
+const FONT_SCALE_VALUES = ['small', 'medium', 'large', 'xlarge'] as const;
+const LANG_VALUES = ['ht', 'fr', 'en'] as const;
+
+function validateDiscretePref<K extends keyof PrefUpdate>(
+  key: K,
+  value: PrefUpdate[K]
+): string | null {
+  if (value === null || value === undefined) return null;
+  if (key === 'accent' && !ACCENT_VALUES.includes(value as never)) {
+    return 'Aksan koulè a pa valid.';
+  }
+  if (key === 'density' && !DENSITY_VALUES.includes(value as never)) {
+    return 'Densite a pa valid.';
+  }
+  if (key === 'card_radius' && !RADIUS_VALUES.includes(value as never)) {
+    return 'Stil kwen kat la pa valid.';
+  }
+  if (key === 'font_scale' && !FONT_SCALE_VALUES.includes(value as never)) {
+    return 'Echèl tèks la pa valid.';
+  }
+  if (key === 'language' && !LANG_VALUES.includes(value as never)) {
+    return 'Lang la pa sipòte.';
+  }
+  if (key === 'font_size') {
+    const n = Number(value);
+    if (!Number.isFinite(n) || n < 12 || n > 22) {
+      return 'Gwosè tèks la dwe ant 12 ak 22 px.';
+    }
+  }
+  return null;
+}
+
 export type UpdatePrefResult =
   | { ok: true; preferences: PrefRow }
   | { ok: false; error: string };
@@ -46,6 +88,9 @@ export async function updatePreference<K extends keyof PrefUpdate>(
   if (!ALLOWED_PREF_KEYS.includes(key)) {
     return { ok: false, error: 'Kle prefere a pa valid.' };
   }
+  const validationError = validateDiscretePref(key, value);
+  if (validationError) return { ok: false, error: validationError };
+
   const supabase = createClient();
   const {
     data: { user },

@@ -476,7 +476,7 @@ export default function SettingsForm({
       {/* ── Aparans ────────────────────────────────────────────────────────── */}
       <SettingsSection
         title="Aparans"
-        description="Pèsonalize fason dashboard la parèt pou ou."
+        description="Pèsonalize fason dashboard la parèt pou ou. Tout chanjman aplike imedyatman."
       >
         <SwatchSetting
           label="Aksan koulè"
@@ -498,6 +498,16 @@ export default function SettingsForm({
           ]}
           commit={commitPref('density')}
         />
+        <RadioSetting
+          label="Stil kwen kat yo"
+          value={prefs.card_radius as 'square' | 'rounded' | 'pill'}
+          options={[
+            { value: 'square', label: 'Kare' },
+            { value: 'rounded', label: 'Awondi' },
+            { value: 'pill', label: 'Pil' },
+          ]}
+          commit={commitPref('card_radius')}
+        />
         <SliderSetting
           label="Gwosè tèks"
           value={prefs.font_size}
@@ -518,9 +528,21 @@ export default function SettingsForm({
         />
         <ToggleSetting
           label="Mòd fonse"
-          description="Itilize palèt fonse pou aswè."
+          description="Itilize palèt fonse pou aswè — ekran pi dous pou je w."
           value={prefs.dark_mode}
           commit={commitPref('dark_mode')}
+        />
+        <ToggleSetting
+          label="Kontras wo (aksesiblite)"
+          description="Bòdi pi fonse epi tèks pi nwa — ede moun ki gen pwoblèm vizyon."
+          value={prefs.high_contrast}
+          commit={commitPref('high_contrast')}
+        />
+        <ToggleSetting
+          label="Diminye animasyon"
+          description="Kanpe tout efè vizyèl ki ka bay maltèt oswa distraksyon."
+          value={prefs.reduced_motion}
+          commit={commitPref('reduced_motion')}
         />
       </SettingsSection>
 
