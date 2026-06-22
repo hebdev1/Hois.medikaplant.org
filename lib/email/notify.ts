@@ -5,6 +5,15 @@ const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ??
   'https://hoismedikaplant.com';
 
+// Which boolean columns on user_preferences gate a given email type.
+// `email_notifications` is the master switch — every email respects it.
+// The other keys are per-category opt-outs the member chooses in their
+// settings panel.
+export type EmailPrefKey =
+  | 'daily_advice_email'
+  | 'weekly_summary_email'
+  | 'badge_unlock_email';
+
 type NotifyOpts = {
   subject: string;
   /** Big heading inside the email body. */
@@ -14,6 +23,12 @@ type NotifyOpts = {
   /** Optional CTA button path (relative, e.g. '/dashboard/health'). */
   linkPath?: string;
   linkLabel?: string;
+  /**
+   * Optional secondary preference key to check on top of `email_notifications`.
+   * Omit for transactional / direct-from-admin emails that should land even
+   * if the user opted out of categorized notifications.
+   */
+  requirePref?: EmailPrefKey;
 };
 
 /**
@@ -46,15 +61,22 @@ export async function emailNotifyMember(
     } | null;
     if (!profile?.email) return;
 
+    // Pull both the master switch + (optionally) the categorized opt-in
+    // in a single round-trip. select('*') is fine because the row is tiny
+    // and we don't want the field list to drift if we add more pref keys.
     const { data: prefRaw } = await supabase
       .from('user_preferences')
-      .select('email_notifications')
+      .select('*')
       .eq('user_id', userId)
       .maybeSingle();
-    const allowed =
-      (prefRaw as { email_notifications: boolean } | null)?.email_notifications ??
-      true;
-    if (!allowed) return;
+    const prefs = prefRaw as Record<string, unknown> | null;
+
+    const masterOn = (prefs?.email_notifications as boolean | undefined) ?? true;
+    if (!masterOn) return;
+    if (opts.requirePref) {
+      const categoryOn = (prefs?.[opts.requirePref] as boolean | undefined) ?? false;
+      if (!categoryOn) return;
+    }
 
     const firstName =
       profile.first_name ||

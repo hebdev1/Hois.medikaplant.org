@@ -566,23 +566,21 @@ export default function SettingsForm({
         />
         <ToggleSetting
           label="Konsèy plant chak jou pa imèl"
-          description="Resevwa konsèy plant la chak maten nan bwat imèl ou."
+          description="Resevwa konsèy plant la chak maten nan bwat imèl ou (7am Ayiti)."
           value={prefs.daily_advice_email}
           commit={commitPref('daily_advice_email')}
-          comingSoon
         />
         <ToggleSetting
           label="Imèl lè ou debloke yon badj"
+          description="Yon notifikasyon imedyat chak fwa ou debloke yon nouvo badj."
           value={prefs.badge_unlock_email}
           commit={commitPref('badge_unlock_email')}
-          comingSoon
         />
         <ToggleSetting
           label="Rezime semèn pa imèl"
-          description="Yon koudèy sou pwogrè ou chak dimanch maten."
+          description="Yon koudèy sou pwogrè ou chak dimanch maten (8am Ayiti)."
           value={prefs.weekly_summary_email}
           commit={commitPref('weekly_summary_email')}
-          comingSoon
         />
         <TimeSetting
           label="Èdtan rapèl"
