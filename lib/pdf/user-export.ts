@@ -19,9 +19,22 @@ const COLORS = {
 } as const;
 
 const PAGE_MARGIN = 50;
-const LINE_HEIGHT = 14;
 const PAGE_BOTTOM_GUARD = 70; // reserve room for the footer
 const MAX_LIST_ROWS = 25;
+
+// jsPDF treats the y coordinate passed to .text(x, y) as the BASELINE,
+// not the top of the glyph. To make a piece of text sit inside a row
+// whose top is at Y, we draw it at `Y + baselineOf(fontSize)`. Roughly
+// 80% of the font size — enough room for the ascender, leaving the
+// rest of the row to the descender + visual padding.
+function baseline(fontSize: number) {
+  return Math.round(fontSize * 0.82);
+}
+// Vertical space allocated to a single text line at a given font size,
+// including a small breathing space below the descender.
+function lineSlot(fontSize: number) {
+  return Math.round(fontSize * 1.3);
+}
 
 // ─── Helpers ───────────────────────────────────────────────────────────────
 
@@ -97,26 +110,26 @@ class PdfBuilder {
     this.doc.setFillColor(fr, fg, fb);
     this.doc.rect(0, 0, this.pageWidth, 70, 'F');
 
-    // Brand mark
+    // Brand mark — y here is "top of brand strip" + baseline offset
     this.doc.setFont('helvetica', 'bold');
     this.doc.setFontSize(20);
     this.doc.setTextColor(255, 255, 255);
-    this.doc.text('Hoïs · MedikaPlant', PAGE_MARGIN, 32);
+    this.doc.text('Hoïs · MedikaPlant', PAGE_MARGIN, 22 + baseline(20));
 
     this.doc.setFont('helvetica', 'normal');
     this.doc.setFontSize(10);
     this.doc.setTextColor(230, 241, 222);
-    this.doc.text(subtitle, PAGE_MARGIN, 52);
+    this.doc.text(subtitle, PAGE_MARGIN, 48 + baseline(10));
 
-    this.y = 110;
+    this.y = 100;
 
-    // Document title
+    // Document title — y is row TOP, baseline computed
     const [ir, ig, ib] = COLORS.ink;
     this.doc.setTextColor(ir, ig, ib);
     this.doc.setFont('helvetica', 'bold');
     this.doc.setFontSize(22);
-    this.doc.text(title, PAGE_MARGIN, this.y);
-    this.y += 26;
+    this.doc.text(title, PAGE_MARGIN, this.y + baseline(22));
+    this.y += lineSlot(22) + 4;
 
     this.doc.setFont('helvetica', 'italic');
     this.doc.setFontSize(10);
@@ -125,40 +138,44 @@ class PdfBuilder {
     this.doc.text(
       `Jenere ${formatDate(new Date().toISOString())} · Hoïs Inivèsite`,
       PAGE_MARGIN,
-      this.y
+      this.y + baseline(10)
     );
-    this.y += 24;
+    this.y += lineSlot(10) + 14;
   }
 
   sectionTitle(label: string) {
     this.ensureRoom(40);
+    const fontSize = 13;
+    const rowHeight = lineSlot(fontSize) + 4;
     const [fr, fg, fb] = COLORS.forest;
     this.doc.setFillColor(fr, fg, fb);
-    this.doc.rect(PAGE_MARGIN, this.y, 3, 16, 'F');
+    this.doc.rect(PAGE_MARGIN, this.y + 2, 3, rowHeight - 4, 'F');
 
     this.doc.setFont('helvetica', 'bold');
-    this.doc.setFontSize(13);
+    this.doc.setFontSize(fontSize);
     const [ir, ig, ib] = COLORS.ink;
     this.doc.setTextColor(ir, ig, ib);
-    this.doc.text(label, PAGE_MARGIN + 10, this.y + 12);
-    this.y += 24;
+    this.doc.text(label, PAGE_MARGIN + 10, this.y + baseline(fontSize));
+    this.y += rowHeight + 6;
   }
 
   paragraph(text: string) {
+    const fontSize = 10;
     this.doc.setFont('helvetica', 'normal');
-    this.doc.setFontSize(10);
+    this.doc.setFontSize(fontSize);
     const [er, eg, eb] = COLORS.earth;
     this.doc.setTextColor(er, eg, eb);
     const lines = this.doc.splitTextToSize(
       text,
       this.pageWidth - 2 * PAGE_MARGIN
     );
+    const slot = lineSlot(fontSize);
     for (const line of lines) {
-      this.ensureRoom(LINE_HEIGHT);
-      this.doc.text(line, PAGE_MARGIN, this.y);
-      this.y += LINE_HEIGHT;
+      this.ensureRoom(slot);
+      this.doc.text(line, PAGE_MARGIN, this.y + baseline(fontSize));
+      this.y += slot;
     }
-    this.y += 4;
+    this.y += 6;
   }
 
   keyValueTable(rows: Array<[string, string]>) {
@@ -166,32 +183,44 @@ class PdfBuilder {
       this.paragraph('— Pa gen okenn done —');
       return;
     }
+    const keyFontSize = 9;
+    const valFontSize = 10;
+    const valSlot = lineSlot(valFontSize);
     const keyCol = PAGE_MARGIN;
     const valCol = PAGE_MARGIN + 160;
     const maxValWidth = this.pageWidth - valCol - PAGE_MARGIN;
 
     for (const [k, v] of rows) {
-      const valueLines = this.doc.splitTextToSize(v || '—', maxValWidth);
-      const rowHeight = Math.max(LINE_HEIGHT, valueLines.length * LINE_HEIGHT);
-      this.ensureRoom(rowHeight + 4);
+      const valueLines = this.doc.splitTextToSize(
+        v || '—',
+        maxValWidth
+      ) as string[];
+      const rowHeight = Math.max(valSlot, valueLines.length * valSlot);
+      this.ensureRoom(rowHeight + 8);
 
-      // Key
+      // Key — baseline aligned with the FIRST value line for visual sync
       this.doc.setFont('helvetica', 'bold');
-      this.doc.setFontSize(9);
+      this.doc.setFontSize(keyFontSize);
       const [mr, mg, mb] = COLORS.muted;
       this.doc.setTextColor(mr, mg, mb);
-      this.doc.text(k, keyCol, this.y);
+      this.doc.text(k, keyCol, this.y + baseline(valFontSize));
 
-      // Value
+      // Value — one .text() call per line so we control vertical spacing
       this.doc.setFont('helvetica', 'normal');
-      this.doc.setFontSize(10);
+      this.doc.setFontSize(valFontSize);
       const [ir, ig, ib] = COLORS.ink;
       this.doc.setTextColor(ir, ig, ib);
-      this.doc.text(valueLines, valCol, this.y);
+      valueLines.forEach((line, idx) => {
+        this.doc.text(
+          line,
+          valCol,
+          this.y + baseline(valFontSize) + idx * valSlot
+        );
+      });
 
-      this.y += rowHeight + 2;
+      this.y += rowHeight + 4;
 
-      // Faint rule
+      // Faint rule sits a hair below the row so it visually separates rows
       const [rr, rg, rb] = COLORS.rule;
       this.doc.setDrawColor(rr, rg, rb);
       this.doc.setLineWidth(0.5);
@@ -218,44 +247,57 @@ class PdfBuilder {
     const truncated = rows.slice(0, MAX_LIST_ROWS);
     const remaining = rows.length - truncated.length;
 
-    // Header row
-    this.ensureRoom(18);
+    const headerFontSize = 8;
+    const bodyFontSize = 9;
+    const headerHeight = lineSlot(headerFontSize) + 2;
+    const bodySlot = lineSlot(bodyFontSize);
+
+    // Header row — band background sized to fit the text, baseline centered
+    this.ensureRoom(headerHeight + bodySlot + 4);
     this.doc.setFillColor(245, 240, 224);
     this.doc.rect(
       PAGE_MARGIN,
-      this.y - 2,
+      this.y,
       this.pageWidth - 2 * PAGE_MARGIN,
-      16,
+      headerHeight,
       'F'
     );
     this.doc.setFont('helvetica', 'bold');
-    this.doc.setFontSize(8);
+    this.doc.setFontSize(headerFontSize);
     const [mr, mg, mb] = COLORS.muted;
     this.doc.setTextColor(mr, mg, mb);
 
     let cursor = PAGE_MARGIN + 6;
     for (const col of columns) {
-      this.doc.text(col.label.toUpperCase(), cursor, this.y + 9);
+      this.doc.text(
+        col.label.toUpperCase(),
+        cursor,
+        this.y + baseline(headerFontSize) + 2
+      );
       cursor += col.width;
     }
-    this.y += 18;
+    this.y += headerHeight + 2;
 
-    // Body rows
+    // Body rows — same baseline math as keyValueTable
     this.doc.setFont('helvetica', 'normal');
-    this.doc.setFontSize(9);
+    this.doc.setFontSize(bodyFontSize);
     const [ir, ig, ib] = COLORS.ink;
     this.doc.setTextColor(ir, ig, ib);
 
     for (const row of truncated) {
-      this.ensureRoom(LINE_HEIGHT + 2);
+      this.ensureRoom(bodySlot + 4);
       let x = PAGE_MARGIN + 6;
       for (const col of columns) {
         const txt = String(row[col.key] ?? '—');
-        const lines = this.doc.splitTextToSize(txt, col.width - 6);
-        this.doc.text(lines[0] ?? '—', x, this.y);
+        const lines = this.doc.splitTextToSize(txt, col.width - 8) as string[];
+        this.doc.text(
+          lines[0] ?? '—',
+          x,
+          this.y + baseline(bodyFontSize)
+        );
         x += col.width;
       }
-      this.y += LINE_HEIGHT;
+      this.y += bodySlot;
 
       const [rr, rg, rb] = COLORS.rule;
       this.doc.setDrawColor(rr, rg, rb);
@@ -266,50 +308,54 @@ class PdfBuilder {
         this.pageWidth - PAGE_MARGIN,
         this.y
       );
-      this.y += 4;
+      this.y += 2;
     }
 
     if (remaining > 0) {
+      const tipFontSize = 8;
       this.doc.setFont('helvetica', 'italic');
-      this.doc.setFontSize(8);
-      const [mr, mg, mb] = COLORS.muted;
-      this.doc.setTextColor(mr, mg, mb);
+      this.doc.setFontSize(tipFontSize);
+      const [tmr, tmg, tmb] = COLORS.muted;
+      this.doc.setTextColor(tmr, tmg, tmb);
       this.doc.text(
         `+${remaining} antre adisyonèl pa parèt nan PDF la (yo enkli nan total konte yo).`,
         PAGE_MARGIN,
-        this.y + 4
+        this.y + baseline(tipFontSize) + 4
       );
-      this.y += 14;
+      this.y += lineSlot(tipFontSize) + 6;
     }
     this.y += 4;
   }
 
   finalizeFooter() {
+    const fontSize = 8;
+    const baselineFromBottom = 22; // distance from page bottom up to baseline
+    const ruleFromBottom = baselineFromBottom + 12;
     const pageCount = this.doc.getNumberOfPages();
     for (let i = 1; i <= pageCount; i++) {
       this.doc.setPage(i);
       const [mr, mg, mb] = COLORS.muted;
       this.doc.setFont('helvetica', 'normal');
-      this.doc.setFontSize(8);
+      this.doc.setFontSize(fontSize);
       this.doc.setTextColor(mr, mg, mb);
       this.doc.text(
         'Done konfidansyèl · Hoïs Inivèsite · hoismedikaplant.com',
         PAGE_MARGIN,
-        this.pageHeight - 30
+        this.pageHeight - baselineFromBottom
       );
       this.doc.text(
         `Paj ${i} / ${pageCount}`,
-        this.pageWidth - PAGE_MARGIN - 50,
-        this.pageHeight - 30
+        this.pageWidth - PAGE_MARGIN - 60,
+        this.pageHeight - baselineFromBottom
       );
       const [rr, rg, rb] = COLORS.rule;
       this.doc.setDrawColor(rr, rg, rb);
       this.doc.setLineWidth(0.5);
       this.doc.line(
         PAGE_MARGIN,
-        this.pageHeight - 42,
+        this.pageHeight - ruleFromBottom,
         this.pageWidth - PAGE_MARGIN,
-        this.pageHeight - 42
+        this.pageHeight - ruleFromBottom
       );
     }
   }
