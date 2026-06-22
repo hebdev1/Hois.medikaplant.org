@@ -84,11 +84,11 @@ export default async function SupportPage() {
             Sipò
           </div>
           <h1 className="font-display text-3xl md:text-4xl font-bold tracking-tight text-ink">
-            Nou la, <em className="text-forest-600 not-italic font-bold">chak jou</em>.
+            Nou disponib, <em className="text-forest-600 not-italic font-bold"> 5 sou 7 </em>.
           </h1>
           <p className="mt-2 text-sm md:text-base text-earth-600 max-w-2xl">
-            Èrboris ou disponib 7 sou 7 — chat dirèk, WhatsApp, oswa apèl.
-            Repons jeneralman nan mwens ke 15 minit.
+            Ekip Hois Medikaplant yo disponib 7 sou 7, chat dirèk, WhatsApp, oswa apèl.
+            Repons jeneralman nan mwens ke 60 minit.
           </p>
         </header>
 
@@ -102,8 +102,8 @@ export default async function SupportPage() {
               <p className="text-sm text-rose-800 mt-1">{threadResult.error}</p>
               <p className="text-xs text-rose-700 mt-2">
                 Pandan tan an, ou ka rive jwenn nou nan{' '}
-                <a className="underline" href="mailto:sipo@medikaplant.org">
-                  sipo@medikaplant.org
+                <a className="underline" href="mailto:plant@hoismedikaplant.com">
+                  plant@hoismedikaplant.com
                 </a>
                 .
               </p>
