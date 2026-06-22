@@ -8,7 +8,7 @@ type ThreadRow = Database['public']['Tables']['support_threads']['Row'];
 type MessageRow = Database['public']['Tables']['support_messages']['Row'];
 
 const DEFAULT_WELCOME =
-  'Bonjou! 🌿 Mwen se Mèt Joseph, èrboris santiniye ou. Kòman ou santi w jodi a? Di m sa ki sou kè ou — m ap reponn nan kèk minit.';
+  'Bonjou!  Kòman ou santi w jodi a? m ap reponn nan kèk minit.';
 
 // Single fixed acknowledgement sent after each user message. Replaces the
 // earlier 4-option pool so members always get the same, predictable reply
