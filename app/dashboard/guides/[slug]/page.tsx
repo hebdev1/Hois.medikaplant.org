@@ -13,6 +13,7 @@ import PlantBig from '@/components/dashboard/plant-big';
 import SaveGuideButton from '@/components/dashboard/save-guide-button';
 import GuideCard from '@/components/dashboard/guide-card';
 import { recordGuideView } from '../actions';
+import { sanitizeGuideHtml } from '@/lib/sanitize-html';
 import type { Database } from '@/types/database';
 
 export const dynamic = 'force-dynamic';
@@ -237,9 +238,23 @@ export default async function GuideDetailPage({
           />
         </div>
 
-        {/* Body */}
+        {/* Body — prefer rich HTML from the Tiptap editor; fall back to
+            the legacy markdown parser for guides that were written
+            before the editor upgrade. */}
         <div className="prose-medikaplant">
-          {renderMarkdown(guide.body_markdown)}
+          {guide.body_html && guide.body_html.trim().length > 0 ? (
+            <div
+              className="guide-rich-body space-y-5 text-base text-ink leading-relaxed"
+              // sanitizeGuideHtml strips scripts, inline handlers, and
+              // javascript: URIs; what survives is the same tag set Tiptap
+              // can emit, so React's dangerouslySetInnerHTML is safe here.
+              dangerouslySetInnerHTML={{
+                __html: sanitizeGuideHtml(guide.body_html),
+              }}
+            />
+          ) : (
+            renderMarkdown(guide.body_markdown)
+          )}
         </div>
 
         {/* Related */}

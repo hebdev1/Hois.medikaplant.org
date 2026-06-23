@@ -45,7 +45,7 @@ type FormInput = {
   title: string;
   slug: string;
   excerpt: string;
-  body_markdown: string;
+  body_html: string;
   category_id: string | null;
   tag: string;
   accent_color: string;
@@ -67,7 +67,7 @@ function readForm(formData: FormData): FormInput {
     title: get('title'),
     slug: get('slug'),
     excerpt: get('excerpt'),
-    body_markdown: get('body_markdown'),
+    body_html: get('body_html'),
     category_id: get('category_id') || null,
     tag: get('tag'),
     accent_color: get('accent_color') || '#5A9138',
@@ -84,10 +84,23 @@ function readForm(formData: FormData): FormInput {
   };
 }
 
+// Strip HTML tags + collapse whitespace so we can length-check the
+// actual visible text instead of the angle-bracket scaffolding.
+function visibleTextLength(html: string): number {
+  return html
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&[a-z]+;/gi, ' ')
+    .replace(/\s+/g, ' ')
+    .trim().length;
+}
+
 function validate(input: FormInput): { ok: true; data: GuideInsert } | { ok: false; error: string } {
   if (input.title.length < 4) return { ok: false, error: 'Tit la twò kout (minimòm 4 karaktè).' };
   if (input.excerpt.length < 10) return { ok: false, error: 'Ekstrè a twò kout (minimòm 10 karaktè).' };
-  if (input.body_markdown.length < 20) return { ok: false, error: 'Kontni an twò kout (minimòm 20 karaktè).' };
+  if (visibleTextLength(input.body_html) < 20) {
+    return { ok: false, error: 'Kontni an twò kout (minimòm 20 karaktè vizib).' };
+  }
   const slug = input.slug ? slugify(input.slug) : slugify(input.title);
   if (slug.length < 3) return { ok: false, error: 'Slug la pa valid.' };
   if (!ART_VALUES.includes(input.art as GuideArt)) {
@@ -108,7 +121,15 @@ function validate(input: FormInput): { ok: true; data: GuideInsert } | { ok: fal
       title: input.title,
       slug,
       excerpt: input.excerpt,
-      body_markdown: input.body_markdown,
+      // Keep body_markdown filled with a plain-text dump of the rich
+      // body so DB consumers that only know about that column (FDW
+      // queries, full-text search seed) don't go empty. The visible
+      // rendering on /dashboard/guides/[slug] uses body_html when set.
+      body_markdown: input.body_html
+        .replace(/<[^>]*>/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim(),
+      body_html: input.body_html,
       category_id: input.category_id,
       tag: input.tag || null,
       accent_color: input.accent_color,

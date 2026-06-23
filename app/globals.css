@@ -114,6 +114,116 @@ html {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
+ * Read-side typography for guide bodies edited with the rich-text editor.
+ * Mirrors the .tiptap-body rules in admin so what the admin sees in the
+ * editor matches what readers see on /dashboard/guides/[slug].
+ * ───────────────────────────────────────────────────────────────────────── */
+.guide-rich-body h1 {
+  font-family: var(--font-playfair), Georgia, serif;
+  font-size: 1.875rem;
+  font-weight: 700;
+  margin: 1.5rem 0 0.75rem;
+  color: #050040;
+  line-height: 1.25;
+}
+.guide-rich-body h2 {
+  font-family: var(--font-playfair), Georgia, serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 1.4rem 0 0.6rem;
+  color: #050040;
+  line-height: 1.3;
+}
+.guide-rich-body h3 {
+  font-family: var(--font-playfair), Georgia, serif;
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 1.1rem 0 0.45rem;
+  color: #050040;
+}
+.guide-rich-body p {
+  margin: 0.75rem 0;
+}
+.guide-rich-body strong {
+  color: #050040;
+  font-weight: 600;
+}
+.guide-rich-body em {
+  font-style: italic;
+}
+.guide-rich-body u {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.guide-rich-body ul {
+  list-style: disc;
+  margin: 0.75rem 0 0.75rem 1.5rem;
+}
+.guide-rich-body ol {
+  list-style: decimal;
+  margin: 0.75rem 0 0.75rem 1.5rem;
+}
+.guide-rich-body li {
+  margin: 0.25rem 0;
+}
+.guide-rich-body ul li::marker {
+  color: #3f7522;
+}
+.guide-rich-body blockquote {
+  border-left: 3px solid #5a9138;
+  margin: 1rem 0;
+  padding: 0.35rem 1rem;
+  color: #5b5a7a;
+  font-style: italic;
+  background: #f3f8ef;
+  border-radius: 0 0.5rem 0.5rem 0;
+}
+.guide-rich-body img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.875rem;
+  margin: 1rem 0;
+  box-shadow: 0 12px 40px -16px rgba(5, 0, 64, 0.18);
+}
+.guide-rich-body a {
+  color: #2d5a1b;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.guide-rich-body a:hover {
+  color: #1e3a0f;
+}
+.guide-rich-body code {
+  background: #f1ead7;
+  padding: 0.1rem 0.3rem;
+  border-radius: 0.25rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.9em;
+}
+.guide-rich-body pre {
+  background: #1e3a0f;
+  color: #fefcf6;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  overflow-x: auto;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.9em;
+  margin: 1rem 0;
+}
+.guide-rich-body [style*='text-align:center'],
+.guide-rich-body [style*='text-align: center'] {
+  text-align: center;
+}
+.guide-rich-body [style*='text-align:right'],
+.guide-rich-body [style*='text-align: right'] {
+  text-align: right;
+}
+.guide-rich-body [style*='text-align:justify'],
+.guide-rich-body [style*='text-align: justify'] {
+  text-align: justify;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
  * User-controlled appearance (driven by components/dashboard/user-appearance).
  *
  * UserAppearance sets these CSS variables + classes on <html>:

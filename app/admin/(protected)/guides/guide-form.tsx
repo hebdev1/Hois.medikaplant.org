@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import { useFormState, useFormStatus } from 'react-dom';
 import {
   Save,
@@ -17,6 +18,55 @@ import { cn } from '@/lib/utils';
 import PlantBig from '@/components/dashboard/plant-big';
 import type { Database } from '@/types/database';
 import type { AdminGuideState } from './actions';
+
+// Tiptap pulls ~150kb of JS; dynamic-import so it only ships on the
+// admin guide editor pages and never blocks first paint elsewhere.
+const RichTextEditor = dynamic(
+  () => import('@/components/admin/rich-text-editor'),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="rounded-xl border border-cream-200 bg-cream-50 px-4 py-8 text-sm text-earth-600 text-center">
+        Editè rich-text ap chaje…
+      </div>
+    ),
+  }
+);
+
+// Small converter so legacy guides (which only have body_markdown) load
+// into the rich editor with their headings/lists/bold intact. Mirrors
+// the regex grammar of the dashboard's render-side parser. Anything it
+// doesn't recognize falls through as a <p>.
+function legacyMarkdownToHtml(md: string): string {
+  if (!md) return '';
+  const blocks = md.split(/\n\n+/);
+  const inline = (s: string) =>
+    s
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  return blocks
+    .map((block) => {
+      const trimmed = block.trim();
+      if (!trimmed) return '';
+      if (trimmed.startsWith('## ')) return `<h2>${inline(trimmed.slice(3))}</h2>`;
+      if (trimmed.startsWith('# ')) return `<h1>${inline(trimmed.slice(2))}</h1>`;
+      const lines = trimmed.split('\n');
+      if (lines.every((l) => /^\d+\.\s/.test(l))) {
+        return `<ol>${lines
+          .map((l) => `<li>${inline(l.replace(/^\d+\.\s/, ''))}</li>`)
+          .join('')}</ol>`;
+      }
+      if (lines.every((l) => /^[-*]\s/.test(l))) {
+        return `<ul>${lines
+          .map((l) => `<li>${inline(l.replace(/^[-*]\s/, ''))}</li>`)
+          .join('')}</ul>`;
+      }
+      return `<p>${inline(trimmed).replace(/\n/g, '<br/>')}</p>`;
+    })
+    .join('');
+}
 
 type Guide = Database['public']['Tables']['guides']['Row'];
 type Category = Database['public']['Tables']['guide_categories']['Row'];
@@ -46,7 +96,7 @@ type FormShape = {
   title: string;
   slug: string;
   excerpt: string;
-  body_markdown: string;
+  body_html: string;
   category_id: string;
   tag: string;
   accent_color: string;
@@ -89,7 +139,11 @@ export default function GuideForm({
     title: guide?.title ?? '',
     slug: guide?.slug ?? '',
     excerpt: guide?.excerpt ?? '',
-    body_markdown: guide?.body_markdown ?? '',
+    // Prefer existing HTML; if the guide only has legacy markdown, convert
+    // once on initial mount so the rich editor opens with the same content.
+    body_html:
+      guide?.body_html ||
+      (guide?.body_markdown ? legacyMarkdownToHtml(guide.body_markdown) : ''),
     category_id: guide?.category_id ?? '',
     tag: guide?.tag ?? '',
     accent_color: guide?.accent_color ?? '#5A9138',
@@ -160,18 +214,19 @@ export default function GuideForm({
             />
           </Field>
           <Field
-            label="Kontni (Markdown)"
+            label="Kontni"
             required
-            help="Sipòte: ## tit, lis 1. 2. 3., lis - ak *, **gra**, paragraf ki separe ak yon liy vid."
+            help="Sèvi ak baton zouti yo anwo a pou fòmate tèks la: tit, gra, italik, lis, aliyman, lyen, imaj. Tankou nan Word/Google Docs."
           >
-            <textarea
-              name="body_markdown"
-              required
-              rows={16}
-              value={values.body_markdown}
-              onChange={(e) => set('body_markdown', e.target.value)}
-              className={cn(inputClass, 'font-mono text-[13px] leading-relaxed resize-y')}
+            <RichTextEditor
+              value={values.body_html}
+              onChange={(html) => set('body_html', html)}
+              placeholder="Kòmanse ekri atik la la a…"
+              minHeight={420}
             />
+            {/* The form posts body_html via this hidden mirror — Tiptap
+                lives outside the form's native field surface. */}
+            <input type="hidden" name="body_html" value={values.body_html} />
           </Field>
         </Section>
 

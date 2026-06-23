@@ -444,6 +444,7 @@ export type Database = {
       guides: {
         Row: {
           accent_color: string
+          body_html: string | null
           art: Database["public"]["Enums"]["guide_art"]
           author_avatar_url: string | null
           author_name: string
@@ -473,6 +474,7 @@ export type Database = {
           author_avatar_url?: string | null
           author_name?: string
           author_role?: string | null
+          body_html?: string | null
           body_markdown: string
           category_id?: string | null
           cover_image_url?: string | null
@@ -498,6 +500,7 @@ export type Database = {
           author_avatar_url?: string | null
           author_name?: string
           author_role?: string | null
+          body_html?: string | null
           body_markdown?: string
           category_id?: string | null
           cover_image_url?: string | null
