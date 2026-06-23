@@ -281,6 +281,67 @@ export async function toggleFeatured(
   return { ok: true, featured: next };
 }
 
+// ─── Image upload for the rich-text editor ─────────────────────────────────
+//
+// Admin pastes the returned public URL into Tiptap (via setImage). Files
+// land in the same public-assets bucket the avatar uploader uses, scoped
+// to a `guide-images/<adminId>/<ts>.<ext>` path so we can sweep them per
+// admin if we ever need to. The bucket is public so the URL works in
+// emails / RSS feeds / archived PDFs without re-signing.
+
+const ALLOWED_IMAGE_MIME = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+const MAX_IMAGE_BYTES = 8 * 1024 * 1024; // 8 MB
+
+export type GuideImageUploadResult =
+  | { ok: true; url: string }
+  | { ok: false; error: string };
+
+export async function uploadGuideImage(
+  formData: FormData
+): Promise<GuideImageUploadResult> {
+  const auth = await assertAdmin();
+  if (!auth.ok) return { ok: false, error: auth.error };
+
+  const file = formData.get('file');
+  if (!(file instanceof File)) {
+    return { ok: false, error: 'Pa gen fichye chwazi.' };
+  }
+  if (!ALLOWED_IMAGE_MIME.includes(file.type)) {
+    return { ok: false, error: 'Sèl JPG, PNG, WEBP, ak GIF otorize.' };
+  }
+  if (file.size > MAX_IMAGE_BYTES) {
+    return { ok: false, error: 'Imaj la twò gwo (maks 8 Mo).' };
+  }
+
+  const ext =
+    file.type === 'image/jpeg'
+      ? 'jpg'
+      : file.type === 'image/png'
+        ? 'png'
+        : file.type === 'image/gif'
+          ? 'gif'
+          : 'webp';
+  const objectPath = `guide-images/${auth.user.id}/${Date.now()}.${ext}`;
+
+  const arrayBuffer = await file.arrayBuffer();
+  const { error: uploadError } = await auth.supabase.storage
+    .from('public-assets')
+    .upload(objectPath, arrayBuffer, {
+      contentType: file.type,
+      cacheControl: '3600',
+      upsert: false,
+    });
+  if (uploadError) {
+    return { ok: false, error: uploadError.message };
+  }
+
+  const {
+    data: { publicUrl },
+  } = auth.supabase.storage.from('public-assets').getPublicUrl(objectPath);
+
+  return { ok: true, url: publicUrl };
+}
+
 // ─── Delete ─────────────────────────────────────────────────────────────────
 
 export async function deleteGuide(

@@ -32,6 +32,8 @@ import {
   AlignRight,
   AlignJustify,
   Image as ImageIcon,
+  ImagePlus,
+  Loader2,
   Link as LinkIcon,
   Link2Off,
   Undo2,
@@ -41,12 +43,23 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
+// Server action signature for uploading inline images. The host form
+// (guide-form.tsx) passes its own server action so the editor stays
+// surface-agnostic — any future Tiptap host can plug in a different
+// upload backend.
+export type ImageUploader = (
+  formData: FormData
+) => Promise<{ ok: true; url: string } | { ok: false; error: string }>;
+
 type Props = {
   value: string;
   onChange: (html: string) => void;
   placeholder?: string;
   /** Min editor body height (px). Defaults to 360. */
   minHeight?: number;
+  /** When provided, the toolbar exposes a "upload imaj" button that
+   *  POSTs a File to this action and inserts the returned URL. */
+  uploadImage?: ImageUploader;
 };
 
 export default function RichTextEditor({
@@ -54,6 +67,7 @@ export default function RichTextEditor({
   onChange,
   placeholder = 'Kòmanse ekri atik la la a…',
   minHeight = 360,
+  uploadImage,
 }: Props) {
   const editor = useEditor({
     extensions: [
@@ -118,7 +132,7 @@ export default function RichTextEditor({
 
   return (
     <div className="rounded-xl border border-cream-200 bg-white overflow-hidden focus-within:ring-2 focus-within:ring-forest-200 focus-within:border-forest-300 transition">
-      <Toolbar editor={editor} />
+      <Toolbar editor={editor} uploadImage={uploadImage} />
       <EditorContent editor={editor} />
       <PlaceholderStyles />
     </div>
@@ -127,7 +141,13 @@ export default function RichTextEditor({
 
 // ─── Toolbar ──────────────────────────────────────────────────────────────
 
-function Toolbar({ editor }: { editor: Editor }) {
+function Toolbar({
+  editor,
+  uploadImage,
+}: {
+  editor: Editor;
+  uploadImage?: ImageUploader;
+}) {
   return (
     <div className="flex flex-wrap items-center gap-0.5 px-2 py-2 bg-cream-50 border-b border-cream-200 sticky top-0 z-10">
       <ToolGroup>
@@ -245,9 +265,12 @@ function Toolbar({ editor }: { editor: Editor }) {
           disabled={!editor.isActive('link')}
           onClick={() => editor.chain().focus().unsetLink().run()}
         />
+        {uploadImage && (
+          <ImageUploadButton editor={editor} uploadImage={uploadImage} />
+        )}
         <ToolButton
           icon={ImageIcon}
-          label="Ajoute yon imaj (URL)"
+          label="Ajoute imaj via URL"
           onClick={() => promptImage(editor)}
         />
       </ToolGroup>
@@ -361,6 +384,68 @@ function promptImage(editor: Editor) {
   }
   const alt = window.prompt('Tèks alternatif (deskripsyon imaj la):') ?? '';
   editor.chain().focus().setImage({ src: url, alt }).run();
+}
+
+// ─── Upload-from-disk button ─────────────────────────────────────────────
+// Wraps a hidden <input type="file"> so the admin can pick an image from
+// their machine, POST it to the host action, and insert the returned URL
+// in one click. Shows a spinner while the upload is in flight.
+
+function ImageUploadButton({
+  editor,
+  uploadImage,
+}: {
+  editor: Editor;
+  uploadImage: ImageUploader;
+}) {
+  const inputRef = React.useRef<HTMLInputElement | null>(null);
+  const [busy, setBusy] = React.useState(false);
+
+  async function handleFileChosen(file: File) {
+    setBusy(true);
+    try {
+      const fd = new FormData();
+      fd.set('file', file);
+      const res = await uploadImage(fd);
+      if (!res.ok) {
+        window.alert(`Pa rive telechaje imaj la: ${res.error}`);
+        return;
+      }
+      // Prompt for alt text so the published image is accessible.
+      const alt =
+        window.prompt(
+          'Tèks alternatif (deskripsyon kout pou aksesiblite):',
+          file.name.replace(/\.[^.]+$/, '')
+        ) ?? '';
+      editor.chain().focus().setImage({ src: res.url, alt }).run();
+    } catch (e) {
+      window.alert(`Erè telechajman: ${(e as Error).message}`);
+    } finally {
+      setBusy(false);
+      if (inputRef.current) inputRef.current.value = '';
+    }
+  }
+
+  return (
+    <>
+      <ToolButton
+        icon={busy ? Loader2 : ImagePlus}
+        label="Telechaje yon imaj soti nan òdinatè w"
+        disabled={busy}
+        onClick={() => inputRef.current?.click()}
+      />
+      <input
+        ref={inputRef}
+        type="file"
+        accept="image/jpeg,image/png,image/webp,image/gif"
+        className="hidden"
+        onChange={(e) => {
+          const f = e.target.files?.[0];
+          if (f) handleFileChosen(f);
+        }}
+      />
+    </>
+  );
 }
 
 // ─── Placeholder styling ──────────────────────────────────────────────────

@@ -18,6 +18,7 @@ import { cn } from '@/lib/utils';
 import PlantBig from '@/components/dashboard/plant-big';
 import type { Database } from '@/types/database';
 import type { AdminGuideState } from './actions';
+import { uploadGuideImage } from './actions';
 
 // Tiptap pulls ~150kb of JS; dynamic-import so it only ships on the
 // admin guide editor pages and never blocks first paint elsewhere.
@@ -223,6 +224,7 @@ export default function GuideForm({
               onChange={(html) => set('body_html', html)}
               placeholder="Kòmanse ekri atik la la a…"
               minHeight={420}
+              uploadImage={uploadGuideImage}
             />
             {/* The form posts body_html via this hidden mirror — Tiptap
                 lives outside the form's native field surface. */}
