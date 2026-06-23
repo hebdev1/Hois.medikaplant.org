@@ -70,3 +70,49 @@ export async function dismissJustUnlocked() {
     .eq('just_unlocked', true);
   revalidatePath('/dashboard');
 }
+
+// ─── Welcome tour ──────────────────────────────────────────────────────────
+
+/**
+ * Mark the welcome tour as completed for the current user.
+ *
+ * Called by <UserTour> when the member finishes or dismisses the
+ * highlight overlay. We stamp the completion timestamp so the next
+ * /dashboard render won't auto-launch the tour again. Best-effort —
+ * failure here just means the user sees the tour one more time, not
+ * a broken page, so we don't surface errors to the caller.
+ */
+export async function markTourComplete(): Promise<void> {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return;
+  await supabase
+    .from('user_preferences')
+    .upsert(
+      { user_id: user.id, tour_completed_at: new Date().toISOString() },
+      { onConflict: 'user_id' }
+    );
+  revalidatePath('/dashboard');
+}
+
+/**
+ * Clear the tour completion stamp so it auto-launches again on the
+ * next dashboard visit. Wired to the "Refè tour la" button in settings.
+ */
+export async function restartTour(): Promise<void> {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return;
+  await supabase
+    .from('user_preferences')
+    .upsert(
+      { user_id: user.id, tour_completed_at: null },
+      { onConflict: 'user_id' }
+    );
+  revalidatePath('/dashboard');
+  revalidatePath('/dashboard/settings');
+}

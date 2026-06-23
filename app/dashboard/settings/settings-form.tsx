@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useRouter } from 'next/navigation';
 import {
   SettingsSection,
   ToggleSetting,
@@ -35,6 +36,8 @@ import {
   removeAvatar,
   updateMedicalInfo,
 } from './actions';
+import { restartTour } from '../actions';
+import { Compass, ArrowRight } from 'lucide-react';
 import type { Database } from '@/types/database';
 
 type PrefRow = Database['public']['Tables']['user_preferences']['Row'];
@@ -544,6 +547,7 @@ export default function SettingsForm({
           value={prefs.reduced_motion}
           commit={commitPref('reduced_motion')}
         />
+        <ReplayTourButton />
       </SettingsSection>
 
       {/* ── Notifikasyon ───────────────────────────────────────────────────── */}
@@ -621,6 +625,47 @@ export default function SettingsForm({
 
       {/* ── Zòn Danje ──────────────────────────────────────────────────────── */}
       <DangerZonePanel />
+    </div>
+  );
+}
+
+// Replay the welcome tour. Clears tour_completed_at and redirects to
+// /dashboard?tour=1 so the auto-launcher fires. Kept in this file
+// because it's tightly coupled to the appearance section UI.
+function ReplayTourButton() {
+  const router = useRouter();
+  const [pending, setPending] = React.useState(false);
+
+  async function onClick() {
+    if (pending) return;
+    setPending(true);
+    try {
+      await restartTour();
+      router.push('/dashboard?tour=1');
+    } finally {
+      setPending(false);
+    }
+  }
+
+  return (
+    <div className="pt-4 border-t border-cream-200">
+      <button
+        type="button"
+        onClick={onClick}
+        disabled={pending}
+        className="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-xl bg-forest-50 hover:bg-forest-100 border border-forest-200 text-forest-800 transition disabled:opacity-60"
+      >
+        <span className="flex items-center gap-2.5">
+          <Compass className="w-4 h-4" strokeWidth={2.2} />
+          <span className="text-sm font-semibold">
+            {pending ? 'Ap reyajiste…' : 'Refè tour byenveni a'}
+          </span>
+        </span>
+        <ArrowRight className="w-4 h-4" strokeWidth={2.2} />
+      </button>
+      <p className="text-[11px] text-earth-600 mt-1.5 leading-snug">
+        Yon vizit gide nan tablodebò a — sidebar, paramèt, fowòm, ak rès la.
+      </p>
     </div>
   );
 }

@@ -54,6 +54,7 @@ function defaultPreferences(userId: string): PrefRow {
     show_in_vip_list: true,
     share_progress_with_coach: false,
     allow_research_use: false,
+    tour_completed_at: null,
     updated_at: new Date().toISOString(),
   };
 }

@@ -74,7 +74,11 @@ export default async function Topbar({
       <div className="flex-1 md:hidden" />
 
       <div className="flex items-center gap-2">
-        {user && <NotificationBell userId={user.id} userPlan={userPlan} />}
+        {user && (
+          <div data-tour="topbar-notif">
+            <NotificationBell userId={user.id} userPlan={userPlan} />
+          </div>
+        )}
         <button
           aria-label="Panye"
           className="hidden sm:grid place-items-center w-10 h-10 rounded-full bg-white border border-cream-200 hover:border-forest-300 text-earth-700 hover:text-forest-700 transition"

@@ -19,6 +19,8 @@ import TreatmentsSection, {
 import OnboardingBlock from '@/components/dashboard/blocks/onboarding-block';
 import HoisReflectionBlock from '@/components/dashboard/blocks/hois-reflection-block';
 import AdaptiveMetrics from '@/components/dashboard/blocks/adaptive-metrics';
+import UserTour from '@/components/dashboard/user-tour';
+import { markTourComplete } from './actions';
 import {
   buildDashboardContext,
   orderedBlocks,
@@ -65,7 +67,7 @@ export const dynamic = 'force-dynamic';
 export default async function DashboardHome({
   searchParams,
 }: {
-  searchParams: { welcome?: string };
+  searchParams: { welcome?: string; tour?: string };
 }) {
   const supabase = createClient();
   const {
@@ -90,6 +92,7 @@ export default async function DashboardHome({
     levelResult,
     levelNameResult,
     unreadCountResult,
+    tourResult,
   ] = await Promise.all([
     supabase.from('profiles').select('*').eq('id', user.id).single(),
     supabase
@@ -154,6 +157,11 @@ export default async function DashboardHome({
     supabase.rpc('user_level', { uid: user.id }),
     supabase.rpc('user_level_name', { uid: user.id }),
     supabase.rpc('user_unread_notifications_count', { uid: user.id }),
+    supabase
+      .from('user_preferences')
+      .select('tour_completed_at')
+      .eq('user_id', user.id)
+      .maybeSingle(),
   ]);
 
   const profile = profileResult.data as {
@@ -487,6 +495,17 @@ export default async function DashboardHome({
           ) : null
         )}
       </div>
+      {/* Welcome tour — auto-launches on first ever dashboard visit OR
+          when the member clicked "Refè tour la" in settings (?tour=1).
+          Otherwise it's a no-op zero-DOM client component. */}
+      <UserTour
+        autoStart={
+          searchParams.tour === '1' ||
+          !(tourResult.data as { tour_completed_at: string | null } | null)
+            ?.tour_completed_at
+        }
+        onComplete={markTourComplete}
+      />
     </>
   );
 }

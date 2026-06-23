@@ -1461,6 +1461,7 @@ export type Database = {
           target_blood_sugar_max: number
           target_blood_sugar_min: number
           target_weight_kg: number | null
+          tour_completed_at: string | null
           updated_at: string
           user_id: string
           weekly_summary_email: boolean
@@ -1489,6 +1490,7 @@ export type Database = {
           target_blood_sugar_max?: number
           target_blood_sugar_min?: number
           target_weight_kg?: number | null
+          tour_completed_at?: string | null
           updated_at?: string
           user_id: string
           weekly_summary_email?: boolean
@@ -1517,6 +1519,7 @@ export type Database = {
           target_blood_sugar_max?: number
           target_blood_sugar_min?: number
           target_weight_kg?: number | null
+          tour_completed_at?: string | null
           updated_at?: string
           user_id?: string
           weekly_summary_email?: boolean

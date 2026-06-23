@@ -153,11 +153,17 @@ export default function Sidebar({
           <nav className="space-y-1">
             {NAV_ITEMS.map(({ href, label, icon: Icon, badge }) => {
               const active = pathname === href;
+              // Tour anchor: derive a stable selector from the href so the
+              // UserTour client component can highlight individual nav
+              // entries (e.g. data-tour="nav-dashboard-health").
+              const tourKey =
+                'nav-' + href.replace(/^\//, '').replace(/\//g, '-');
               return (
                 <Link
                   key={href}
                   href={href}
                   onClick={onLinkClick}
+                  data-tour={tourKey}
                   className={cn(
                     'group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all',
                     active
@@ -196,7 +202,10 @@ export default function Sidebar({
         </div>
 
         {/* User card */}
-        <div className="m-3 rounded-2xl bg-gradient-to-br from-forest-700 to-forest-900 text-cream-50 p-3 flex items-center gap-3 shadow-plant">
+        <div
+          data-tour="user-card"
+          className="m-3 rounded-2xl bg-gradient-to-br from-forest-700 to-forest-900 text-cream-50 p-3 flex items-center gap-3 shadow-plant"
+        >
           <Avatar size={42} />
           <div className="flex-1 min-w-0">
             <div className="text-sm font-semibold truncate font-display">
