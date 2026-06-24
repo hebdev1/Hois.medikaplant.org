@@ -54,6 +54,7 @@ type Initial = {
   student_count_text: string | null;
   rating: number;
   price_cents: number | null;
+  seat_capacity: number | null;
   plan_required: string;
   category_id: string | null;
   language: string;
@@ -101,6 +102,7 @@ export default function CourseForm({ mode, initial, categories }: Props) {
     student_count_text: initial?.student_count_text ?? '',
     rating: initial?.rating ?? 5.0,
     price_cents: initial?.price_cents ?? null,
+    seat_capacity: initial?.seat_capacity ?? null,
     plan_required: initial?.plan_required ?? 'basic',
     category_id: initial?.category_id ?? '',
     language: initial?.language ?? 'ht',
@@ -355,6 +357,25 @@ export default function CourseForm({ mode, initial, categories }: Props) {
               }
               className={inputClass}
               placeholder="(vid = enkli)"
+            />
+          </Field>
+          <Field
+            label="Kapasite (# plas)"
+            help="Kite vid pou san limit. Lè kapasite a rive, lòt moun pap ka enskri."
+          >
+            <input
+              name="seat_capacity"
+              type="number"
+              min={1}
+              value={v.seat_capacity ?? ''}
+              onChange={(e) =>
+                set(
+                  'seat_capacity',
+                  e.target.value === '' ? null : Math.max(1, Number(e.target.value))
+                )
+              }
+              className={inputClass}
+              placeholder="(vid = san limit)"
             />
           </Field>
           <div className="grid grid-cols-2 gap-3">

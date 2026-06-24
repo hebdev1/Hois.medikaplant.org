@@ -132,6 +132,7 @@ function readCourseForm(formData: FormData) {
     .filter(Boolean)
     .slice(0, 8);
   const priceRaw = get('price_cents');
+  const seatsRaw = get('seat_capacity');
   return {
     title: get('title'),
     slug: get('slug'),
@@ -149,6 +150,7 @@ function readCourseForm(formData: FormData) {
     student_count_text: get('student_count_text') || null,
     rating: Math.max(0, Math.min(5, Number(get('rating')) || 5)),
     price_cents: priceRaw ? Math.max(0, Math.floor(Number(priceRaw))) : null,
+    seat_capacity: seatsRaw ? Math.max(1, Math.floor(Number(seatsRaw))) : null,
     plan_required: get('plan_required') || 'basic',
     category_id: get('category_id') || null,
     language: get('language') || 'ht',
@@ -213,6 +215,7 @@ export async function saveCourse(
     student_count_text: input.student_count_text,
     rating: input.rating,
     price_cents: input.price_cents,
+    seat_capacity: input.seat_capacity,
     plan_required: input.plan_required,
     category_id: input.category_id,
     language: input.language,

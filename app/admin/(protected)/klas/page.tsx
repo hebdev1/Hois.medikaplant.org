@@ -19,6 +19,7 @@ import KlasTabBar from './tab-bar';
 import CategoryEditor from './category-editor';
 import PageConfigEditor from './page-config-editor';
 import CourseRowActions from './course-row-actions';
+import { cn } from '@/lib/utils';
 
 export const metadata = { title: 'Admin · Klas' };
 export const dynamic = 'force-dynamic';
@@ -37,6 +38,7 @@ type CourseRow = {
   active: boolean;
   display_order: number;
   price_cents: number | null;
+  seat_capacity: number | null;
   rating: number;
   cover_image_url: string | null;
   instructor_name: string;
@@ -123,11 +125,11 @@ export default async function AdminKlasPage({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const sb = supabase as any;
 
-  const [coursesRes, categoriesRes, configRes] = await Promise.all([
+  const [coursesRes, categoriesRes, configRes, enrollmentsRes] = await Promise.all([
     sb
       .from('courses')
       .select(
-        'id, slug, title, level, format, plan_required, category_id, featured, active, display_order, price_cents, rating, cover_image_url, instructor_name, student_count_text'
+        'id, slug, title, level, format, plan_required, category_id, featured, active, display_order, price_cents, seat_capacity, rating, cover_image_url, instructor_name, student_count_text'
       )
       .order('display_order', { ascending: true })
       .order('created_at', { ascending: false }),
@@ -138,12 +140,23 @@ export default async function AdminKlasPage({
       )
       .order('display_order', { ascending: true }),
     sb.from('klas_page_config').select('*').eq('id', 1).maybeSingle(),
+    // Count enrollments per course so we can show "X / Y plas okipe"
+    // chips inline. Aggregating in TS is fine here — counts are small.
+    sb.from('course_enrollments').select('course_id'),
   ]);
 
   const courses = (coursesRes.data ?? []) as CourseRow[];
   const categories = (categoriesRes.data ?? []) as CategoryRow[];
   const config = (configRes.data ?? null) as PageConfigRow | null;
   const categoryById = new Map(categories.map((c) => [c.id, c]));
+
+  const enrollmentCountByCourse = new Map<string, number>();
+  for (const row of ((enrollmentsRes.data ?? []) as Array<{ course_id: string }>)) {
+    enrollmentCountByCourse.set(
+      row.course_id,
+      (enrollmentCountByCourse.get(row.course_id) ?? 0) + 1
+    );
+  }
 
   return (
     <div className="p-5 md:p-8 lg:p-10 max-w-[1400px] mx-auto">
@@ -191,7 +204,11 @@ export default async function AdminKlasPage({
       />
 
       {tab === 'courses' && (
-        <CoursesTab courses={courses} categoryById={categoryById} />
+        <CoursesTab
+          courses={courses}
+          categoryById={categoryById}
+          enrollmentCountByCourse={enrollmentCountByCourse}
+        />
       )}
       {tab === 'categories' && <CategoriesTab categories={categories} />}
       {tab === 'config' && <PageConfigEditor initial={config} />}
@@ -204,9 +221,11 @@ export default async function AdminKlasPage({
 function CoursesTab({
   courses,
   categoryById,
+  enrollmentCountByCourse,
 }: {
   courses: CourseRow[];
   categoryById: Map<string, CategoryRow>;
+  enrollmentCountByCourse: Map<string, number>;
 }) {
   if (courses.length === 0) {
     return (
@@ -278,6 +297,31 @@ function CoursesTab({
                 </Chip>
                 <Chip>Plan {PLAN_LABEL[c.plan_required] ?? c.plan_required}</Chip>
                 <Chip>{dollars(c.price_cents)}</Chip>
+                {(() => {
+                  const taken = enrollmentCountByCourse.get(c.id) ?? 0;
+                  if (c.seat_capacity === null) {
+                    return taken > 0 ? (
+                      <Chip icon={UsersIcon}>{taken} enskri</Chip>
+                    ) : null;
+                  }
+                  const full = taken >= c.seat_capacity;
+                  return (
+                    <span
+                      className={cn(
+                        'inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-semibold',
+                        full
+                          ? 'bg-rose-100 text-rose-700'
+                          : taken / c.seat_capacity > 0.8
+                            ? 'bg-amber-100 text-amber-800'
+                            : 'bg-forest-50 text-forest-800'
+                      )}
+                    >
+                      <UsersIcon className="w-3 h-3" strokeWidth={2.2} />
+                      {taken} / {c.seat_capacity} plas
+                      {full ? ' (konplè)' : ''}
+                    </span>
+                  );
+                })()}
                 {c.student_count_text && (
                   <Chip icon={UsersIcon}>{c.student_count_text}</Chip>
                 )}

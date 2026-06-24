@@ -20,6 +20,7 @@ import PromoteHeader from '@/components/ui/promote-header';
 import Footer from '@/components/ui/footer';
 import { createClient } from '@/lib/supabase/server';
 import { sanitizeGuideHtml } from '@/lib/sanitize-html';
+import EnrollButton from './enroll-button';
 
 export const dynamic = 'force-dynamic';
 
@@ -41,6 +42,7 @@ type CourseRow = {
   student_count_text: string | null;
   rating: number;
   price_cents: number | null;
+  seat_capacity: number | null;
   plan_required: 'basic' | 'premium' | 'vip';
   category_id: string | null;
   language: string;
@@ -126,6 +128,10 @@ export default async function CourseDetailPage({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const sb = supabase as any;
 
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   const { data: courseRaw } = await sb
     .from('courses')
     .select('*')
@@ -135,7 +141,10 @@ export default async function CourseDetailPage({
   const course = courseRaw as CourseRow | null;
   if (!course) notFound();
 
-  const [modulesRes, categoryRes, relatedRes] = await Promise.all([
+  // Pull seat state + per-user enrollment state in parallel with the
+  // already-existing fan-out. The enrollment lookup is cheap because of
+  // the UNIQUE(course_id, user_id) constraint giving us an index hit.
+  const [modulesRes, categoryRes, relatedRes, seatsRes, mineRes, profileRes] = await Promise.all([
     sb
       .from('course_modules')
       .select(
@@ -162,6 +171,27 @@ export default async function CourseDetailPage({
           .order('display_order', { ascending: true })
           .limit(3)
       : Promise.resolve({ data: [] }),
+    // Total seats claimed on this course. count: 'exact' returns the
+    // number on the response without shipping every row.
+    sb
+      .from('course_enrollments')
+      .select('id', { count: 'exact', head: true })
+      .eq('course_id', course.id),
+    user
+      ? sb
+          .from('course_enrollments')
+          .select('id')
+          .eq('course_id', course.id)
+          .eq('user_id', user.id)
+          .maybeSingle()
+      : Promise.resolve({ data: null }),
+    user
+      ? sb
+          .from('profiles')
+          .select('plan')
+          .eq('id', user.id)
+          .maybeSingle()
+      : Promise.resolve({ data: null }),
   ]);
 
   const modules = (modulesRes.data ?? []) as ModuleRow[];
@@ -185,6 +215,18 @@ export default async function CourseDetailPage({
 
   const totalDurationModules = modules.length;
   const planHref = PLAN_HREF[course.plan_required] ?? '/#pri';
+
+  const seatsTaken = (seatsRes as { count?: number | null }).count ?? 0;
+  const alreadyEnrolled = !!mineRes.data;
+  const memberPlan =
+    (profileRes.data as { plan: 'basic' | 'premium' | 'vip' } | null)?.plan ??
+    null;
+  // The plan tier order matches the SQL enroll_in_course gate.
+  const PLAN_RANK: Record<string, number> = { basic: 1, premium: 2, vip: 3 };
+  const meetsPlan =
+    memberPlan !== null &&
+    (PLAN_RANK[memberPlan] ?? 0) >= (PLAN_RANK[course.plan_required] ?? 99);
+  const isFreeWithSubscription = meetsPlan;
 
   return (
     <main className="min-h-screen bg-white">
@@ -315,14 +357,19 @@ export default async function CourseDetailPage({
                 </div>
               </div>
 
-              <Link
-                href={planHref}
-                className="block w-full text-center bg-brand-gradient hover:brightness-110 text-white px-5 py-3 rounded-full font-medium transition shadow-md"
-              >
-                {course.price_cents !== null
-                  ? 'Achte klas la'
-                  : 'Vin manm pou jwenn aksè'}
-              </Link>
+              <EnrollButton
+                courseId={course.id}
+                slug={course.slug}
+                seatCapacity={course.seat_capacity}
+                seatsTaken={seatsTaken}
+                alreadyEnrolled={alreadyEnrolled}
+                isAuthenticated={!!user}
+                isFreeWithSubscription={
+                  isFreeWithSubscription && course.price_cents === null
+                }
+                planRequired={course.plan_required}
+                upgradeHref={planHref}
+              />
 
               {course.format !== 'video' && course.zoom_schedule?.text && (
                 <div className="rounded-xl bg-cream-100 px-3 py-2.5 text-xs text-earth-700">
