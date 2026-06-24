@@ -14,6 +14,7 @@ import {
   Inbox,
   Layers,
   CalendarRange,
+  GraduationCap,
   Settings as SettingsIcon,
   type LucideIcon,
 } from 'lucide-react';
@@ -46,6 +47,7 @@ export type AdminCapability =
   | 'moderate_forum'
   | 'manage_resources'
   | 'manage_guides'
+  | 'manage_courses'
   | 'manage_subscriptions'
   | 'broadcast_notifications'
   | 'manage_advice'
@@ -71,6 +73,7 @@ export const ROLE_CAPABILITIES: Record<AdminRole, ReadonlySet<AdminCapability>> 
     'moderate_forum',
     'manage_resources',
     'manage_guides',
+    'manage_courses',
     'manage_subscriptions',
     'broadcast_notifications',
     'manage_advice',
@@ -89,6 +92,7 @@ export const ROLE_CAPABILITIES: Record<AdminRole, ReadonlySet<AdminCapability>> 
     'moderate_forum',
     'manage_resources',
     'manage_guides',
+    'manage_courses',
     'manage_subscriptions',
     'broadcast_notifications',
     'manage_advice',
@@ -116,6 +120,7 @@ export const ROLE_CAPABILITIES: Record<AdminRole, ReadonlySet<AdminCapability>> 
     'overview',
     'manage_resources',
     'manage_guides',
+    'manage_courses',
     'manage_advice',
     'manage_badges',
     'broadcast_notifications',
@@ -176,6 +181,7 @@ export const ADMIN_NAV_LINKS: readonly AdminNavLink[] = [
   { href: '/admin/forum', label: 'Fowòm', icon: MessagesSquare, capability: 'moderate_forum' },
   { href: '/admin/resources', label: 'Resources', icon: FileText, capability: 'manage_resources' },
   { href: '/admin/guides', label: 'Guides', icon: BookOpen, capability: 'manage_guides' },
+  { href: '/admin/klas', label: 'Klas', icon: GraduationCap, capability: 'manage_courses' },
   { href: '/admin/advice', label: 'Konsèy jou a', icon: Sparkles, capability: 'manage_advice' },
   { href: '/admin/badges', label: 'Badj', icon: Award, capability: 'manage_badges' },
   { href: '/admin/subscriptions', label: 'Subscriptions', icon: CreditCard, capability: 'manage_subscriptions' },
