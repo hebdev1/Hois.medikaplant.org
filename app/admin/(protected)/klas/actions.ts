@@ -282,6 +282,154 @@ export async function deleteCourse(
   return { ok: true };
 }
 
+// ─── Course modules ────────────────────────────────────────────────────────
+
+export type ModuleState = { error?: string; ok?: boolean; id?: string };
+
+function readModuleForm(formData: FormData) {
+  const get = (k: string) => (formData.get(k)?.toString() ?? '').trim();
+  // resource_links arrive as one-per-line "Label | https://url" pairs.
+  // Anything that doesn't match the pipe-separated shape is skipped.
+  const linksText = get('resource_links');
+  const resource_links = linksText
+    ? linksText
+        .split('\n')
+        .map((line) => {
+          const [label, url] = line.split('|').map((s) => s.trim());
+          if (!label || !url || !/^https?:\/\//i.test(url)) return null;
+          return { label, url };
+        })
+        .filter(Boolean)
+        .slice(0, 10)
+    : [];
+
+  return {
+    title: get('title'),
+    description: get('description') || null,
+    duration_text: get('duration_text') || null,
+    video_url: get('video_url') || null,
+    resource_links: resource_links.length > 0 ? resource_links : null,
+    preview: formData.get('preview') === 'on',
+    display_order: Math.max(0, Number(get('display_order')) || 0),
+  };
+}
+
+export async function saveModule(
+  courseId: string,
+  moduleId: string | null,
+  _prev: ModuleState,
+  formData: FormData
+): Promise<ModuleState> {
+  const auth = await assertAdmin();
+  if (!auth.ok) return { error: auth.error };
+
+  const input = readModuleForm(formData);
+
+  if (input.title.length < 2) return { error: 'Tit modil la twò kout.' };
+  if (input.video_url && !/^https?:\/\//i.test(input.video_url)) {
+    return { error: 'Lyen videyo dwe kòmanse pa https://' };
+  }
+
+  const payload = { ...input, course_id: courseId };
+
+  if (moduleId) {
+    const { error } = await auth.sb
+      .from('course_modules')
+      .update(payload)
+      .eq('id', moduleId);
+    if (error) return { error: error.message };
+    revalidatePath(`/admin/klas/${courseId}`);
+    revalidatePath('/klas');
+    return { ok: true, id: moduleId };
+  }
+
+  // For a brand-new module, auto-append at the end if the form didn't
+  // pick a display_order — admins shouldn't have to count rows.
+  const orderToUse = input.display_order > 0
+    ? input.display_order
+    : await nextModuleOrder(auth.sb, courseId);
+
+  const { data, error } = await auth.sb
+    .from('course_modules')
+    .insert({ ...payload, display_order: orderToUse })
+    .select('id')
+    .single();
+  if (error || !data) return { error: error?.message ?? 'Erè inkoni.' };
+  revalidatePath(`/admin/klas/${courseId}`);
+  revalidatePath('/klas');
+  return { ok: true, id: (data as { id: string }).id };
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function nextModuleOrder(sb: any, courseId: string): Promise<number> {
+  const { data } = await sb
+    .from('course_modules')
+    .select('display_order')
+    .eq('course_id', courseId)
+    .order('display_order', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  const top = (data as { display_order: number } | null)?.display_order ?? 0;
+  return top + 1;
+}
+
+export async function deleteModule(
+  courseId: string,
+  moduleId: string
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  const auth = await assertAdmin();
+  if (!auth.ok) return { ok: false, error: auth.error };
+  const { error } = await auth.sb.from('course_modules').delete().eq('id', moduleId);
+  if (error) return { ok: false, error: error.message };
+  revalidatePath(`/admin/klas/${courseId}`);
+  revalidatePath('/klas');
+  return { ok: true };
+}
+
+export async function reorderModule(
+  courseId: string,
+  moduleId: string,
+  direction: 'up' | 'down'
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  const auth = await assertAdmin();
+  if (!auth.ok) return { ok: false, error: auth.error };
+
+  // Fetch the full ordered list once so we can swap with the neighbor
+  // by id without a second query per row.
+  const { data: rowsRaw } = await auth.sb
+    .from('course_modules')
+    .select('id, display_order')
+    .eq('course_id', courseId)
+    .order('display_order', { ascending: true });
+  const rows = (rowsRaw ?? []) as Array<{ id: string; display_order: number }>;
+
+  const idx = rows.findIndex((r) => r.id === moduleId);
+  if (idx === -1) return { ok: false, error: 'Modil la pa twouve.' };
+
+  const swapWith = direction === 'up' ? idx - 1 : idx + 1;
+  if (swapWith < 0 || swapWith >= rows.length) {
+    return { ok: true }; // already at the edge — no-op
+  }
+
+  const a = rows[idx];
+  const b = rows[swapWith];
+
+  // Swap display_orders with two updates. Race-safe enough at admin
+  // scale — only one operator edits a course at a time.
+  await auth.sb
+    .from('course_modules')
+    .update({ display_order: b.display_order })
+    .eq('id', a.id);
+  await auth.sb
+    .from('course_modules')
+    .update({ display_order: a.display_order })
+    .eq('id', b.id);
+
+  revalidatePath(`/admin/klas/${courseId}`);
+  revalidatePath('/klas');
+  return { ok: true };
+}
+
 // ─── Page config (singleton) ────────────────────────────────────────────────
 
 export type PageConfigState = { error?: string; ok?: boolean };

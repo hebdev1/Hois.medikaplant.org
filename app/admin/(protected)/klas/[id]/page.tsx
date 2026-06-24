@@ -2,6 +2,7 @@ import { notFound, redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { hasCapability, type AdminRole } from '../../admin-nav-config';
 import CourseForm from '../course-form';
+import ModulesManager from '../modules-manager';
 
 export const metadata = { title: 'Admin · Edite klas' };
 export const dynamic = 'force-dynamic';
@@ -32,11 +33,16 @@ export default async function AdminEditCoursePage({
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const sb = supabase as any;
-  const [courseRes, catsRes] = await Promise.all([
+  const [courseRes, catsRes, modulesRes] = await Promise.all([
     sb.from('courses').select('*').eq('id', params.id).maybeSingle(),
     sb
       .from('course_categories')
       .select('id, title')
+      .order('display_order', { ascending: true }),
+    sb
+      .from('course_modules')
+      .select('*')
+      .eq('course_id', params.id)
       .order('display_order', { ascending: true }),
   ]);
   const course = courseRes.data;
@@ -45,6 +51,17 @@ export default async function AdminEditCoursePage({
   const categories = (catsRes.data ?? []) as Array<{
     id: string;
     title: string;
+  }>;
+  const modules = (modulesRes.data ?? []) as Array<{
+    id: string;
+    course_id: string;
+    display_order: number;
+    title: string;
+    description: string | null;
+    duration_text: string | null;
+    video_url: string | null;
+    resource_links: Array<{ label: string; url: string }> | null;
+    preview: boolean;
   }>;
 
   return (
@@ -63,6 +80,9 @@ export default async function AdminEditCoursePage({
         )}
       </header>
       <CourseForm mode="edit" initial={course} categories={categories} />
+      <div className="mt-6">
+        <ModulesManager courseId={params.id} initial={modules} />
+      </div>
     </div>
   );
 }

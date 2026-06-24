@@ -447,10 +447,10 @@ export default async function KlasPage() {
                         )}
                       </div>
                       <Link
-                        href={PLAN_HREF[c.plan_required] ?? '/#pri'}
+                        href={`/klas/${c.slug}`}
                         className="mt-5 inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-full text-sm font-semibold bg-ink hover:bg-brand-gradient text-cream-50 transition"
                       >
-                        Kòmanse klas la
+                        Wè detay klas la
                         <ArrowRight className="w-3.5 h-3.5" strokeWidth={2.4} />
                       </Link>
                     </div>
