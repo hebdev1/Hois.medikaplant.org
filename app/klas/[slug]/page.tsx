@@ -367,6 +367,10 @@ export default async function CourseDetailPage({
                 isFreeWithSubscription={
                   isFreeWithSubscription && course.price_cents === null
                 }
+                isPaidCourse={
+                  course.price_cents !== null && course.price_cents > 0
+                }
+                priceCents={course.price_cents}
                 planRequired={course.plan_required}
                 upgradeHref={planHref}
               />

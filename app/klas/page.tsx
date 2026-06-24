@@ -88,6 +88,7 @@ type CourseRow = {
   category_id: string | null;
   featured: boolean;
   tags: string[];
+  price_cents: number | null;
 };
 
 type PageConfigRow = {
@@ -124,7 +125,7 @@ export default async function KlasPage() {
     sb
       .from('courses')
       .select(
-        'id, slug, title, description, cover_image_url, instructor_name, instructor_role, duration_text, level, format, student_count_text, rating, plan_required, category_id, featured, tags'
+        'id, slug, title, description, cover_image_url, instructor_name, instructor_role, duration_text, level, format, student_count_text, rating, plan_required, category_id, featured, tags, price_cents'
       )
       .eq('active', true)
       .order('display_order', { ascending: true }),
@@ -446,13 +447,26 @@ export default async function KlasPage() {
                           </span>
                         )}
                       </div>
-                      <Link
-                        href={`/klas/${c.slug}`}
-                        className="mt-5 inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-full text-sm font-semibold bg-ink hover:bg-brand-gradient text-cream-50 transition"
-                      >
-                        Wè detay klas la
-                        <ArrowRight className="w-3.5 h-3.5" strokeWidth={2.4} />
-                      </Link>
+                      <div className="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between gap-2">
+                        <div className="font-display font-bold text-ink">
+                          {c.price_cents !== null && c.price_cents > 0 ? (
+                            <span className="text-lg">
+                              ${(c.price_cents / 100).toFixed(2)}
+                            </span>
+                          ) : (
+                            <span className="text-xs text-ink-muted font-normal">
+                              Enkli nan abònman
+                            </span>
+                          )}
+                        </div>
+                        <Link
+                          href={`/klas/${c.slug}`}
+                          className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold bg-ink hover:bg-brand-gradient text-cream-50 transition"
+                        >
+                          Wè detay
+                          <ArrowRight className="w-3 h-3" strokeWidth={2.4} />
+                        </Link>
+                      </div>
                     </div>
                   </article>
                 );

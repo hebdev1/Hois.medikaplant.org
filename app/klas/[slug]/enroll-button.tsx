@@ -22,6 +22,8 @@ type Props = {
   alreadyEnrolled: boolean;
   isAuthenticated: boolean;
   isFreeWithSubscription: boolean;
+  isPaidCourse: boolean;
+  priceCents: number | null;
   planRequired: string;
   upgradeHref: string;
 };
@@ -32,6 +34,10 @@ const PLAN_LABEL: Record<string, string> = {
   vip: 'Melis',
 };
 
+function dollars(cents: number): string {
+  return `$${(cents / 100).toFixed(2)}`;
+}
+
 export default function EnrollButton({
   courseId,
   slug,
@@ -40,6 +46,8 @@ export default function EnrollButton({
   alreadyEnrolled,
   isAuthenticated,
   isFreeWithSubscription,
+  isPaidCourse,
+  priceCents,
   planRequired,
   upgradeHref,
 }: Props) {
@@ -126,7 +134,27 @@ export default function EnrollButton({
     );
   }
 
-  // ─── State 3: needs to upgrade plan first ───────────────────────────────
+  // ─── State 3a: paid course — anyone can buy, route to course checkout ──
+  if (isPaidCourse && priceCents) {
+    return (
+      <div className="space-y-2">
+        <Link
+          href={`/checkout/klas/${slug}`}
+          className="block w-full text-center bg-brand-gradient hover:brightness-110 text-white px-5 py-3 rounded-full font-medium transition shadow-md"
+        >
+          Achte klas la pou {dollars(priceCents)}
+        </Link>
+        <p className="text-[11px] text-ink-muted text-center">
+          Pa bezwen abònman — yon achte sèlman, aksè lifetime.
+        </p>
+        {seatsLeft !== null && seatsLeft <= 10 && (
+          <SeatsLeftBadge seatsLeft={seatsLeft} seatCapacity={seatCapacity!} />
+        )}
+      </div>
+    );
+  }
+
+  // ─── State 3b: free course but member needs a higher plan ───────────────
   if (!isFreeWithSubscription) {
     return (
       <div className="space-y-2">
@@ -134,7 +162,7 @@ export default function EnrollButton({
           href={upgradeHref}
           className="block w-full text-center bg-brand-gradient hover:brightness-110 text-white px-5 py-3 rounded-full font-medium transition shadow-md"
         >
-          Achte klas la
+          Vin manm pou jwenn aksè
         </Link>
         {seatsLeft !== null && seatsLeft <= 10 && (
           <SeatsLeftBadge seatsLeft={seatsLeft} seatCapacity={seatCapacity!} />
