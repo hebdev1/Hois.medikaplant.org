@@ -29,8 +29,8 @@ export function Features() {
             6 valè ki gide chak desizyon nou pran
           </h2>
           <p className="text-ink-muted text-base md:text-lg leading-relaxed">
-            Yon SaaS pa fèt nan moman an. Li bati sou prensip ki rete menm
-            depi premye jou — sa yo se boussol Hoïs Inivèsite a.
+            Yon platfom pa fèt nan moman an. Li bati sou prensip ki rete menm
+            depi premye jou sa yo se boussol Hoïs Inivèsite a.
           </p>
         </div>
 
@@ -52,8 +52,8 @@ export function Features() {
               <h3 className="text-sm font-semibold text-ink">Lasyans</h3>
             </div>
             <p className="text-sm text-ink-muted leading-relaxed">
-              Chak tretman dwe rete jistifye ak rechèch klinik aktyèl —
-              tradisyon ak lasyans pa ènmi.
+              Chak tretman dwe baze sou prèv syantifik ak rechèch klinik aktyèl; 
+              tradisyon ak lasyans pa nesesèman opoze youn ak lòt..
             </p>
           </div>
 
@@ -74,8 +74,8 @@ export function Features() {
               <h3 className="text-sm font-semibold text-ink">Edikasyon</h3>
             </div>
             <p className="text-sm text-ink-muted leading-relaxed">
-              Aprann manm yo otonomi sou pwòp sante yo, pa kreye depandans —
-              yon manm enfòme se yon manm pwoteje.
+              Ankouraje manm yo devlope otonomi nan jesyon pwòp sante yo olye pou kreye depandans, 
+              paske yon manm ki byen enfòme se yon manm ki pi byen pwoteje.
             </p>
           </div>
 
@@ -85,8 +85,7 @@ export function Features() {
               <h3 className="text-sm font-semibold text-ink">Respè</h3>
             </div>
             <p className="text-sm text-ink-muted leading-relaxed">
-              Pou Granmèt ki kreye plant yo, pou tè ki kiltive yo, ak pou
-              chak istwa ki pote yo nan men nou.
+              Pou Granmèt ki bay lavi, pou tè ki nouri plant yo, ak pou tout eritaj ak konesans ki mennen yo rive nan men nou.
             </p>
           </div>
 
@@ -96,8 +95,7 @@ export function Features() {
               <h3 className="text-sm font-semibold text-ink">Kominote</h3>
             </div>
             <p className="text-sm text-ink-muted leading-relaxed">
-              Yon rezo manm an Ayiti ak nan dyaspora ki sipòte youn lòt —
-              gerizon pa janm fèt nan solitid.
+              Yon rezo manm an Ayiti ak nan dyaspora ki mache ansanm epi sipòte youn lòt, paske gerizon pa fèt pou kont li.
             </p>
           </div>
         </div>
