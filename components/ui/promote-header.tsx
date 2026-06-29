@@ -55,7 +55,7 @@ type Resource = {
 
 const NAV: NavItem[] = [
   { href: '#akey', label: 'Akèy' },
-  { href: '#pwodui', label: 'Pwodui' },
+  { href: 'https://www.medikaplantshop.com', label: 'Boutik' },
   { href: '#istwa', label: 'Istwa' },
   { href: '#hois', label: 'HOÏS' },
   { href: '#pri', label: 'Pri' },
