@@ -37,3 +37,5 @@ next-env.d.ts
 # lockfiles (kept by default; remove from gitignore if needed)
 
 .vercel
+
+.superpowers/
