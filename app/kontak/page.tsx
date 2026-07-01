@@ -57,7 +57,7 @@ const CHANNELS = [
   },
 ];
 
-const FAQS = const faqs = [
+const FAQS = [
   {
     q: 'Kisa HOÏS MedikaPlant ye?',
     a: 'HOÏS MedikaPlant se platfòm edikatif kote manm yo jwenn fòmasyon, videyo, dokiman, atelye ak lòt resous pou aprann sou Medsin Tradisyonèl Ayisyen, syans plant ak byennèt.'
