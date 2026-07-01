@@ -22,9 +22,9 @@ import Footer from '@/components/ui/footer';
 import { createClient } from '@/lib/supabase/server';
 
 export const metadata = {
-  title: 'Klas · MedikaPlant Hoïs Inivèsite',
+  title: 'Klas · Hoïs Inivèsite',
   description:
-    'Katalòg klas Hoïs Inivèsite — plant santiniye, espiritualite HOÏS, nitrisyon, lavi natiropatik. Aprann ak yon èrboris.',
+    'Dekouvri kou sou syans plant, Medsin Tradisyonèl Ayisyen, espirityalite HOÏS, nitrisyon, ak lavi natiwopatik. Aprann avèk yon èrboris epi devlope konesans ou atravè fòmasyon ki chita sou rechèch, eksperyans, ak pratik.',
 };
 
 export const dynamic = 'force-dynamic';
@@ -170,10 +170,11 @@ export default async function KlasPage() {
   const heroEyebrow = config?.hero_eyebrow ?? 'Klas Hoïs';
   const heroTitle =
     config?.hero_title ??
-    'Aprann plant ki geri, jan grann nou yo te konnen yo.';
+    'Aprann. Konprann. Aplike. Byenveni nan klas HOÏS Inivèsite.';
   const heroSubtitle =
     config?.hero_subtitle ??
-    `${courses.length}+ klas an Kreyòl, sou plant santiniye, espiritualite HOÏS, nitrisyon, ak lavi natiropatik.`;
+    `${courses.length}+ Klas an Kreyòl sou plant medsin, Medsin Tradisyonèl Ayisyen, espirityalite HOÏS, nitrisyon, ak lavi natiwopatik.
+`;
   const heroCtaLabel = config?.hero_cta_label ?? 'Vin manm pou aksè total';
   const heroCtaHref = config?.hero_cta_href ?? '/#pri';
   const heroImageUrl =
@@ -227,7 +228,7 @@ export default async function KlasPage() {
                   href="#kategori"
                   className="inline-flex items-center gap-2 px-6 py-3 rounded-full font-medium text-ink hover:text-brand-700 border border-slate-200 hover:border-brand-300 transition"
                 >
-                  Wè kategori yo
+                  Wè klas yo
                 </a>
               </div>
 
@@ -293,11 +294,11 @@ export default async function KlasPage() {
                 Kategori
               </span>
               <h2 className="font-display text-3xl md:text-5xl font-bold tracking-tight text-ink leading-tight">
-                {categories.length} chemen aprann ki konekte
+                {categories.length} Yon chemen aprantisaj ki konekte tout konesans yo.
               </h2>
               <p className="mt-4 text-ink-muted leading-relaxed">
-                Chwazi kote w vle kòmanse — ou ka pase yon chemen nan yon lòt
-                san pwoblèm. Tout klas yo vini ansanm nan abònman ou.
+               Kòmanse ak chemen aprantisaj ki enterese w pi plis. Ou ka chanje chemen nenpòt lè san okenn restriksyon.
+
               </p>
             </div>
 
@@ -455,7 +456,7 @@ export default async function KlasPage() {
                             </span>
                           ) : (
                             <span className="text-xs text-ink-muted font-normal">
-                              Enkli nan abònman
+                              Aprann Konnya 
                             </span>
                           )}
                         </div>
@@ -490,9 +491,9 @@ export default async function KlasPage() {
                   {formats.length} fason pou aprann nan ritm pa w
                 </h2>
                 <p className="mt-4 text-ink-muted leading-relaxed">
-                  Pa gen yon "bon" fason aprann — gen sèlman fason ki bon pou
-                  ou. Hoïs Inivèsite konbinen plizyè fòma pou kreye yon
-                  eksperyans konplè.
+                Pa gen yon sèl fason pou aprann. Chak moun aprann nan rit pa l. 
+                Se poutèt sa HOÏS Inivèsite ofri plizyè fòma aprantisaj pou ede w jwenn eksperyans ki pi byen adapte ak bezwen w.
+
                 </p>
               </div>
 
@@ -546,8 +547,10 @@ export default async function KlasPage() {
                   Pa yon klas — yon kominote vivan
                 </h2>
                 <p className="mt-4 text-white/70 leading-relaxed">
-                  Lè ou abonè, ou pa sèlman jwenn klas — ou jwenn aksè a yon
-                  kominote, yon èrboris, ak yon rezo sipò ki la chak jou.
+                 Lè w vin manm HOÏS Inivèsite, ou pa sèlman jwenn aksè ak klas yo. 
+                 Ou antre nan yon kominote aprantisaj kote w ka benefisye de eksperyans ak yon doktè fèy, resous edikatif, 
+                 ak sipò ekip nou an pandan tout vwayaj aprantisaj ou.
+
                 </p>
               </div>
 
@@ -615,21 +618,22 @@ export default async function KlasPage() {
             </h2>
             <p className="mt-5 max-w-2xl mx-auto text-ink-muted text-base md:text-lg leading-relaxed">
               {config?.cta_subtitle ??
-                'Chwazi yon plan, jwenn aksè a tout klas yo, epi konekte ak yon èrboris kounye a. Pa gen angajman long — ou ka anile nenpòt lè.'}
+                'Chwazi klas ki enterese w la epi kòmanse aprann jodi a. Konekte ak yon doktè fèy pou gide w nan vwayaj aprantisaj ou. Pa gen kontra alontèm — ou lib pou sispann oswa anile nenpòt lè, selon kondisyon sèvis la.'
+'}
             </p>
             <div className="mt-8 flex flex-wrap justify-center items-center gap-3">
               <Link
                 href="/#pri"
                 className="inline-flex items-center gap-2 bg-brand-gradient hover:brightness-110 text-white px-7 py-3.5 rounded-full font-medium transition shadow-md"
               >
-                Wè plan yo
+                Wè Klas yo
                 <ArrowRight className="w-4 h-4" strokeWidth={2.2} />
               </Link>
               <Link
                 href="/kontak"
                 className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full font-medium text-ink hover:text-brand-700 border border-slate-200 hover:border-brand-300 transition"
               >
-                Pale ak yon konseye
+                Pran klas ou entèrese a 
               </Link>
             </div>
           </div>
