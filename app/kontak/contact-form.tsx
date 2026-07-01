@@ -244,7 +244,7 @@ export default function ContactForm() {
       <div className="pt-2 flex items-center justify-between gap-3 flex-wrap">
         <p className="text-xs text-ink-muted max-w-md">
           Lè ou voye yon email pou nou, ou aksepte ke nou itilize done sa pou reponn ou 
-          verifye paj <a href="/konfidansyalite" className="text-brand-700 hover:underline font-medium">paj konfidansyalite pou plis enfo</a>.
+          verifye <a href="/konfidansyalite" className="text-brand-700 hover:underline font-medium">paj konfidansyalite pou plis enfo</a>.
         </p>
         <SubmitButton />
       </div>
