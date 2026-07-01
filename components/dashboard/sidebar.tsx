@@ -30,6 +30,10 @@ type SidebarProps = {
   userName: string;
   planLabel: string;
   level?: number;
+  /** Optional public URL of the member's uploaded profile picture.
+   *  When present the sidebar user card renders it instead of the SVG
+   *  illustration so the member's identity is immediately recognizable. */
+  avatarUrl?: string | null;
 };
 
 type NavItem = {
@@ -55,6 +59,7 @@ export default function Sidebar({
   userName,
   planLabel,
   level = 3,
+  avatarUrl,
 }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
@@ -206,7 +211,7 @@ export default function Sidebar({
           data-tour="user-card"
           className="m-3 rounded-2xl bg-gradient-to-br from-forest-700 to-forest-900 text-cream-50 p-3 flex items-center gap-3 shadow-plant"
         >
-          <Avatar size={42} />
+          <Avatar size={42} src={avatarUrl} alt={userName} />
           <div className="flex-1 min-w-0">
             <div className="text-sm font-semibold truncate font-display">
               {userName}

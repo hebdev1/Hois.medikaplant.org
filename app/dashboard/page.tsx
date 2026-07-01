@@ -88,10 +88,7 @@ export default async function DashboardHome({
     treatmentsResult,
     adviceResult,
     productResult,
-    streakResult,
-    levelResult,
-    levelNameResult,
-    unreadCountResult,
+    dashboardBundleResult,
     tourResult,
   ] = await Promise.all([
     supabase.from('profiles').select('*').eq('id', user.id).single(),
@@ -153,10 +150,11 @@ export default async function DashboardHome({
       .order('created_at', { ascending: false })
       .limit(1)
       .maybeSingle(),
-    supabase.rpc('user_streak', { uid: user.id }),
-    supabase.rpc('user_level', { uid: user.id }),
-    supabase.rpc('user_level_name', { uid: user.id }),
-    supabase.rpc('user_unread_notifications_count', { uid: user.id }),
+    // One RPC returning streak + level + level_name + unread_notifs so we
+    // save three network roundtrips per dashboard hit. Placed after the
+    // heavy content queries but still parallel via Promise.all.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (supabase as any).rpc('user_dashboard_bundle', { uid: user.id }),
     supabase
       .from('user_preferences')
       .select('tour_completed_at')
@@ -381,10 +379,16 @@ export default async function DashboardHome({
   const shortName = userName.split(' ')[0];
   const planLabel = profile ? PLAN_LABELS[profile.plan] : 'Hoïs Bazilik';
 
-  const streak = (streakResult.data as number | null) ?? 0;
-  const level = (levelResult.data as number | null) ?? 1;
-  const levelName = (levelNameResult.data as string | null) ?? 'Nouvo Manm';
-  const unreadCount = (unreadCountResult.data as number | null) ?? 0;
+  const bundle = (dashboardBundleResult.data as {
+    streak?: number;
+    level?: number;
+    level_name?: string;
+    unread_notifs?: number;
+  } | null) ?? {};
+  const streak = bundle.streak ?? 0;
+  const level = bundle.level ?? 1;
+  const levelName = bundle.level_name ?? 'Nouvo Manm';
+  const unreadCount = bundle.unread_notifs ?? 0;
 
   const justSubscribedPlan =
     searchParams.welcome && PLAN_LABELS[searchParams.welcome]

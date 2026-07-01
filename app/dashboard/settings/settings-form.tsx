@@ -38,6 +38,31 @@ import {
 } from './actions';
 import { restartTour } from '../actions';
 import { Compass, ArrowRight } from 'lucide-react';
+
+// Mirror TranslateSwitcher's cookie contract so a settings-driven change
+// lands in the same place the floating switcher writes to. Kept inline
+// (rather than imported from the switcher) because the switcher is a
+// client-only component whose full module we don't want to pull in just
+// for one cookie-writer function.
+function writeLangCookie(target: 'ht' | 'fr' | 'en') {
+  if (typeof document === 'undefined') return;
+  if (target === 'ht') {
+    document.cookie = 'googtrans=; path=/; max-age=0';
+    const host = window.location.hostname;
+    if (host.split('.').length >= 2) {
+      const apex = host.replace(/^(www|app|admin)\./, '');
+      document.cookie = `googtrans=; path=/; domain=.${apex}; max-age=0`;
+    }
+    return;
+  }
+  const value = encodeURIComponent(`/ht/${target}`);
+  document.cookie = `googtrans=${value}; path=/; max-age=31536000`;
+  const host = window.location.hostname;
+  if (host.split('.').length >= 2) {
+    const apex = host.replace(/^(www|app|admin)\./, '');
+    document.cookie = `googtrans=${value}; path=/; domain=.${apex}; max-age=31536000`;
+  }
+}
 import type { Database } from '@/types/database';
 
 type PrefRow = Database['public']['Tables']['user_preferences']['Row'];
@@ -104,6 +129,18 @@ export default function SettingsForm({
     return async (value: PrefRow[K]) => {
       const res = await updatePreference(key, value as never);
       if (res.ok) setPrefs(res.preferences);
+      // When the member changes their UI language, drive the Google
+      // Translate cookie the TranslateSwitcher already reads on mount and
+      // hard-reload the tab so Google boots against the fresh HTML rather
+      // than mutating a hydrated React tree. Same pattern the switcher
+      // uses in components/translate-switcher.tsx — kept in sync here.
+      if (res.ok && key === 'language') {
+        const target = value as 'ht' | 'fr' | 'en';
+        writeLangCookie(target);
+        // Small timeout so the settings-controls "saved" pulse can render
+        // before the page vanishes.
+        window.setTimeout(() => window.location.reload(), 250);
+      }
       return res;
     };
   }

@@ -1,13 +1,48 @@
 type AvatarProps = {
   size?: number;
   bordered?: boolean;
+  /**
+   * Public URL of the member's uploaded profile picture. When present the
+   * component renders that image (object-covered inside a circle) instead
+   * of the illustrated SVG fallback. Empty/null falls back to the SVG.
+   */
+  src?: string | null;
+  /** Alt text when rendering an uploaded image. Defaults to "Pwofil". */
+  alt?: string;
 };
 
 /**
- * Illustrated portrait avatar — gradient sky background with hair/face/shoulders.
- * Pure SVG so it scales crisply and ships with zero asset weight.
+ * Portrait avatar. Uploaded photo (via `src`) takes precedence; otherwise
+ * an illustrated SVG fallback renders — pure SVG so it scales crisply and
+ * ships with zero asset weight for members without a photo.
  */
-export default function Avatar({ size = 38, bordered = false }: AvatarProps) {
+export default function Avatar({
+  size = 38,
+  bordered = false,
+  src,
+  alt = 'Pwofil',
+}: AvatarProps) {
+  if (src) {
+    // eslint-disable-next-line @next/next/no-img-element
+    return (
+      <img
+        src={src}
+        alt={alt}
+        width={size}
+        height={size}
+        style={{
+          width: size,
+          height: size,
+          borderRadius: '50%',
+          display: 'block',
+          objectFit: 'cover',
+          boxShadow: bordered
+            ? '0 0 0 2px var(--brand-primary, #5a9138)'
+            : 'none',
+        }}
+      />
+    );
+  }
   return (
     <svg
       width={size}

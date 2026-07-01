@@ -18,6 +18,7 @@ type SidebarProfile = {
   full_name: string | null;
   plan: 'basic' | 'premium' | 'vip';
   email: string;
+  avatar_url: string | null;
 };
 
 export default async function DashboardLayout({
@@ -42,7 +43,7 @@ export default async function DashboardLayout({
   const [profileResult, prefsResult] = await Promise.all([
     supabase
       .from('profiles')
-      .select('role, suspended, full_name, plan, email')
+      .select('role, suspended, full_name, plan, email, avatar_url')
       .eq('id', user.id)
       .maybeSingle(),
     supabase
@@ -94,7 +95,7 @@ export default async function DashboardLayout({
         },
         { onConflict: 'id' }
       )
-      .select('role, suspended, full_name, plan, email')
+      .select('role, suspended, full_name, plan, email, avatar_url')
       .single();
 
     profile = (inserted as SidebarProfile | null) ?? null;
@@ -131,6 +132,7 @@ export default async function DashboardLayout({
           userName={shortName}
           planLabel={planLabel}
           level={3}
+          avatarUrl={profile?.avatar_url ?? null}
         />
         <div className="flex-1 min-w-0">{children}</div>
       </div>

@@ -32,22 +32,30 @@ export default async function Topbar({
   // Read plan from the JWT claim (populated by custom_access_token_hook).
   // Falls back to a profile query for sessions issued before the hook
   // was enabled — one DB roundtrip saved per dashboard navigation in the
-  // common case.
+  // common case. The same fallback query also pulls avatar_url so the
+  // top-right avatar renders the member's uploaded photo when they have
+  // one instead of the SVG placeholder.
   let userPlan: 'basic' | 'premium' | 'vip' = 'basic';
+  let avatarUrl: string | null = null;
   if (user) {
     const metaPlan = (user.user_metadata as { app_plan?: string } | null)
       ?.app_plan;
-    if (metaPlan === 'basic' || metaPlan === 'premium' || metaPlan === 'vip') {
-      userPlan = metaPlan;
-    } else {
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('plan')
-        .eq('id', user.id)
-        .maybeSingle();
-      const p = profile as { plan: 'basic' | 'premium' | 'vip' } | null;
-      if (p?.plan) userPlan = p.plan;
-    }
+    const needPlanFallback =
+      !(metaPlan === 'basic' || metaPlan === 'premium' || metaPlan === 'vip');
+    // Always fetch avatar_url; combine with plan fallback when needed to
+    // keep the query count at one.
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('plan, avatar_url')
+      .eq('id', user.id)
+      .maybeSingle();
+    const p = profile as {
+      plan: 'basic' | 'premium' | 'vip';
+      avatar_url: string | null;
+    } | null;
+    if (needPlanFallback && p?.plan) userPlan = p.plan;
+    if (!needPlanFallback && metaPlan) userPlan = metaPlan;
+    avatarUrl = p?.avatar_url ?? null;
   }
 
   return (
@@ -89,7 +97,7 @@ export default async function Topbar({
           href="/dashboard/settings"
           className="hidden sm:flex items-center gap-2.5 pl-1 pr-3 py-1 rounded-full bg-white border border-cream-200 hover:border-forest-300 transition"
         >
-          <Avatar size={32} />
+          <Avatar size={32} src={avatarUrl} alt={userName} />
           <div className="hidden md:flex flex-col leading-tight">
             <span className="text-sm font-semibold text-ink truncate max-w-[160px]">
               {userName}
@@ -106,7 +114,7 @@ export default async function Topbar({
           className="sm:hidden grid place-items-center"
           aria-label="Pwofil"
         >
-          <Avatar size={36} />
+          <Avatar size={36} src={avatarUrl} alt={userName} />
         </Link>
       </div>
     </header>
