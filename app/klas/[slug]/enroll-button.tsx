@@ -102,7 +102,7 @@ export default function EnrollButton({
           className="block w-full text-center bg-forest-700 hover:bg-forest-800 text-cream-50 px-5 py-3 rounded-full font-medium transition shadow-md inline-flex items-center justify-center gap-2"
         >
           <CheckCircle2 className="w-4 h-4" strokeWidth={2.4} />
-          Ou deja enskri — ale nan tablodebò
+          Ou deja enskri  ale nan tablodebò
         </Link>
         {seatsLeft !== null && (
           <p className="text-[11px] text-ink-muted text-center">
@@ -145,7 +145,7 @@ export default function EnrollButton({
           Achte klas la pou {dollars(priceCents)}
         </Link>
         <p className="text-[11px] text-ink-muted text-center">
-          Pa bezwen abònman — yon achte sèlman, aksè lifetime.
+          Yon sèl acha. Pa bezwen abònman. Aksè pou tout lavi.
         </p>
         {seatsLeft !== null && seatsLeft <= 10 && (
           <SeatsLeftBadge seatsLeft={seatsLeft} seatCapacity={seatCapacity!} />
@@ -162,7 +162,7 @@ export default function EnrollButton({
           href={upgradeHref}
           className="block w-full text-center bg-brand-gradient hover:brightness-110 text-white px-5 py-3 rounded-full font-medium transition shadow-md"
         >
-          Vin manm pou jwenn aksè
+          Achte klas ou a epi kòmanse aprann tousuit.
         </Link>
         {seatsLeft !== null && seatsLeft <= 10 && (
           <SeatsLeftBadge seatsLeft={seatsLeft} seatCapacity={seatCapacity!} />
@@ -189,7 +189,7 @@ export default function EnrollButton({
         )}
         {isAuthenticated
           ? 'Pran plas mwen kounye a'
-          : 'Konekte pou pran yon plas'}
+          : 'achte klas ou pou rezève plas ou'}
       </button>
 
       {seatsLeft !== null && seatsLeft <= 10 && (
@@ -198,7 +198,7 @@ export default function EnrollButton({
       {seatsLeft === null && (
         <p className="text-[11px] text-ink-muted text-center inline-flex items-center justify-center gap-1">
           <CheckCircle2 className="w-3 h-3 text-forest-700" strokeWidth={2.4} />
-          Plas san limit
+          Plas yo limite Rezève pa w la depi kounye a.
         </p>
       )}
 
