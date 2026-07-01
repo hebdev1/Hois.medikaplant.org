@@ -59,77 +59,37 @@ const CHANNELS = [
 
 const FAQS = [
   {
-    q: 'Kisa HOÏS MedikaPlant ye?',
-    a: 'HOÏS MedikaPlant se platfòm edikatif kote manm yo jwenn fòmasyon, videyo, dokiman, atelye ak lòt resous pou aprann sou Medsin Tradisyonèl Ayisyen, syans plant ak byennèt.'
-  },
-  {
-    q: 'Kijan mwen vin manm?',
-    a: 'pou kreye Kreye yon kont sou HOÏS MedikaPlant, chwazi plan ki enterese w la epi finalize enskripsyon w.'
-  },
-  {
-    q: 'Mwen bliye modpas mwen. Kisa pou m fè?',
-    a: 'Klike sou "Bliye modpas" sou paj koneksyon an epi swiv etap yo pou kreye yon nouvo modpas.'
-  },
-  {
-    q: 'Èske mwen ka suiv kou yo sou telefòn?',
-    a: 'Wi. Ou ka itilize HOÏS MedikaPlant sou telefòn, tablèt oswa òdinatè.'
-  },
-  {
-    q: 'Èske m ap resevwa aksè tousuit apre peman?',
-    a: 'Wi, aksè a aktive otomatikman tousuit apre peman an konfime.'
-  },
-  {
-    q: 'Kijan pou m pran yon konsiltasyon?',
-    a: 'Klike sou "Mande yon konsiltasyon". Yon Gid ap kontakte w pou pwograme randevou w. Tout konsiltasyon fèt sou Zoom.'
-  },
-  {
-    q: 'Èske konsiltasyon yo gratis?',
-    a: 'Non. Konsiltasyon yo se yon sèvis separe ki mande randevou ak peman davans.'
-  },
-  {
-    q: 'Èske m ka voye kesyon sou sante m?',
-    a: 'Wi. Dekri sitiyasyon w ak tout detay ki enpòtan pou ekip la ka pi byen evalye bezwen w.'
-  },
-  {
     q: 'Konbyen tan li pran pou nou reponn?',
-    a: 'Nou fè tout efò pou reponn mesaj yo nan mwens pase 24 èdtan pandan lè sèvis yo.'
+    a: 'Pi souvan, mwens ke 24 èdtan pandan jou travay yo (Lendi–Vandredi). Mesaj ki rive nan wikenn oswa jou ferye ap resevwa yon repons nan pwochèn jou travay la.',
   },
   {
-    q: 'Poukisa mwen poko jwenn repons?',
-    a: 'Nou trete mesaj yo youn apre lòt. Si gen anpil demann, sa ka pran plis tan. Nou apresye pasyans ou.'
+    q: 'Ki kanal ki pi rapid pou jwenn èd?',
+    a: 'Si w deja gen yon kont, chat sipò a nan panel manm ou (Kont mwen → Sipò) se pi rapid — mesaj ou rive dirèkteman nan ekip la. Fòm ki sou paj sa a se pou vizitè ki poko manm, oswa pou kesyon jeneral.',
   },
   {
-    q: 'Èske mwen ka rele Vye Ewòl dirèkteman?',
-    a: 'Non. Tout demann pase atravè sistèm HOÏS MedikaPlant. Sa pèmèt nou sèvi tout moun nan yon fason òganize ak jis.'
+    q: 'Èske mwen bezwen yon kont pou voye yon mesaj?',
+    a: 'Non. Ou ka voye yon mesaj san kreye yon kont. Men si w deja konekte, n ap gen plis kontèks (plan ou, istwa sipò w) pou reponn ou pi vit ak pi presi.',
   },
   {
-    q: 'Èske Vye Ewòl reponn tout mesaj yo?',
-    a: 'Non. Gen yon ekip Gid ki trete mesaj yo. Vye Ewòl patisipe nan konsiltasyon, fòmasyon ak lòt sèvis ki mande prezans li.'
+    q: 'Ki enfòmasyon pou m mete pou jwenn repons pi rapid?',
+    a: 'Bay non ou, imèl kote pou nou reponn, epi eksplike sitiyasyon w klèman. Si se yon pwoblèm teknik, mete non navigatè w ak sa ki t ap pase avan pwoblèm nan parèt. Si se yon kesyon konsiltasyon, mete plan ou ak preferans dat.',
   },
   {
-    q: 'Kijan mwen mete ajou enfòmasyon kont mwen?',
-    a: 'Ale nan Paramèt Kont ou pou modifye non, imèl, modpas ak lòt enfòmasyon pèsonèl.'
+    q: 'Kesyon m nan se sou kont oswa sante m. Kote pou m ale?',
+    a: 'Konekte sou kont ou, epi ale nan "Kont mwen → Sipò" pou kesyon administratif (fakti, chanjman plan, modpas). Pou kesyon medikal, ale nan "Sante" epi mande yon konsiltasyon — yon Gid ap kontakte w pou pwograme yon randevou Zoom.',
   },
   {
-    q: 'Èske mwen ka anile abònman mwen?',
-    a: 'Wi. Ou ka jere oswa anile abònman w selon kondisyon plan ou a depi nan kont ou.'
+    q: 'Èske mesaj m nan rete konfidansyèl?',
+    a: 'Wi. Sèl ekip sipò w otorize ki li mesaj ou. Nou pa vann, ni pataje enfòmasyon pèsonèl ou ak tyès pati. Pou plis detay, gade Politik Konfidansyalite nou an.',
   },
   {
-    q: 'Kijan pou m rapòte yon pwoblèm teknik?',
-    a: 'Sèvi ak fòm sipò a oswa chat sipò ki nan kont ou epi eksplike pwoblèm nan ak tout detay ki enpòtan.'
+    q: 'Èske m ka jwenn èd an Kreyòl, Franse, oswa Angle?',
+    a: 'Wi. Ekip nou an sèvi manm nan Kreyòl, Franse, ak Angle. Ekri nou nan lang ki pi konfòtab pou ou — n ap reponn nan menm lang lan.',
   },
   {
-    q: 'Èske enfòmasyon mwen yo rete konfidansyèl?',
-    a: 'Wi. Nou respekte vi prive manm nou yo epi nou trete enfòmasyon yo avèk konfidansyalite.'
+    q: 'Sa pou m fè si mesaj mwen an ijan?',
+    a: 'Pou yon ijans medikal, kontakte sèvis lokal ijans nan zòn ou (911, HUEH nan Pòtoprens, elatriye) — HOÏS pa yon sèvis ijans medikal. Pou lòt bagay ijan (aksè kont bloke, pwoblèm peman), make mesaj ou ak "URGENT" nan sijè a epi nou pran l pi vit.',
   },
-  {
-    q: 'Èske HOÏS MedikaPlant vann pwodwi?',
-    a: 'Pwodwi Medikaplant yo disponib sou MedikaplantShop.com. HOÏS MedikaPlant se platfòm edikasyon ak sèvis pou manm yo.'
-  },
-  {
-    q: 'Kijan pou m jwenn plis èd?',
-    a: 'Ou ka itilize seksyon Sipò a oswa voye yon mesaj atravè kont ou. Ekip nou an ap ede w pi vit posib.'
-  }
 ];
 
 const SOCIALS = [
