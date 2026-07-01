@@ -20,28 +20,31 @@ import PromoteHeader from '@/components/ui/promote-header';
 import Footer from '@/components/ui/footer';
 
 export const metadata = {
-  title: 'Konfidansyalite · MedikaPlant Hoïs Inivèsite',
+  title: 'Konfidansyalite · Hoïs Inivèsite',
   description:
-    'Politik konfidansyalite MedikaPlant Hoïs Inivèsite — sa nou kolekte, sa nou fè avè l, ak dwa ou genyen sou done w yo.',
+    'Nan HOÏS Inivèsite, nou pran pwoteksyon enfòmasyon pèsonèl ou trè oserye. Politik sa a eksplike ki kalite enfòmasyon nou kolekte, poukisa nou kolekte yo, kijan nou itilize yo, kijan nou pwoteje yo, ak dwa ou genyen sou done pèsonèl ou. 
+    Lè w itilize platfòm nou an, ou dakò ak prensip ki dekri nan politik sa a.',
 };
 
-const LAST_UPDATED = '15 Me 2026';
+const LAST_UPDATED = '30 Jen 2026';
 
 const SUMMARY = [
   {
     Icon: Lock,
     title: 'Nou pwoteje done w',
-    body: 'Tout done sansib (medikal, peman) kript ant kanal ki sekirize.',
+    body: 'Tout enfòmasyon sansib, tankou done medikal ak enfòmasyon peman, pwoteje ak teknoloji chifreman (encryption) pandan y ap transmèt sou chanèl kominikasyon ki sekirize.',
   },
   {
     Icon: Eye,
     title: 'Nou pa vann done w',
-    body: 'Nou pa janm vann oswa lwe enfòmasyon ou bay nou ak okenn tyès pati.',
+    body: 'Nou pa janm vann, lwe, ni pataje enfòmasyon pèsonèl ou ak okenn tyès pati pou rezon komèsyal san konsantman ou, sof si lalwa egzije sa oswa sa nesesè pou bay sèvis ou mande a.
+',
   },
   {
     Icon: Trash2,
     title: 'Ou ka mande efase tout',
-    body: 'Ou ka konsilte, ekspòte, oswa efase tout done w nenpòt lè.',
+    body: 'Ou gen dwa konsilte, telechaje, mete ajou, oswa mande efasman done pèsonèl ou nenpòt lè, dapre règleman ak kondisyon sèvis nou yo.
+',
   },
 ];
 
@@ -88,7 +91,7 @@ export default function KonfidansyalitePage() {
             <p className="mt-6 text-lg md:text-xl text-ink-muted leading-relaxed max-w-2xl">
               Politik sa eksplike ki enfòmasyon nou kolekte sou Hoïs Inivèsite,
               ki jan nou itilize yo, ak ki dwa ou genyen sou yo. Nou ekri li
-              klè — pa gen jargon legal ki kache anyen.
+              klè  pa gen jargon legal ki kache anyen.
             </p>
             <div className="mt-6 inline-flex items-center gap-2 text-sm text-ink-muted">
               <Calendar className="w-4 h-4" strokeWidth={2} />
@@ -156,23 +159,23 @@ export default function KonfidansyalitePage() {
                 <ul>
                   <li>
                     <strong>Done idantite:</strong> non, imèl, telefòn, dat
-                    nesans, vil — sa w bay nou nan moman ou enskri oswa nan
+                    nesans, vil sa w ba nou nan moman ou enskri oswa nan
                     paj paramèt ou.
                   </li>
                   <li>
                     <strong>Done sante:</strong> kondisyon medikal, mezi sik,
-                    tansyon, pwa, alèji, medikaman — <em>sèlman sa ou
+                    tansyon, pwa, alèji, medikaman  <em>sèlman sa ou
                     chwazi pou pataje avè n</em>.
                   </li>
                   <li>
                     <strong>Done teknik:</strong> adrès IP, kalite navigatè,
-                    paj ou vizite — yon ti kantite enfòmasyon ki ede nou
+                    paj ou vizite yon ti kantite enfòmasyon ki ede nou
                     bay yon eksperyans pi bon.
                   </li>
                 </ul>
                 <p>
                   Ou pa ka itilize sèvis la san done idantite (paske n bezwen
-                  konekte w ak kont ou); men tout lòt done a se chwa w.
+                  konekte w ak kont ou); men tout lòt done yo se selon chwa w.
                 </p>
               </Block>
 
@@ -187,12 +190,12 @@ export default function KonfidansyalitePage() {
                     Voye yon notifikasyon ki enpòtan: mizajou abònman, kont,
                     sipò
                   </li>
-                  <li>Amelyore platfòm la (analiz anonim)</li>
+                  <li>Amelyore platfòm nan (analiz anonim)</li>
                   <li>Reponn demann sipò ou voye nou</li>
                 </ul>
                 <p>
                   <strong>Sa nou pa fè:</strong> Nou pa itilize done w yo pou
-                  fè reklam, vann ou nan tyès pati, oswa antrene modèl
+                  fè reklam, vann yo ak lòt antite, oswa antrene modèl
                   entèlijans atifisyèl piblik.
                 </p>
               </Block>
@@ -204,20 +207,20 @@ export default function KonfidansyalitePage() {
                 </p>
                 <ul>
                   <li>
-                    <strong>Supabase</strong> — sèvè baz done nou. Tout done
+                    <strong>Supabase</strong> sèvè baz done nou. Tout done
                     rete an Etazini sou enfrastrikti yo.
                   </li>
                   <li>
-                    <strong>Vercel</strong> — sèvè ki sèvi paj yo. Pa kenbe
+                    <strong>Vercel</strong>  sèvè ki sèvi paj yo. Pa kenbe
                     okenn done pèsonèl.
                   </li>
                   <li>
-                    <strong>Stripe</strong> — pou peman (lè li aktive). Yo
+                    <strong>Stripe</strong>  pou peman (lè li aktive). Yo
                     pwosesè kat kredi a; nou pa janm wè nimewo kat ou.
                   </li>
                   <li>
                     <strong>Sètifikasyon legal:</strong> Si yon otorite legal
-                    Ayisyen oswa entènasyonal mande nou — ak yon manda valid —
+                    Ayisyen oswa entènasyonal mande nou  ak yon manda valid 
                     nou ka oblije bay enfòmasyon. Sa pap janm fèt anba bòl.
                   </li>
                 </ul>
@@ -247,14 +250,14 @@ export default function KonfidansyalitePage() {
 
               <Block id="sekirite" icon={Lock} title="5. Sekirite">
                 <p>
-                  Nou pran sekirite trè o serye. Mesi pratik nou aplike yo
+                  Nou pran sekirite done w yo trè o serye. Mesi pratik nou aplike yo
                   enkli:
                 </p>
                 <ul>
-                  <li>Modpas kript ak bcrypt — nou pa janm ka li yo</li>
+                  <li>Modpas kript ak bcrypt  nou pa janm ka li yo</li>
                   <li>Done sansib (medikal) ak Row-Level Security (RLS) Postgres</li>
                   <li>Sesyon ki ekspire otomatikman</li>
-                  <li>Done finansye pase atravè Stripe — pa janm sou sèvè nou</li>
+                  <li>Done finansye pase atravè Stripe  pa janm sou sèvè nou</li>
                   <li>Bakap chak jou nan repèjyon jeografik diferan</li>
                 </ul>
                 <p className="not-italic text-amber-900 bg-amber-50 border border-amber-200 rounded-lg px-4 py-3 inline-flex items-start gap-2">
@@ -263,10 +266,10 @@ export default function KonfidansyalitePage() {
                     Si w sispèk yon vyolasyon sekirite sou kont ou, kontakte nou
                     san pèdi tan nan{' '}
                     <a
-                      href="mailto:plant@medikaplant.org"
+                      href="mailto:contact@hoismedikaplant.com"
                       className="font-bold underline"
                     >
-                      plant@medikaplant.org
+                      Contact@hoismedikaplant.com
                     </a>
                     .
                   </span>
@@ -284,16 +287,15 @@ export default function KonfidansyalitePage() {
                     kont ou.
                   </li>
                   <li>
-                    <strong>Efase:</strong> mande tout done w yo retire (yon
+                    <strong>Efase:</strong> mande siprime tout done w yo (yon
                     ekstre kont).
                   </li>
                   <li>
-                    <strong>Ekspòte:</strong> resevwa yon kopi nan fòma JSON
-                    oswa CSV.
+                    <strong>Ekspòte:</strong> resevwa yon kopi nan fòma PDF.
+                    
                   </li>
                   <li>
-                    <strong>Refize:</strong> dezabonè nan kominikasyon yo san
-                    pèdi sèvis la.
+                    <strong>Refize:</strong> Ou ka dezabòne nan kominikasyon pwomosyonèl nou yo nenpòt lè san sa pa afekte aksè ou ak sèvis ou yo.
                   </li>
                 </ul>
                 <p>
@@ -313,7 +315,7 @@ export default function KonfidansyalitePage() {
                 <p>
                   Nou itilize kèk cookies esansyèl pou platfòm la fonksyone —
                   pou kenbe sesyon ou konekte, sonje preferans afichaj, ak
-                  pwoteje kont misa.
+                  pwoteje kont ou.
                 </p>
                 <p>
                   <strong>Sa nou pa fè:</strong> nou pa enstale cookies pou
@@ -332,8 +334,8 @@ export default function KonfidansyalitePage() {
 
               <Block id="timoun" icon={Shield} title="8. Timoun">
                 <p>
-                  Hoïs Inivèsite a fèt pou granmoun (16+ ane). Si w gen mwens
-                  ke 16 ane, ou bezwen pèmisyon paran oswa gadyen ou pou
+                  Hoïs Inivèsite a fèt pou moun (18+ ane). Si w gen mwens
+                  ke 18 ane, ou bezwen pèmisyon paran oswa moun ki responsab ou pou
                   itilize sèvis la.
                 </p>
                 <p>
@@ -344,7 +346,7 @@ export default function KonfidansyalitePage() {
 
               <Block id="chanjman" icon={FileText} title="9. Chanjman politik la">
                 <p>
-                  Nou ka mete politik sa ajou tan pou tan — sitou lè nou
+                  Nou ka mete politik sa ajou tan pou tan  sitou lè nou
                   ajoute nouvo fonksyonalite oswa lè lwa yo chanje. Lè sa,
                   n ap:
                 </p>
@@ -352,7 +354,8 @@ export default function KonfidansyalitePage() {
                   <li>Voye yon imèl ba ou ak chanjman ki enpòtan yo</li>
                   <li>Mete dat "dènye mizajou" anwo paj sa</li>
                   <li>
-                    Pou chanjman ki gen gwo enpak, mande otorizasyon w ankò
+                   Si nou fè yon chanjman enpòtan nan Politik Konfidansyalite a, n ap fè w konnen epi, si sa nesesè, n ap mande konsantman w ankò anvan chanjman yo aplike.
+
                   </li>
                 </ul>
                 <p>
@@ -363,17 +366,17 @@ export default function KonfidansyalitePage() {
 
               <Block id="kontak" icon={Mail} title="10. Kontak konfidansyalite">
                 <p>
-                  Si w gen kesyon sou politik sa oswa sou fason nou itilize
+                  Si w gen kesyon sou politik sa yo oswa sou fason nou itilize
                   done w, kontakte nou:
                 </p>
                 <ul>
                   <li>
                     <strong>Imèl:</strong>{' '}
                     <a
-                      href="mailto:plant@medikaplant.org"
+                      href="mailto:contact@hoismedikaplant.com"
                       className="text-brand-700 hover:underline"
                     >
-                      plant@medikaplant.org
+                      COntact@hoismedikaplant.com
                     </a>
                   </li>
                   <li>
@@ -384,12 +387,12 @@ export default function KonfidansyalitePage() {
                     — chwazi sijè "Sipò manm"
                   </li>
                   <li>
-                    <strong>Adrès postal:</strong> Delmas 31, Pòtoprens, Ayiti
+                    <strong>Adrès postal:</strong>1823 S. DIXIE HIGHWAY POMPANO BEACH, FL 33060
                   </li>
                 </ul>
                 <p>
                   Nou angaje pou reponn nenpòt demann konfidansyalite nan
-                  mwens ke 7 jou kalandriye.
+                  mwens ke 7 jou ouvrab.
                 </p>
               </Block>
             </article>
@@ -415,17 +418,17 @@ export default function KonfidansyalitePage() {
                 Nou kenbe pwomès nou
               </span>
               <h2 className="font-display text-3xl md:text-5xl font-bold tracking-tight leading-tight">
-                Ou kontwole — pa nou.
+                Ou kontwole done pèsonèl ou yo.
               </h2>
               <p className="mt-4 text-white/70 leading-relaxed">
-                Konfidansyalite pa yon dokiman legal — se yon kontra moralite.
+                Konfidansyalite pa yon dokiman legal se yon kontra moralite.
                 Men chak pwomès konkrè ki vin ak Hoïs Inivèsite.
               </p>
             </div>
 
             <ul className="space-y-4">
               {[
-                'Pa janm vann done w bay yon tyès pati',
+                'Pa janm vann done w bay okenn lòt antite',
                 'Pa itilize done sante w pou reklam oswa antrene IA',
                 'Efase tout done w nan mwens ke 30 jou si ou mande sa',
                 'Kript tout koneksyon ak baz la (TLS) san eksepsyon',
