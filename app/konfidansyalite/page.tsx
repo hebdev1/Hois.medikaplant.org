@@ -22,8 +22,7 @@ import Footer from '@/components/ui/footer';
 export const metadata = {
   title: 'Konfidansyalite · Hoïs Inivèsite',
   description:
-    'Nan HOÏS Inivèsite, nou pran pwoteksyon enfòmasyon pèsonèl ou trè oserye. Politik sa a eksplike ki kalite enfòmasyon nou kolekte, poukisa nou kolekte yo, kijan nou itilize yo, kijan nou pwoteje yo, ak dwa ou genyen sou done pèsonèl ou. 
-    Lè w itilize platfòm nou an, ou dakò ak prensip ki dekri nan politik sa a.',
+    'Nan HOÏS Inivèsite, nou pran pwoteksyon enfòmasyon pèsonèl ou trè oserye. Politik sa a eksplike ki kalite enfòmasyon nou kolekte, poukisa nou kolekte yo, kijan nou itilize yo, kijan nou pwoteje yo, ak dwa ou genyen sou done pèsonèl ou. Lè w itilize platfòm nou an, ou dakò ak prensip ki dekri nan politik sa a.',
 };
 
 const LAST_UPDATED = '30 Jen 2026';
@@ -37,14 +36,12 @@ const SUMMARY = [
   {
     Icon: Eye,
     title: 'Nou pa vann done w',
-    body: 'Nou pa janm vann, lwe, ni pataje enfòmasyon pèsonèl ou ak okenn tyès pati pou rezon komèsyal san konsantman ou, sof si lalwa egzije sa oswa sa nesesè pou bay sèvis ou mande a.
-',
+    body: 'Nou pa janm vann, lwe, ni pataje enfòmasyon pèsonèl ou ak okenn tyès pati pou rezon komèsyal san konsantman ou, sof si lalwa egzije sa oswa sa nesesè pou bay sèvis ou mande a.',
   },
   {
     Icon: Trash2,
     title: 'Ou ka mande efase tout',
-    body: 'Ou gen dwa konsilte, telechaje, mete ajou, oswa mande efasman done pèsonèl ou nenpòt lè, dapre règleman ak kondisyon sèvis nou yo.
-',
+    body: 'Ou gen dwa konsilte, telechaje, mete ajou, oswa mande efasman done pèsonèl ou nenpòt lè, dapre règleman ak kondisyon sèvis nou yo.',
   },
 ];
 

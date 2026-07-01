@@ -173,8 +173,7 @@ export default async function KlasPage() {
     'Aprann. Konprann. Aplike. Byenveni nan klas HOÏS Inivèsite.';
   const heroSubtitle =
     config?.hero_subtitle ??
-    `${courses.length}+ Klas an Kreyòl sou plant medsin, Medsin Tradisyonèl Ayisyen, espirityalite HOÏS, nitrisyon, ak lavi natiwopatik.
-`;
+    `${courses.length}+ Klas an Kreyòl sou plant medsin, Medsin Tradisyonèl Ayisyen, espirityalite HOÏS, nitrisyon, ak lavi natiwopatik.`;
   const heroCtaLabel = config?.hero_cta_label ?? 'Vin manm pou aksè total';
   const heroCtaHref = config?.hero_cta_href ?? '/#pri';
   const heroImageUrl =
@@ -618,8 +617,7 @@ export default async function KlasPage() {
             </h2>
             <p className="mt-5 max-w-2xl mx-auto text-ink-muted text-base md:text-lg leading-relaxed">
               {config?.cta_subtitle ??
-                'Chwazi klas ki enterese w la epi kòmanse aprann jodi a. Konekte ak yon doktè fèy pou gide w nan vwayaj aprantisaj ou. Pa gen kontra alontèm — ou lib pou sispann oswa anile nenpòt lè, selon kondisyon sèvis la.'
-'}
+                'Chwazi klas ki enterese w la epi kòmanse aprann jodi a. Konekte ak yon doktè fèy pou gide w nan vwayaj aprantisaj ou. Pa gen kontra alontèm — ou lib pou sispann oswa anile nenpòt lè, selon kondisyon sèvis la.'}
             </p>
             <div className="mt-8 flex flex-wrap justify-center items-center gap-3">
               <Link
