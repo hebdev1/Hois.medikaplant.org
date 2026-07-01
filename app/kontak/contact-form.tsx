@@ -86,11 +86,11 @@ export default function ContactForm() {
           </span>
           <div>
             <h3 className="font-display text-xl font-bold text-ink">
-              Mesaj la voye ak siksè
+              Nou resevwa mesaj la, yon manm nan ekip la ap kontakte w nan mwens ke 24è tan.
             </h3>
             <p className="mt-1 text-ink-muted leading-relaxed">
-              Mèsi pou kontakte nou. Yon manm ekip la ap reponn nan mwens ke
-              24 èdtan (jou semèn). Gade bwat imèl ou — n ap reponn nan adrès
+              Mèsi paske w kontakte nou. Yon manm ekip la ap reponn nan mwens ke
+              24 èdtan. Verifye bwat imèl ou  n ap reponn nan adrès
               ou bay la.
             </p>
             <button
@@ -111,7 +111,9 @@ export default function ContactForm() {
       {/* Topic picker */}
       <fieldset>
         <legend className="text-xs font-bold uppercase tracking-wider text-ink-muted mb-2.5">
-          Sou kisa mesaj ou a?
+          Tanpri dekri pwoblèm ou an ak tout detay ki enpòtan. 
+          Plis deskripsyon w bay klè ak presi, se pi vit epi pi byen n ap kapab konprann sitiyasyon an pou ede w.
+
         </legend>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-2">
           {TOPICS.map(({ value, label, Icon, body }) => {
@@ -206,7 +208,8 @@ export default function ContactForm() {
       </div>
 
       {/* Message */}
-      <Field label="Mesaj" required help="Pi byen w eksplike, pi rapid n ap reponn.">
+      <Field label="Mesaj" required help="**Plis ou bay detay sou bezwen w oswa kestyon w, se plis n ap kapab konprann sitiyasyon an epi reponn ou pi vit ak plis presizyon.**
+">
         <textarea
           name="message"
           required
@@ -240,8 +243,8 @@ export default function ContactForm() {
 
       <div className="pt-2 flex items-center justify-between gap-3 flex-wrap">
         <p className="text-xs text-ink-muted max-w-md">
-          Lè ou voye, ou aksepte ke nou itilize done sa pou reponn ou —
-          gade <a href="/konfidansyalite" className="text-brand-700 hover:underline font-medium">paj konfidansyalite</a>.
+          Lè ou voye yon email pou nou, ou aksepte ke nou itilize done sa pou reponn ou 
+          verifye paj <a href="/konfidansyalite" className="text-brand-700 hover:underline font-medium">paj konfidansyalite pou plis enfo</a>.
         </p>
         <SubmitButton />
       </div>
