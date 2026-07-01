@@ -35,11 +35,11 @@ const dmSans = DM_Sans({
 
 export const metadata: Metadata = {
   title: {
-    default: 'MedikaPlant — Hoïs Inivèsite | Naturopathic Wellness from Haiti',
-    template: '%s · MedikaPlant',
+    default: 'Hoïs Inivèsite | Naturopathic Wellness from Haiti',
+    template: '%s · Hoïs Inivèsite',
   },
   description:
-    'MedikaPlant pwopoze remèd fèy, swen natirèl, ak kominote VIP Hoïs pou byennèt fizik ak espirityèl ou. Plant-based wellness, naturopathic remedies, and traditional Haitian medicine.',
+    'Hoïs Inivèsite pwopoze remèd fèy, swen natirèl, ak kominote VIP Hoïs pou byennèt fizik ak espirityèl ou. Plant-based wellness, naturopathic remedies, and traditional Haitian medicine.',
   keywords: [
     'MedikaPlant',
     'Hoïs',
@@ -50,7 +50,7 @@ export const metadata: Metadata = {
     'traditional Haitian medicine',
   ],
   openGraph: {
-    title: 'MedikaPlant — Hoïs Inivèsite',
+    title: 'Hoïs Inivèsite',
     description:
       'Plant-based wellness, naturopathic remedies, and a VIP community rooted in Haitian tradition.',
     url: 'https://hoismedikaplant.com',
