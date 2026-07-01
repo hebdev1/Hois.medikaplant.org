@@ -1,11 +1,31 @@
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import { ArrowLeft, Library } from 'lucide-react';
 import ResourceForm from '../resource-form';
+import { createClient } from '@/lib/supabase/server';
+import { hasCapability, type AdminRole } from '../../admin-nav-config';
 
 export const metadata = { title: 'Admin · Nouvo resous' };
 export const dynamic = 'force-dynamic';
 
-export default function NewResourcePage() {
+export default async function NewResourcePage() {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect('/admin/login');
+
+  const { data: profileRaw } = await supabase
+    .from('profiles')
+    .select('admin_role')
+    .eq('id', user.id)
+    .maybeSingle();
+  const adminRole = (profileRaw as { admin_role: AdminRole | null } | null)
+    ?.admin_role;
+  if (!hasCapability(adminRole, 'manage_resources')) {
+    redirect('/admin');
+  }
+
   return (
     <div className="p-5 md:p-8 lg:p-10 max-w-[860px] mx-auto">
       <Link

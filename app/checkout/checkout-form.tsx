@@ -169,7 +169,11 @@ export default function CheckoutForm({
               </div>
             </div>
             <Link
-              href={`/auth/login?redirect=/checkout?plan=${plan}`}
+              // Encode the redirect target — without this, the second `?`
+              // parses as a top-level query param separator, so the login
+              // page sees ?redirect=/checkout&plan=X (two params) instead
+              // of ?redirect=/checkout?plan=X (one composite target).
+              href={`/auth/login?redirect=${encodeURIComponent(`/checkout?plan=${plan}`)}`}
               className="inline-flex items-center gap-1 text-[11px] font-semibold text-ink-muted hover:text-ink transition"
               title="Konekte ak yon lòt kont"
             >

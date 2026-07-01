@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import {
   MessagesSquare,
   Pin,
@@ -16,6 +17,7 @@ import { cn } from '@/lib/utils';
 import CategoriesManager from './categories-manager';
 import TopicRowActions from './topic-row-actions';
 import type { Database } from '@/types/database';
+import { hasCapability, type AdminRole } from '../admin-nav-config';
 
 export const metadata = { title: 'Admin · Fowòm' };
 export const dynamic = 'force-dynamic';
@@ -55,6 +57,22 @@ export default async function AdminForumPage({
   searchParams: { cat?: string; status?: string; q?: string };
 }) {
   const supabase = createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect('/admin/login');
+
+  const { data: profileRaw } = await supabase
+    .from('profiles')
+    .select('admin_role')
+    .eq('id', user.id)
+    .maybeSingle();
+  const adminRole = (profileRaw as { admin_role: AdminRole | null } | null)
+    ?.admin_role;
+  if (!hasCapability(adminRole, 'moderate_forum')) {
+    redirect('/admin');
+  }
 
   const [topicsResult, categoriesResult] = await Promise.all([
     supabase

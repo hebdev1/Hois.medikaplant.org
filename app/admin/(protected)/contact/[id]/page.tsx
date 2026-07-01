@@ -1,4 +1,4 @@
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import Link from 'next/link';
 import {
   ChevronLeft,
@@ -14,6 +14,7 @@ import { createClient } from '@/lib/supabase/server';
 import ContactReplyForm from './reply-form';
 import ContactRowActions from './row-actions';
 import type { Database } from '@/types/database';
+import { hasCapability, type AdminRole } from '../../admin-nav-config';
 
 export const metadata = { title: 'Admin · Detay mesaj' };
 export const dynamic = 'force-dynamic';
@@ -59,6 +60,23 @@ export default async function ContactDetailPage({
   params: { id: string };
 }) {
   const supabase = createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect('/admin/login');
+
+  const { data: profileRaw } = await supabase
+    .from('profiles')
+    .select('admin_role')
+    .eq('id', user.id)
+    .maybeSingle();
+  const adminRole = (profileRaw as { admin_role: AdminRole | null } | null)
+    ?.admin_role;
+  if (!hasCapability(adminRole, 'manage_contact')) {
+    redirect('/admin');
+  }
+
   const { data, error } = await supabase
     .from('contact_messages')
     .select('*')

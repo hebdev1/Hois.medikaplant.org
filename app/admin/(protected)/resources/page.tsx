@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import {
   Plus,
   Library,
@@ -15,6 +16,7 @@ import { createClient } from '@/lib/supabase/server';
 import ResourceRowActions from './resource-row-actions';
 import type { Database } from '@/types/database';
 import { cn } from '@/lib/utils';
+import { hasCapability, type AdminRole } from '../admin-nav-config';
 
 export const metadata = { title: 'Admin · Resous' };
 export const dynamic = 'force-dynamic';
@@ -96,6 +98,22 @@ export default async function AdminResourcesPage({
   searchParams: { filter?: string; type?: string; plan?: string };
 }) {
   const supabase = createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect('/admin/login');
+
+  const { data: profileRaw } = await supabase
+    .from('profiles')
+    .select('admin_role')
+    .eq('id', user.id)
+    .maybeSingle();
+  const adminRole = (profileRaw as { admin_role: AdminRole | null } | null)
+    ?.admin_role;
+  if (!hasCapability(adminRole, 'manage_resources')) {
+    redirect('/admin');
+  }
 
   const { data: resourcesRaw } = await supabase
     .from('resources')

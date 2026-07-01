@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
 import { sendEmail } from '@/lib/email/resend';
 import type { Database } from '@/types/database';
+import { hasCapability, type AdminRole } from '../admin-nav-config';
 
 type ContactRow = Database['public']['Tables']['contact_messages']['Row'];
 type ContactUpdate = Database['public']['Tables']['contact_messages']['Update'];
@@ -16,14 +17,22 @@ async function assertAdmin() {
   if (!user) return { ok: false as const, error: 'Ou dwe konekte.' };
   const { data: profile } = await supabase
     .from('profiles')
-    .select('role, full_name, first_name')
+    .select('role, full_name, first_name, admin_role')
     .eq('id', user.id)
     .maybeSingle();
   const p = profile as
-    | { role: string; full_name: string | null; first_name: string | null }
+    | {
+        role: string;
+        full_name: string | null;
+        first_name: string | null;
+        admin_role: AdminRole | null;
+      }
     | null;
   if (p?.role !== 'admin') {
     return { ok: false as const, error: 'Aksè entèdi.' };
+  }
+  if (!hasCapability(p.admin_role, 'manage_contact')) {
+    return { ok: false as const, error: 'Ou pa gen pèmisyon pou jere mesaj kontak yo.' };
   }
   const adminName =
     p?.first_name || p?.full_name?.split(' ')[0] || 'Ekip MedikaPlant';

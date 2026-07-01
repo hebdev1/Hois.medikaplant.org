@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
 import { emailNotifyMember } from '@/lib/email/notify';
 import type { Database } from '@/types/database';
+import { hasCapability, type AdminRole } from '../admin-nav-config';
 
 type MessageRow = Database['public']['Tables']['support_messages']['Row'];
 
@@ -15,11 +16,15 @@ async function assertAdmin() {
   if (!user) return { ok: false as const, error: 'Ou dwe konekte.' };
   const { data: profile } = await supabase
     .from('profiles')
-    .select('role')
+    .select('role, admin_role')
     .eq('id', user.id)
     .maybeSingle();
-  if ((profile as { role: string } | null)?.role !== 'admin') {
+  const row = profile as { role: string; admin_role: AdminRole | null } | null;
+  if (row?.role !== 'admin') {
     return { ok: false as const, error: 'Aksè entèdi.' };
+  }
+  if (!hasCapability(row.admin_role, 'reply_support')) {
+    return { ok: false as const, error: 'Ou pa gen pèmisyon pou reponn sipò.' };
   }
   return { ok: true as const, user, supabase };
 }

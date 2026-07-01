@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import {
   ArrowLeft,
   ChevronRight,
@@ -15,6 +15,7 @@ import TopicRowActions from '../topic-row-actions';
 import ReplyRowActions from './reply-row-actions';
 import AdminReplyComposer from './admin-reply-composer';
 import type { Database } from '@/types/database';
+import { hasCapability, type AdminRole } from '../../admin-nav-config';
 
 export const metadata = { title: 'Admin · Sijè fowòm' };
 export const dynamic = 'force-dynamic';
@@ -52,17 +53,32 @@ export default async function AdminForumTopicPage({
 }) {
   const supabase = createClient();
 
-  const [topicResult, viewerAuthResult] = await Promise.all([
+  const {
+    data: { user: authedUser },
+  } = await supabase.auth.getUser();
+  if (!authedUser) redirect('/admin/login');
+
+  const { data: viewerProfileRaw } = await supabase
+    .from('profiles')
+    .select('admin_role')
+    .eq('id', authedUser.id)
+    .maybeSingle();
+  const viewerAdminRole = (viewerProfileRaw as { admin_role: AdminRole | null } | null)
+    ?.admin_role;
+  if (!hasCapability(viewerAdminRole, 'moderate_forum')) {
+    redirect('/admin');
+  }
+
+  const [topicResult] = await Promise.all([
     supabase
       .from('forum_topics')
       .select('*')
       .eq('slug', params.slug)
       .maybeSingle(),
-    supabase.auth.getUser(),
   ]);
 
   const topic = topicResult.data as Topic | null;
-  const viewerUserId = viewerAuthResult.data.user?.id ?? null;
+  const viewerUserId = authedUser.id;
   if (!topic) notFound();
 
   const [categoryResult, authorResult, repliesResult, viewerResult] = await Promise.all([

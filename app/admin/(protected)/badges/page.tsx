@@ -1,10 +1,12 @@
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import { Award, Edit3, CheckCircle2, XCircle } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import BadgeArt from '@/components/dashboard/badge-art';
 import BadgeActiveToggle from './badge-active-toggle';
 import { asBadgeIcon, METRIC_LABEL, METRIC_UNIT } from '@/lib/badges/metric-helpers';
 import type { Database } from '@/types/database';
+import { hasCapability, type AdminRole } from '../admin-nav-config';
 
 export const metadata = { title: 'Admin · Badj' };
 export const dynamic = 'force-dynamic';
@@ -13,6 +15,22 @@ type BadgeRow = Database['public']['Tables']['badges']['Row'];
 
 export default async function AdminBadgesPage() {
   const supabase = createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect('/admin/login');
+
+  const { data: profileRaw } = await supabase
+    .from('profiles')
+    .select('admin_role')
+    .eq('id', user.id)
+    .maybeSingle();
+  const adminRole = (profileRaw as { admin_role: AdminRole | null } | null)
+    ?.admin_role;
+  if (!hasCapability(adminRole, 'manage_badges')) {
+    redirect('/admin');
+  }
 
   // Pull all badges (incl. inactive) + per-badge unlock counts.
   const [badgesResult, countsResult] = await Promise.all([

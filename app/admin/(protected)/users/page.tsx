@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import {
   Users,
   Search,
@@ -11,7 +12,7 @@ import {
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { cn } from '@/lib/utils';
-import { ADMIN_ROLE_LABEL, type AdminRole } from '../admin-nav-config';
+import { ADMIN_ROLE_LABEL, hasCapability, type AdminRole } from '../admin-nav-config';
 
 export const metadata = { title: 'Admin · Manm' };
 export const dynamic = 'force-dynamic';
@@ -65,17 +66,19 @@ export default async function AdminUsersListPage({
   const {
     data: { user: viewer },
   } = await supabase.auth.getUser();
-  let viewerIsSuperAdmin = false;
-  if (viewer) {
-    const { data: viewerProfile } = await supabase
-      .from('profiles')
-      .select('admin_role')
-      .eq('id', viewer.id)
-      .maybeSingle();
-    viewerIsSuperAdmin =
-      (viewerProfile as { admin_role: string | null } | null)?.admin_role ===
-      'super_admin';
+  if (!viewer) redirect('/admin/login');
+
+  const { data: viewerProfile } = await supabase
+    .from('profiles')
+    .select('admin_role')
+    .eq('id', viewer.id)
+    .maybeSingle();
+  const viewerAdminRole = (viewerProfile as { admin_role: AdminRole | null } | null)
+    ?.admin_role;
+  if (!hasCapability(viewerAdminRole, 'manage_users')) {
+    redirect('/admin');
   }
+  const viewerIsSuperAdmin = viewerAdminRole === 'super_admin';
 
   const [profilesResult, medicalResult, healthResult] = await Promise.all([
     supabase

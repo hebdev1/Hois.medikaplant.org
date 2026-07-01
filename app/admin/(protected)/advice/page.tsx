@@ -1,8 +1,10 @@
+import { redirect } from 'next/navigation';
 import { Sparkles, Calendar, Crown, Headphones, Clock } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import AdviceComposer from './advice-composer';
 import AdviceRowActions from './advice-row-actions';
 import type { Database } from '@/types/database';
+import { hasCapability, type AdminRole } from '../admin-nav-config';
 
 export const metadata = { title: 'Admin · Konsèy jou a' };
 export const dynamic = 'force-dynamic';
@@ -38,6 +40,22 @@ function formatDuration(seconds: number | null) {
 
 export default async function AdminAdvicePage() {
   const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect('/admin/login');
+
+  const { data: profileRaw } = await supabase
+    .from('profiles')
+    .select('admin_role')
+    .eq('id', user.id)
+    .maybeSingle();
+  const adminRole = (profileRaw as { admin_role: AdminRole | null } | null)
+    ?.admin_role;
+  if (!hasCapability(adminRole, 'manage_advice')) {
+    redirect('/admin');
+  }
+
   const { data: rows } = await supabase
     .from('daily_advice')
     .select('*')

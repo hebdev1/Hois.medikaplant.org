@@ -1,7 +1,9 @@
+import { redirect } from 'next/navigation';
 import { MessageCircle } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import SupportInbox from './support-inbox';
 import type { Database } from '@/types/database';
+import { hasCapability, type AdminRole } from '../admin-nav-config';
 
 export const metadata = { title: 'Admin · Sipò' };
 export const dynamic = 'force-dynamic';
@@ -21,28 +23,31 @@ export default async function AdminSupportPage() {
   const {
     data: { user: currentUser },
   } = await supabase.auth.getUser();
+  if (!currentUser) redirect('/admin/login');
 
   let adminPersona = 'Sipò MedikaPlant';
-  if (currentUser) {
-    const { data: meRaw } = await supabase
-      .from('profiles')
-      .select('full_name, first_name, last_name, email, support_persona_name')
-      .eq('id', currentUser.id)
-      .maybeSingle();
-    const me = meRaw as {
-      full_name: string | null;
-      first_name: string | null;
-      last_name: string | null;
-      email: string;
-      support_persona_name: string | null;
-    } | null;
-    if (me) {
-      adminPersona =
-        me.support_persona_name?.trim() ||
-        me.full_name?.trim() ||
-        [me.first_name, me.last_name].filter(Boolean).join(' ').trim() ||
-        me.email.split('@')[0];
-    }
+  const { data: meRaw } = await supabase
+    .from('profiles')
+    .select('full_name, first_name, last_name, email, support_persona_name, admin_role')
+    .eq('id', currentUser.id)
+    .maybeSingle();
+  const me = meRaw as {
+    full_name: string | null;
+    first_name: string | null;
+    last_name: string | null;
+    email: string;
+    support_persona_name: string | null;
+    admin_role: AdminRole | null;
+  } | null;
+  if (!hasCapability(me?.admin_role, 'reply_support')) {
+    redirect('/admin');
+  }
+  if (me) {
+    adminPersona =
+      me.support_persona_name?.trim() ||
+      me.full_name?.trim() ||
+      [me.first_name, me.last_name].filter(Boolean).join(' ').trim() ||
+      me.email.split('@')[0];
   }
 
   // Fetch all threads (admins can see all via RLS)

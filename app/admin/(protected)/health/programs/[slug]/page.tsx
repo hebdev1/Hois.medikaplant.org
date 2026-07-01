@@ -1,10 +1,11 @@
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import Link from 'next/link';
 import { ChevronLeft, CalendarRange } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { describeCondition } from '@/lib/conditions/catalog';
 import ScheduleEditor from './schedule-editor';
 import type { Database } from '@/types/database';
+import { hasCapability, type AdminRole } from '../../../admin-nav-config';
 
 export const dynamic = 'force-dynamic';
 
@@ -38,6 +39,22 @@ export default async function AdminProgramSchedulerPage({
   params: { slug: string };
 }) {
   const supabase = createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect('/admin/login');
+
+  const { data: profileRaw } = await supabase
+    .from('profiles')
+    .select('admin_role')
+    .eq('id', user.id)
+    .maybeSingle();
+  const adminRole = (profileRaw as { admin_role: AdminRole | null } | null)
+    ?.admin_role;
+  if (!hasCapability(adminRole, 'view_health')) {
+    redirect('/admin');
+  }
 
   const { data: programData } = await supabase
     .from('programs')

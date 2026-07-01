@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import {
   ArrowLeft,
   Mail,
@@ -26,6 +26,7 @@ import DangerZone from './danger-zone';
 import DirectNotificationForm from './direct-notification-form';
 import HubspotCard from './hubspot-card';
 import type { Database } from '@/types/database';
+import { hasCapability, type AdminRole } from '../../admin-nav-config';
 
 export const metadata = { title: 'Admin · Modifye manm' };
 export const dynamic = 'force-dynamic';
@@ -119,17 +120,18 @@ export default async function AdminUserDetailPage({
   const {
     data: { user: currentUser },
   } = await supabase.auth.getUser();
+  if (!currentUser) redirect('/admin/login');
 
-  let viewerIsSuperAdmin = false;
-  if (currentUser) {
-    const { data: viewerRaw } = await supabase
-      .from('profiles')
-      .select('admin_role')
-      .eq('id', currentUser.id)
-      .maybeSingle();
-    const viewer = viewerRaw as { admin_role: string | null } | null;
-    viewerIsSuperAdmin = viewer?.admin_role === 'super_admin';
+  const { data: viewerRaw } = await supabase
+    .from('profiles')
+    .select('admin_role')
+    .eq('id', currentUser.id)
+    .maybeSingle();
+  const viewer = viewerRaw as { admin_role: AdminRole | null } | null;
+  if (!hasCapability(viewer?.admin_role, 'manage_users')) {
+    redirect('/admin');
   }
+  const viewerIsSuperAdmin = viewer?.admin_role === 'super_admin';
 
   // 2) Fetch profile first — must exist
   const { data: profileRaw, error: profileError } = await supabase

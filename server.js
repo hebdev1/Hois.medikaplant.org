@@ -41,6 +41,13 @@ const OPTIONAL_ENV = [
   'EMAIL_FROM',
   'SUPABASE_AUTH_HOOK_SECRET',
   'SUPABASE_SERVICE_ROLE_KEY',
+  // Bearer token for /api/cron/* + /api/webhooks/badge-unlocked. Cron
+  // and the badge trigger both send this header, and the endpoints 401
+  // silently if it's missing. Kept optional at boot so the app still
+  // starts when the operator is mid-setup, but a missing value means
+  // the entire notification/scheduling stack is dark until it lands.
+  'CRON_SECRET',
+  'CONTACT_REPLY_TO',
   'HUBSPOT_PRIVATE_APP_TOKEN',
 ];
 const missing = REQUIRED_ENV.filter((k) => !process.env[k]);

@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import type { Database } from '@/types/database';
+import { hasCapability, type AdminRole } from '../admin-nav-config';
 
 type GuideInsert = Database['public']['Tables']['guides']['Insert'];
 type GuideUpdate = Database['public']['Tables']['guides']['Update'];
@@ -33,11 +34,14 @@ async function assertAdmin() {
   if (!user) return { ok: false as const, error: 'Ou dwe konekte.' };
   const { data: profile } = await supabase
     .from('profiles')
-    .select('role')
+    .select('role, admin_role')
     .eq('id', user.id)
     .maybeSingle();
-  const role = (profile as { role: string } | null)?.role;
-  if (role !== 'admin') return { ok: false as const, error: 'Aksè entèdi.' };
+  const row = profile as { role: string; admin_role: AdminRole | null } | null;
+  if (row?.role !== 'admin') return { ok: false as const, error: 'Aksè entèdi.' };
+  if (!hasCapability(row.admin_role, 'manage_guides')) {
+    return { ok: false as const, error: 'Ou pa gen pèmisyon pou jere gid yo.' };
+  }
   return { ok: true as const, user, supabase };
 }
 

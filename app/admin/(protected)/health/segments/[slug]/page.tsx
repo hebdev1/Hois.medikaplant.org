@@ -1,9 +1,10 @@
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { ChevronLeft, Layers, ExternalLink, Activity } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { describeCondition } from '@/lib/conditions/catalog';
 import SegmentBroadcastForm from './broadcast-form';
+import { hasCapability, type AdminRole } from '../../../admin-nav-config';
 
 export const dynamic = 'force-dynamic';
 
@@ -36,6 +37,22 @@ export default async function SegmentDetailPage({
   const slug = decodeURIComponent(params.slug);
   const info = describeCondition(slug);
   const supabase = createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect('/admin/login');
+
+  const { data: profileRaw } = await supabase
+    .from('profiles')
+    .select('admin_role')
+    .eq('id', user.id)
+    .maybeSingle();
+  const adminRole = (profileRaw as { admin_role: AdminRole | null } | null)
+    ?.admin_role;
+  if (!hasCapability(adminRole, 'view_health')) {
+    redirect('/admin');
+  }
 
   // Find every user whose conditions array contains this slug. The
   // `cs.{slug}` filter uses Postgres' array contains operator, which

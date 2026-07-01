@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import {
   CreditCard,
   Search,
@@ -13,6 +14,7 @@ import { createClient } from '@/lib/supabase/server';
 import { cn } from '@/lib/utils';
 import SubscriptionActions from './subscription-actions';
 import type { Database } from '@/types/database';
+import { hasCapability, type AdminRole } from '../admin-nav-config';
 
 export const metadata = { title: 'Admin · Abònman' };
 export const dynamic = 'force-dynamic';
@@ -73,6 +75,22 @@ export default async function AdminSubscriptionsPage({
   searchParams: { q?: string; plan?: string; status?: string };
 }) {
   const supabase = createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect('/admin/login');
+
+  const { data: profileRaw } = await supabase
+    .from('profiles')
+    .select('admin_role')
+    .eq('id', user.id)
+    .maybeSingle();
+  const adminRole = (profileRaw as { admin_role: AdminRole | null } | null)
+    ?.admin_role;
+  if (!hasCapability(adminRole, 'manage_subscriptions')) {
+    redirect('/admin');
+  }
 
   const [subsResult, profilesResult] = await Promise.all([
     supabase

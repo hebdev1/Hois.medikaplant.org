@@ -11,6 +11,7 @@ import { createClient } from '@/lib/supabase/server';
 import {
   ADMIN_ROLE_LABEL,
   ADMIN_ROLE_DESCRIPTION,
+  hasCapability,
   type AdminRole,
 } from '../admin-nav-config';
 import AdminSettingsForm from './admin-settings-form';
@@ -40,6 +41,9 @@ export default async function AdminSettingsPage() {
 
   const profile = profileResult.data as ProfileRow | null;
   if (!profile) redirect('/admin/login');
+  if (!hasCapability(profile.admin_role as AdminRole | null, 'manage_self')) {
+    redirect('/admin');
+  }
 
   // Self-heal a preferences row if it's missing. Admins inherit the same
   // user_preferences table as regular members — the columns we surface in

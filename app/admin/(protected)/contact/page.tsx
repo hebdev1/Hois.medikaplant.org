@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import {
   Inbox,
   Mail,
@@ -9,6 +10,7 @@ import {
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import type { Database } from '@/types/database';
+import { hasCapability, type AdminRole } from '../admin-nav-config';
 
 export const metadata = { title: 'Admin · Mesaj kontak' };
 export const dynamic = 'force-dynamic';
@@ -63,6 +65,22 @@ export default async function AdminContactInbox({
       : 'new';
 
   const supabase = createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect('/admin/login');
+
+  const { data: profileRaw } = await supabase
+    .from('profiles')
+    .select('admin_role')
+    .eq('id', user.id)
+    .maybeSingle();
+  const adminRole = (profileRaw as { admin_role: AdminRole | null } | null)
+    ?.admin_role;
+  if (!hasCapability(adminRole, 'manage_contact')) {
+    redirect('/admin');
+  }
 
   // One query for the filtered list, three count queries for the tab pills
   // so the UI always shows the correct totals regardless of the active tab.

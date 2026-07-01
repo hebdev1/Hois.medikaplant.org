@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import {
   ArrowLeft,
   Mail,
@@ -26,6 +26,7 @@ import PrescriptionForm from './prescription-form';
 import TreatmentRow from './treatment-row';
 import PersonalPlanComposer from './personal-plan-composer';
 import type { Database } from '@/types/database';
+import { hasCapability, type AdminRole } from '../../admin-nav-config';
 
 export const metadata = { title: 'Admin · Pasyan' };
 export const dynamic = 'force-dynamic';
@@ -102,6 +103,22 @@ export default async function AdminPatientPage({
   params: { userId: string };
 }) {
   const supabase = createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect('/admin/login');
+
+  const { data: profileRaw } = await supabase
+    .from('profiles')
+    .select('admin_role')
+    .eq('id', user.id)
+    .maybeSingle();
+  const adminRole = (profileRaw as { admin_role: AdminRole | null } | null)
+    ?.admin_role;
+  if (!hasCapability(adminRole, 'view_health')) {
+    redirect('/admin');
+  }
 
   const [
     profileResult,

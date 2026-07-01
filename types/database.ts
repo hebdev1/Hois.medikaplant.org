@@ -1527,6 +1527,375 @@ export type Database = {
         }
         Relationships: []
       }
+      // ─── Manually-added type stubs for tables landed after the last
+      // regen (migrations 059-071). Replace with generator output on next
+      // `supabase gen types typescript --linked`. ─────────────────────────
+      app_config: {
+        Row: { key: string; value: string; updated_at: string }
+        Insert: { key: string; value: string; updated_at?: string }
+        Update: { key?: string; value?: string; updated_at?: string }
+        Relationships: []
+      }
+      referrals: {
+        Row: {
+          id: string
+          code: string
+          referrer_user_id: string
+          referee_email: string
+          referee_user_id: string | null
+          signed_up_at: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          code: string
+          referrer_user_id: string
+          referee_email: string
+          referee_user_id?: string | null
+          signed_up_at?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          code?: string
+          referrer_user_id?: string
+          referee_email?: string
+          referee_user_id?: string | null
+          signed_up_at?: string | null
+          created_at?: string
+        }
+        Relationships: []
+      }
+      subscription_credits: {
+        Row: {
+          id: string
+          user_id: string
+          amount_cents: number
+          reason: string | null
+          consumed_at: string | null
+          consumed_by: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          amount_cents: number
+          reason?: string | null
+          consumed_at?: string | null
+          consumed_by?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          amount_cents?: number
+          reason?: string | null
+          consumed_at?: string | null
+          consumed_by?: string | null
+          created_at?: string
+        }
+        Relationships: []
+      }
+      course_categories: {
+        Row: {
+          id: string
+          slug: string
+          title: string
+          body: string
+          icon: string
+          tone: string
+          display_order: number
+          active: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          slug: string
+          title: string
+          body: string
+          icon?: string
+          tone?: string
+          display_order?: number
+          active?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          slug?: string
+          title?: string
+          body?: string
+          icon?: string
+          tone?: string
+          display_order?: number
+          active?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      courses: {
+        Row: {
+          id: string
+          slug: string
+          title: string
+          description: string
+          body_html: string | null
+          cover_image_url: string | null
+          instructor_name: string
+          instructor_role: string | null
+          instructor_avatar_url: string | null
+          duration_text: string | null
+          level: string
+          format: string
+          zoom_url: string | null
+          zoom_schedule: { text?: string } | null
+          student_count_text: string | null
+          rating: number
+          price_cents: number | null
+          seat_capacity: number | null
+          plan_required: 'basic' | 'premium' | 'vip'
+          category_id: string | null
+          language: string
+          featured: boolean
+          active: boolean
+          display_order: number
+          tags: string[]
+          faq: unknown | null
+          created_at: string
+          updated_at: string
+          created_by: string | null
+        }
+        Insert: {
+          id?: string
+          slug: string
+          title: string
+          description: string
+          body_html?: string | null
+          cover_image_url?: string | null
+          instructor_name?: string
+          instructor_role?: string | null
+          instructor_avatar_url?: string | null
+          duration_text?: string | null
+          level?: string
+          format?: string
+          zoom_url?: string | null
+          zoom_schedule?: { text?: string } | null
+          student_count_text?: string | null
+          rating?: number
+          price_cents?: number | null
+          seat_capacity?: number | null
+          plan_required?: 'basic' | 'premium' | 'vip'
+          category_id?: string | null
+          language?: string
+          featured?: boolean
+          active?: boolean
+          display_order?: number
+          tags?: string[]
+          faq?: unknown | null
+          created_at?: string
+          updated_at?: string
+          created_by?: string | null
+        }
+        Update: {
+          id?: string
+          slug?: string
+          title?: string
+          description?: string
+          body_html?: string | null
+          cover_image_url?: string | null
+          instructor_name?: string
+          instructor_role?: string | null
+          instructor_avatar_url?: string | null
+          duration_text?: string | null
+          level?: string
+          format?: string
+          zoom_url?: string | null
+          zoom_schedule?: { text?: string } | null
+          student_count_text?: string | null
+          rating?: number
+          price_cents?: number | null
+          seat_capacity?: number | null
+          plan_required?: 'basic' | 'premium' | 'vip'
+          category_id?: string | null
+          language?: string
+          featured?: boolean
+          active?: boolean
+          display_order?: number
+          tags?: string[]
+          faq?: unknown | null
+          created_at?: string
+          updated_at?: string
+          created_by?: string | null
+        }
+        Relationships: []
+      }
+      course_modules: {
+        Row: {
+          id: string
+          course_id: string
+          display_order: number
+          title: string
+          description: string | null
+          duration_text: string | null
+          video_url: string | null
+          resource_links: Array<{ label: string; url: string }> | null
+          preview: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          course_id: string
+          display_order?: number
+          title: string
+          description?: string | null
+          duration_text?: string | null
+          video_url?: string | null
+          resource_links?: Array<{ label: string; url: string }> | null
+          preview?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          course_id?: string
+          display_order?: number
+          title?: string
+          description?: string | null
+          duration_text?: string | null
+          video_url?: string | null
+          resource_links?: Array<{ label: string; url: string }> | null
+          preview?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      course_enrollments: {
+        Row: {
+          id: string
+          course_id: string
+          user_id: string
+          enrolled_at: string
+          source: 'click' | 'purchase' | 'subscription' | 'admin_grant'
+        }
+        Insert: {
+          id?: string
+          course_id: string
+          user_id: string
+          enrolled_at?: string
+          source?: 'click' | 'purchase' | 'subscription' | 'admin_grant'
+        }
+        Update: {
+          id?: string
+          course_id?: string
+          user_id?: string
+          enrolled_at?: string
+          source?: 'click' | 'purchase' | 'subscription' | 'admin_grant'
+        }
+        Relationships: []
+      }
+      course_purchases: {
+        Row: {
+          id: string
+          course_id: string
+          user_id: string
+          amount_cents: number
+          currency: string
+          payment_reference: string
+          status: 'paid' | 'refunded' | 'failed' | 'pending'
+          purchased_at: string
+          created_by: string | null
+        }
+        Insert: {
+          id?: string
+          course_id: string
+          user_id: string
+          amount_cents: number
+          currency?: string
+          payment_reference: string
+          status?: 'paid' | 'refunded' | 'failed' | 'pending'
+          purchased_at?: string
+          created_by?: string | null
+        }
+        Update: {
+          id?: string
+          course_id?: string
+          user_id?: string
+          amount_cents?: number
+          currency?: string
+          payment_reference?: string
+          status?: 'paid' | 'refunded' | 'failed' | 'pending'
+          purchased_at?: string
+          created_by?: string | null
+        }
+        Relationships: []
+      }
+      klas_page_config: {
+        Row: {
+          id: number
+          hero_eyebrow: string | null
+          hero_title: string | null
+          hero_subtitle: string | null
+          hero_cta_label: string | null
+          hero_cta_href: string | null
+          hero_image_url: string | null
+          stat_courses_label: string | null
+          stat_categories_label: string | null
+          stat_rating_label: string | null
+          stat_rating_value: number | null
+          benefits: string[]
+          faqs: Array<{ q: string; a: string }>
+          formats: Array<{ title: string; body: string; icon: string }>
+          cta_title: string | null
+          cta_subtitle: string | null
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          id?: number
+          hero_eyebrow?: string | null
+          hero_title?: string | null
+          hero_subtitle?: string | null
+          hero_cta_label?: string | null
+          hero_cta_href?: string | null
+          hero_image_url?: string | null
+          stat_courses_label?: string | null
+          stat_categories_label?: string | null
+          stat_rating_label?: string | null
+          stat_rating_value?: number | null
+          benefits?: string[]
+          faqs?: Array<{ q: string; a: string }>
+          formats?: Array<{ title: string; body: string; icon: string }>
+          cta_title?: string | null
+          cta_subtitle?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          id?: number
+          hero_eyebrow?: string | null
+          hero_title?: string | null
+          hero_subtitle?: string | null
+          hero_cta_label?: string | null
+          hero_cta_href?: string | null
+          hero_image_url?: string | null
+          stat_courses_label?: string | null
+          stat_categories_label?: string | null
+          stat_rating_label?: string | null
+          stat_rating_value?: number | null
+          benefits?: string[]
+          faqs?: Array<{ q: string; a: string }>
+          formats?: Array<{ title: string; body: string; icon: string }>
+          cta_title?: string | null
+          cta_subtitle?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: { [_ in never]: never }
     Functions: {

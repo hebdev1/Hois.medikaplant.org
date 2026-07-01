@@ -1,9 +1,10 @@
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { ArrowLeft, ExternalLink, CheckCircle2 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import ResourceForm from '../resource-form';
 import type { Database } from '@/types/database';
+import { hasCapability, type AdminRole } from '../../admin-nav-config';
 
 export const metadata = { title: 'Admin · Modifye resous' };
 export const dynamic = 'force-dynamic';
@@ -18,6 +19,22 @@ export default async function EditResourcePage({
   searchParams: { created?: string };
 }) {
   const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect('/admin/login');
+
+  const { data: profileRaw } = await supabase
+    .from('profiles')
+    .select('admin_role')
+    .eq('id', user.id)
+    .maybeSingle();
+  const adminRole = (profileRaw as { admin_role: AdminRole | null } | null)
+    ?.admin_role;
+  if (!hasCapability(adminRole, 'manage_resources')) {
+    redirect('/admin');
+  }
+
   const { data, error } = await supabase
     .from('resources')
     .select('*')

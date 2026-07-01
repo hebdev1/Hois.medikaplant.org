@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import {
   Bell,
   Megaphone,
@@ -15,6 +16,7 @@ import { cn } from '@/lib/utils';
 import BroadcastComposer from './broadcast-composer';
 import DeleteNotificationButton from './delete-notification-button';
 import type { Database } from '@/types/database';
+import { hasCapability, type AdminRole } from '../admin-nav-config';
 
 export const metadata = { title: 'Admin · Notifikasyon' };
 export const dynamic = 'force-dynamic';
@@ -65,6 +67,22 @@ export default async function AdminNotificationsPage({
   searchParams: { target?: string };
 }) {
   const supabase = createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect('/admin/login');
+
+  const { data: profileRaw } = await supabase
+    .from('profiles')
+    .select('admin_role')
+    .eq('id', user.id)
+    .maybeSingle();
+  const adminRole = (profileRaw as { admin_role: AdminRole | null } | null)
+    ?.admin_role;
+  if (!hasCapability(adminRole, 'broadcast_notifications')) {
+    redirect('/admin');
+  }
 
   const { data: rawNotifs } = await supabase
     .from('notifications')

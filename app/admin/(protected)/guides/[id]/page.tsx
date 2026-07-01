@@ -1,10 +1,11 @@
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { ArrowLeft, Edit3, ExternalLink, Eye, CheckCircle2 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import GuideForm from '../guide-form';
 import { updateGuide } from '../actions';
 import type { Database } from '@/types/database';
+import { hasCapability, type AdminRole } from '../../admin-nav-config';
 
 export const metadata = { title: 'Admin · Modifye gid' };
 export const dynamic = 'force-dynamic';
@@ -20,6 +21,22 @@ export default async function EditGuidePage({
   searchParams: { created?: string };
 }) {
   const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect('/admin/login');
+
+  const { data: profileRaw } = await supabase
+    .from('profiles')
+    .select('admin_role')
+    .eq('id', user.id)
+    .maybeSingle();
+  const adminRole = (profileRaw as { admin_role: AdminRole | null } | null)
+    ?.admin_role;
+  if (!hasCapability(adminRole, 'manage_guides')) {
+    redirect('/admin');
+  }
+
   const [guideResult, catsResult] = await Promise.all([
     supabase.from('guides').select('*').eq('id', params.id).maybeSingle(),
     supabase

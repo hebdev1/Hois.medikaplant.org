@@ -17,7 +17,19 @@ Variables**. Tout sa yo dwe egziste **AVAN** ou klike Build:
 | `RESEND_API_KEY` | `re_...` |
 | `EMAIL_FROM` | `MedikaPlant <onboarding@resend.dev>` |
 | `SUPABASE_AUTH_HOOK_SECRET` | `v1,whsec_...` |
+| `CRON_SECRET` | Bearer token pataje ak `app_config.cron_secret` nan Supabase. Sa ki pwoteje `/api/cron/daily-advice`, `/api/cron/weekly-summary`, ak `/api/webhooks/badge-unlocked`. Jenere ak 2 GUID (`[guid]::NewGuid()`) nan PowerShell oswa `openssl rand -hex 32`. |
+| `CONTACT_REPLY_TO` | `sipò@hoismedikaplant.com` (opsyonèl — fallback sou `EMAIL_FROM`) |
 | `HUBSPOT_PRIVATE_APP_TOKEN` | `pat-na1-...` (opsyonèl) |
+
+> **CRON_SECRET setup**: Apre w mete env var la nan Hostinger, ale nan
+> **Supabase → SQL Editor** epi kouri:
+> ```sql
+> insert into public.app_config(key, value) values ('cron_secret', '<MENM_VALÈ_AK_HOSTINGER>')
+> on conflict (key) do update set value = excluded.value;
+> insert into public.app_config(key, value) values ('site_url', 'https://hoismedikaplant.com')
+> on conflict (key) do update set value = excluded.value;
+> ```
+> Toude valè yo dwe egal. Si absent, tout cron ak webhook yo tounen 401 an silans.
 
 > **⚠️ Sa ki pi enpòtan**: `NEXT_PUBLIC_*` valè yo **enkòpore nan
 > bundle browser la pandan build la**. Si yo manke nan moman build,

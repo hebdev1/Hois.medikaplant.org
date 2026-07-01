@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import {
   Plus,
   BookOpen,
@@ -13,6 +14,7 @@ import {
 import { createClient } from '@/lib/supabase/server';
 import GuideRowActions from './guide-row-actions';
 import type { Database } from '@/types/database';
+import { hasCapability, type AdminRole } from '../admin-nav-config';
 
 export const metadata = { title: 'Admin · Gid' };
 export const dynamic = 'force-dynamic';
@@ -44,7 +46,22 @@ export default async function AdminGuidesPage({
 }) {
   const supabase = createClient();
 
-  // No need to re-check admin here — /admin layout already guards.
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect('/admin/login');
+
+  const { data: profileRaw } = await supabase
+    .from('profiles')
+    .select('admin_role')
+    .eq('id', user.id)
+    .maybeSingle();
+  const adminRole = (profileRaw as { admin_role: AdminRole | null } | null)
+    ?.admin_role;
+  if (!hasCapability(adminRole, 'manage_guides')) {
+    redirect('/admin');
+  }
+
   const [guidesResult, categoriesResult, statsResult] = await Promise.all([
     supabase
       .from('guides')

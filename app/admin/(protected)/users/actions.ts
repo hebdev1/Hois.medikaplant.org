@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/server';
 import { emailNotifyMember } from '@/lib/email/notify';
 import { syncMemberToHubspot } from '@/lib/hubspot/sync';
 import type { Database } from '@/types/database';
+import { hasCapability } from '../admin-nav-config';
 
 type ProfileUpdate = Database['public']['Tables']['profiles']['Update'];
 type ProfileRow = Database['public']['Tables']['profiles']['Row'];
@@ -33,6 +34,9 @@ async function assertAdmin() {
   } | null;
   if (p?.role !== 'admin') {
     return { ok: false as const, error: 'Aksè entèdi.' };
+  }
+  if (!hasCapability(p.admin_role, 'manage_users')) {
+    return { ok: false as const, error: 'Ou pa gen pèmisyon pou jere manm yo.' };
   }
   return {
     ok: true as const,

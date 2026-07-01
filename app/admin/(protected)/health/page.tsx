@@ -1,8 +1,11 @@
+import { redirect } from 'next/navigation';
 import { Activity } from 'lucide-react';
 import CareTabBar, { type CareTab } from './tab-bar';
 import PatientsView from './patients-view';
 import SegmentsView from './segments-view';
 import ProgramsView from './programs-view';
+import { createClient } from '@/lib/supabase/server';
+import { hasCapability, type AdminRole } from '../admin-nav-config';
 
 export const metadata = { title: 'Admin · Swivi Sante' };
 export const dynamic = 'force-dynamic';
@@ -37,6 +40,23 @@ export default async function AdminCarePage({
 }: {
   searchParams: { tab?: string; q?: string; condition?: string };
 }) {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect('/admin/login');
+
+  const { data: profileRaw } = await supabase
+    .from('profiles')
+    .select('admin_role')
+    .eq('id', user.id)
+    .maybeSingle();
+  const adminRole = (profileRaw as { admin_role: AdminRole | null } | null)
+    ?.admin_role;
+  if (!hasCapability(adminRole, 'view_health')) {
+    redirect('/admin');
+  }
+
   const active = normalizeTab(searchParams.tab);
   const meta = TAB_TITLE[active];
 
