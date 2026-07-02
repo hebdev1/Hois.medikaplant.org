@@ -11,6 +11,21 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import { AlertTriangle, RefreshCw, ArrowLeft, Home } from 'lucide-react';
 
+// Chunk-load errors show up under several names depending on the
+// bundler + browser version. Match liberally so we auto-reload for all
+// of them and never surface the confusing "Application error" screen
+// for what's really just a stale-cache problem.
+function isChunkLoadError(err: Error): boolean {
+  const name = err?.name ?? '';
+  const msg = err?.message ?? '';
+  return (
+    name === 'ChunkLoadError' ||
+    /loading chunk \d+ failed/i.test(msg) ||
+    /failed to fetch dynamically imported module/i.test(msg) ||
+    /importing a module script failed/i.test(msg)
+  );
+}
+
 export default function DashboardError({
   error,
   reset,
@@ -24,6 +39,16 @@ export default function DashboardError({
     // Surface to whatever frontend telemetry we add later
     // eslint-disable-next-line no-console
     console.error('[dashboard error]', error);
+
+    // Auto-recover from chunk-load errors. These fire when a fresh deploy
+    // invalidates the JS chunks the browser cached — clicking any Link
+    // triggers a dynamic import that 404s, React catches it, we land
+    // here. `reset()` won't help because the module is still gone; a
+    // hard reload fetches the new HTML + fresh chunk manifest and the
+    // navigation continues transparently.
+    if (isChunkLoadError(error)) {
+      window.location.reload();
+    }
   }, [error]);
 
   return (
