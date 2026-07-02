@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import Sidebar from '@/components/dashboard/sidebar';
 import UserAppearance from '@/components/dashboard/user-appearance';
+import SuggestionBox from '@/components/dashboard/suggestion-box';
 import type { Database } from '@/types/database';
 
 type PrefsRow = Database['public']['Tables']['user_preferences']['Row'];
@@ -126,18 +127,14 @@ export default async function DashboardLayout({
 
   return (
     <UserAppearance prefs={effectivePrefs}>
-      {/* translate="no" + notranslate: Google Translate rewrites text
-          nodes with <font> wrappers, which breaks React reconciliation
-          on any component with realtime state (notification bell,
-          sidebar drawer, form inputs) and surfaces as
-          "Failed to execute 'insertBefore' on 'Node'" random crashes.
-          The floating language switcher (TranslateSwitcher) still
-          works for anon marketing pages; inside the dashboard we
-          disable page-level translation to protect the UI. */}
-      <div
-        translate="no"
-        className="notranslate min-h-screen bg-cream-100 dark:bg-ink flex"
-      >
+      {/* Dashboard IS translatable — Google Translate now walks the tree.
+          Individual components that carry realtime state (notification
+          bell, drawer state, form inputs) mark themselves translate="no"
+          internally so their subtree is safe from the <font>-wrapper
+          reconciliation crashes. Anything that goes wrong anyway falls
+          through to app/dashboard/error.tsx which detects the DOM
+          mutation error and hard-reloads transparently. */}
+      <div className="min-h-screen bg-cream-100 dark:bg-ink flex">
         <Sidebar
           isAdmin={profile?.role === 'admin'}
           userName={shortName}
@@ -147,6 +144,7 @@ export default async function DashboardLayout({
         />
         <div className="flex-1 min-w-0">{children}</div>
       </div>
+      <SuggestionBox />
     </UserAppearance>
   );
 }

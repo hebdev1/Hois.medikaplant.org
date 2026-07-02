@@ -116,3 +116,65 @@ export async function restartTour(): Promise<void> {
   revalidatePath('/dashboard');
   revalidatePath('/dashboard/settings');
 }
+
+// ─── Suggestion box ────────────────────────────────────────────────────────
+// Members can drop feedback / improvement ideas from anywhere in the
+// dashboard via the floating <SuggestionBox> button. The action inserts a
+// row into user_suggestions (RLS: authenticated user can insert own).
+// Admins triage from /admin/suggestions.
+
+const SUGGESTION_CATEGORIES = [
+  'general',
+  'ui',
+  'feature',
+  'bug',
+  'content',
+  'performance',
+  'other',
+] as const;
+type SuggestionCategory = (typeof SUGGESTION_CATEGORIES)[number];
+
+export type SuggestionResult =
+  | { ok: true }
+  | { ok: false; error: string };
+
+export async function submitSuggestion(input: {
+  category: string;
+  message: string;
+  pageUrl?: string | null;
+  userAgent?: string | null;
+}): Promise<SuggestionResult> {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, error: 'Ou dwe konekte pou voye yon sijesyon.' };
+
+  const category = SUGGESTION_CATEGORIES.includes(
+    input.category as SuggestionCategory
+  )
+    ? (input.category as SuggestionCategory)
+    : 'general';
+
+  const message = (input.message ?? '').trim();
+  if (message.length < 5) {
+    return { ok: false, error: 'Antre omwen 5 karaktè.' };
+  }
+  if (message.length > 2000) {
+    return { ok: false, error: 'Sijesyon w twò long (maks 2000 karaktè).' };
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const sb = supabase as any;
+  const { error } = await sb.from('user_suggestions').insert({
+    user_id: user.id,
+    category,
+    message,
+    page_url: input.pageUrl ?? null,
+    user_agent: input.userAgent ? input.userAgent.slice(0, 512) : null,
+  });
+  if (error) return { ok: false, error: error.message };
+
+  revalidatePath('/admin/suggestions');
+  return { ok: true };
+}

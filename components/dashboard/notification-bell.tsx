@@ -174,7 +174,15 @@ export default function NotificationBell({
   const hasUnread = unreadCount > 0;
 
   return (
-    <div ref={dropdownRef} className="relative">
+    // translate="no" + notranslate: this subtree updates on realtime
+    // notification pushes, so if Google Translate wraps its text nodes
+    // in <font> tags, React's insertBefore on the next re-render throws.
+    // Bell + count are numeric/iconic anyway — nothing to translate.
+    <div
+      ref={dropdownRef}
+      className="notranslate relative"
+      translate="no"
+    >
       <button
         type="button"
         aria-label="Notifikasyon"
