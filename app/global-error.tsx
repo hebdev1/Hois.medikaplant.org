@@ -23,6 +23,15 @@ function isChunkLoadError(err: Error): boolean {
   );
 }
 
+function isDomMutationError(err: Error): boolean {
+  const msg = err?.message ?? '';
+  return (
+    /insertBefore.*not a child/i.test(msg) ||
+    /removeChild.*not a child/i.test(msg) ||
+    /the node before which the new node is to be inserted is not a child/i.test(msg)
+  );
+}
+
 export default function GlobalError({
   error,
   reset,
@@ -33,7 +42,7 @@ export default function GlobalError({
   React.useEffect(() => {
     // eslint-disable-next-line no-console
     console.error('[global error]', error);
-    if (isChunkLoadError(error)) {
+    if (isChunkLoadError(error) || isDomMutationError(error)) {
       window.location.reload();
     }
   }, [error]);

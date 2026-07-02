@@ -68,7 +68,14 @@ export default async function AdminProtectedLayout({
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 lg:flex">
+    // translate="no" + notranslate: Google Translate mutates text nodes
+    // in ways React can't reconcile — realtime-state components (bell,
+    // drawer, forms) crash with "Failed to execute 'insertBefore' on
+    // 'Node'". Admin panel is Kreyòl-only anyway.
+    <div
+      translate="no"
+      className="notranslate min-h-screen bg-slate-50 lg:flex"
+    >
       {/* ── Mobile-only top strip + drawer (hidden lg+) ──────────────── */}
       <AdminMobileNav
         adminName={adminName}

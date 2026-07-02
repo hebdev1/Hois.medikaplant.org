@@ -126,7 +126,18 @@ export default async function DashboardLayout({
 
   return (
     <UserAppearance prefs={effectivePrefs}>
-      <div className="min-h-screen bg-cream-100 dark:bg-ink flex">
+      {/* translate="no" + notranslate: Google Translate rewrites text
+          nodes with <font> wrappers, which breaks React reconciliation
+          on any component with realtime state (notification bell,
+          sidebar drawer, form inputs) and surfaces as
+          "Failed to execute 'insertBefore' on 'Node'" random crashes.
+          The floating language switcher (TranslateSwitcher) still
+          works for anon marketing pages; inside the dashboard we
+          disable page-level translation to protect the UI. */}
+      <div
+        translate="no"
+        className="notranslate min-h-screen bg-cream-100 dark:bg-ink flex"
+      >
         <Sidebar
           isAdmin={profile?.role === 'admin'}
           userName={shortName}

@@ -26,6 +26,19 @@ function isChunkLoadError(err: Error): boolean {
   );
 }
 
+// DOM mutation errors: usually the result of Google Translate rewriting
+// text nodes with <font> wrappers, so React can no longer find the
+// reference node it's trying to update. A hard reload gives React a
+// fresh unhydrated tree that the browser extension can start over on.
+function isDomMutationError(err: Error): boolean {
+  const msg = err?.message ?? '';
+  return (
+    /insertBefore.*not a child/i.test(msg) ||
+    /removeChild.*not a child/i.test(msg) ||
+    /the node before which the new node is to be inserted is not a child/i.test(msg)
+  );
+}
+
 export default function DashboardError({
   error,
   reset,
@@ -46,7 +59,7 @@ export default function DashboardError({
     // here. `reset()` won't help because the module is still gone; a
     // hard reload fetches the new HTML + fresh chunk manifest and the
     // navigation continues transparently.
-    if (isChunkLoadError(error)) {
+    if (isChunkLoadError(error) || isDomMutationError(error)) {
       window.location.reload();
     }
   }, [error]);
