@@ -141,17 +141,20 @@ export default function SuggestionBox() {
 
   return (
     <>
-      {/* Floating trigger — bottom-left so it doesn't collide with the
-          existing TranslateSwitcher (bottom-right). translate="no" so
-          Google can't touch the label. */}
+      {/* Floating trigger — stacked ABOVE the TranslateSwitcher on the
+          bottom-right of the viewport. Language switcher sits at
+          bottom-4/right-4 (mobile) → bottom-6/right-6 (sm+); we offset
+          our own bottom by ~one button-height so we clear it cleanly.
+          Gold to match the brand accent, white icon + label for
+          contrast. translate="no" so Google can't touch the label. */}
       <button
         type="button"
         onClick={() => setOpen(true)}
         aria-label="Voye yon sijesyon"
         translate="no"
-        className="notranslate fixed bottom-4 left-4 sm:bottom-6 sm:left-6 z-[90] inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-accent hover:brightness-110 text-white shadow-lg border border-accent-dark transition"
+        className="notranslate fixed bottom-16 right-4 sm:bottom-20 sm:right-6 z-[99] inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-gold-400 hover:bg-gold-500 text-forest-900 shadow-lg border border-gold-500 transition"
       >
-        <Lightbulb className="w-4 h-4" strokeWidth={2.2} />
+        <Lightbulb className="w-4 h-4" strokeWidth={2.4} />
         <span className="text-xs font-bold uppercase tracking-wider">
           Sijesyon
         </span>
