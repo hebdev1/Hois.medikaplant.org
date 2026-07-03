@@ -21,7 +21,7 @@ export const METRIC_LABEL: Record<BadgeMetric, string> = {
   hydration_days: 'Jou idratasyon',
   movement_days: 'Jou mouvman',
   glycemia_in_range: 'rantre yon mezi',
-  program_day: 'pwogram'jou a,
+  program_day: 'pwogram jou a',
   level: 'Nivo manm',
   tasks_done: 'Tach konplete',
 };
