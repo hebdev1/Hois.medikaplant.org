@@ -45,7 +45,7 @@ import {
 //     that benefit from being one click away.
 // ───────────────────────────────────────────────────────────────────────────
 
-type NavItem = { href: string; label: string };
+type NavItem = { href: string; label: string; target?: '_blank' };
 type Resource = {
   href: string;
   title: string;
