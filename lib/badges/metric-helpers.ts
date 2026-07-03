@@ -20,8 +20,8 @@ export const METRIC_LABEL: Record<BadgeMetric, string> = {
   tisane_count: 'Tas tizan pran',
   hydration_days: 'Jou idratasyon',
   movement_days: 'Jou mouvman',
-  glycemia_in_range: 'Mezi nan zòn',
-  program_day: 'Jou nan pwogram',
+  glycemia_in_range: 'rantre yon mezi',
+  program_day: 'pwogram'jou a,
   level: 'Nivo manm',
   tasks_done: 'Tach konplete',
 };
@@ -29,13 +29,13 @@ export const METRIC_LABEL: Record<BadgeMetric, string> = {
 /** Unit displayed after the value ("7 jou", "30 fwa"). Empty for 'level'. */
 export const METRIC_UNIT: Record<BadgeMetric, string> = {
   streak_days: 'jou',
-  tisane_count: 'fwa',
-  hydration_days: 'jou',
-  movement_days: 'jou',
+  tisane_count: 'frekans',
+  hydration_days: 'idratasyon kotidyen',
+  movement_days: 'mouvman kotidyen',
   glycemia_in_range: 'mezi',
-  program_day: 'jou',
-  level: '',
-  tasks_done: 'tach',
+  program_day: 'pwogram jou a',
+  level: 'Nivo',
+  tasks_done: 'tach konplete',
 };
 
 /** A one-sentence tip + a CTA telling the user where to act on it. */
@@ -49,27 +49,27 @@ export const METRIC_TIP: Record<
     href: '/dashboard',
   },
   tisane_count: {
-    text: 'Pran tizan ki nan plan ou chak jou, epi make tach "Tizan" kòm konplete.',
+    text: 'Bwè tizan ki nan plan ou chak jou, epi make tach "Tizan" an kòm konplete.',
     linkLabel: 'Plan mwen yo',
     href: '/dashboard/programs',
   },
   hydration_days: {
-    text: 'Bwè omwen 2L dlo pa jou epi make tach "Idratasyon" an chak jou diferan.',
+    text: 'Bwè omwen 2 lit dlo chak jou, epi make tach "Idratasyon" an lè w fini.',
     linkLabel: 'Plan mwen yo',
     href: '/dashboard/programs',
   },
   movement_days: {
-    text: 'Mache, etire, oswa bouje 30 minit. Make tach "Mouvman" an chak jou.',
+    text: 'Mache, etire kò w, oswa fè omwen 30 minit aktivite fizik. Make tach "Mouvman" an chak jou.',
     linkLabel: 'Plan mwen yo',
     href: '/dashboard/programs',
   },
   glycemia_in_range: {
-    text: 'Loge mezi glikemi ou souvan. Sèl mezi ki tonbe nan zòn 70–130 mg/dL k ap konte.',
+    text: 'Mete mezi glisemi w yo regilyèman. Se sèlman rezilta ki ant 70 ak 130 mg/dL ki konte pou pwogrè w.',
     linkLabel: 'Loge yon mezi',
     href: '/dashboard/health',
   },
   program_day: {
-    text: 'Kontinye angaje w nan pwogram aktif la — chak jou ki pase ajoute nan total ou.',
+    text: 'Rete angaje nan pwogram nan chak jou. Chak jou ou patisipe konte, epi li ajoute nan total pwogrè ou.',
     linkLabel: 'Wè pwogram nan',
     href: '/dashboard/programs',
   },
@@ -79,7 +79,7 @@ export const METRIC_TIP: Record<
     href: '/dashboard/badges',
   },
   tasks_done: {
-    text: 'Konplete tach jou yo nan plan w. Yo otomatik konte.',
+    text: 'Konplete tach ou yo chak jou. Chak tach ou fini konte otomatikman nan pwogrè w.',
     linkLabel: 'Plan mwen yo',
     href: '/dashboard/programs',
   },
