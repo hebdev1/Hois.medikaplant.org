@@ -143,8 +143,8 @@ export default async function ResourcesPage({
             Telechajman <em className="text-forest-600 not-italic font-bold">w yo</em>
           </h1>
           <p className="mt-2 text-sm md:text-base text-earth-600 max-w-2xl leading-relaxed">
-            {counts.all} dosye disponib — gid PDF, videyo ak meditasyon odyo
-            eksklizif pou abone Hois Plan yo.
+            {counts.all} Resous ki disponib: Gid an PDF, videyo, ak meditasyon odyo 
+            ki disponib sèlman pou manm ki abòne ak Plan HOÏS yo.
           </p>
         </header>
 
@@ -158,17 +158,17 @@ export default async function ResourcesPage({
               <Inbox className="w-5 h-5" strokeWidth={1.8} />
             </div>
             <div className="font-display text-lg font-bold text-ink">
-              Pa gen dosye ki koresponn
+              Pa gen okenn dosye ki koresponn ak rechèch ou.
             </div>
             <p className="text-sm text-earth-600 mt-1.5">
-              Eseye yon lòt filtè oswa kèk lòt mo nan ba rechèch la.
+              Eseye chanje filtè yo oswa itilize lòt mo kle nan ba rechèch la.
             </p>
             {(filterType || query) && (
               <Link
                 href="/dashboard/resources"
                 className="inline-flex items-center gap-1.5 mt-4 text-xs font-semibold text-forest-700 hover:text-forest-800"
               >
-                Reset tout filtè
+                Retounen filtè yo nan eta orijinal yo
                 <ChevronRight className="w-3 h-3" strokeWidth={2.4} />
               </Link>
             )}
