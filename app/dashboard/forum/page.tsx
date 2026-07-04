@@ -148,8 +148,8 @@ export default async function ForumIndexPage({
                 <em className="text-forest-600 not-italic font-bold">manm yo</em>
               </h1>
               <p className="mt-2 text-sm text-earth-600 max-w-2xl leading-relaxed">
-                Yon espas san jujman pou pataje kesyon, eksperyans, ak konsèy
-                ak rès manm Hoïs yo. Tout pati respekte chak moun.
+                Yon espas ki akeyan ak san jijman kote w ka pataje kesyon, eksperyans, ak konsèy ak lòt manm HOÏS yo.
+                Nou ankouraje respè, koutwazi, ak sipò youn pou lòt nan tout entèraksyon..
               </p>
             </div>
             <Link
@@ -255,7 +255,7 @@ export default async function ForumIndexPage({
                   className="inline-flex items-center gap-1.5 mt-4 px-4 py-2 text-sm font-bold bg-forest-700 hover:bg-forest-800 text-cream-50 rounded-lg transition"
                 >
                   <Plus className="w-4 h-4" strokeWidth={2.4} />
-                  Kòmanse yon sijè
+                  Louvri yon nouvo sijè
                 </Link>
               )}
             </div>
