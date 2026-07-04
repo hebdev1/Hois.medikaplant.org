@@ -183,8 +183,8 @@ export default async function GuidesIndexPage({
             Aprann, <em className="text-forest-600 not-italic font-bold">youn pa youn</em>.
           </h1>
           <p className="mt-2 text-sm md:text-base text-earth-600 max-w-2xl">
-            Atik, gid ak konsèy nan Kreyòl pa èrboris Ayisyen yo ak doktè
-            patnè yo. Kontni nouvo chak semèn.
+           Dekouvri atik, gid pratik, ak konsèy sou sante an Kreyòl,Fransè ak anglè prepare pa doktè ayisyen ak doktè patnè nou yo.
+           Nouvo kontni ajoute chak semèn pou ede w kontinye aprann epi pran pi bon swen sante w..
           </p>
         </header>
 
@@ -286,7 +286,7 @@ function FeaturedHero({ featured, saved }: { featured: Guide; saved: boolean }) 
           <span aria-hidden>·</span>
           <span className="inline-flex items-center gap-1">
             <Clock className="w-3 h-3" strokeWidth={2.2} />
-            {featured.read_minutes} min lekti
+            {featured.read_minutes} men lekti
           </span>
           {dateLabel && (
             <>
@@ -324,7 +324,7 @@ function EmptyState({ category }: { category: string | null }) {
           : 'Poko gen atik pibliye.'}
       </p>
       <p className="text-sm text-earth-600 mt-1">
-        Ekip Hoïs ap pibliye nouvo kontni chak semèn — tcheke ankò byento.
+        Ekip HOÏS la pibliye nouvo kontni chak semèn. Tounen vizite nou byento pou dekouvri dènye atik, gid, ak resous yo...
       </p>
     </div>
   );
