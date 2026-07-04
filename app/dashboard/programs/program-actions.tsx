@@ -63,7 +63,7 @@ export default function ProgramActions({
             ) : (
               <Pause className="w-3.5 h-3.5" strokeWidth={2.2} />
             )}
-            Pose plan an
+            kanpe plan an
           </button>
         )}
         <button
@@ -71,7 +71,7 @@ export default function ProgramActions({
           onClick={() => {
             if (
               window.confirm(
-                'Èske w sèten ou vle make plan an kòm fini? Sa ap libere yon nouvo pwogram pou kòmanse.'
+                'Èske w sèten ou vle make plan sa a kòm konplè? Lè w konfime, plan an ap fèmen epi w ap kapab kòmanse yon nouvo pwogram.'
               )
             ) {
               run('finish');
@@ -85,7 +85,7 @@ export default function ProgramActions({
           ) : (
             <CheckCheck className="w-3.5 h-3.5" strokeWidth={2.2} />
           )}
-          Make kòm fini
+          Make kòm Konplè
         </button>
         {resourceUrl && (
           <a
@@ -95,7 +95,7 @@ export default function ProgramActions({
             className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-gold-50 hover:bg-gold-100 border border-gold-200 text-gold-700 rounded-lg transition"
           >
             <Download className="w-3.5 h-3.5" strokeWidth={2.2} />
-            Telechaje gid
+            Telechaje gid yo
           </a>
         )}
       </div>
