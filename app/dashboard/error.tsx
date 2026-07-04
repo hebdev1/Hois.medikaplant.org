@@ -73,11 +73,10 @@ export default function DashboardError({
           </span>
           <div>
             <h1 className="font-display text-xl font-bold text-ink">
-              Yon erè rive
+              Oops! Gen Yon erè. Tanpri eseye ankò.
             </h1>
             <p className="text-sm text-earth-600 mt-1">
-              Paj la pa ka chaje kounye a. Ekip teknik la jwenn yon mesaj
-              otomatik — eseye ankò nan kèk segond.
+               Paj la pa disponib pou kounye a. Tanpri eseye ankò nan kèk segond.
             </p>
           </div>
         </div>
