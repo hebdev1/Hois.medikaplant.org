@@ -14,7 +14,7 @@ export default function ResetPasswordPage() {
         Chwazi yon nouvo modpas
       </h1>
       <p className="mt-2 text-ink-muted text-sm">
-        Antre modpas ou vle a 2 fwa. Apre konfimasyon, n ap konekte ou
+        Antre modpas ou chwazi 2 fwa. Apre konfimasyon, n ap konekte ou
         otomatikman.
       </p>
       <div className="mt-8">
@@ -26,7 +26,7 @@ export default function ResetPasswordPage() {
           href="/auth/login"
           className="text-brand-700 font-medium hover:underline"
         >
-          Tounen sou paj konekte
+          Tounen sou paj koneksyon an
         </Link>
       </p>
     </>
