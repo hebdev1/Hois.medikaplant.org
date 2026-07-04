@@ -17,8 +17,7 @@ export default function ForgotPasswordPage() {
         Bliye modpas ou?
       </h1>
       <p className="mt-2 text-ink-muted text-sm">
-        Antre imel kont MedikaPlant ou — n ap voye yon lyen sekirize pou ou ka
-        chwazi yon nouvo modpas.
+        Antre adrès imel ki asosye ak kont Hois ou. N ap voye yon lyen sekirize pou pèmèt ou kreye yon nouvo modpas.
       </p>
       <div className="mt-8">
         <ForgotPasswordForm />
