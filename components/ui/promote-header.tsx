@@ -3,6 +3,7 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import BrandLogo from './brand-logo';
 import {
   Leaf,
   BookOpen,
@@ -255,9 +256,7 @@ export default function PromoteHeader() {
                 className="inline-flex items-center gap-2"
                 aria-label="MedikaPlant — Akèy"
               >
-                <span className="grid place-items-center w-9 h-9 rounded-xl bg-brand-gradient text-white shadow-md">
-                  <Leaf className="w-4 h-4" strokeWidth={2.4} />
-                </span>
+                <BrandLogo size={36} className="shrink-0 rounded-xl shadow-md" />
                 <span className="flex flex-col leading-tight">
                   <span className="font-bold text-base sm:text-lg text-ink tracking-tight">
                     MedikaPlant
@@ -413,9 +412,7 @@ export default function PromoteHeader() {
               onClick={() => setOpen(false)}
               className="flex items-center gap-2"
             >
-              <span className="grid place-items-center w-9 h-9 rounded-xl bg-brand-gradient text-white shadow-md">
-                <Leaf className="w-4 h-4" strokeWidth={2.4} />
-              </span>
+              <BrandLogo size={36} className="shrink-0 rounded-xl shadow-md" />
               <span className="flex flex-col leading-tight">
                 <span className="font-bold text-base text-ink">
                   MedikaPlant
