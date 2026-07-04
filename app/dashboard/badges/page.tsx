@@ -266,13 +266,11 @@ export default async function BadgesGalleryPage() {
               mezi sante, jou idratasyon, elatriye).
             </li>
             <li>
-              Pwogresyon an mete ajou{' '}
-              <strong>otomatik</strong> chak fwa w konplete yon tach oswa loge
-              yon mezi.
+             Mizajou pwogrè a fèt.{' '}
+              <strong>otomatik</strong> Chak fwa w konplete yon tach oswa anrejistre yon mezi.
             </li>
             <li>
-              Chak badj debloke fè w monte 1 nivo. 5 badj = "Èrboris
-              Pwofesyonèl".
+              Chak badj ou debloke fè w monte yon nivo siperyè. Lè w debloke 5 badj, ou rive nan nivo "Èboris Pwofesyonèl".
             </li>
           </ul>
         </section>
