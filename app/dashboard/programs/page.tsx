@@ -10,7 +10,7 @@ import EnrollButton from './enroll-button';
 import { cn } from '@/lib/utils';
 import type { Database, TaskChipKind } from '@/types/database';
 
-export const metadata = { title: 'Pwogram mwen yo · MedikaPlant' };
+export const metadata = { title: 'Pwogram mwen yo · Hois Inivèsite' };
 export const dynamic = 'force-dynamic';
 
 type ProgramRow = Database['public']['Tables']['programs']['Row'];
@@ -263,7 +263,7 @@ export default async function ProgramsPage() {
                     Eta <em className="text-forest-600 not-italic font-bold">plan an</em>
                   </h2>
                   <p className="text-xs text-earth-600 mt-1">
-                    Chak kare reprezante yon jou. Konplete epi koche aktivite yo pou kontinye avanse nan pwogram ou.
+                    Chak kazye reprezante yon jou. Konplete aktivite yo epi make yo kòm fini pou kontinye avanse nan pwogram ou.
                   </p>
                 </div>
                 <div className="flex items-stretch gap-5">
