@@ -285,8 +285,7 @@ export default async function HealthPage({
             Mezi <em className="text-forest-600 not-italic font-bold">w yo</em>
           </h1>
           <p className="mt-2 text-sm md:text-base text-earth-600 max-w-2xl">
-            Note chif yo chak jou pou yo ka vin yon istwa. Plan ou ajiste ak
-            rezilta w.
+            Anrejistre mezi ou chak jou pou konstwi istwa pwogrè w. Plan ou a ajiste selon rezilta ak evolisyon ou.
           </p>
         </header>
 
@@ -332,7 +331,7 @@ export default async function HealthPage({
                   Defini yon objektif sante
                 </div>
                 <p className="text-xs text-earth-600 mt-0.5">
-                  Sa ap ede Hoïs pèsonalize konsèy ak rekòmandasyon yo pou ou.
+                  Sa ap ede Ekip Hoïs la pèsonalize konsèy ak rekòmandasyon yo pou ou.
                 </p>
               </div>
               <span className="text-xs font-semibold text-forest-700 shrink-0">
@@ -380,7 +379,7 @@ export default async function HealthPage({
                 Ajoute <em className="text-forest-600 not-italic font-bold">yon mezi</em>
               </h2>
               <p className="text-xs text-earth-600 mt-0.5">
-                Pi vit ou note, pi byen plan an adapte.
+               Mete mezi ou yo ajou regilyèman pou plan an ka pi byen adapte ak evolisyon ou.
               </p>
             </header>
 
@@ -405,7 +404,7 @@ export default async function HealthPage({
                 Rezime <em className="text-forest-600 not-italic font-bold">peryòd la</em>
               </h2>
               <p className="text-xs text-earth-600 mt-0.5">
-                {range} dènye jou · tande tande, pa janm sote yon jou.
+                {range} Dènye aktivite: Jodi a. Kenbe rit la; evite sote yon jou.
               </p>
             </header>
 
