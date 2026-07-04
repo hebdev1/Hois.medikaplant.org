@@ -83,7 +83,7 @@ export default async function CheckoutPage({
           <p className="mt-3 text-ink-muted">
             {user
               ? 'Antre detay pèman ou pou aktive plan an imedyatman.'
-              : 'Konekte (oswa kreye yon kont) epi peye nan menm fòm sa. Plan yo disponib sèlman pou manm ki nan Ayiti.'}
+              : 'Konekte (oswa kreye yon kont) epi peye nan menm fòm sa.'}
           </p>
         </div>
 
@@ -137,7 +137,7 @@ export default async function CheckoutPage({
               {cycle === 'yearly' && (
                 <>
                   <div className="flex justify-between text-ink-muted">
-                    <dt>Pri orijinal anyèl</dt>
+                    <dt>Pri anyèl</dt>
                     <dd>${plan.priceYearlyOriginal.toFixed(2)}</dd>
                   </div>
                   <div className="flex justify-between text-amber-700">
@@ -148,7 +148,7 @@ export default async function CheckoutPage({
               )}
               {cycle === 'monthly' && (
                 <div className="flex justify-between text-ink-muted">
-                  <dt>Pèyman mansyèl</dt>
+                  <dt>Pèman mansyèl</dt>
                   <dd>${displayPrice.toFixed(2)}</dd>
                 </div>
               )}
@@ -168,8 +168,8 @@ export default async function CheckoutPage({
                 strokeWidth={2.2}
               />
               <span>
-                Plan sa yo disponib <strong>sèlman pou manm ki nan Ayiti</strong>.
-                Si ou pa nan Ayiti, kreyasyon kont peye a ap refize.
+                Plan sa yo disponib <strong>pou tout moun atravè lemond</strong>.
+                Ou ka kreye yon kont peye epi jwenn aksè ak sèvis yo kèlkeswa peyi kote w ap viv.
               </span>
             </div>
           </aside>
