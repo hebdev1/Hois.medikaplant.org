@@ -23,7 +23,7 @@ export default function LoginPage({
     <>
       <h1 className="text-3xl font-bold tracking-tight text-ink">Bon retou</h1>
       <p className="mt-2 text-ink-muted text-sm">
-        Konekte ak kont MedikaPlant ou pou kontinye vwayaj ou.
+        Konekte ak kont Hois ou pou kontinye vwayaj ou.
       </p>
       <div className="mt-8">
         <Suspense fallback={<div className="h-64 rounded-xl bg-slate-50 animate-pulse" />}>
@@ -31,9 +31,9 @@ export default function LoginPage({
         </Suspense>
       </div>
       <div className="mt-6 rounded-2xl border border-brand-100 bg-brand-50/50 px-4 py-3.5 text-sm text-center">
-        <p className="text-ink font-semibold">Pa gen kont toujou?</p>
+        <p className="text-ink font-semibold">Ou Poko gen kont?</p>
         <p className="text-ink-muted text-xs mt-0.5">
-          Pou kreye yon kont MedikaPlant, ou dwe chwazi yon plan an premye.
+          Pou ouvri yon kont HOÏS, premye etap la se chwazi plan ki pi byen adapte ak bezwen ou.
         </p>
         <Link
           href={planHref}
