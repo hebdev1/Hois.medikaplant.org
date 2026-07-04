@@ -292,7 +292,7 @@ export default async function ProgramsPage() {
                 <div className="mb-4 rounded-xl bg-amber-50 border border-amber-200 px-3 py-2.5 flex items-start gap-2 text-xs text-amber-800">
                   <PauseIcon className="w-3.5 h-3.5 mt-0.5 shrink-0" strokeWidth={2.4} />
                   <div>
-                    <strong>Plan ou sou pòz.</strong> Konte jou yo kanpe depi{' '}
+                    <strong>Plan ou sou pòz.</strong> Pwogrè a sou pòz depi {' '}
                     {formatDate(activeEnrollment?.paused_at)}. Klike sou
                     &ldquo;Repran plan an&rdquo; pou kontinye.
                   </div>
