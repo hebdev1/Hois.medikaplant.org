@@ -275,16 +275,25 @@ export default function PromoteHeader() {
                 cluster sits exactly between brand + CTAs no matter what
                 widths they have. */}
             <nav className="hidden md:flex justify-self-center items-center gap-1">
-              {NAV.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  aria-current={isActive(item.href) ? 'page' : undefined}
-                  className={desktopLink(isActive(item.href))}
-                >
-                  {item.label}
-                </Link>
-              ))}
+              {NAV.map((item) => {
+                // External links (e.g. Boutik → medikaplantshop.com)
+                // open in a new tab so the member's dashboard session
+                // stays put. Internal + hash links use the SPA path.
+                const isExternal = /^https?:\/\//i.test(item.href);
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    aria-current={isActive(item.href) ? 'page' : undefined}
+                    className={desktopLink(isActive(item.href))}
+                    {...(isExternal
+                      ? { target: '_blank', rel: 'noopener noreferrer' }
+                      : {})}
+                  >
+                    {item.label}
+                  </Link>
+                );
+              })}
 
               {/* Resources hover panel */}
               <div className="relative group">
@@ -427,22 +436,28 @@ export default function PromoteHeader() {
 
           {/* Nav list */}
           <nav className="space-y-1">
-            {NAV.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={() => setOpen(false)}
-                className={[
-                  'block rounded-md px-2.5 py-2 text-sm font-medium transition-colors',
-                  'hover:bg-cream-50',
-                  isActive(item.href)
-                    ? 'text-ink ring-1 ring-inset ring-cream-300 bg-cream-50'
-                    : 'text-ink-muted',
-                ].join(' ')}
-              >
-                {item.label}
-              </Link>
-            ))}
+            {NAV.map((item) => {
+              const isExternal = /^https?:\/\//i.test(item.href);
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setOpen(false)}
+                  className={[
+                    'block rounded-md px-2.5 py-2 text-sm font-medium transition-colors',
+                    'hover:bg-cream-50',
+                    isActive(item.href)
+                      ? 'text-ink ring-1 ring-inset ring-cream-300 bg-cream-50'
+                      : 'text-ink-muted',
+                  ].join(' ')}
+                  {...(isExternal
+                    ? { target: '_blank', rel: 'noopener noreferrer' }
+                    : {})}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
           </nav>
 
           {/* Resources block */}
