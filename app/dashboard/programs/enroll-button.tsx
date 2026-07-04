@@ -41,7 +41,7 @@ export default function EnrollButton({
   async function start() {
     if (
       !window.confirm(
-        'Èske w vle kòmanse pwogram sa? Pwogram aktif ou a (si gen) pral mete sou pòz.'
+        'Èske w vle kòmanse pwogram sa a? Si w deja gen yon pwogram aktif, li pral otomatikman mete sou pòz jiskaske w retounen sou li.'
       )
     ) {
       return;
