@@ -130,17 +130,17 @@ export default async function ReceiptPage({
                 </span>
                 <div>
                   <div className="font-display font-bold text-lg text-forest-800 leading-none">
-                    Medikaplant
+                    Hois Medikaplant
                   </div>
                   <div className="font-serif italic text-[11px] text-earth-600 mt-0.5">
-                    Hoïs Inivèsite · un pied à la fois
+                   HOÏS Inivèsite · Chak pa konte.
                   </div>
                 </div>
               </div>
               <div className="text-[11px] text-earth-600 leading-relaxed">
                 hoismedikaplant.com<br />
-                hello@medikaplant.org<br />
-                Pòtoprens, Ayiti
+                contact@hoismedikaplant.com<br />
+                1823 S. DIXIE HIGHWAY POMPANO BEACH, FL 33060
               </div>
             </div>
             <div className="text-right">
@@ -281,8 +281,8 @@ export default async function ReceiptPage({
             </p>
             <p>
               Si ou gen kesyon sou faktirasyon, ekri{' '}
-              <a href="mailto:hello@medikaplant.org" className="text-forest-700">
-                hello@medikaplant.org
+              <a href="mailto:contact@hoismedikaplant.com" className="text-forest-700">
+                contact@hoismedikaplant.com
               </a>{' '}
               ak ID#{invoiceNumber}.
             </p>
