@@ -239,7 +239,7 @@ export default async function ProgramsPage() {
                   ? `Yon plan ${totalDays} jou — ${totalDays - dayOfPlan + 1} jou rete. ${
                       activeProgram.short_tagline ??
                       activeProgram.description ??
-                      'Swiv chak etap pou pi bon rezilta.'
+                      'Konplete chak etap youn apre lòt pou jwenn pi bon rezilta.'
                     }`
                   : 'Chwazi yon pwogram pi ba a pou kòmanse vwayaj sante ou.'}
               </p>
@@ -263,7 +263,7 @@ export default async function ProgramsPage() {
                     Eta <em className="text-forest-600 not-italic font-bold">plan an</em>
                   </h2>
                   <p className="text-xs text-earth-600 mt-1">
-                    Chak kare se yon jou — koche aktivite yo pou avanse.
+                    Chak kare reprezante yon jou. Konplete epi koche aktivite yo pou kontinye avanse nan pwogram ou.
                   </p>
                 </div>
                 <div className="flex items-stretch gap-5">
@@ -367,7 +367,7 @@ export default async function ProgramsPage() {
                 </header>
                 {phases.length === 0 ? (
                   <div className="rounded-xl bg-cream-50 border border-dashed border-cream-200 p-5 text-center text-sm text-earth-600 italic">
-                    Pa gen faz konfigire pou pwogram sa ankò.
+                    Pwogram sa a poko gen okenn faz ki disponib.
                   </div>
                 ) : (
                   <ul className="space-y-3">
@@ -399,7 +399,7 @@ export default async function ProgramsPage() {
               Ou pa gen pwogram aktif kounye a.
             </div>
             <p className="text-sm text-earth-600 mt-2">
-              Chwazi yon pwogram nan katalòg la pi ba a pou kòmanse vwayaj sante ou.
+              Chwazi pwogram ki pi byen adapte ak bezwen ou nan katalòg ki anba a pou kòmanse vwayaj byennèt ou...
             </p>
           </section>
         )}
@@ -414,7 +414,7 @@ export default async function ProgramsPage() {
               <p className="text-sm text-earth-600 mt-1">
                 {activeProgram
                   ? `Lè ou fini ${activeProgram.name}, chwazi pwochen vwayaj sante ou.`
-                  : 'Kòmanse vwayaj sante ou ak yon nan pwogram sa yo.'}
+                  : 'Kòmanse vwayaj sante ou ak youn nan pwogram sa yo.'}
               </p>
             </header>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
@@ -439,7 +439,7 @@ export default async function ProgramsPage() {
           <section>
             <header className="mb-4">
               <h2 className="font-display text-lg font-bold text-ink">
-                Pwogram <em className="text-forest-600 not-italic font-bold">w fini</em>
+                Pwogram <em className="text-forest-600 not-italic font-bold">ou fini</em>
               </h2>
             </header>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
