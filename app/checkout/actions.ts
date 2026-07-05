@@ -91,14 +91,12 @@ export async function processCheckout(
     }
 
     if (mode === 'signup') {
-      // Haiti-only gate
-      const country = formData.get('country')?.toString().trim().toUpperCase();
-      if (country !== 'HT') {
-        return {
-          error:
-            'Plan sa yo disponib sèlman pou manm ki Ayiti. Chwazi Ayiti pou kontinye.',
-        };
-      }
+      // Worldwide eligibility — every country can subscribe. We still
+      // capture the selected country so the profile is complete and the
+      // team can segment by region later. Falls back to 'HT' when the
+      // form posts nothing.
+      const country =
+        formData.get('country')?.toString().trim().toUpperCase() || 'HT';
       const firstName =
         formData.get('first_name')?.toString().trim() ?? '';
       const lastName = formData.get('last_name')?.toString().trim() ?? '';
@@ -115,7 +113,7 @@ export async function processCheckout(
             first_name: firstName,
             last_name: lastName,
             full_name: fullName,
-            country: 'HT',
+            country,
             intended_plan: plan.key,
           },
           // If Supabase Auth requires email confirmation, the confirmation
@@ -144,10 +142,11 @@ export async function processCheckout(
         return { error: 'Kreyasyon kont lan pa pase. Eseye ankò.' };
       }
 
-      // Persist country on profile so future server checks have it
+      // Persist the chosen country on the profile so future server
+      // checks + region segmentation have it.
       await supabase
         .from('profiles')
-        .update({ country: 'HT' })
+        .update({ country })
         .eq('id', signUpData.user.id);
 
       // If Supabase Auth has email confirmations on, signup won't return a

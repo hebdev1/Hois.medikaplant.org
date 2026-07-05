@@ -310,7 +310,9 @@ export default function CheckoutForm({
               </div>
             </div>
 
-            {/* Country gate — only required when creating an account */}
+            {/* Country — collected at signup so the profile is complete.
+                All countries are eligible; the list mirrors the settings
+                page COUNTRIES options with a diaspora-first ordering. */}
             {mode === 'signup' && (
               <div>
                 <label className="text-xs font-semibold text-ink-muted uppercase tracking-wide">
@@ -328,11 +330,21 @@ export default function CheckoutForm({
                     className="w-full pl-10 pr-4 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-brand-500 focus:ring-2 focus:ring-brand-100 outline-none transition appearance-none bg-white"
                   >
                     <option value="HT">🇭🇹 Ayiti (Haiti)</option>
-                    <option value="OTHER">Lòt peyi (pa aksepte)</option>
+                    <option value="US">🇺🇸 Etazini (USA)</option>
+                    <option value="CA">🇨🇦 Kanada</option>
+                    <option value="FR">🇫🇷 Lafrans</option>
+                    <option value="DO">🇩🇴 Repiblik Dominikèn</option>
+                    <option value="BS">🇧🇸 Bahamas</option>
+                    <option value="JM">🇯🇲 Jamayik</option>
+                    <option value="BR">🇧🇷 Brezil</option>
+                    <option value="CL">🇨🇱 Chili</option>
+                    <option value="MX">🇲🇽 Meksik</option>
+                    <option value="OTHER">🌍 Lòt peyi</option>
                   </select>
                 </div>
                 <p className="mt-1.5 text-[11px] text-ink-muted">
-                  Plan sa yo disponib <strong>sèlman pou manm ki nan Ayiti</strong>.
+                  Manm nan <strong>tout peyi</strong> byenveni — plan yo disponib
+                  toupatou.
                 </p>
               </div>
             )}

@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Poppins, Playfair_Display, Lora, DM_Sans } from 'next/font/google';
 import './globals.css';
 import TranslateSwitcher from '@/components/translate-switcher';
+import RemedFinder from '@/components/remed-finder/remed-finder';
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -73,6 +74,7 @@ export default function RootLayout({
       <body className="font-sans antialiased bg-white text-ink">
         {children}
         <TranslateSwitcher />
+        <RemedFinder />
       </body>
     </html>
   );
