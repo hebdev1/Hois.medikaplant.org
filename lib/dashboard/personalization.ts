@@ -21,6 +21,7 @@ export type BlockId =
   | 'metrics'
   | 'checklist'
   | 'treatments'
+  | 'remed'
   | 'badges'
   | 'downloads'
   | 'upsell';
@@ -59,6 +60,69 @@ const GOAL_METRIC: Record<string, PrimaryMetric> = {
   lose_weight: 'weight',
   gain_weight: 'weight',
 };
+
+// ── Profile → Remèd Finder condition slugs ───────────────────────────────
+// Bridges the member's medical-profile slugs (user_medical_info.conditions,
+// as written by the settings form) and their health_goal onto the Remèd
+// Finder `conditions` table slugs (migration 078 seed). Used by the
+// dashboard's "Remèd pou ou" block to pull personalized product
+// recommendations from the same dataset the floating widget searches.
+const PROFILE_CONDITION_TO_REMED: Record<string, string> = {
+  diabetes: 'dyabet',
+  diabetes_type_1: 'dyabet',
+  diabetes_type_2: 'dyabet',
+  hypertension: 'tansyon-wo',
+  hypotension: 'sikilasyon',
+  heart: 'sikilasyon',
+  anemia: 'sikilasyon',
+  asthma: 'respirasyon',
+  arthritis: 'doule-enflamasyon',
+  migraine: 'doule-enflamasyon',
+  cholesterol: 'cholesterol',
+  thyroid: 'tiwoyid',
+  kidney: 'ren-pipi',
+  liver: 'fwa-epatit',
+  gastric: 'dijesyon',
+  digestive: 'dijesyon',
+  depression: 'estres-somey',
+  anxiety: 'estres-somey',
+  insomnia: 'estres-somey',
+  menstrual: 'doule-reg',
+  fertility: 'fetilite',
+  obesity: 'pedi-pwa',
+};
+
+const GOAL_TO_REMED: Record<string, string> = {
+  manage_diabetes: 'dyabet',
+  manage_hypertension: 'tansyon-wo',
+  lose_weight: 'pedi-pwa',
+  gain_weight: 'eneji',
+  spiritual_balance: 'estres-somey',
+  general_wellness: 'iminite',
+  detox: 'detoks',
+  fertility: 'fetilite',
+};
+
+/**
+ * Resolve the member's profile into Remèd Finder condition slugs,
+ * deduplicated, conditions first (more specific than the goal). Empty
+ * array = nothing to recommend, the block hides itself.
+ */
+export function remedSlugsFor(
+  conditions: string[],
+  healthGoal: string | null
+): string[] {
+  const out: string[] = [];
+  for (const c of conditions) {
+    const slug = PROFILE_CONDITION_TO_REMED[c];
+    if (slug && !out.includes(slug)) out.push(slug);
+  }
+  if (healthGoal) {
+    const slug = GOAL_TO_REMED[healthGoal];
+    if (slug && !out.includes(slug)) out.push(slug);
+  }
+  return out;
+}
 
 export function resolvePrimaryMetric(
   conditions: string[],
@@ -143,6 +207,14 @@ export function orderedBlocks(ctx: DashboardContext): BlockId[] {
 
     { id: 'checklist', show: ctx.hasProgram, weight: 30 },
     { id: 'treatments', show: ctx.hasTreatments, weight: 35 },
+
+    // Personalized shop recommendations — only when the member's
+    // conditions/goal actually map onto the Remèd Finder dataset.
+    {
+      id: 'remed',
+      show: remedSlugsFor(ctx.conditions, ctx.healthGoal).length > 0,
+      weight: 38,
+    },
 
     // Badges reward engaged members; hide for brand-new to reduce clutter.
     { id: 'badges', show: ctx.lifecycle !== 'new', weight: 50 },

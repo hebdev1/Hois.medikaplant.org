@@ -19,6 +19,7 @@ import TreatmentsSection, {
 import OnboardingBlock from '@/components/dashboard/blocks/onboarding-block';
 import HoisReflectionBlock from '@/components/dashboard/blocks/hois-reflection-block';
 import AdaptiveMetrics from '@/components/dashboard/blocks/adaptive-metrics';
+import RemedRecommendations from '@/components/dashboard/blocks/remed-recommendations';
 import UserTour from '@/components/dashboard/user-tour';
 import { markTourComplete } from './actions';
 import {
@@ -456,6 +457,9 @@ export default async function DashboardHome({
     ) : null,
     checklist: <ChecklistPanel initialTasks={tasks} />,
     treatments: <TreatmentsSection treatments={treatments} />,
+    remed: (
+      <RemedRecommendations conditions={conditions} healthGoal={healthGoal} />
+    ),
     badges: <BadgesPanel badges={badges} level={level} levelName={levelName} />,
     downloads: <DownloadsPanel resources={resourcesResult.data ?? []} />,
     upsell: <ShopSlider />,
