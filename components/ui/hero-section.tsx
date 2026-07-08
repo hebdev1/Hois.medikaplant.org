@@ -78,19 +78,19 @@ export default function HeroSection() {
           <span className="inline-flex items-center gap-2 border border-brand-200 bg-white/70 backdrop-blur-sm rounded-full px-4 py-2 shadow-sm text-sm">
             <Sparkles className="w-4 h-4 text-brand-600" strokeWidth={2.2} />
             <span className="text-ink/80">
-              Nouvo:{' '}
-              <span className="font-semibold text-ink">Plan Hoïs VIP 2026</span>{' '}
-              louvri
+              Byenvini:{' '}
+              <span className="font-semibold text-ink">nan Hoïs Inivèsite</span>{' '}
+              
             </span>
           </span>
         }
         title={
           <>
-            Geri ak <span className="text-brand-600">fòs lanati</span>,
-            <br className="hidden sm:block" /> Viv ak lasajès zansèt yo.
+            Viv ak <span className="text-brand-600">Lasajès tradinsyonèl</span>,
+            <br className="hidden sm:block" /> Ak nan limyè.
           </>
         }
-        subtitle="Medikaplant pote pou ou remèd fèy, konsiltasyon natiropatik, ak yon kominote VIP ki rasinen nan medsin tradisyonèl ayisyen  pou ede w pran swen kò w, lespri w, ak nanm ou."
+        subtitle="Hoïs Inivèsite pote pou ou remèd fèy, konsiltasyon natiropatik, ak yon kominote VIP ki rasinen nan medsin tradisyonèl ayisyen  pou ede w pran swen kò w, lespri w, ak nanm ou."
         ctas={[
           { label: 'Kòmanse Vwayaj pa w', href: '#pri', variant: 'primary' },
           { label: 'Dekouvri avantaj yo', href: '#pwodui', variant: 'secondary' },
