@@ -12,7 +12,10 @@
 
 import { Leaf, ExternalLink, Sparkles } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
-import { remedSlugsFor } from '@/lib/dashboard/personalization';
+import {
+  remedSlugsFor,
+  unmappedConditionTerms,
+} from '@/lib/dashboard/personalization';
 
 type Props = {
   conditions: string[];
@@ -56,15 +59,31 @@ export default async function RemedRecommendations({
   conditions,
   healthGoal,
 }: Props) {
-  const slugs = remedSlugsFor(conditions, healthGoal);
-  if (slugs.length === 0) return null;
-
   const supabase = createClient();
   // conditions / condition_products / shop_products are newer than the
   // generated types — same `as any` pattern as the rest of the Remèd
   // Finder surfaces until the next type regen.
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const sb = supabase as any;
+
+  // Layer 1: fixed lookup (checkbox conditions + preset goal).
+  const slugs = remedSlugsFor(conditions, healthGoal);
+
+  // Layer 2: keyword-match any free-text conditions the member typed
+  // themselves ("hpylori", "gout", "matris"...) against the same
+  // dictionary the widget searches. Appended after the fixed slugs so
+  // the member's explicit checkbox picks still lead.
+  const customTerms = unmappedConditionTerms(conditions);
+  if (customTerms.length > 0) {
+    const { data: matched } = await sb.rpc('match_remed_conditions', {
+      p_terms: customTerms,
+    });
+    for (const m of (matched ?? []) as Array<{ slug: string }>) {
+      if (!slugs.includes(m.slug)) slugs.push(m.slug);
+    }
+  }
+
+  if (slugs.length === 0) return null;
 
   const { data: rowsRaw } = await sb
     .from('conditions')

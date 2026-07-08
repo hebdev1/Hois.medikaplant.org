@@ -104,9 +104,12 @@ const GOAL_TO_REMED: Record<string, string> = {
 };
 
 /**
- * Resolve the member's profile into Remèd Finder condition slugs,
- * deduplicated, conditions first (more specific than the goal). Empty
- * array = nothing to recommend, the block hides itself.
+ * Resolve the member's profile into Remèd Finder condition slugs via the
+ * fixed lookup tables, deduplicated, conditions first (more specific than
+ * the goal). This is the SYNCHRONOUS layer — it only knows the checkbox
+ * conditions + preset goals. Free-text custom conditions (e.g. "hpylori",
+ * "gout") are resolved separately + asynchronously by the keyword-match
+ * RPC; see remedSlugsWithKeywordFallback().
  */
 export function remedSlugsFor(
   conditions: string[],
@@ -120,6 +123,27 @@ export function remedSlugsFor(
   if (healthGoal) {
     const slug = GOAL_TO_REMED[healthGoal];
     if (slug && !out.includes(slug)) out.push(slug);
+  }
+  return out;
+}
+
+/** Which of the member's raw condition entries did NOT resolve through the
+ *  fixed table — i.e. custom free-text the member typed themselves. Those
+ *  get sent to the keyword-match RPC so "hpylori" still finds the H.
+ *  Pylori remedies. Normalized (lowercase + unaccented) so they line up
+ *  with the stored keyword dictionary. */
+export function unmappedConditionTerms(conditions: string[]): string[] {
+  const out: string[] = [];
+  for (const c of conditions) {
+    if (PROFILE_CONDITION_TO_REMED[c]) continue; // already resolved
+    const norm = c
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[̀-ͯ]/g, '')
+      .replace(/[_-]+/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+    if (norm.length >= 3 && !out.includes(norm)) out.push(norm);
   }
   return out;
 }
@@ -208,11 +232,15 @@ export function orderedBlocks(ctx: DashboardContext): BlockId[] {
     { id: 'checklist', show: ctx.hasProgram, weight: 30 },
     { id: 'treatments', show: ctx.hasTreatments, weight: 35 },
 
-    // Personalized shop recommendations — only when the member's
-    // conditions/goal actually map onto the Remèd Finder dataset.
+    // Personalized shop recommendations. Show when EITHER the fixed
+    // lookup maps something OR the member typed a free-text condition we
+    // can keyword-match (e.g. "hpylori"). The block itself no-ops to null
+    // if the async keyword match also comes up empty.
     {
       id: 'remed',
-      show: remedSlugsFor(ctx.conditions, ctx.healthGoal).length > 0,
+      show:
+        remedSlugsFor(ctx.conditions, ctx.healthGoal).length > 0 ||
+        unmappedConditionTerms(ctx.conditions).length > 0,
       weight: 38,
     },
 
