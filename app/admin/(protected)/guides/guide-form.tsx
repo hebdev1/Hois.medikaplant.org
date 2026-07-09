@@ -414,14 +414,15 @@ export default function GuideForm({
             <input type="hidden" name="accent_color" value={values.accent_color} />
           </Field>
 
-          <Field label="URL foto kouvèti (opsyonèl)">
+          <Field label="Foto kouvèti / thumbnail (opsyonèl)">
+            <CoverImageField
+              value={values.cover_image_url}
+              onChange={(url) => set('cover_image_url', url)}
+            />
             <input
-              type="url"
+              type="hidden"
               name="cover_image_url"
               value={values.cover_image_url}
-              onChange={(e) => set('cover_image_url', e.target.value)}
-              className={inputClass}
-              placeholder="https://…"
             />
           </Field>
         </Section>
@@ -429,6 +430,102 @@ export default function GuideForm({
         <SubmitBar mode={mode} state={state} />
       </aside>
     </form>
+  );
+}
+
+// ─── Cover image field: upload OR paste URL, with live preview ─────────────
+function CoverImageField({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (url: string) => void;
+}) {
+  const inputRef = React.useRef<HTMLInputElement | null>(null);
+  const [busy, setBusy] = React.useState(false);
+  const [err, setErr] = React.useState<string | null>(null);
+
+  async function onFile(file: File) {
+    setBusy(true);
+    setErr(null);
+    try {
+      const fd = new FormData();
+      fd.set('file', file);
+      const res = await uploadGuideImage(fd);
+      if (res.ok) onChange(res.url);
+      else setErr(res.error);
+    } catch (e) {
+      setErr((e as Error).message);
+    } finally {
+      setBusy(false);
+      if (inputRef.current) inputRef.current.value = '';
+    }
+  }
+
+  return (
+    <div className="space-y-2">
+      <div className="flex items-start gap-3">
+        {/* Preview / placeholder */}
+        <div className="w-16 h-16 rounded-xl overflow-hidden border border-cream-200 bg-cream-50 shrink-0 grid place-items-center">
+          {value ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={value} alt="" className="w-full h-full object-cover" />
+          ) : (
+            <PlantBig art="leaf" accent="#a8cb8c" opacity={0.6} size={34} />
+          )}
+        </div>
+
+        <div className="flex-1 min-w-0 space-y-1.5">
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => inputRef.current?.click()}
+              disabled={busy}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-forest-700 hover:bg-forest-800 disabled:opacity-60 text-cream-50 rounded-lg transition"
+            >
+              {busy ? (
+                <Loader2 className="w-3.5 h-3.5 animate-spin" strokeWidth={2.2} />
+              ) : (
+                <Save className="w-3.5 h-3.5" strokeWidth={2.2} />
+              )}
+              Telechaje imaj
+            </button>
+            {value && (
+              <button
+                type="button"
+                onClick={() => onChange('')}
+                className="text-xs font-semibold text-rose-600 hover:text-rose-700"
+              >
+                Retire
+              </button>
+            )}
+          </div>
+          <input
+            ref={inputRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp,image/gif"
+            className="hidden"
+            onChange={(e) => {
+              const f = e.target.files?.[0];
+              if (f) onFile(f);
+            }}
+          />
+          {/* Manual URL fallback */}
+          <input
+            type="url"
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            className={cn(inputClass, 'text-xs')}
+            placeholder="…oswa kole yon URL imaj"
+          />
+        </div>
+      </div>
+      {err && (
+        <p className="text-[11px] text-rose-600 flex items-center gap-1">
+          <AlertCircle className="w-3 h-3" strokeWidth={2.4} /> {err}
+        </p>
+      )}
+    </div>
   );
 }
 

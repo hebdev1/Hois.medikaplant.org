@@ -364,3 +364,31 @@ export async function deleteGuide(
   revalidatePath('/dashboard/guides');
   return { ok: true };
 }
+
+// ─── Bulk delete ─────────────────────────────────────────────────────────────
+// Delete many guides in one round-trip via `.in()`. Returns the number
+// actually removed so the UI can report it. Capped at 200 ids per call
+// as a sanity guard against a runaway request.
+
+export async function bulkDeleteGuides(
+  guideIds: string[]
+): Promise<{ ok: true; deleted: number } | { ok: false; error: string }> {
+  const auth = await assertAdmin();
+  if (!auth.ok) return { ok: false, error: auth.error };
+
+  const ids = Array.from(new Set(guideIds.filter(Boolean))).slice(0, 200);
+  if (ids.length === 0) {
+    return { ok: false, error: 'Pa gen atik chwazi.' };
+  }
+
+  const { data, error } = await auth.supabase
+    .from('guides')
+    .delete()
+    .in('id', ids)
+    .select('id');
+  if (error) return { ok: false, error: error.message };
+
+  revalidatePath('/admin/guides');
+  revalidatePath('/dashboard/guides');
+  return { ok: true, deleted: (data as { id: string }[] | null)?.length ?? 0 };
+}
