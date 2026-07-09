@@ -18,6 +18,7 @@ type GuideCardProps = {
     | 'art'
     | 'read_minutes'
     | 'language'
+    | 'cover_image_url'
   >;
 };
 
@@ -33,26 +34,41 @@ export default function GuideCard({ guide }: GuideCardProps) {
       href={`/dashboard/guides/${guide.slug}`}
       className="group flex flex-col bg-white border border-cream-200 rounded-2xl overflow-hidden shadow-card hover:shadow-cardHover transition-all"
     >
-      {/* Decorative art header */}
+      {/* Header — real cover thumbnail when the admin set one, else the
+          decorative plant art on the accent gradient. */}
       <div
         className="relative aspect-[16/9] grid place-items-center overflow-hidden"
-        style={{
-          backgroundImage: `linear-gradient(135deg, ${guide.accent_color}, ${guide.accent_color}AA)`,
-        }}
+        style={
+          guide.cover_image_url
+            ? undefined
+            : {
+                backgroundImage: `linear-gradient(135deg, ${guide.accent_color}, ${guide.accent_color}AA)`,
+              }
+        }
       >
         {guide.tag && (
-          <span className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-white/85 backdrop-blur text-[10px] font-bold text-ink uppercase tracking-wider">
+          <span className="absolute top-3 left-3 z-10 px-2.5 py-1 rounded-full bg-white/85 backdrop-blur text-[10px] font-bold text-ink uppercase tracking-wider">
             {guide.tag}
           </span>
         )}
-        <div className="transition-transform group-hover:scale-105 group-hover:rotate-3">
-          <PlantBig
-            art={guide.art as GuideArt}
-            accent="#FFFDF8"
-            opacity={0.78}
-            size={130}
+        {guide.cover_image_url ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={guide.cover_image_url}
+            alt=""
+            className="absolute inset-0 w-full h-full object-cover transition-transform group-hover:scale-105"
+            loading="lazy"
           />
-        </div>
+        ) : (
+          <div className="transition-transform group-hover:scale-105 group-hover:rotate-3">
+            <PlantBig
+              art={guide.art as GuideArt}
+              accent="#FFFDF8"
+              opacity={0.78}
+              size={130}
+            />
+          </div>
+        )}
       </div>
 
       {/* Body */}

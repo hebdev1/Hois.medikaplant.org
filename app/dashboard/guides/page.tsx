@@ -249,13 +249,23 @@ function FeaturedHero({ featured, saved }: { featured: Guide; saved: boolean }) 
         aria-hidden
       />
 
-      <div className="relative grid place-items-center min-h-[220px]">
-        <PlantBig
-          art={featured.art as GuideArt}
-          accent={featured.accent_color}
-          opacity={0.95}
-          size={260}
-        />
+      <div className="relative grid place-items-center min-h-[220px] rounded-2xl overflow-hidden">
+        {featured.cover_image_url ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={featured.cover_image_url}
+            alt=""
+            className="absolute inset-0 w-full h-full object-cover"
+            loading="lazy"
+          />
+        ) : (
+          <PlantBig
+            art={featured.art as GuideArt}
+            accent={featured.accent_color}
+            opacity={0.95}
+            size={260}
+          />
+        )}
       </div>
 
       <div className="relative flex flex-col justify-center">
