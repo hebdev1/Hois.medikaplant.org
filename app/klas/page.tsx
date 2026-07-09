@@ -63,6 +63,7 @@ const PLAN_HREF: Record<string, string> = {
 // ─── DB row shapes ─────────────────────────────────────────────────────────
 
 type CategoryRow = {
+  id: string;
   slug: string;
   title: string;
   body: string;
@@ -119,7 +120,7 @@ export default async function KlasPage() {
   const [categoriesRes, coursesRes, configRes] = await Promise.all([
     sb
       .from('course_categories')
-      .select('slug, title, body, icon, tone, display_order')
+      .select('id, slug, title, body, icon, tone, display_order')
       .eq('active', true)
       .order('display_order', { ascending: true }),
     sb
@@ -146,19 +147,10 @@ export default async function KlasPage() {
       (courseCountByCat.get(c.category_id) ?? 0) + 1
     );
   }
-  // The query above returns category_id alongside courses; we need the
-  // category id from course_categories for the count lookup. Fetch a tiny
-  // {id, slug} map so the count chips display.
-  const { data: catIdMap } = await sb
-    .from('course_categories')
-    .select('id, slug')
-    .eq('active', true);
-  const slugById = new Map(
-    ((catIdMap ?? []) as Array<{ id: string; slug: string }>).map((c) => [
-      c.id,
-      c.slug,
-    ])
-  );
+  // Map category id → slug for the count lookup. Built from the categories
+  // already fetched in the parallel batch above (they now carry `id`), so
+  // no extra round-trip is needed.
+  const slugById = new Map(categories.map((c) => [c.id, c.slug]));
   const countBySlug = new Map<string, number>();
   for (const [id, count] of courseCountByCat) {
     const s = slugById.get(id);
