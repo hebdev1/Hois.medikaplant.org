@@ -3,6 +3,7 @@ import { Sparkles, Calendar, Crown, Headphones, Clock } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import AdviceComposer from './advice-composer';
 import AdviceRowActions from './advice-row-actions';
+import { sanitizeGuideHtml } from '@/lib/sanitize-html';
 import type { Database } from '@/types/database';
 import { hasCapability, type AdminRole } from '../admin-nav-config';
 
@@ -204,7 +205,7 @@ function AdviceListItem({
           </div>
           <p
             className="font-serif text-sm text-ink leading-snug line-clamp-3"
-            dangerouslySetInnerHTML={{ __html: row.body_html }}
+            dangerouslySetInnerHTML={{ __html: sanitizeGuideHtml(row.body_html) }}
           />
           {row.plant_name && (
             <div className="font-serif italic text-[11px] text-earth-600 mt-1">

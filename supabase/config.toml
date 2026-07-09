@@ -1,0 +1,22 @@
+# Supabase CLI project config.
+# Project ref lives at https://supabase.com/dashboard/project/kmzmtuthwssyuoklmydy
+project_id = "kmzmtuthwssyuoklmydy"
+
+[db]
+# Local dev DB port (only used with `supabase start`).
+port = 54322
+major_version = 15
+
+[db.migrations]
+# Migrations applied to the linked project live in supabase/migrations/.
+schema_paths = []
+
+[functions]
+# Edge functions download into supabase/functions/<slug>/ via
+# `supabase functions download <slug>`. See supabase/README.md.
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public"]
+extra_search_path = ["public", "extensions"]

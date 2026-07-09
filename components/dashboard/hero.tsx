@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { Flame, ChevronRight, Sparkles } from 'lucide-react';
 import ProgressPlant from './progress-plant';
 import ShareAdviceButton from './share-advice-button';
+import { sanitizeGuideHtml } from '@/lib/sanitize-html';
 
 type HeroProps = {
   userShortName: string;
@@ -140,7 +141,9 @@ export default function Hero({
           </div>
           <p
             className="font-serif text-lg md:text-xl text-ink leading-snug"
-            dangerouslySetInnerHTML={{ __html: dailyAdvice.bodyHtml }}
+            dangerouslySetInnerHTML={{
+              __html: sanitizeGuideHtml(dailyAdvice.bodyHtml),
+            }}
           />
           <div className="font-serif italic text-sm text-earth-600 mt-2">
             {dailyAdvice.plant}
