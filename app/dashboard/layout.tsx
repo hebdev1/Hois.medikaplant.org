@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
+import { getCurrentUser } from '@/lib/supabase/auth';
 import Sidebar from '@/components/dashboard/sidebar';
 import UserAppearance from '@/components/dashboard/user-appearance';
 import SuggestionBox from '@/components/dashboard/suggestion-box';
@@ -28,9 +29,7 @@ export default async function DashboardLayout({
   children: React.ReactNode;
 }) {
   const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
 
   if (!user) redirect('/auth/login?redirect=/dashboard');
 

@@ -1,6 +1,7 @@
 import { Search, ShoppingCart, ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
+import { getCurrentUser } from '@/lib/supabase/auth';
 import Avatar from './avatar';
 import NotificationBell from './notification-bell';
 import MobileNavButton from './mobile-nav-button';
@@ -25,9 +26,7 @@ export default async function Topbar({
   userCondition = 'Manm Hoïs',
 }: TopbarProps) {
   const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
 
   // Read plan from the JWT claim (populated by custom_access_token_hook).
   // Falls back to a profile query for sessions issued before the hook

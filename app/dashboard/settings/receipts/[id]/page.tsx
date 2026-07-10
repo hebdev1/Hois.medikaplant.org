@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, CheckCircle2 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
+import { getCurrentUser } from '@/lib/supabase/auth';
 import PrintButton from './print-button';
 
 export const dynamic = 'force-dynamic';
@@ -45,9 +46,7 @@ export default async function ReceiptPage({
   params: { id: string };
 }) {
   const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) notFound();
 
   const [subResult, profileResult] = await Promise.all([

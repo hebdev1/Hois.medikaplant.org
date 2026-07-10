@@ -10,6 +10,7 @@ import {
   ArrowRight,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
+import { getCurrentUser } from '@/lib/supabase/auth';
 import Topbar from '@/components/dashboard/topbar';
 import BadgeArt from '@/components/dashboard/badge-art';
 import {
@@ -74,9 +75,7 @@ export default async function BadgeDetailPage({
   params: { slug: string };
 }) {
   const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) return null;
 
   // Fetch badge + user state in parallel.

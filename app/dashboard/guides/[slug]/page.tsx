@@ -8,6 +8,7 @@ import {
   Calendar,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
+import { getCurrentUser } from '@/lib/supabase/auth';
 import Topbar from '@/components/dashboard/topbar';
 import PlantBig from '@/components/dashboard/plant-big';
 import SaveGuideButton from '@/components/dashboard/save-guide-button';
@@ -63,9 +64,7 @@ export default async function GuideDetailPage({
   params: { slug: string };
 }) {
   const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) return null;
 
   // Fetch the guide. RLS already restricts to published + at-or-below plan,

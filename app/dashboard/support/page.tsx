@@ -1,5 +1,6 @@
 import { LifeBuoy, AlertCircle } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
+import { getCurrentUser } from '@/lib/supabase/auth';
 import Topbar from '@/components/dashboard/topbar';
 import SupportChat from '@/components/dashboard/support-chat';
 import SupportContacts from '@/components/dashboard/support-contacts';
@@ -21,9 +22,7 @@ const PLAN_LABELS: Record<string, string> = {
 
 export default async function SupportPage() {
   const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) return null;
 
   // The thread getter creates a welcome message + thread on first visit,

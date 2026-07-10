@@ -11,6 +11,7 @@ import {
   Inbox,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
+import { getCurrentUser } from '@/lib/supabase/auth';
 import Topbar from '@/components/dashboard/topbar';
 import ResourcesToolbar from './resources-toolbar';
 import { cn } from '@/lib/utils';
@@ -67,9 +68,7 @@ export default async function ResourcesPage({
   searchParams: { type?: string; q?: string };
 }) {
   const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) return null;
 
   const [profileResult, allResourcesResult] = await Promise.all([

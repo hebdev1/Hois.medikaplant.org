@@ -1,5 +1,6 @@
 import { Settings, AlertCircle } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
+import { getCurrentUser } from '@/lib/supabase/auth';
 import Topbar from '@/components/dashboard/topbar';
 import SettingsForm from './settings-form';
 import ReferralSection from '@/components/dashboard/referral-section';
@@ -112,9 +113,7 @@ function defaultProfile(userId: string, email: string): ProfileRow {
 
 export default async function SettingsPage() {
   const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) return null;
 
   // Fan-out fetch. Each maybeSingle returns null without erroring if there's

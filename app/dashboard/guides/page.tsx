@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { BookOpen, Star, Clock, ChevronRight, Bookmark } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
+import { getCurrentUser } from '@/lib/supabase/auth';
 import Topbar from '@/components/dashboard/topbar';
 import GuideCard from '@/components/dashboard/guide-card';
 import GuideCategoryChips from '@/components/dashboard/guide-category-chips';
@@ -71,9 +72,7 @@ export default async function GuidesIndexPage({
   searchParams: { cat?: string };
 }) {
   const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) return null;
 
   // Fan-out fetch with allSettled so one failure doesn't kill the whole page.

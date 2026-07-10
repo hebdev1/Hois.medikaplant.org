@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Activity, Calendar, Target, Pencil } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
+import { getCurrentUser } from '@/lib/supabase/auth';
 import Topbar from '@/components/dashboard/topbar';
 import MetricTabs, {
   type MetricKey,
@@ -91,9 +92,7 @@ export default async function HealthPage({
   searchParams: { metric?: string; range?: string };
 }) {
   const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) return null;
 
   const range = rangeFromSearch(searchParams.range);

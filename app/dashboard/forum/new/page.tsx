@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { ChevronRight, ArrowLeft, MessageSquarePlus } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
+import { getCurrentUser } from '@/lib/supabase/auth';
 import Topbar from '@/components/dashboard/topbar';
 import NewTopicForm from './new-topic-form';
 import type { Database } from '@/types/database';
@@ -12,9 +13,7 @@ type Category = Database['public']['Tables']['forum_categories']['Row'];
 
 export default async function NewTopicPage() {
   const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) return null;
 
   const [categoriesResult, profileResult] = await Promise.all([

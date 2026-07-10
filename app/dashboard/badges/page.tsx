@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Award, Sparkles, Flame, ChevronRight, Trophy } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
+import { getCurrentUser } from '@/lib/supabase/auth';
 import Topbar from '@/components/dashboard/topbar';
 import BadgeArt from '@/components/dashboard/badge-art';
 import {
@@ -37,9 +38,7 @@ function formatHaitianDate(iso: string | null): string {
 
 export default async function BadgesGalleryPage() {
   const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) return null;
 
   const [

@@ -1,5 +1,6 @@
 import { PartyPopper } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
+import { getCurrentUser } from '@/lib/supabase/auth';
 import Topbar from '@/components/dashboard/topbar';
 import Hero from '@/components/dashboard/hero';
 import ChecklistPanel, {
@@ -71,9 +72,7 @@ export default async function DashboardHome({
   searchParams: { welcome?: string; tour?: string };
 }) {
   const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) return null;
 
   const today = new Date().toISOString().slice(0, 10);

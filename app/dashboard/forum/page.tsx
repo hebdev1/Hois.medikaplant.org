@@ -12,6 +12,7 @@ import {
   Users as UsersIcon,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
+import { getCurrentUser } from '@/lib/supabase/auth';
 import Topbar from '@/components/dashboard/topbar';
 import { cn } from '@/lib/utils';
 import type { Database } from '@/types/database';
@@ -54,9 +55,7 @@ export default async function ForumIndexPage({
   searchParams: { cat?: string; q?: string };
 }) {
   const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) return null;
 
   const [categoriesResult, topicsResult, profileResult] = await Promise.all([
