@@ -72,7 +72,7 @@ export default async function ForumIndexPage({
       .limit(80),
     supabase
       .from('profiles')
-      .select('full_name, email, plan')
+      .select('full_name, email, plan, avatar_url')
       .eq('id', user.id)
       .maybeSingle(),
   ]);
@@ -83,6 +83,7 @@ export default async function ForumIndexPage({
     full_name: string | null;
     email: string;
     plan: string;
+    avatar_url: string | null;
   } | null;
 
   // Resolve author + last-reply-by profiles in one query
@@ -132,7 +133,13 @@ export default async function ForumIndexPage({
 
   return (
     <>
-      <Topbar userName={shortName} userCondition="Fowòm kominote" />
+      <Topbar
+        userName={shortName}
+        userCondition="Fowòm kominote"
+        userId={user.id}
+        userPlan={(viewer?.plan as 'basic' | 'premium' | 'vip') ?? 'basic'}
+        avatarUrl={viewer?.avatar_url ?? null}
+      />
       <div className="p-5 md:p-8 lg:p-10 max-w-[1120px] mx-auto grid gap-5 md:gap-6">
         {/* Header */}
         <header>

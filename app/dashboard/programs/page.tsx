@@ -69,7 +69,7 @@ export default async function ProgramsPage() {
   ] = await Promise.all([
     supabase
       .from('profiles')
-      .select('plan, full_name, email')
+      .select('plan, full_name, email, avatar_url')
       .eq('id', user.id)
       .maybeSingle(),
     supabase
@@ -102,6 +102,7 @@ export default async function ProgramsPage() {
     plan: 'basic' | 'premium' | 'vip';
     full_name: string | null;
     email: string;
+    avatar_url: string | null;
   } | null;
 
   type ActiveProgramJoinRow = UserProgramRow & { programs: ProgramRow | null };
@@ -202,6 +203,9 @@ export default async function ProgramsPage() {
       <Topbar
         userName={shortName}
         userCondition={`${PLAN_LABEL[profile?.plan ?? 'basic']} · Pwogram`}
+        userId={user.id}
+        userPlan={profile?.plan ?? 'basic'}
+        avatarUrl={profile?.avatar_url ?? null}
       />
       <div className="p-5 md:p-8 lg:p-10 max-w-[1320px] mx-auto grid gap-5 md:gap-6">
         {/* Page header */}

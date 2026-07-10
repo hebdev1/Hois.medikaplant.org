@@ -21,6 +21,7 @@ type Profile = {
   last_name: string | null;
   email: string;
   plan: 'basic' | 'premium' | 'vip';
+  avatar_url: string | null;
 };
 
 const PLAN_LABELS: Record<string, string> = {
@@ -86,7 +87,7 @@ export default async function GuidesIndexPage({
   ] = await Promise.allSettled([
     supabase
       .from('profiles')
-      .select('full_name, first_name, last_name, email, plan')
+      .select('full_name, first_name, last_name, email, plan, avatar_url')
       .eq('id', user.id)
       .maybeSingle(),
     supabase
@@ -170,6 +171,9 @@ export default async function GuidesIndexPage({
         userName={shortName}
         userCondition={planLabel}
         unreadCount={unreadCount}
+        userId={user.id}
+        userPlan={profile?.plan ?? 'basic'}
+        avatarUrl={profile?.avatar_url ?? null}
       />
       <div className="p-5 md:p-8 lg:p-10 max-w-[1280px]">
         {/* Page header */}

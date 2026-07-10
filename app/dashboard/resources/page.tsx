@@ -74,7 +74,7 @@ export default async function ResourcesPage({
   const [profileResult, allResourcesResult] = await Promise.all([
     supabase
       .from('profiles')
-      .select('plan, full_name, email')
+      .select('plan, full_name, email, avatar_url')
       .eq('id', user.id)
       .maybeSingle(),
     supabase
@@ -88,6 +88,7 @@ export default async function ResourcesPage({
     plan: 'basic' | 'premium' | 'vip';
     full_name: string | null;
     email: string;
+    avatar_url: string | null;
   } | null;
 
   const allResources = (allResourcesResult.data ?? []) as ResourceRow[];
@@ -123,6 +124,9 @@ export default async function ResourcesPage({
       <Topbar
         userName={shortName}
         userCondition={`${PLAN_LABEL[profile?.plan ?? 'basic']} · Bibliyotèk`}
+        userId={user.id}
+        userPlan={profile?.plan ?? 'basic'}
+        avatarUrl={profile?.avatar_url ?? null}
       />
       <div className="p-5 md:p-8 lg:p-10 max-w-[1320px] mx-auto grid gap-5 md:gap-6">
         {/* Header */}

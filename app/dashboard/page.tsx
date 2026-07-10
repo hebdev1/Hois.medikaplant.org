@@ -167,6 +167,7 @@ export default async function DashboardHome({
     email: string;
     plan: 'basic' | 'premium' | 'vip';
     created_at: string;
+    avatar_url: string | null;
   } | null;
 
   const medical = medicalResult.data as {
@@ -472,6 +473,9 @@ export default async function DashboardHome({
         userName={shortName}
         userCondition={`${planLabel} · Niv. ${level} ${levelName}`}
         unreadCount={unreadCount}
+        userId={user.id}
+        userPlan={profile?.plan ?? 'basic'}
+        avatarUrl={profile?.avatar_url ?? null}
       />
       {/* Single-column grid with minmax(0,1fr) — without the 0 lower
           bound, a grid item's intrinsic min-size defaults to auto, which

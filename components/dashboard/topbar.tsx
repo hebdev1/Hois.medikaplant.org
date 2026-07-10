@@ -12,49 +12,59 @@ type TopbarProps = {
   /** @deprecated Kept for backward compatibility — NotificationBell now
    *  computes its own live unread count via realtime subscription. */
   unreadCount?: number;
+  // Fast path: the parent page already loads the profile (to render
+  // userName), so it can hand the topbar the user id, plan, and avatar it
+  // needs. When userId is supplied the topbar makes ZERO network calls —
+  // removing a serial profile round-trip from every dashboard navigation.
+  userId?: string;
+  userPlan?: 'basic' | 'premium' | 'vip';
+  avatarUrl?: string | null;
 };
 
 /**
- * Topbar is a server component so it can fetch the current user's id + plan
- * once and pass them to the live <NotificationBell />. The bell handles its
- * own realtime subscription + dropdown state on the client. The mobile
- * hamburger sits at the start of the row on small screens; the search input
- * is hidden below md to keep the row compact on phones.
+ * Topbar is a server component. In the fast path the parent page passes the
+ * user id / plan / avatar it already holds and the topbar fetches nothing.
+ * The fallback path (no userId prop) self-fetches, so any caller that has
+ * not been converted still renders correctly. The bell handles its own
+ * realtime subscription + dropdown on the client. The mobile hamburger sits
+ * at the start on small screens; the search input hides below md.
  */
 export default async function Topbar({
   userName,
   userCondition = 'Manm Hoïs',
+  userId,
+  userPlan: userPlanProp,
+  avatarUrl: avatarUrlProp,
 }: TopbarProps) {
-  const supabase = createClient();
-  const user = await getCurrentUser();
+  let uid: string | null = userId ?? null;
+  let userPlan: 'basic' | 'premium' | 'vip' = userPlanProp ?? 'basic';
+  let avatarUrl: string | null = avatarUrlProp ?? null;
 
-  // Read plan from the JWT claim (populated by custom_access_token_hook).
-  // Falls back to a profile query for sessions issued before the hook
-  // was enabled — one DB roundtrip saved per dashboard navigation in the
-  // common case. The same fallback query also pulls avatar_url so the
-  // top-right avatar renders the member's uploaded photo when they have
-  // one instead of the SVG placeholder.
-  let userPlan: 'basic' | 'premium' | 'vip' = 'basic';
-  let avatarUrl: string | null = null;
-  if (user) {
-    const metaPlan = (user.user_metadata as { app_plan?: string } | null)
-      ?.app_plan;
-    const needPlanFallback =
-      !(metaPlan === 'basic' || metaPlan === 'premium' || metaPlan === 'vip');
-    // Always fetch avatar_url; combine with plan fallback when needed to
-    // keep the query count at one.
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('plan, avatar_url')
-      .eq('id', user.id)
-      .maybeSingle();
-    const p = profile as {
-      plan: 'basic' | 'premium' | 'vip';
-      avatar_url: string | null;
-    } | null;
-    if (needPlanFallback && p?.plan) userPlan = p.plan;
-    if (!needPlanFallback && metaPlan) userPlan = metaPlan;
-    avatarUrl = p?.avatar_url ?? null;
+  // Fallback: no fast-path props → resolve identity ourselves. Reads plan
+  // from the JWT claim (custom_access_token_hook) and pulls avatar_url in a
+  // single profile query.
+  if (!userId) {
+    const supabase = createClient();
+    const user = await getCurrentUser();
+    uid = user?.id ?? null;
+    if (user) {
+      const metaPlan = (user.user_metadata as { app_plan?: string } | null)
+        ?.app_plan;
+      const needPlanFallback =
+        !(metaPlan === 'basic' || metaPlan === 'premium' || metaPlan === 'vip');
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('plan, avatar_url')
+        .eq('id', user.id)
+        .maybeSingle();
+      const p = profile as {
+        plan: 'basic' | 'premium' | 'vip';
+        avatar_url: string | null;
+      } | null;
+      if (needPlanFallback && p?.plan) userPlan = p.plan;
+      if (!needPlanFallback && metaPlan) userPlan = metaPlan;
+      avatarUrl = p?.avatar_url ?? null;
+    }
   }
 
   return (
@@ -81,9 +91,9 @@ export default async function Topbar({
       <div className="flex-1 md:hidden" />
 
       <div className="flex items-center gap-2">
-        {user && (
+        {uid && (
           <div data-tour="topbar-notif">
-            <NotificationBell userId={user.id} userPlan={userPlan} />
+            <NotificationBell userId={uid} userPlan={userPlan} />
           </div>
         )}
         <button
