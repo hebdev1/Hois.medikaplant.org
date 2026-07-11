@@ -86,7 +86,7 @@ export default function HeroSection() {
         }
         title={
           <>
-            Viv ak <span className="text-brand-600">Lasajès tradinsyonèl</span>,
+            Viv ak <span className="text-brand-600">Lasajès tradisyonèl</span>,
             <br className="hidden sm:block" /> Ak nan limyè.
           </>
         }
