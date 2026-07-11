@@ -1,13 +1,18 @@
 'use client';
 
-// Remèd Finder mount point — the floating button lives in the initial
-// bundle (tiny); the panel + Fuse.js + Supabase fetch only load when the
-// visitor actually opens it (next/dynamic + dynamic import inside the
-// hook). Mounted from the root layout so it's available on every page.
+// "Doktè Maton" — the floating natural-remedy assistant. The button lives in
+// the initial bundle (tiny); the panel + Fuse.js + Supabase fetch only load
+// when the visitor opens it (next/dynamic + dynamic import inside the hook).
+// Mounted from the root layout so it's available on every page.
+//
+// Note: there is NO runtime LLM. Matching stays keyword-based (see
+// use-remed-search). "Doktè Maton" is a friendly assistant *persona* layered
+// over that dictionary — the copy stays suggestion-only (never diagnostic)
+// and the FDA disclaimer stays pinned in the panel.
 
 import React from 'react';
 import dynamic from 'next/dynamic';
-import { Leaf } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 
 const RemedFinderPanel = dynamic(() => import('./remed-finder-panel'), {
   ssr: false,
@@ -40,16 +45,14 @@ export default function RemedFinder() {
 
   return (
     <>
-      {/* Stacked ABOVE the TranslateSwitcher (bottom-4/6 right-4/6,
-          z-100). Forest green to read as "plant remedies", distinct
-          from the gold suggestion button on the dashboard (which sits
-          one slot higher there). */}
+      {/* Stacked ABOVE the TranslateSwitcher. Reads as a personal AI
+          assistant: avatar bubble + name + a small "AI" sparkle. */}
       <button
         type="button"
         onClick={onOpen}
-        aria-label="Chèche yon remèd"
+        aria-label="Louvri Doktè Maton, asistan remèd natirèl"
         translate="no"
-        className="notranslate fixed bottom-16 right-4 sm:bottom-20 sm:right-6 z-[95] inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-forest-700 hover:bg-forest-800 text-cream-50 shadow-lg border border-forest-600 transition"
+        className="notranslate group fixed bottom-16 right-4 sm:bottom-20 sm:right-6 z-[95] inline-flex items-center gap-2 pl-1.5 pr-3.5 py-1.5 rounded-full bg-gradient-to-br from-forest-600 to-forest-800 text-cream-50 shadow-lg border border-forest-500/60 transition hover:brightness-110"
       >
         {pulse && (
           <span
@@ -57,9 +60,21 @@ export default function RemedFinder() {
             aria-hidden
           />
         )}
-        <Leaf className="w-4 h-4" strokeWidth={2.2} />
-        <span className="text-xs font-bold uppercase tracking-wider">
-          Remèd
+        {/* Assistant avatar */}
+        <span className="relative grid place-items-center w-8 h-8 rounded-full bg-cream-50 text-forest-700 text-base shadow-inner">
+          <span aria-hidden>🩺</span>
+          {/* live "AI online" dot */}
+          <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-gold-400 border-2 border-forest-700 grid place-items-center">
+            <Sparkles className="w-1.5 h-1.5 text-forest-900" strokeWidth={3} />
+          </span>
+        </span>
+        <span className="flex flex-col items-start leading-none">
+          <span className="text-[13px] font-bold tracking-tight">
+            Doktè Maton
+          </span>
+          <span className="text-[9px] uppercase tracking-[0.14em] text-cream-200/85">
+            Asistan remèd
+          </span>
         </span>
       </button>
 
