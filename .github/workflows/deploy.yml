@@ -1,0 +1,63 @@
+name: Deploy to Hostinger
+
+# Deplwaman otomatik: chak push sou `main` konekte sou Hostinger via SSH,
+# rale dènye kòd la, rebati (npm run build — se sa ki aplike nouvo koulè /
+# chanjman yo), epi rekòmanse app la. Ou ka deklanche l manyèlman tou
+# (onglè Actions → Deploy to Hostinger → Run workflow).
+#
+# ⚠️  Anvan premye deplwaman: ajoute Secrets yo nan GitHub
+#     (Settings → Secrets and variables → Actions → New repository secret).
+#     Lis konplè a nan .github/workflows/README.md.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+# Anpeche 2 deplwaman kouri ansanm — dènye push la genyen.
+concurrency:
+  group: hostinger-deploy
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy over SSH
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.HOSTINGER_SSH_HOST }}
+          username: ${{ secrets.HOSTINGER_SSH_USER }}
+          key: ${{ secrets.HOSTINGER_SSH_KEY }}
+          port: ${{ secrets.HOSTINGER_SSH_PORT }}
+          command_timeout: 20m
+          script: |
+            set -euo pipefail
+
+            echo "→ Ale nan dosye app la"
+            cd "${{ secrets.HOSTINGER_APP_PATH }}"
+
+            echo "→ Rale dènye kòd la depi origin/main"
+            git fetch --all --prune
+            git reset --hard origin/main
+
+            # NEXT_PUBLIC_* dwe prezan PANDAN build la, otreman paj la parèt
+            # san style. Nou enjekte yo isit soti nan GitHub Secrets pou
+            # build la toujou konplè, kèlkeswa jan Hostinger konfigire env.
+            export NEXT_PUBLIC_SUPABASE_URL="${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}"
+            export NEXT_PUBLIC_SUPABASE_ANON_KEY="${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}"
+            export NEXT_PUBLIC_SITE_URL="${{ secrets.NEXT_PUBLIC_SITE_URL }}"
+
+            echo "→ Enstale depandans yo (npm ci)"
+            npm ci
+
+            echo "→ Rebati (npm run build)"
+            npm run build
+
+            # Rekòmanse app la. Konfigirasyon Node.js Hostinger (Passenger)
+            # rekòmanse lè fichye tmp/restart.txt la chanje. Si enstalasyon w
+            # sèvi ak PM2 pito, ranplase liy sa a pa: pm2 reload all
+            echo "→ Rekòmanse app la"
+            mkdir -p tmp && touch tmp/restart.txt
+
+            echo "✓ Deplwaman fini"
