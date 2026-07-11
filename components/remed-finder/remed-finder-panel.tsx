@@ -9,7 +9,7 @@
 // Mobile: bottom sheet. Desktop (sm+): 400px panel anchored bottom-right.
 
 import React from 'react';
-import { Search, X, Loader2, Sparkles } from 'lucide-react';
+import { Search, X, Loader2, Sparkles, Stethoscope } from 'lucide-react';
 import { useRemedSearch, normalizeQuery } from './use-remed-search';
 import ConditionChips from './condition-chips';
 import ProductCard from './product-card';
@@ -20,15 +20,17 @@ const DISCLAIMER =
   'ou itilize remèd fèy, sitou si w ap pran medikaman. Kite yon espas 2 èdtan ant ' +
   'pwodui fèy yo ak medikaman preskri yo.';
 
-/** Doktè Maton avatar — a stethoscope in a green bubble with an AI spark. */
+/** Doktè Maton avatar — a dark-green doctor icon on a pale-green bubble
+ *  (high contrast) with a small gold AI spark. */
 function DrAvatar({ size = 'md' }: { size?: 'sm' | 'md' }) {
-  const dim = size === 'sm' ? 'w-7 h-7 text-sm' : 'w-9 h-9 text-lg';
+  const dim = size === 'sm' ? 'w-7 h-7' : 'w-9 h-9';
+  const icon = size === 'sm' ? 'w-3.5 h-3.5' : 'w-[18px] h-[18px]';
   return (
     <span
-      className={`relative grid place-items-center ${dim} rounded-full bg-gradient-to-br from-forest-600 to-forest-800 text-cream-50 shrink-0`}
+      className={`relative grid place-items-center ${dim} rounded-full bg-forest-100 text-forest-700 border border-forest-200 shrink-0`}
       aria-hidden
     >
-      <span>🩺</span>
+      <Stethoscope className={icon} strokeWidth={2.2} />
       <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-gold-400 border-2 border-white grid place-items-center">
         <Sparkles className="w-1.5 h-1.5 text-forest-900" strokeWidth={3} />
       </span>
