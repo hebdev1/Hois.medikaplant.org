@@ -141,7 +141,7 @@ export async function adminUpsertCategory(
   const description =
     (formData.get('description')?.toString() ?? '').trim() || null;
   const color =
-    (formData.get('color')?.toString() ?? '').trim() || '#5A9138';
+    (formData.get('color')?.toString() ?? '').trim() || '#65881a';
   const icon = (formData.get('icon')?.toString() ?? '').trim() || null;
   const displayOrderRaw = formData.get('display_order')?.toString() ?? '0';
   const display_order = Math.max(0, Number.parseInt(displayOrderRaw, 10) || 0);
@@ -149,7 +149,7 @@ export async function adminUpsertCategory(
   if (name.length < 2) return { error: 'Non kategori a twò kout.' };
   if (name.length > 60) return { error: 'Non kategori a twò long.' };
   if (!/^#[0-9a-f]{3,8}$/i.test(color)) {
-    return { error: 'Koulè dwe yon kòd hex (ex. #5A9138).' };
+    return { error: 'Koulè dwe yon kòd hex (ex. #65881a).' };
   }
 
   if (id) {

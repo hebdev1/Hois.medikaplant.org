@@ -13,15 +13,15 @@ export default function Radial({ value, size = 84 }: RadialProps) {
       <svg viewBox="0 0 84 84" className="w-full h-full -rotate-90">
         <defs>
           <linearGradient id="radialGradient" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="#C9A227" />
-            <stop offset="100%" stopColor="#5A9138" />
+            <stop offset="0%" stopColor="#e78e17" />
+            <stop offset="100%" stopColor="#65881a" />
           </linearGradient>
         </defs>
         <circle
           cx="42"
           cy="42"
           r={r}
-          stroke="#e6f1de"
+          stroke="#eaefce"
           strokeWidth="7"
           fill="none"
         />

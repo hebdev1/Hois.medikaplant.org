@@ -33,7 +33,7 @@ export default function HealthLineChart({
   targetMax,
   unit,
   rangeDays,
-  stroke = { from: '#2D5A1B', to: '#C9A227' },
+  stroke = { from: '#435b12', to: '#e78e17' },
 }: Props) {
   const W = 900;
   const H = 280;
@@ -105,7 +105,7 @@ export default function HealthLineChart({
         y={zoneTop}
         width={innerW}
         height={Math.max(2, zoneBottom - zoneTop)}
-        fill="#7AAF52"
+        fill="#93b031"
         opacity="0.1"
       />
       <line
@@ -113,7 +113,7 @@ export default function HealthLineChart({
         x2={PAD_L + innerW}
         y1={zoneTop}
         y2={zoneTop}
-        stroke="#7AAF52"
+        stroke="#93b031"
         strokeDasharray="3 4"
         strokeWidth="1"
       />
@@ -122,7 +122,7 @@ export default function HealthLineChart({
         x2={PAD_L + innerW}
         y1={zoneBottom}
         y2={zoneBottom}
-        stroke="#7AAF52"
+        stroke="#93b031"
         strokeDasharray="3 4"
         strokeWidth="1"
       />
@@ -131,7 +131,7 @@ export default function HealthLineChart({
         y={zoneTop - 6}
         textAnchor="end"
         fontSize="10"
-        fill="#5A9138"
+        fill="#65881a"
         fontWeight="600"
       >
         Zòn sib {targetMin}–{targetMax} {unit}
@@ -179,7 +179,7 @@ export default function HealthLineChart({
           cy={py}
           r={i === lastIdx ? 4.5 : 3.2}
           fill="#FFFDF8"
-          stroke={i === lastIdx ? '#C9A227' : '#2D5A1B'}
+          stroke={i === lastIdx ? '#e78e17' : '#435b12'}
           strokeWidth={i === lastIdx ? 2.5 : 1.8}
         />
       ))}
@@ -201,7 +201,7 @@ export default function HealthLineChart({
                 width={w}
                 height={22}
                 rx="6"
-                fill="#1E3A0F"
+                fill="#33450e"
               />
               <text
                 x={Math.min(W - PAD_R - w / 2, Math.max(PAD_L + w / 2, px))}

@@ -201,9 +201,9 @@ function renderReplyEmail({
         <td align="center">
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#ffffff;border-radius:16px;overflow:hidden;border:1px solid #e7e5dd;">
             <tr>
-              <td style="background:linear-gradient(135deg,#16a34a,#166534);padding:24px 28px;">
+              <td style="background:linear-gradient(135deg,#587d17,#354b0f);padding:24px 28px;">
                 <span style="color:#ffffff;font-size:18px;font-weight:700;letter-spacing:-0.01em;">MedikaPlant</span>
-                <span style="color:#bbf7d0;font-size:11px;text-transform:uppercase;letter-spacing:0.18em;display:block;margin-top:2px;">Hoïs Inivèsite</span>
+                <span style="color:#d0e394;font-size:11px;text-transform:uppercase;letter-spacing:0.18em;display:block;margin-top:2px;">Hoïs Inivèsite</span>
               </td>
             </tr>
             <tr>

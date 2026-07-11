@@ -241,7 +241,7 @@ function FeaturedHero({ featured, saved }: { featured: Guide; saved: boolean }) 
         className="absolute inset-0 opacity-20 pointer-events-none"
         style={{
           backgroundImage:
-            'radial-gradient(circle at 1px 1px, rgba(201,162,39,0.35) 1px, transparent 0)',
+            'radial-gradient(circle at 1px 1px, rgba(231, 142, 23,0.35) 1px, transparent 0)',
           backgroundSize: '24px 24px',
         }}
         aria-hidden

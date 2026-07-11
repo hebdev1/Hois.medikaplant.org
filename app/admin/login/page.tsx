@@ -47,7 +47,7 @@ export default async function AdminLoginPage({
         className="pointer-events-none absolute -top-32 -left-32 w-[420px] h-[420px] rounded-full opacity-30 blur-3xl"
         style={{
           background:
-            'radial-gradient(circle at center, #c9a227 0%, transparent 60%)',
+            'radial-gradient(circle at center, #e78e17 0%, transparent 60%)',
         }}
       />
       <div
@@ -55,7 +55,7 @@ export default async function AdminLoginPage({
         className="pointer-events-none absolute -bottom-40 -right-32 w-[520px] h-[520px] rounded-full opacity-25 blur-3xl"
         style={{
           background:
-            'radial-gradient(circle at center, #5A9138 0%, transparent 60%)',
+            'radial-gradient(circle at center, #65881a 0%, transparent 60%)',
         }}
       />
 

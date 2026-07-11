@@ -317,11 +317,11 @@ function brandedTemplate({
   const button =
     linkUrl && linkLabel
       ? `<div style="margin:24px 0 8px;">
-           <a href="${linkUrl}" style="display:inline-block;background:#16a34a;color:#ffffff;text-decoration:none;font-weight:600;font-size:14px;padding:14px 28px;border-radius:9999px;">${escape(linkLabel)}</a>
+           <a href="${linkUrl}" style="display:inline-block;background:#587d17;color:#ffffff;text-decoration:none;font-weight:600;font-size:14px;padding:14px 28px;border-radius:9999px;">${escape(linkLabel)}</a>
          </div>
          <p style="margin:8px 0 0;color:#8a8699;font-size:11px;word-break:break-all;">
            Si bouton an pa mache, kopye lyen sa nan navigatè ou:<br/>
-           <a href="${linkUrl}" style="color:#16a34a;text-decoration:underline;">${linkUrl}</a>
+           <a href="${linkUrl}" style="color:#587d17;text-decoration:underline;">${linkUrl}</a>
          </p>`
       : '';
 
@@ -333,9 +333,9 @@ function brandedTemplate({
         <td align="center">
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;background:#ffffff;border-radius:16px;overflow:hidden;border:1px solid #e7e5dd;">
             <tr>
-              <td style="background:linear-gradient(135deg,#16a34a,#166534);padding:24px 28px;">
+              <td style="background:linear-gradient(135deg,#587d17,#354b0f);padding:24px 28px;">
                 <span style="color:#ffffff;font-size:18px;font-weight:700;letter-spacing:-0.01em;">MedikaPlant</span>
-                <span style="color:#bbf7d0;font-size:11px;text-transform:uppercase;letter-spacing:0.18em;display:block;margin-top:2px;">Hoïs Inivèsite</span>
+                <span style="color:#d0e394;font-size:11px;text-transform:uppercase;letter-spacing:0.18em;display:block;margin-top:2px;">Hoïs Inivèsite</span>
               </td>
             </tr>
             <tr>

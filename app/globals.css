@@ -5,13 +5,13 @@
 :root {
   --background: 255 255 255;
   --foreground: 5 0 64;
-  --brand: 22 163 74;
-  --accent: 196 49 120;
+  --brand: 88 125 23;
+  --accent: 210 76 40;
 
   /* shadcn-compatible HSL token map for <Button>, <Badge>, etc.
-     Anchored to the existing forest+gold+cream palette instead of
-     shadcn's default neutral blue — see tailwind.config.ts. */
-  --primary: 96 53% 23%;
+     Anchored to the forest(green)+gold(tangerine)+cream palette instead
+     of shadcn's default neutral blue — see tailwind.config.ts. */
+  --primary: 80 67% 21%;
   --primary-foreground: 39 67% 98%;
   --secondary: 39 50% 95%;
   --secondary-foreground: 245 100% 13%;
@@ -23,7 +23,7 @@
   --destructive-foreground: 0 0% 100%;
   --border: 39 47% 89%;
   --input: 39 47% 89%;
-  --ring: 96 40% 51%;
+  --ring: 79 68% 32%;
 }
 
 html,
@@ -90,19 +90,19 @@ html {
 /* Subtle leaf pattern background */
 .leaf-grid {
   background-image:
-    radial-gradient(circle at 1px 1px, rgba(22, 101, 52, 0.08) 1px, transparent 0);
+    radial-gradient(circle at 1px 1px, rgba(67, 91, 18, 0.08) 1px, transparent 0);
   background-size: 28px 28px;
 }
 
 /* Gradient utilities */
 .bg-brand-gradient {
-  background-image: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+  background-image: linear-gradient(135deg, #587d17 0%, #456012 100%);
 }
 .bg-accent-gradient {
-  background-image: linear-gradient(135deg, #c43178 0%, #9d2961 100%);
+  background-image: linear-gradient(135deg, #d24c28 0%, #a83a1e 100%);
 }
 .bg-popular-gradient {
-  background-image: linear-gradient(135deg, #5eead4 0%, #14b8a6 100%);
+  background-image: linear-gradient(135deg, #e78e17 0%, #d24c28 100%);
 }
 
 /* Card lift on hover */
@@ -167,15 +167,15 @@ html {
   margin: 0.25rem 0;
 }
 .guide-rich-body ul li::marker {
-  color: #3f7522;
+  color: #547216;
 }
 .guide-rich-body blockquote {
-  border-left: 3px solid #5a9138;
+  border-left: 3px solid #65881a;
   margin: 1rem 0;
   padding: 0.35rem 1rem;
   color: #5b5a7a;
   font-style: italic;
-  background: #f3f8ef;
+  background: #f6f8ec;
   border-radius: 0 0.5rem 0.5rem 0;
 }
 .guide-rich-body img {
@@ -186,12 +186,12 @@ html {
   box-shadow: 0 12px 40px -16px rgba(5, 0, 64, 0.18);
 }
 .guide-rich-body a {
-  color: #2d5a1b;
+  color: #435b12;
   text-decoration: underline;
   text-underline-offset: 2px;
 }
 .guide-rich-body a:hover {
-  color: #1e3a0f;
+  color: #33450e;
 }
 .guide-rich-body code {
   background: #f1ead7;
@@ -201,7 +201,7 @@ html {
   font-size: 0.9em;
 }
 .guide-rich-body pre {
-  background: #1e3a0f;
+  background: #33450e;
   color: #fefcf6;
   padding: 1rem;
   border-radius: 0.75rem;
@@ -298,7 +298,7 @@ html {
 
 /* ── High contrast: borders darken, links underlined ──────────────────── */
 .high-contrast {
-  --high-contrast-border: #1e3a0f;
+  --high-contrast-border: #33450e;
 }
 .high-contrast a:not([class*='btn']):not([class*='Button']) {
   text-decoration: underline;
@@ -319,21 +319,21 @@ html {
    Anything else keeps the brand palette. */
 :root[data-accent='gold'] .text-forest-700,
 :root[data-accent='gold'] .text-forest-600 {
-  color: #856915 !important;
+  color: #985c0c !important;
 }
 :root[data-accent='gold'] .bg-forest-700,
 :root[data-accent='gold'] .bg-forest-600,
 :root[data-accent='gold'] .bg-forest-500 {
-  background-color: #c9a227 !important;
-  color: #1e3a0f !important;
+  background-color: #e78e17 !important;
+  color: #33450e !important;
 }
 :root[data-accent='gold'] .bg-forest-100,
 :root[data-accent='gold'] .bg-forest-50 {
-  background-color: #faedc2 !important;
+  background-color: #fbe4bb !important;
 }
 :root[data-accent='gold'] .border-forest-200,
 :root[data-accent='gold'] .border-forest-300 {
-  border-color: #e0c155 !important;
+  border-color: #eeac41 !important;
 }
 
 /* ── Dark mode palette ─────────────────────────────────────────────────── */

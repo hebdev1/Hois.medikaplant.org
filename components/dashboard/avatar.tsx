@@ -37,7 +37,7 @@ export default function Avatar({
           display: 'block',
           objectFit: 'cover',
           boxShadow: bordered
-            ? '0 0 0 2px var(--brand-primary, #5a9138)'
+            ? '0 0 0 2px var(--brand-primary, #65881a)'
             : 'none',
         }}
       />
@@ -51,19 +51,19 @@ export default function Avatar({
       style={{
         borderRadius: '50%',
         display: 'block',
-        boxShadow: bordered ? '0 0 0 2px var(--brand-primary, #5a9138)' : 'none',
+        boxShadow: bordered ? '0 0 0 2px var(--brand-primary, #65881a)' : 'none',
       }}
     >
       <defs>
         <linearGradient id="avBg" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#7AAF52" />
-          <stop offset="100%" stopColor="#2D5A1B" />
+          <stop offset="0%" stopColor="#93b031" />
+          <stop offset="100%" stopColor="#435b12" />
         </linearGradient>
       </defs>
       <rect width="80" height="80" fill="url(#avBg)" />
       <path
         d="M 8 80 C 14 60 26 56 40 56 C 54 56 66 60 72 80 Z"
-        fill="#C9A227"
+        fill="#e78e17"
       />
       <path
         d="M 30 56 C 30 58 34 62 40 62 C 46 62 50 58 50 56 Z"
@@ -80,8 +80,8 @@ export default function Avatar({
       <circle cx="40" cy="22" r="4" fill="#3A2218" />
       <circle cx="48" cy="26" r="3.5" fill="#3A2218" />
       <circle cx="54" cy="32" r="3.5" fill="#3A2218" />
-      <circle cx="26" cy="44" r="1.5" fill="#C9A227" />
-      <circle cx="54" cy="44" r="1.5" fill="#C9A227" />
+      <circle cx="26" cy="44" r="1.5" fill="#e78e17" />
+      <circle cx="54" cy="44" r="1.5" fill="#e78e17" />
       <ellipse cx="34" cy="40" rx="1.4" ry="1.8" fill="#1A1A1A" />
       <ellipse cx="46" cy="40" rx="1.4" ry="1.8" fill="#1A1A1A" />
       <path
@@ -105,7 +105,7 @@ export default function Avatar({
         fill="none"
         strokeLinecap="round"
       />
-      <path d="M 56 30 Q 62 26 60 22 Q 58 24 56 28 Z" fill="#7AAF52" />
+      <path d="M 56 30 Q 62 26 60 22 Q 58 24 56 28 Z" fill="#93b031" />
     </svg>
   );
 }

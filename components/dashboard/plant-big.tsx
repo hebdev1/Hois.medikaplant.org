@@ -17,7 +17,7 @@ type PlantBigProps = {
  */
 export default function PlantBig({
   art = 'leaf',
-  accent = '#7AAF52',
+  accent = '#93b031',
   opacity = 0.85,
   size = 200,
 }: PlantBigProps) {

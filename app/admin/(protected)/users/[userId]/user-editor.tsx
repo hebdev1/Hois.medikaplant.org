@@ -414,9 +414,9 @@ export default function UserEditor({
           label="Aksan koulè"
           value={prefs.accent}
           options={[
-            { value: 'forest', label: 'Vèt fèy', color: '#3f7522', accent: '#7aaf52' },
-            { value: 'gold', label: 'Lò Hoïs', color: '#c9a227', accent: '#e0c155' },
-            { value: 'both', label: 'Melanje', color: '#3f7522', accent: '#c9a227' },
+            { value: 'forest', label: 'Vèt fèy', color: '#547216', accent: '#93b031' },
+            { value: 'gold', label: 'Lò Hoïs', color: '#e78e17', accent: '#eeac41' },
+            { value: 'both', label: 'Melanje', color: '#547216', accent: '#e78e17' },
           ]}
           commit={commitPref('accent')}
         />

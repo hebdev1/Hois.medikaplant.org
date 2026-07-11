@@ -30,7 +30,7 @@ export default function UpsellCard({
       {/* Bottle illustration */}
       <div className="grid place-items-center w-24 h-24 md:w-28 md:h-28 rounded-2xl bg-forest-900/40 border border-cream-50/10 shrink-0">
         <svg width="80" height="80" viewBox="0 0 120 120">
-          <rect x="38" y="22" width="44" height="80" rx="10" fill="#1E3A0F" />
+          <rect x="38" y="22" width="44" height="80" rx="10" fill="#33450e" />
           <rect x="38" y="22" width="44" height="22" fill="#5C3D2E" />
           <rect x="42" y="48" width="36" height="34" rx="3" fill="#FAF6ED" />
           <text
@@ -38,7 +38,7 @@ export default function UpsellCard({
             y="62"
             fontFamily="var(--font-playfair), serif"
             fontSize="9"
-            fill="#1E3A0F"
+            fill="#33450e"
             textAnchor="middle"
             fontWeight="700"
           >
@@ -57,23 +57,23 @@ export default function UpsellCard({
           </text>
           <path
             d="M 56 92 Q 60 86 64 92"
-            stroke="#7AAF52"
+            stroke="#93b031"
             strokeWidth="1.5"
             fill="none"
           />
           <path
             d="M 20 50 Q 28 40 36 48 Q 28 55 20 50 Z"
-            fill="#7AAF52"
+            fill="#93b031"
             opacity="0.9"
           />
           <path
             d="M 100 60 Q 92 50 84 58 Q 92 65 100 60 Z"
-            fill="#5A9138"
+            fill="#65881a"
             opacity="0.9"
           />
           <path
             d="M 22 90 Q 30 84 36 92 Q 30 96 22 90 Z"
-            fill="#C9A227"
+            fill="#e78e17"
             opacity="0.75"
           />
         </svg>

@@ -39,7 +39,7 @@ const PLAN_TONE: Record<string, string> = {
 const PLAN_ACCENT: Record<string, string> = {
   basic: '#64748b',
   premium: '#0d9488',
-  vip: '#c9a227',
+  vip: '#e78e17',
 };
 const STATUS_TONE: Record<string, string> = {
   active: 'bg-forest-100 text-forest-700',

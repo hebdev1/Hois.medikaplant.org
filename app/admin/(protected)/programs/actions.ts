@@ -80,7 +80,7 @@ function readForm(formData: FormData) {
     milestone_days: milestones,
     plan_required: get('plan_required') || 'basic',
     condition_tags: tags,
-    accent_color: get('accent_color') || '#5A9138',
+    accent_color: get('accent_color') || '#65881a',
     hero_color: get('hero_color') || null,
     active: formData.get('active') === 'on',
   };
@@ -100,7 +100,7 @@ function validate(
     return { ok: false, error: 'Nivo pa valid.' };
   }
   if (!/^#[0-9A-Fa-f]{6}$/.test(input.accent_color)) {
-    return { ok: false, error: 'Koulè aksan pa valid (egz: #5A9138).' };
+    return { ok: false, error: 'Koulè aksan pa valid (egz: #65881a).' };
   }
   if (input.hero_color && !/^#[0-9A-Fa-f]{6}$/.test(input.hero_color)) {
     return { ok: false, error: 'Koulè ewo pa valid.' };

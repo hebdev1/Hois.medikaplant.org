@@ -148,7 +148,7 @@ export default function SupportChat({
       <header className="flex items-center gap-3 px-5 py-3.5 border-b border-cream-200 bg-gradient-to-r from-cream-50 to-white">
         <div
           className="grid place-items-center w-11 h-11 rounded-full text-cream-50 font-display font-bold text-base shrink-0 shadow"
-          style={{ backgroundImage: 'linear-gradient(135deg, #C9A227, #856915)' }}
+          style={{ backgroundImage: 'linear-gradient(135deg, #e78e17, #985c0c)' }}
         >
           {thread.agent_initials}
         </div>

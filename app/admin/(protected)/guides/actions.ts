@@ -74,7 +74,7 @@ function readForm(formData: FormData): FormInput {
     body_html: get('body_html'),
     category_id: get('category_id') || null,
     tag: get('tag'),
-    accent_color: get('accent_color') || '#5A9138',
+    accent_color: get('accent_color') || '#65881a',
     art: get('art') || 'leaf',
     read_minutes: Math.max(1, Math.min(120, Number(get('read_minutes')) || 5)),
     language: get('language') || 'ht',
@@ -117,7 +117,7 @@ function validate(input: FormInput): { ok: true; data: GuideInsert } | { ok: fal
     return { ok: false, error: 'Lang pa valid.' };
   }
   if (!/^#[0-9A-Fa-f]{6}$/.test(input.accent_color)) {
-    return { ok: false, error: 'Koulè aksan an pa valid (egz: #5A9138).' };
+    return { ok: false, error: 'Koulè aksan an pa valid (egz: #65881a).' };
   }
   return {
     ok: true,

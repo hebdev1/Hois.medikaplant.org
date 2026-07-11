@@ -440,7 +440,7 @@ export default async function AdminPatientPage({
           target={bsTarget}
           points={bsPoints}
           icon={Droplet}
-          accent="#5A9138"
+          accent="#65881a"
         />
         <ChartCard
           title="Pwa kò"
@@ -448,7 +448,7 @@ export default async function AdminPatientPage({
           target={wtTarget}
           points={wtPoints}
           icon={Scale}
-          accent="#C9A227"
+          accent="#e78e17"
         />
         <ChartCard
           title="Tansyon sistolik"

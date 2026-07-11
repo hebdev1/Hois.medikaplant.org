@@ -83,11 +83,11 @@ const ART_OPTIONS: { value: GuideArt; label: string }[] = [
 ];
 
 const PRESET_COLORS = [
-  '#5A9138',
+  '#65881a',
   '#3D7222',
-  '#7AAF52',
-  '#C9A227',
-  '#856915',
+  '#93b031',
+  '#e78e17',
+  '#985c0c',
   '#B73A3A',
   '#5C3D2E',
   '#3A2218',
@@ -147,7 +147,7 @@ export default function GuideForm({
       (guide?.body_markdown ? legacyMarkdownToHtml(guide.body_markdown) : ''),
     category_id: guide?.category_id ?? '',
     tag: guide?.tag ?? '',
-    accent_color: guide?.accent_color ?? '#5A9138',
+    accent_color: guide?.accent_color ?? '#65881a',
     art: (guide?.art as GuideArt) ?? 'leaf',
     read_minutes: guide?.read_minutes ?? 5,
     language: ((guide?.language as 'ht' | 'fr' | 'en') ?? 'ht'),
@@ -471,7 +471,7 @@ function CoverImageField({
             // eslint-disable-next-line @next/next/no-img-element
             <img src={value} alt="" className="w-full h-full object-cover" />
           ) : (
-            <PlantBig art="leaf" accent="#a8cb8c" opacity={0.6} size={34} />
+            <PlantBig art="leaf" accent="#c5cf5e" opacity={0.6} size={34} />
           )}
         </div>
 

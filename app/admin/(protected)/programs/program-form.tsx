@@ -40,11 +40,11 @@ type Props = {
 };
 
 const PRESET_COLORS = [
-  '#5A9138',
+  '#65881a',
   '#3D7222',
-  '#7AAF52',
-  '#C9A227',
-  '#856915',
+  '#93b031',
+  '#e78e17',
+  '#985c0c',
   '#B73A3A',
   '#5C3D2E',
   '#3A2218',
@@ -80,7 +80,7 @@ export default function ProgramForm({ mode, initial }: Props) {
     milestone_days: (initial?.milestone_days ?? [7, 14, 21, 30]).join(', '),
     plan_required: (initial?.plan_required ?? 'basic') as string,
     condition_tags: new Set<string>(initial?.condition_tags ?? []),
-    accent_color: initial?.accent_color ?? '#5A9138',
+    accent_color: initial?.accent_color ?? '#65881a',
     hero_color: initial?.hero_color ?? '',
     active: initial?.active ?? true,
   });

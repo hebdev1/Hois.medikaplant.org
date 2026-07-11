@@ -35,20 +35,20 @@ const ACCENT_VARS: Record<
   { primary: string; primaryFg: string; primarySoft: string }
 > = {
   forest: {
-    primary: '#3f7522',
+    primary: '#547216',
     primaryFg: '#fefcf6',
-    primarySoft: '#e6f1de',
+    primarySoft: '#eaefce',
   },
   gold: {
-    primary: '#c9a227',
-    primaryFg: '#1e3a0f',
-    primarySoft: '#faedc2',
+    primary: '#e78e17',
+    primaryFg: '#33450e',
+    primarySoft: '#fbe4bb',
   },
   // 'both' = brand-default. Pink accent + forest primary.
   both: {
-    primary: '#3f7522',
+    primary: '#547216',
     primaryFg: '#fefcf6',
-    primarySoft: '#e6f1de',
+    primarySoft: '#eaefce',
   },
 };
 

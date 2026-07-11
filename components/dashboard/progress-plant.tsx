@@ -44,23 +44,23 @@ export default function ProgressPlant({ day, total, todayCompletion }: ProgressP
         className="absolute inset-0 opacity-30 pointer-events-none"
         style={{
           backgroundImage:
-            'radial-gradient(circle at 1px 1px, rgba(201,162,39,0.25) 1px, transparent 0)',
+            'radial-gradient(circle at 1px 1px, rgba(231, 142, 23,0.25) 1px, transparent 0)',
           backgroundSize: '22px 22px',
         }}
       />
       <svg viewBox="0 0 260 320" className="relative z-10 w-full h-full">
         <defs>
           <linearGradient id="leafGrad" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="#7AAF52" />
-            <stop offset="100%" stopColor="#2D5A1B" />
+            <stop offset="0%" stopColor="#93b031" />
+            <stop offset="100%" stopColor="#435b12" />
           </linearGradient>
           <linearGradient id="leafGoldGrad" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="#E0C155" />
-            <stop offset="100%" stopColor="#A8851E" />
+            <stop offset="0%" stopColor="#eeac41" />
+            <stop offset="100%" stopColor="#c1750f" />
           </linearGradient>
           <radialGradient id="potGrad" cx="0.5" cy="0.2">
-            <stop offset="0%" stopColor="#E0C155" />
-            <stop offset="100%" stopColor="#856915" />
+            <stop offset="0%" stopColor="#eeac41" />
+            <stop offset="100%" stopColor="#985c0c" />
           </radialGradient>
         </defs>
 
@@ -72,7 +72,7 @@ export default function ProgressPlant({ day, total, todayCompletion }: ProgressP
           d="M 88 286 L 92 318 Q 92 320 94 320 L 166 320 Q 168 320 168 318 L 172 286 Z"
           fill="url(#potGrad)"
         />
-        <path d="M 84 282 L 176 282 L 173 290 L 87 290 Z" fill="#A8851E" />
+        <path d="M 84 282 L 176 282 L 173 290 L 87 290 Z" fill="#c1750f" />
         <text
           x="130"
           y="306"
@@ -89,7 +89,7 @@ export default function ProgressPlant({ day, total, todayCompletion }: ProgressP
         {/* Stem */}
         <path
           d={stemPath}
-          stroke="#2D5A1B"
+          stroke="#435b12"
           strokeWidth="2.4"
           fill="none"
           strokeLinecap="round"
@@ -110,7 +110,7 @@ export default function ProgressPlant({ day, total, todayCompletion }: ProgressP
             : completed
             ? 'url(#leafGrad)'
             : 'none';
-          const stroke = completed ? '#1E3A0F' : isToday ? '#C9A227' : '#7AAF52';
+          const stroke = completed ? '#33450e' : isToday ? '#e78e17' : '#93b031';
 
           return (
             <g
@@ -135,13 +135,13 @@ export default function ProgressPlant({ day, total, todayCompletion }: ProgressP
                   y1="0"
                   x2={leaf.len - 2}
                   y2="0"
-                  stroke="#1E3A0F"
+                  stroke="#33450e"
                   strokeWidth="0.6"
                   opacity="0.4"
                 />
               )}
               {isToday && (
-                <circle cx="0" cy="0" r="3" fill="#C9A227">
+                <circle cx="0" cy="0" r="3" fill="#e78e17">
                   <animate attributeName="r" values="3;5;3" dur="2s" repeatCount="indefinite" />
                   <animate
                     attributeName="opacity"
@@ -169,7 +169,7 @@ export default function ProgressPlant({ day, total, todayCompletion }: ProgressP
                 cy="-8"
                 rx="3"
                 ry="6"
-                fill="#C9A227"
+                fill="#e78e17"
                 transform={`rotate(${a})`}
                 opacity="0.9"
               />
@@ -184,7 +184,7 @@ export default function ProgressPlant({ day, total, todayCompletion }: ProgressP
             fontFamily="var(--font-playfair), serif"
             fontSize="34"
             fontWeight="700"
-            fill="#E0C155"
+            fill="#eeac41"
             textAnchor="end"
           >
             {day}

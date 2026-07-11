@@ -113,7 +113,7 @@ const ITEM_HEIGHT = 65;
 
 // HOÏS gold — see tailwind.config.ts gold-400. Hard-coded here so
 // inline arbitrary classes stay legible.
-const HOIS_GOLD = '#C9A227';
+const HOIS_GOLD = '#e78e17';
 
 const wrap = (min: number, max: number, v: number) => {
   const rangeSize = max - min;
@@ -168,14 +168,14 @@ export function FeatureCarousel() {
             className="absolute inset-x-0 top-0 h-12 md:h-20 lg:h-16 z-40"
             style={{
               background:
-                'linear-gradient(to bottom, #C9A227, rgba(201,162,39,0.8), transparent)',
+                'linear-gradient(to bottom, #e78e17, rgba(231, 142, 23,0.8), transparent)',
             }}
           />
           <div
             className="absolute inset-x-0 bottom-0 h-12 md:h-20 lg:h-16 z-40"
             style={{
               background:
-                'linear-gradient(to top, #C9A227, rgba(201,162,39,0.8), transparent)',
+                'linear-gradient(to top, #e78e17, rgba(231, 142, 23,0.8), transparent)',
             }}
           />
           <div className="relative w-full h-full flex items-center justify-center lg:justify-start z-20">

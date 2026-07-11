@@ -257,7 +257,7 @@ function CategoryForm({
         <input
           type="color"
           name="color"
-          defaultValue={category?.color ?? '#5A9138'}
+          defaultValue={category?.color ?? '#65881a'}
           className="w-full h-9 px-1 py-1 bg-white border border-cream-200 rounded-lg cursor-pointer"
         />
       </div>

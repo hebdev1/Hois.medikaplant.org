@@ -22,7 +22,7 @@ export default function HoisSection() {
         className="absolute top-20 -left-32 w-[480px] h-[480px] rounded-full blur-3xl opacity-30"
         style={{
           background:
-            'radial-gradient(circle, rgba(201,162,39,0.35) 0%, transparent 60%)',
+            'radial-gradient(circle, rgba(231, 142, 23,0.35) 0%, transparent 60%)',
         }}
       />
       <div
@@ -30,7 +30,7 @@ export default function HoisSection() {
         className="absolute bottom-10 -right-40 w-[520px] h-[520px] rounded-full blur-3xl opacity-25"
         style={{
           background:
-            'radial-gradient(circle, rgba(90,145,56,0.30) 0%, transparent 60%)',
+            'radial-gradient(circle, rgba(101, 136, 26,0.30) 0%, transparent 60%)',
         }}
       />
 
@@ -47,7 +47,7 @@ export default function HoisSection() {
               className="bg-clip-text text-transparent"
               style={{
                 backgroundImage:
-                  'linear-gradient(135deg, #C9A227 0%, #856915 50%, #5A9138 100%)',
+                  'linear-gradient(135deg, #e78e17 0%, #985c0c 50%, #65881a 100%)',
               }}
             >
               HOÏS
@@ -89,7 +89,7 @@ export default function HoisSection() {
             className="group inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full font-semibold text-white shadow-lg transition-all"
             style={{
               background:
-                'linear-gradient(135deg, #C9A227 0%, #856915 50%, #5A9138 100%)',
+                'linear-gradient(135deg, #e78e17 0%, #985c0c 50%, #65881a 100%)',
             }}
           >
             Vwayaje sou pakou HOÏS la

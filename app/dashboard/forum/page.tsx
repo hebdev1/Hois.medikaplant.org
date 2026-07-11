@@ -199,7 +199,7 @@ export default async function ForumIndexPage({
             href="/dashboard/forum"
             active={!catFilter || catFilter === 'all'}
             label="Tout"
-            color="#3f7522"
+            color="#547216"
             icon="✨"
           />
           {categories.map((c) => (

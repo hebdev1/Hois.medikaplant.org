@@ -4,8 +4,8 @@ type SparklineProps = {
 };
 
 const TONE_TO_STROKE: Record<NonNullable<SparklineProps['tone']>, string> = {
-  forest: '#5A9138',
-  gold: '#C9A227',
+  forest: '#65881a',
+  gold: '#e78e17',
   earth: '#5C3D2E',
 };
 

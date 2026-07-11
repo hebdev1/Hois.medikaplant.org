@@ -499,7 +499,7 @@ function PlaceholderStyles() {
         margin: 0.5rem 0 0.5rem 1.5rem;
       }
       .tiptap-body blockquote {
-        border-left: 3px solid #5a9138;
+        border-left: 3px solid #65881a;
         margin: 0.75rem 0;
         padding: 0.25rem 0.75rem;
         color: #5b5a7a;
@@ -512,7 +512,7 @@ function PlaceholderStyles() {
         margin: 0.75rem 0;
       }
       .tiptap-body a {
-        color: #2d5a1b;
+        color: #435b12;
         text-decoration: underline;
         text-underline-offset: 2px;
       }

@@ -47,12 +47,12 @@ export default function BrandLogo({
           x2="1"
           y2="1"
         >
-          <stop offset="0%" stopColor="#5a9138" />
-          <stop offset="100%" stopColor="#1e3a0f" />
+          <stop offset="0%" stopColor="#65881a" />
+          <stop offset="100%" stopColor="#33450e" />
         </linearGradient>
         <linearGradient id="mp-leaf" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#f3f8ef" />
-          <stop offset="100%" stopColor="#cce3bd" />
+          <stop offset="0%" stopColor="#f6f8ec" />
+          <stop offset="100%" stopColor="#dfe1b5" />
         </linearGradient>
       </defs>
 
@@ -81,7 +81,7 @@ export default function BrandLogo({
       {/* Central vein (midrib) — a soft dark line through the leaf */}
       <path
         d="M13 28 Q 20 20 28 13"
-        stroke="#1e3a0f"
+        stroke="#33450e"
         strokeWidth="1.2"
         strokeLinecap="round"
         fill="none"
@@ -91,7 +91,7 @@ export default function BrandLogo({
       {/* Two small side veins for depth */}
       <path
         d="M17 24 Q 20 22 23 20"
-        stroke="#1e3a0f"
+        stroke="#33450e"
         strokeWidth="0.7"
         strokeLinecap="round"
         fill="none"
@@ -99,7 +99,7 @@ export default function BrandLogo({
       />
       <path
         d="M20 27 Q 23 24 26 22"
-        stroke="#1e3a0f"
+        stroke="#33450e"
         strokeWidth="0.7"
         strokeLinecap="round"
         fill="none"
@@ -108,7 +108,7 @@ export default function BrandLogo({
 
       {/* Gold accent dot — the "Hoïs" mark. Sits off the leaf tip
           like a small berry / drop of gold sun. */}
-      <circle cx="30.5" cy="9.5" r="2.4" fill="#c9a227" />
+      <circle cx="30.5" cy="9.5" r="2.4" fill="#e78e17" />
       <circle cx="30.5" cy="9.5" r="2.4" fill="none" stroke="rgba(255,255,255,0.35)" strokeWidth="0.6" />
     </svg>
   );

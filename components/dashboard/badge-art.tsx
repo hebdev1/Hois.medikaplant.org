@@ -8,8 +8,8 @@ type BadgeArtProps = {
  * bottom; unlocked badges grow gold ribbons on either side.
  */
 export default function BadgeArt({ icon, unlocked }: BadgeArtProps) {
-  const main = unlocked ? '#C9A227' : '#CFC09A';
-  const dark = unlocked ? '#856915' : '#8A8A8A';
+  const main = unlocked ? '#e78e17' : '#CFC09A';
+  const dark = unlocked ? '#985c0c' : '#8A8A8A';
 
   return (
     <svg viewBox="0 0 56 56" width="42" height="42">
@@ -17,7 +17,7 @@ export default function BadgeArt({ icon, unlocked }: BadgeArtProps) {
         cx="28"
         cy="28"
         r="22"
-        fill={unlocked ? '#FDF8E7' : '#F4F4F4'}
+        fill={unlocked ? '#fdf4e1' : '#F4F4F4'}
         stroke={main}
         strokeWidth="1.5"
       />

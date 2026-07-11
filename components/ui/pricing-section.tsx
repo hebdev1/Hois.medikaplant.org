@@ -48,7 +48,7 @@ const PLANS: Plan[] = [
     yearlyOriginal: 135,
     monthly: 11.25,
     icon: Leaf,
-    accent: '#5A9138',
+    accent: '#65881a',
     features: [
       'Dokiman ak echantiyon pwodui gratis',
       'Aksè privilejye nan aktivite Hoïs',
@@ -66,7 +66,7 @@ const PLANS: Plan[] = [
     monthly: 14.58,
     popular: true,
     icon: Sparkles,
-    accent: '#C9A227',
+    accent: '#e78e17',
     features: [
       'Tout sa ki nan Bazilik',
       'Aksè davans pou li kèk pòs anvan li piblik',
@@ -83,7 +83,7 @@ const PLANS: Plan[] = [
     yearlyOriginal: 249,
     monthly: 20.75,
     icon: Crown,
-    accent: '#856915',
+    accent: '#985c0c',
     features: [
       'Tout sa ki nan Sitwonèl',
       'Konsiltasyon patikilye sou ka maladi mistik',
@@ -118,8 +118,8 @@ function PricingSwitch({
               className="absolute top-0 left-0 h-12 w-full rounded-xl shadow-sm"
               style={{
                 background:
-                  'linear-gradient(to top, #2D5A1B, #5A9138, #2D5A1B)',
-                border: '2px solid #2D5A1B',
+                  'linear-gradient(to top, #435b12, #65881a, #435b12)',
+                border: '2px solid #435b12',
                 boxShadow: '0 6px 24px -8px rgba(45,90,27,0.55)',
               }}
               transition={{ type: 'spring', stiffness: 500, damping: 30 }}
@@ -142,8 +142,8 @@ function PricingSwitch({
               className="absolute top-0 left-0 h-12 w-full rounded-xl shadow-sm"
               style={{
                 background:
-                  'linear-gradient(to top, #856915, #C9A227, #856915)',
-                border: '2px solid #856915',
+                  'linear-gradient(to top, #985c0c, #e78e17, #985c0c)',
+                border: '2px solid #985c0c',
                 boxShadow: '0 6px 24px -8px rgba(133,105,21,0.55)',
               }}
               transition={{ type: 'spring', stiffness: 500, damping: 30 }}
@@ -310,7 +310,7 @@ export default function PricingSection() {
                           className="text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider whitespace-nowrap shadow"
                           style={{
                             background:
-                              'linear-gradient(135deg, #C9A227, #856915)',
+                              'linear-gradient(135deg, #e78e17, #985c0c)',
                           }}
                         >
                           ★ Best Value
@@ -331,9 +331,9 @@ export default function PricingSection() {
                           <span
                             className="ml-2 inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider"
                             style={{
-                              background: '#C9A2271A',
-                              color: '#856915',
-                              border: '1px solid #C9A22740',
+                              background: '#e78e171A',
+                              color: '#985c0c',
+                              border: '1px solid #e78e1740',
                             }}
                           >
                             Ekonomize ${savingAnnual.toFixed(2)}
@@ -380,7 +380,7 @@ export default function PricingSection() {
                         plan.popular
                           ? {
                               background:
-                                'linear-gradient(to top, #856915, #C9A227, #856915)',
+                                'linear-gradient(to top, #985c0c, #e78e17, #985c0c)',
                               boxShadow:
                                 '0 10px 30px -10px rgba(133,105,21,0.55)',
                             }

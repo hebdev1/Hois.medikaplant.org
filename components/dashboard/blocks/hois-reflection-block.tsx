@@ -62,7 +62,7 @@ export default function HoisReflectionBlock() {
         className="absolute inset-0 opacity-40"
         style={{
           backgroundImage:
-            'radial-gradient(circle at 80% 20%, rgba(201,162,39,0.25), transparent 45%), radial-gradient(circle at 15% 90%, rgba(122,175,82,0.2), transparent 40%)',
+            'radial-gradient(circle at 80% 20%, rgba(231, 142, 23,0.25), transparent 45%), radial-gradient(circle at 15% 90%, rgba(122,175,82,0.2), transparent 40%)',
         }}
       />
       <div className="relative p-6 md:p-8">
