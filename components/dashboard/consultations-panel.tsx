@@ -28,8 +28,8 @@ export default function ConsultationsPanel() {
             </em>
           </h2>
           <p className="mt-2 text-sm text-cream-200/90 leading-relaxed max-w-xl">
-            Pwograme yon randevou ak yon èrboris Hoïs sou medikaplantshop.com.
-            Vidyo, telefòn, oswa an pèsòn — chwazi sa ki pi bon pou ou epi
+            Pwograme yon randevou ak yon doktè Hoïs sou medikaplantshop.com.
+            Videyo, telefòn. chwazi sa ki pi bon pou ou epi
             peye dirèkteman sou boutik la.
           </p>
 
