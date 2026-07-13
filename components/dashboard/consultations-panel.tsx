@@ -37,7 +37,7 @@ export default function ConsultationsPanel() {
           <ul className="mt-4 flex flex-wrap gap-2 text-[11px] font-semibold">
             <ModalityChip
               icon={<Video className="w-3 h-3" strokeWidth={2.4} />}
-              label="Vidyo"
+              label="Videyo"
             />
             <ModalityChip
               icon={<Phone className="w-3 h-3" strokeWidth={2.4} />}
