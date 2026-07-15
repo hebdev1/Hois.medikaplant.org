@@ -111,7 +111,7 @@ export async function POST(req: Request) {
       'Men yon koudèy sou aktivite ou semèn ki sot pase a:',
     ];
     if (nLogs > 0) body.push(`📊 ${nLogs} antre sou swivi sante w (sik, tansyon, pwa, kè…)`);
-    if (nTasks > 0) body.push(`✅ ${nTasks} tach pwogram ou konplete`);
+    if (nTasks > 0) body.push(`✅ ${nTasks} tach pwotokòl ou konplete`);
     if (nBadges > 0) body.push(`🏆 ${nBadges} nouvo badj ou debloke`);
     body.push(
       'Kontinye konsa — chak ti pa konte. Ou pral wè evolisyon w nan ' +

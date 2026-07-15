@@ -312,7 +312,7 @@ export default function GuideForm({
               value={values.tag}
               onChange={(e) => set('tag', e.target.value)}
               className={inputClass}
-              placeholder="Egz: Plant, Konsèy, Pwogram…"
+              placeholder="Egz: Plant, Konsèy, Pwotokòl…"
             />
           </Field>
           <Field label="Lang">

@@ -57,7 +57,7 @@ const TIMELINE = [
     year: '2023',
     title: 'Nesans HOÏS Inivèsite',
     body:
-      'Kreasyon yon pwogram fòmasyon konplè ki kombine plant tradisyonèl ak swivi pèsonalize pou chak kondisyon.',
+      'Kreasyon yon pwotokòl fòmasyon konplè ki kombine plant tradisyonèl ak swivi pèsonalize pou chak kondisyon.',
   },
   {
     year: '2026',

@@ -71,7 +71,7 @@ export default function ProgramActions({
           onClick={() => {
             if (
               window.confirm(
-                'Èske w sèten ou vle make plan sa a kòm konplè? Lè w konfime, plan an ap fèmen epi w ap kapab kòmanse yon nouvo pwogram.'
+                'Èske w sèten ou vle make plan sa a kòm konplè? Lè w konfime, plan an ap fèmen epi w ap kapab kòmanse yon nouvo pwotokòl.'
               )
             ) {
               run('finish');

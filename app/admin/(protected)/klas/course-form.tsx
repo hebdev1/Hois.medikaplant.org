@@ -206,7 +206,7 @@ export default function CourseForm({ mode, initial, categories }: Props) {
                 />
               </Field>
               <Field
-                label="Pwogram sesyon yo"
+                label="Pwotokòl sesyon yo"
                 help="Egz: Chak Madi ak Jedi 7pm Ayiti · 90 min"
               >
                 <input

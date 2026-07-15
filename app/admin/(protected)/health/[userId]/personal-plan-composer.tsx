@@ -248,8 +248,8 @@ export default function PersonalPlanComposer({
           Konstwi yon plan pou manm sa
         </h2>
         <p className="text-sm text-earth-600 mt-1">
-          Kreye yon pwogram chak jou ki sib kondisyon ak objektif manm nan.
-          Plan an ap parèt kòm pwogram aktif li sou tablodebò a.
+          Kreye yon pwotokòl chak jou ki sib kondisyon ak objektif manm nan.
+          Plan an ap parèt kòm pwotokòl aktif li sou tablodebò a.
         </p>
 
         {/* Patient context */}

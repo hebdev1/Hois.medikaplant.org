@@ -34,7 +34,7 @@ async function assertAdmin() {
   if (!hasCapability(row.admin_role, 'manage_programs')) {
     return {
       ok: false as const,
-      error: 'Ou pa gen pèmisyon pou jere pwogram yo.',
+      error: 'Ou pa gen pèmisyon pou jere pwotokòl yo.',
     };
   }
   return { ok: true as const, user, supabase };
@@ -89,8 +89,8 @@ function readForm(formData: FormData) {
 function validate(
   input: ReturnType<typeof readForm>
 ): { ok: true; data: ProgramInsert } | { ok: false; error: string } {
-  if (input.name.length < 3) return { ok: false, error: 'Non pwogram twò kout.' };
-  if (input.name.length > 120) return { ok: false, error: 'Non pwogram twò long.' };
+  if (input.name.length < 3) return { ok: false, error: 'Non pwotokòl twò kout.' };
+  if (input.name.length > 120) return { ok: false, error: 'Non pwotokòl twò long.' };
   const slug = input.slug ? slugify(input.slug) : slugify(input.name);
   if (slug.length < 2) return { ok: false, error: 'Slug la pa valid.' };
   if (!PLAN_VALUES.includes(input.plan_required as Plan)) {
@@ -183,7 +183,7 @@ export async function toggleProgramActive(
     .eq('id', id)
     .maybeSingle();
   const c = current as { active: boolean } | null;
-  if (!c) return { ok: false, error: 'Pwogram lan pa egziste.' };
+  if (!c) return { ok: false, error: 'Pwotokòl la pa egziste.' };
 
   const next = !c.active;
   const { error } = await auth.supabase
@@ -240,7 +240,7 @@ export async function deleteProgram(
   if ((count ?? 0) > 0) {
     return {
       ok: false,
-      error: `Pa ka efase — ${count} manm gen pwogram sa a aktif. Dezaktive li dabò.`,
+      error: `Pa ka efase — ${count} manm gen pwotokòl sa a aktif. Dezaktive li dabò.`,
     };
   }
 
@@ -269,7 +269,7 @@ export async function duplicateProgram(
     .eq('id', id)
     .maybeSingle();
   const src = srcRaw as ProgramRow | null;
-  if (!src) return { ok: false, error: 'Pwogram sous la pa egziste.' };
+  if (!src) return { ok: false, error: 'Pwotokòl sous la pa egziste.' };
 
   // Craft a fresh slug: "<original>-kopi-2", incrementing until unused.
   const base = `${src.slug}-kopi`;

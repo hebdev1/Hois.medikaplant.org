@@ -20,7 +20,7 @@ import type { Database } from '@/types/database';
 
 type ProgramRow = Database['public']['Tables']['programs']['Row'];
 
-export const metadata = { title: 'Admin · Pwogram' };
+export const metadata = { title: 'Admin · Pwotokòl' };
 export const dynamic = 'force-dynamic';
 
 const PLAN_LABEL: Record<string, string> = {
@@ -120,14 +120,14 @@ export default async function AdminProgramsPage({
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-forest-100 text-forest-800 text-xs font-semibold mb-3">
             <FolderKanban className="w-3.5 h-3.5" strokeWidth={2.2} />
-            Admin · Pwogram
+            Admin · Pwotokòl
           </div>
           <h1 className="font-display text-3xl md:text-4xl font-bold tracking-tight text-ink">
-            Jere tout pwogram Hoïs yo
+            Jere tout pwotokòl Hoïs yo
           </h1>
           <p className="mt-2 text-sm text-earth-600 max-w-2xl">
-            Kreye, modifye, dezaktive oswa bloke pwogram yo pou yon plan
-            espesifik. Chak pwogram gen tach jou pa jou nan tab kalandriye a.
+            Kreye, modifye, dezaktive oswa bloke pwotokòl yo pou yon plan
+            espesifik. Chak pwotokòl gen tach jou pa jou nan tab kalandriye a.
           </p>
         </div>
         <Link
@@ -135,7 +135,7 @@ export default async function AdminProgramsPage({
           className="inline-flex items-center gap-1.5 px-4 py-2.5 text-sm font-semibold bg-forest-700 hover:bg-forest-800 text-cream-50 rounded-xl transition shrink-0"
         >
           <PlusCircle className="w-4 h-4" strokeWidth={2.4} />
-          Nouvo pwogram
+          Nouvo pwotokòl
         </Link>
       </header>
 
@@ -158,9 +158,9 @@ export default async function AdminProgramsPage({
       {/* ── Program cards ────────────────────────────────────────────── */}
       {programs.length === 0 ? (
         <div className="rounded-2xl border border-cream-200 bg-white p-8 text-center text-sm text-earth-600">
-          Pa gen okenn pwogram nan filtre sa a.{' '}
+          Pa gen okenn pwotokòl nan filtre sa a.{' '}
           <Link href="/admin/programs/new" className="text-forest-700 font-semibold underline">
-            Kreye premye pwogram nan
+            Kreye premye pwotokòl la
           </Link>
           .
         </div>
@@ -263,7 +263,7 @@ export default async function AdminProgramsPage({
                   ) : (
                     <div className="text-[10px] text-amber-700 italic inline-flex items-center gap-1">
                       <Sparkles className="w-3 h-3" strokeWidth={2.4} />
-                      Pa gen tag — pwogram jeneral pou tout moun
+                      Pa gen tag — pwotokòl jeneral pou tout moun
                     </div>
                   )}
                 </div>

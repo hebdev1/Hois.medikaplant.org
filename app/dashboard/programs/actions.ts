@@ -37,7 +37,7 @@ export async function enrollInProgram(
     .eq('id', programId)
     .maybeSingle();
   if (!program || !(program as { active: boolean }).active) {
-    return { ok: false, error: 'Pwogram sa pa disponib.' };
+    return { ok: false, error: 'Pwotokòl sa pa disponib.' };
   }
 
   // Deactivate any current active enrollment (don't mark finished — pause-style)
@@ -76,8 +76,8 @@ export async function pauseActiveProgram(): Promise<ProgramActionResult> {
     .maybeSingle();
 
   const enrollment = row as { id: string; paused_at: string | null } | null;
-  if (!enrollment) return { ok: false, error: 'Pa gen pwogram aktif.' };
-  if (enrollment.paused_at) return { ok: false, error: 'Pwogram nan deja poze.' };
+  if (!enrollment) return { ok: false, error: 'Pa gen pwotokòl aktif.' };
+  if (enrollment.paused_at) return { ok: false, error: 'Pwotokòl la deja poze.' };
 
   const { error } = await supabase
     .from('user_programs')
@@ -110,8 +110,8 @@ export async function resumeActiveProgram(): Promise<ProgramActionResult> {
     paused_at: string | null;
     pause_offset_seconds: number;
   } | null;
-  if (!enrollment) return { ok: false, error: 'Pa gen pwogram aktif.' };
-  if (!enrollment.paused_at) return { ok: false, error: 'Pwogram nan pa poze.' };
+  if (!enrollment) return { ok: false, error: 'Pa gen pwotokòl aktif.' };
+  if (!enrollment.paused_at) return { ok: false, error: 'Pwotokòl la pa poze.' };
 
   const pausedAtMs = new Date(enrollment.paused_at).getTime();
   const elapsedSeconds = Math.max(0, Math.floor((Date.now() - pausedAtMs) / 1000));

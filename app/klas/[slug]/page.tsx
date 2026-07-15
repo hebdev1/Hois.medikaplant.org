@@ -390,7 +390,7 @@ export default async function CourseDetailPage({
                 <div className="rounded-xl bg-cream-100 px-3 py-2.5 text-xs text-earth-700">
                   <div className="inline-flex items-center gap-1.5 font-semibold mb-0.5">
                     <Calendar className="w-3 h-3" strokeWidth={2.4} />
-                    Pwogram sesyon yo
+                    Pwotokòl sesyon yo
                   </div>
                   <p className="text-[11px] leading-snug">
                     {course.zoom_schedule.text}

@@ -45,9 +45,9 @@ const STEPS: DriveStep[] = [
   {
     element: '[data-tour="nav-dashboard-programs"]',
     popover: {
-      title: '📒 Pwogram mwen yo',
+      title: '📒 Pwotokòl mwen yo',
       description:
-        'Tout pwogram pèsonalize w yo, ak tach pa jou pou kondisyon sante w lan.',
+        'Tout pwotokòl pèsonalize w yo, ak tach pa jou pou kondisyon sante w lan.',
       side: 'right',
       align: 'start',
     },

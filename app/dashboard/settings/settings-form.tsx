@@ -410,7 +410,7 @@ export default function SettingsForm({
         )}
         <TextareaSetting
           label="Alèji"
-          description="Endike plant, manje, oswa medikaman ki ba w alèji. Enfòmasyon sa a enpòtan pou ede nou evite rekòmandasyon ki pa apwopriye, sitou anvan nenpòt pwogram tizan."
+          description="Endike plant, manje, oswa medikaman ki ba w alèji. Enfòmasyon sa a enpòtan pou ede nou evite rekòmandasyon ki pa apwopriye, sitou anvan nenpòt pwotokòl tizan."
           value={medical.allergies}
           placeholder="Egz: nwa, krevèt, penisilin…"
           rows={2}
@@ -651,7 +651,7 @@ export default function SettingsForm({
         />
         <ToggleSetting
           label="Pèmèt itilizasyon pou rechèch"
-          description="Done anonim sèlman, pou ede amelyore pwogram Hoïs yo."
+          description="Done anonim sèlman, pou ede amelyore pwotokòl Hoïs yo."
           value={prefs.allow_research_use}
           commit={commitPref('allow_research_use')}
         />

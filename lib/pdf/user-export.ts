@@ -494,7 +494,7 @@ function renderHealthLogs(b: PdfBuilder, data: ExportData) {
 
 function renderPrograms(b: PdfBuilder, data: ExportData) {
   const rows = asArray(data.programs);
-  b.sectionTitle(`7 · Pwogram (${rows.length})`);
+  b.sectionTitle(`7 · Pwotokòl (${rows.length})`);
   b.listRows(
     rows.map((r) => ({
       program: safe(r.program_id),
@@ -503,7 +503,7 @@ function renderPrograms(b: PdfBuilder, data: ExportData) {
       started: formatDateOnly(r.started_at),
     })),
     [
-      { key: 'program', label: 'Pwogram', width: 200 },
+      { key: 'program', label: 'Pwotokòl', width: 200 },
       { key: 'status', label: 'Eta', width: 90 },
       { key: 'progress', label: 'Pwogrè', width: 80 },
       { key: 'started', label: 'Kòmanse', width: 110 },

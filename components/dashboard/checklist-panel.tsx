@@ -80,7 +80,7 @@ export default function ChecklistPanel({ initialTasks }: ChecklistPanelProps) {
           href="/dashboard/programs"
           className="inline-flex items-center gap-1 text-xs font-semibold text-forest-700 hover:text-forest-800 transition shrink-0"
         >
-          Wè tout pwogram
+          Wè tout pwotokòl
           <ChevronRight className="w-3 h-3" strokeWidth={2.4} />
         </Link>
       </header>

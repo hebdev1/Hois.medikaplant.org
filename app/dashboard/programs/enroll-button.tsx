@@ -21,7 +21,7 @@ export default function EnrollButton({
   if (isCurrent) {
     return (
       <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wide px-2 py-1 rounded-full bg-forest-100 text-forest-700">
-        Pwogram aktif
+        Pwotokòl aktif
       </span>
     );
   }
@@ -41,7 +41,7 @@ export default function EnrollButton({
   async function start() {
     if (
       !window.confirm(
-        'Èske w vle kòmanse pwogram sa a? Si w deja gen yon pwogram aktif, li pral otomatikman mete sou pòz jiskaske w retounen sou li.'
+        'Èske w vle kòmanse pwotokòl sa a? Si w deja gen yon pwotokòl aktif, li pral otomatikman mete sou pòz jiskaske w retounen sou li.'
       )
     ) {
       return;

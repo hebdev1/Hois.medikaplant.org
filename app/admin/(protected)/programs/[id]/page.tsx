@@ -7,7 +7,7 @@ import type { Database } from '@/types/database';
 
 type ProgramRow = Database['public']['Tables']['programs']['Row'];
 
-export const metadata = { title: 'Admin · Edite pwogram' };
+export const metadata = { title: 'Admin · Edite pwotokòl' };
 export const dynamic = 'force-dynamic';
 
 export default async function AdminEditProgramPage({
@@ -56,12 +56,12 @@ export default async function AdminEditProgramPage({
           {program.name}
         </h1>
         <p className="text-sm text-earth-600 mt-1">
-          Modifye detay pwogram lan. Tach jou pa jou yo edite nan kalandriye a
+          Modifye detay pwotokòl la. Tach jou pa jou yo edite nan kalandriye a
           (bouton adwat la).
         </p>
         {searchParams.created === '1' && (
           <div className="mt-3 rounded-xl bg-forest-50 border border-forest-200 px-3 py-2 text-sm text-forest-800">
-            ✓ Pwogram lan kreye avèk siksè.
+            ✓ Pwotokòl la kreye avèk siksè.
           </div>
         )}
       </header>

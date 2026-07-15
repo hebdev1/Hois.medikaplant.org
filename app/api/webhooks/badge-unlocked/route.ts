@@ -77,7 +77,7 @@ export async function POST(req: Request) {
     body: [
       badge.sub ?? 'Yon mak rekonesans pou pwogrè w sou Hoïs.',
       badge.description ??
-        'Kontinye konsa — chak ti pa nan pwogram lan ap pòte yon nouvo rekonesans.',
+        'Kontinye konsa — chak ti pa nan pwotokòl la ap pòte yon nouvo rekonesans.',
     ],
     linkPath: `/dashboard/badges/${badge.slug}`,
     linkLabel: 'Wè badj la',

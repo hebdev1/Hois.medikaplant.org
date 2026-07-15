@@ -457,7 +457,7 @@ async function fetchRecentActivity(
       programs: { name: string; total_days: number } | null;
     } | null;
     if (!row) {
-      return { title: 'Pwogram aktif', items: [] };
+      return { title: 'Pwotokòl aktif', items: [] };
     }
 
     const days = Math.max(
@@ -467,10 +467,10 @@ async function fetchRecentActivity(
       ) + 1
     );
     return {
-      title: 'Pwogram aktif',
+      title: 'Pwotokòl aktif',
       items: [
         {
-          label: row.programs?.name ?? 'Pwogram',
+          label: row.programs?.name ?? 'Pwotokòl',
           meta: `Kòmanse ${formatHaitianDate(row.started_at)}`,
         },
         {
@@ -478,7 +478,7 @@ async function fetchRecentActivity(
           meta: `${days} jou`,
         },
         {
-          label: 'Total pwogram',
+          label: 'Total pwotokòl',
           meta: `${row.programs?.total_days ?? '—'} jou`,
         },
       ],

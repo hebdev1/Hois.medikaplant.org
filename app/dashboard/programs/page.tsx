@@ -11,7 +11,7 @@ import EnrollButton from './enroll-button';
 import { cn } from '@/lib/utils';
 import type { Database, TaskChipKind } from '@/types/database';
 
-export const metadata = { title: 'Pwogram mwen yo · Hois Inivèsite' };
+export const metadata = { title: 'Pwotokòl mwen yo · Hois Inivèsite' };
 export const dynamic = 'force-dynamic';
 
 type ProgramRow = Database['public']['Tables']['programs']['Row'];
@@ -202,7 +202,7 @@ export default async function ProgramsPage() {
     <>
       <Topbar
         userName={shortName}
-        userCondition={`${PLAN_LABEL[profile?.plan ?? 'basic']} · Pwogram`}
+        userCondition={`${PLAN_LABEL[profile?.plan ?? 'basic']} · Pwotokòl`}
         userId={user.id}
         userPlan={profile?.plan ?? 'basic'}
         avatarUrl={profile?.avatar_url ?? null}
@@ -215,11 +215,11 @@ export default async function ProgramsPage() {
               Tablodebò
             </Link>
             <ChevronRight className="w-3 h-3" strokeWidth={2.4} />
-            <span className="text-ink font-medium">Pwogram mwen yo</span>
+            <span className="text-ink font-medium">Pwotokòl mwen yo</span>
           </nav>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-forest-100 text-forest-700 text-xs font-semibold mb-3">
             <Sparkles className="w-3.5 h-3.5" strokeWidth={2.2} />
-            Pwogram mwen yo
+            Pwotokòl mwen yo
           </div>
           <div className="flex items-start justify-between gap-4 flex-wrap">
             <div>
@@ -234,7 +234,7 @@ export default async function ProgramsPage() {
                     )}
                   </>
                 ) : (
-                  'Pa gen pwogram aktif'
+                  'Pa gen pwotokòl aktif'
                 )}
               </h1>
               <p className="mt-2 text-sm md:text-base text-earth-600 max-w-2xl leading-relaxed">
@@ -244,7 +244,7 @@ export default async function ProgramsPage() {
                       activeProgram.description ??
                       'Konplete chak etap youn apre lòt pou jwenn pi bon rezilta.'
                     }`
-                  : 'Chwazi yon pwogram pi ba a pou kòmanse vwayaj sante ou.'}
+                  : 'Chwazi yon pwotokòl pi ba a pou kòmanse vwayaj sante ou.'}
               </p>
             </div>
             {activeProgram && (
@@ -266,7 +266,7 @@ export default async function ProgramsPage() {
                     Eta <em className="text-forest-600 not-italic font-bold">plan an</em>
                   </h2>
                   <p className="text-xs text-earth-600 mt-1">
-                    Chak kazye reprezante yon jou. Konplete aktivite yo epi make yo kòm fini pou kontinye avanse nan pwogram ou.
+                    Chak kazye reprezante yon jou. Konplete aktivite yo epi make yo kòm fini pou kontinye avanse nan pwotokòl ou.
                   </p>
                 </div>
                 <div className="flex items-stretch gap-5">
@@ -370,7 +370,7 @@ export default async function ProgramsPage() {
                 </header>
                 {phases.length === 0 ? (
                   <div className="rounded-xl bg-cream-50 border border-dashed border-cream-200 p-5 text-center text-sm text-earth-600 italic">
-                    Pwogram sa a poko gen okenn faz ki disponib.
+                    Pwotokòl sa a poko gen okenn faz ki disponib.
                   </div>
                 ) : (
                   <ul className="space-y-3">
@@ -399,10 +399,10 @@ export default async function ProgramsPage() {
         ) : (
           <section className="bg-white border border-dashed border-cream-200 rounded-2xl p-8 text-center">
             <div className="font-display text-lg font-bold text-ink">
-              Ou pa gen pwogram aktif kounye a.
+              Ou pa gen pwotokòl aktif kounye a.
             </div>
             <p className="text-sm text-earth-600 mt-2">
-              Chwazi pwogram ki pi byen adapte ak bezwen ou nan katalòg ki anba a pou kòmanse vwayaj byennèt ou...
+              Chwazi pwotokòl ki pi byen adapte ak bezwen ou nan katalòg ki anba a pou kòmanse vwayaj byennèt ou...
             </p>
           </section>
         )}
@@ -412,12 +412,12 @@ export default async function ProgramsPage() {
           <section>
             <header className="mb-4">
               <h2 className="font-display text-2xl font-bold text-ink">
-                Lòt pwogram pou <em className="text-forest-600 not-italic font-bold">dekouvri</em>
+                Lòt pwotokòl pou <em className="text-forest-600 not-italic font-bold">dekouvri</em>
               </h2>
               <p className="text-sm text-earth-600 mt-1">
                 {activeProgram
                   ? `Lè ou fini ${activeProgram.name}, chwazi pwochen vwayaj sante ou.`
-                  : 'Kòmanse vwayaj sante ou ak youn nan pwogram sa yo.'}
+                  : 'Kòmanse vwayaj sante ou ak youn nan pwotokòl sa yo.'}
               </p>
             </header>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
@@ -442,7 +442,7 @@ export default async function ProgramsPage() {
           <section>
             <header className="mb-4">
               <h2 className="font-display text-lg font-bold text-ink">
-                Pwogram <em className="text-forest-600 not-italic font-bold">ou fini</em>
+                Pwotokòl <em className="text-forest-600 not-italic font-bold">ou fini</em>
               </h2>
             </header>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">

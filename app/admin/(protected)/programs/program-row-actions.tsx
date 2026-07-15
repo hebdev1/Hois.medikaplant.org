@@ -182,7 +182,7 @@ export default function ProgramRowActions({
 
       <Link
         href={`/admin/programs/${id}`}
-        title="Modifye pwogram lan"
+        title="Modifye pwotokòl la"
         className="grid place-items-center w-8 h-8 rounded-lg text-earth-700 hover:bg-cream-100 hover:text-ink"
       >
         <Pencil className="w-3.5 h-3.5" strokeWidth={2.2} />

@@ -119,7 +119,7 @@ export default function ProgramForm({ mode, initial }: Props) {
       {/* ── LEFT ─────────────────────────────────────────────────────────── */}
       <div className="space-y-5">
         <Section title="Idantite">
-          <Field label="Non pwogram lan" required>
+          <Field label="Non pwotokòl la" required>
             <input
               name="name"
               value={v.name}
@@ -141,7 +141,7 @@ export default function ProgramForm({ mode, initial }: Props) {
               placeholder="fondasyon-dyabet"
             />
           </Field>
-          <Field label="Tit kout (tagline)" help="Yon fraz ki paret sou kat pwogram lan.">
+          <Field label="Tit kout (tagline)" help="Yon fraz ki paret sou kat pwotokòl la.">
             <input
               name="short_tagline"
               value={v.short_tagline}
@@ -206,9 +206,9 @@ export default function ProgramForm({ mode, initial }: Props) {
 
         <Section title="Kondisyon sib">
           <p className="text-[11px] text-earth-600 -mt-1 mb-2">
-            Chwazi ki kondisyon sante pwogram sa a adrese. Manm ki gen youn
+            Chwazi ki kondisyon sante pwotokòl sa a adrese. Manm ki gen youn
             oswa plizyè nan tag sa yo pral otomatikman jwenn ak/oswa
-            rekòmande pwogram sa a.
+            rekòmande pwotokòl sa a.
           </p>
           <div className="space-y-3">
             {groupedConditions.map(([group, items]) => (
@@ -242,7 +242,7 @@ export default function ProgramForm({ mode, initial }: Props) {
           </div>
           {v.condition_tags.size === 0 && (
             <p className="text-[11px] text-amber-700 mt-2">
-              ⚠ Pa gen tag chwazi — pwogram sa a ap parèt kòm "jeneral" (tout
+              ⚠ Pa gen tag chwazi — pwotokòl sa a ap parèt kòm "jeneral" (tout
               moun).
             </p>
           )}
@@ -260,7 +260,7 @@ export default function ProgramForm({ mode, initial }: Props) {
           <Toggle
             name="active"
             label="Aktif"
-            description="Lè li ON, pwogram lan parèt pou manm yo (dashboard + auto-enrollment)."
+            description="Lè li ON, pwotokòl la parèt pou manm yo (dashboard + auto-enrollment)."
             checked={v.active}
             onChange={(b) => set('active', b)}
             Icon={v.active ? Eye : EyeOff}
@@ -443,7 +443,7 @@ function ProgramSideActions({
         ) : (
           <Trash2 className="w-3.5 h-3.5" strokeWidth={2.2} />
         )}
-        {confirmDelete ? 'Konfime — efase pwogram lan' : 'Efase pwogram lan'}
+        {confirmDelete ? 'Konfime — efase pwotokòl la' : 'Efase pwotokòl la'}
       </button>
     </section>
   );
@@ -587,7 +587,7 @@ function SubmitBar({ mode, state }: { mode: 'create' | 'edit'; state: ProgramSta
         ) : (
           <Save className="w-4 h-4" strokeWidth={2.4} />
         )}
-        {mode === 'create' ? 'Kreye pwogram lan' : 'Anrejistre chanjman'}
+        {mode === 'create' ? 'Kreye pwotokòl la' : 'Anrejistre chanjman'}
       </button>
 
       {state.error && (
@@ -608,7 +608,7 @@ function SubmitBar({ mode, state }: { mode: 'create' | 'edit'; state: ProgramSta
         className="inline-flex items-center gap-1 text-xs font-semibold text-earth-700 hover:text-ink"
       >
         <ArrowLeft className="w-3.5 h-3.5" strokeWidth={2.2} />
-        Tounen nan lis pwogram yo
+        Tounen nan lis pwotokòl yo
       </Link>
     </section>
   );

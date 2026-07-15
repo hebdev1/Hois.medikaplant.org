@@ -21,7 +21,7 @@ export const METRIC_LABEL: Record<BadgeMetric, string> = {
   hydration_days: 'Jou idratasyon',
   movement_days: 'Jou mouvman',
   glycemia_in_range: 'rantre yon mezi',
-  program_day: 'pwogram jou a',
+  program_day: 'pwotokòl jou a',
   level: 'Nivo manm',
   tasks_done: 'Tach konplete',
 };
@@ -33,7 +33,7 @@ export const METRIC_UNIT: Record<BadgeMetric, string> = {
   hydration_days: 'idratasyon kotidyen',
   movement_days: 'mouvman kotidyen',
   glycemia_in_range: 'mezi',
-  program_day: 'pwogram jou a',
+  program_day: 'pwotokòl jou a',
   level: 'Nivo',
   tasks_done: 'tach konplete',
 };
@@ -69,8 +69,8 @@ export const METRIC_TIP: Record<
     href: '/dashboard/health',
   },
   program_day: {
-    text: 'Rete angaje nan pwogram nan chak jou. Chak jou ou patisipe konte, epi li ajoute nan total pwogrè ou.',
-    linkLabel: 'Wè pwogram nan',
+    text: 'Rete angaje nan pwotokòl la chak jou. Chak jou ou patisipe konte, epi li ajoute nan total pwogrè ou.',
+    linkLabel: 'Wè pwotokòl la',
     href: '/dashboard/programs',
   },
   level: {

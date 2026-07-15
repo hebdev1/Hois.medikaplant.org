@@ -178,7 +178,7 @@ export const ADMIN_NAV_LINKS: readonly AdminNavLink[] = [
   // under tabs at /admin/health?tab=… — keeps the sidebar tight and
   // mirrors how operators think about the work (one care workspace).
   { href: '/admin/health', label: 'Swivi Sante', icon: Activity, capability: 'view_health' },
-  { href: '/admin/programs', label: 'Pwogram', icon: FolderKanban, capability: 'manage_programs' },
+  { href: '/admin/programs', label: 'Pwotokòl', icon: FolderKanban, capability: 'manage_programs' },
   { href: '/admin/support', label: 'Sipò chat', icon: MessageCircle, capability: 'reply_support' },
   { href: '/admin/contact', label: 'Mesaj kontak', icon: Inbox, capability: 'manage_contact' },
   { href: '/admin/forum', label: 'Fowòm', icon: MessagesSquare, capability: 'moderate_forum' },

@@ -251,7 +251,7 @@ export async function createPersonalProgram(
   if (!auth.ok) return { ok: false, error: auth.error };
 
   const name = input.name.trim();
-  if (name.length < 2) return { ok: false, error: 'Non pwogram nan twò kout.' };
+  if (name.length < 2) return { ok: false, error: 'Non pwotokòl la twò kout.' };
   if (!Number.isFinite(input.total_days) || input.total_days < 1 || input.total_days > 365) {
     return { ok: false, error: 'Dire a dwe ant 1 ak 365 jou.' };
   }
