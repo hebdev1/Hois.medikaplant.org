@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
+import { createServiceClient } from '@/lib/supabase/service';
 import { hasCapability, type AdminRole } from '../admin-nav-config';
 
 // The courses + course_categories + klas_page_config tables are too new
@@ -306,15 +307,51 @@ function readModuleForm(formData: FormData) {
         .slice(0, 10)
     : [];
 
+  const video_source = get('video_source') === 'storage' ? 'storage' : 'external';
+
   return {
     title: get('title'),
     description: get('description') || null,
     duration_text: get('duration_text') || null,
+    video_source: video_source as 'external' | 'storage',
     video_url: get('video_url') || null,
+    video_path: get('video_path') || null,
     resource_links: resource_links.length > 0 ? resource_links : null,
     preview: formData.get('preview') === 'on',
     display_order: Math.max(0, Number(get('display_order')) || 0),
   };
+}
+
+export type UploadTicket =
+  | { ok: true; path: string; token: string }
+  | { ok: false; error: string };
+
+/**
+ * Mint a one-time signed upload URL for a course video (admin only). The
+ * browser PUTs the file straight to the private `course-videos` bucket, so
+ * large videos never stream through a server action.
+ */
+export async function createModuleUploadUrl(
+  courseId: string,
+  filename: string
+): Promise<UploadTicket> {
+  const auth = await assertAdmin();
+  if (!auth.ok) return { ok: false, error: auth.error };
+
+  const safe = filename
+    .toLowerCase()
+    .replace(/[^a-z0-9.\-_]+/g, '-')
+    .slice(-80);
+  const path = `${courseId}/${crypto.randomUUID()}-${safe}`;
+
+  const svc = createServiceClient();
+  const { data, error } = await svc.storage
+    .from('course-videos')
+    .createSignedUploadUrl(path);
+  if (error || !data) {
+    return { ok: false, error: error?.message ?? 'Nou pa rive prepare upload la.' };
+  }
+  return { ok: true, path: data.path, token: data.token };
 }
 
 export async function saveModule(
@@ -329,11 +366,21 @@ export async function saveModule(
   const input = readModuleForm(formData);
 
   if (input.title.length < 2) return { error: 'Tit modil la twò kout.' };
-  if (input.video_url && !/^https?:\/\//i.test(input.video_url)) {
-    return { error: 'Lyen videyo dwe kòmanse pa https://' };
+  if (input.video_source === 'external') {
+    if (input.video_url && !/^https?:\/\//i.test(input.video_url)) {
+      return { error: 'Lyen videyo dwe kòmanse pa https://' };
+    }
+  } else if (!input.video_path) {
+    return { error: 'Upload yon fichye videyo, oswa chwazi "Lyen ekstèn".' };
   }
 
-  const payload = { ...input, course_id: courseId };
+  // Keep the two sources mutually exclusive so playback is unambiguous.
+  const payload = {
+    ...input,
+    course_id: courseId,
+    video_url: input.video_source === 'external' ? input.video_url : null,
+    video_path: input.video_source === 'storage' ? input.video_path : null,
+  };
 
   if (moduleId) {
     const { error } = await auth.sb

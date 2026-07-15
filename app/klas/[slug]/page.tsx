@@ -55,7 +55,9 @@ type ModuleRow = {
   title: string;
   description: string | null;
   duration_text: string | null;
+  video_source: 'external' | 'storage';
   video_url: string | null;
+  video_path: string | null;
   resource_links: Array<{ label: string; url: string }> | null;
   preview: boolean;
 };
@@ -148,7 +150,7 @@ export default async function CourseDetailPage({
     sb
       .from('course_modules')
       .select(
-        'id, display_order, title, description, duration_text, video_url, resource_links, preview'
+        'id, display_order, title, description, duration_text, video_source, video_url, video_path, resource_links, preview'
       )
       .eq('course_id', course.id)
       .order('display_order', { ascending: true }),
@@ -194,7 +196,16 @@ export default async function CourseDetailPage({
       : Promise.resolve({ data: null }),
   ]);
 
-  const modules = (modulesRes.data ?? []) as ModuleRow[];
+  // Column hygiene (spec §4.2): the public sales page shows WHICH modules
+  // have a video, but never carries a paid module's source. Preview modules
+  // keep their external URL so the free preview link still works; everything
+  // else is watched through the enrollment-gated player in /dashboard/kou.
+  const modules = ((modulesRes.data ?? []) as ModuleRow[]).map((m) => ({
+    ...m,
+    has_video: m.video_source === 'storage' ? !!m.video_path : !!m.video_url,
+    video_url: m.preview ? m.video_url : null,
+    video_path: null,
+  }));
   const category = (categoryRes.data ?? null) as CategoryRow | null;
   const related = (relatedRes.data ?? []) as Array<
     Pick<
@@ -469,7 +480,7 @@ export default async function CourseDetailPage({
                               {m.duration_text}
                             </span>
                           )}
-                          {m.video_url && (
+                          {m.has_video && (
                             <span className="inline-flex items-center gap-1 text-brand-700">
                               <Video
                                 className="w-3 h-3"

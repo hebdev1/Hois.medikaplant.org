@@ -19,10 +19,12 @@ import {
   Link as LinkIcon,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { createClient as createBrowserClient } from '@/lib/supabase/client';
 import {
   saveModule,
   deleteModule,
   reorderModule,
+  createModuleUploadUrl,
   type ModuleState,
 } from './actions';
 
@@ -33,7 +35,9 @@ type ModuleRow = {
   title: string;
   description: string | null;
   duration_text: string | null;
+  video_source: 'external' | 'storage';
   video_url: string | null;
+  video_path: string | null;
   resource_links: Array<{ label: string; url: string }> | null;
   preview: boolean;
 };
@@ -268,6 +272,47 @@ function ModuleForm({
       .join('\n')
   );
 
+  // Video source + direct-to-Storage upload. The file goes browser →
+  // Supabase via a one-time signed URL minted by an admin-only action, so
+  // large videos never pass through the server action body.
+  const [source, setSource] = React.useState<'external' | 'storage'>(
+    initial?.video_source ?? 'external'
+  );
+  const [videoPath, setVideoPath] = React.useState<string | null>(
+    initial?.video_path ?? null
+  );
+  const [uploading, setUploading] = React.useState(false);
+  const [uploadErr, setUploadErr] = React.useState<string | null>(null);
+  const [fileName, setFileName] = React.useState<string | null>(null);
+
+  async function onPickFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadErr(null);
+    setUploading(true);
+    setFileName(file.name);
+    try {
+      const ticket = await createModuleUploadUrl(courseId, file.name);
+      if (!ticket.ok) {
+        setUploadErr(ticket.error);
+        return;
+      }
+      const supabase = createBrowserClient();
+      const { error } = await supabase.storage
+        .from('course-videos')
+        .uploadToSignedUrl(ticket.path, ticket.token, file);
+      if (error) {
+        setUploadErr(error.message);
+        return;
+      }
+      setVideoPath(ticket.path);
+    } catch (err) {
+      setUploadErr(err instanceof Error ? err.message : 'Upload echwe.');
+    } finally {
+      setUploading(false);
+    }
+  }
+
   return (
     <form action={formAction} className="space-y-3">
       <div className="grid sm:grid-cols-[1fr_120px] gap-3">
@@ -301,15 +346,40 @@ function ModuleForm({
         />
       </Field>
 
-      <div className="grid sm:grid-cols-2 gap-3">
-        <Field label="Dirasyon" help="Egz: 25 min, 1h 10min">
-          <input
-            name="duration_text"
-            defaultValue={initial?.duration_text ?? ''}
-            className={inputClass}
-          />
-        </Field>
-        <Field label="Lyen videyo (opsyonèl)">
+      <Field label="Dirasyon" help="Egz: 25 min, 1h 10min">
+        <input
+          name="duration_text"
+          defaultValue={initial?.duration_text ?? ''}
+          className={inputClass}
+        />
+      </Field>
+
+      {/* Video source — an external link, or a file uploaded straight to the
+          private course-videos bucket (browser → Storage via a signed URL). */}
+      <Field
+        label="Sous videyo a"
+        help="Lyen ekstèn (YouTube/Vimeo) oswa upload yon fichye nou menm nou lojman."
+      >
+        <div className="flex gap-2 mb-2">
+          {(['external', 'storage'] as const).map((s) => (
+            <button
+              key={s}
+              type="button"
+              onClick={() => setSource(s)}
+              className={cn(
+                'px-3 py-1.5 rounded-lg text-xs font-semibold border transition',
+                source === s
+                  ? 'bg-forest-700 text-cream-50 border-forest-700'
+                  : 'bg-white text-earth-700 border-cream-200 hover:border-forest-300'
+              )}
+            >
+              {s === 'external' ? 'Lyen ekstèn' : 'Upload fichye'}
+            </button>
+          ))}
+        </div>
+        <input type="hidden" name="video_source" value={source} />
+
+        {source === 'external' ? (
           <input
             name="video_url"
             type="url"
@@ -317,8 +387,40 @@ function ModuleForm({
             className={cn(inputClass, 'font-mono text-xs')}
             placeholder="https://vimeo.com/... oswa https://youtu.be/..."
           />
-        </Field>
-      </div>
+        ) : (
+          <div className="space-y-2">
+            <input type="hidden" name="video_path" value={videoPath ?? ''} />
+            <input
+              type="file"
+              accept="video/mp4,video/webm,video/quicktime,video/x-matroska"
+              onChange={onPickFile}
+              disabled={uploading}
+              className="block w-full text-xs text-earth-700 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-forest-100 file:text-forest-700 file:text-xs file:font-semibold"
+            />
+            {uploading && (
+              <p className="text-xs text-earth-600 flex items-center gap-1.5">
+                <Loader2 className="w-3 h-3 animate-spin" strokeWidth={2.2} />
+                Ap voye videyo a…
+              </p>
+            )}
+            {videoPath && !uploading && (
+              <p className="text-xs text-forest-700 font-medium flex items-center gap-1.5">
+                <CheckCircle2 className="w-3 h-3" strokeWidth={2.4} />
+                Videyo a anrejistre{fileName ? ` (${fileName})` : ''}
+              </p>
+            )}
+            {uploadErr && (
+              <p className="text-xs text-rose-700 flex items-center gap-1.5">
+                <AlertCircle className="w-3 h-3" strokeWidth={2.4} />
+                {uploadErr}
+              </p>
+            )}
+            <p className="text-[11px] text-earth-500">
+              Maks 1 Go. Pou fichye pi gwo, sèvi ak yon lyen ekstèn.
+            </p>
+          </div>
+        )}
+      </Field>
 
       <Field
         label="Resous adisyonèl (yon liy chak : Tit | URL)"

@@ -59,7 +59,9 @@ export default async function AdminEditCoursePage({
     title: string;
     description: string | null;
     duration_text: string | null;
+    video_source: 'external' | 'storage';
     video_url: string | null;
+    video_path: string | null;
     resource_links: Array<{ label: string; url: string }> | null;
     preview: boolean;
   }>;
