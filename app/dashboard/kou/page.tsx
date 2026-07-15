@@ -61,7 +61,7 @@ export default async function MyCoursesPage() {
     <>
       <Topbar
         userName={shortName}
-        userCondition={`${PLAN_LABEL[profile?.plan ?? 'basic']} · Kou`}
+        userCondition={`${PLAN_LABEL[profile?.plan ?? 'basic']} · Klas`}
         userId={user.id}
         userPlan={profile?.plan ?? 'basic'}
         avatarUrl={profile?.avatar_url ?? null}
