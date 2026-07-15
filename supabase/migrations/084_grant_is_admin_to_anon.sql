@@ -1,0 +1,21 @@
+-- Migration 084: let the `anon` role EXECUTE public.is_admin(uuid).
+--
+-- Bug this fixes: 40 tables (incl. `courses` and `course_modules`) carry an
+-- admin policy of the form `FOR ALL USING (is_admin(auth.uid()))` alongside a
+-- public-read policy. Postgres evaluates every permissive policy that applies
+-- to the command, so an anonymous SELECT also evaluates the admin policy's
+-- qual. `anon` had no EXECUTE grant on is_admin (ACL was postgres/authenticated
+-- /service_role only), so the whole query aborted with:
+--
+--     ERROR: 42501: permission denied for function is_admin
+--
+-- Effect: logged-out visitors got an EMPTY course catalog and a 404 on every
+-- /klas/[slug] page — i.e. nobody could browse or buy a course while signed
+-- out. Granting EXECUTE lets the admin policy simply evaluate to false for
+-- anon (auth.uid() is null), leaving the "Public reads active courses" policy
+-- to do its job.
+--
+-- Safety: is_admin is SECURITY DEFINER and only reports whether a given uid is
+-- an admin. It grants no data access by itself — RLS still decides every row.
+
+grant execute on function public.is_admin(uuid) to anon;
