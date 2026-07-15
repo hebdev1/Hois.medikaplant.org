@@ -108,7 +108,7 @@ export default async function CoursePlayerPage({
           className="inline-flex items-center gap-1.5 text-sm text-earth-600 hover:text-forest-700 transition"
         >
           <ArrowLeft className="w-4 h-4" strokeWidth={2.2} />
-          Kou mwen yo
+          Klas mwen yo
         </Link>
 
         <header>
