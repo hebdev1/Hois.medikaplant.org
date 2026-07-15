@@ -1742,6 +1742,8 @@ export type Database = {
           video_url: string | null
           resource_links: Array<{ label: string; url: string }> | null
           preview: boolean
+          video_source: 'external' | 'storage'
+          video_path: string | null
           created_at: string
           updated_at: string
         }
@@ -1755,6 +1757,8 @@ export type Database = {
           video_url?: string | null
           resource_links?: Array<{ label: string; url: string }> | null
           preview?: boolean
+          video_source?: 'external' | 'storage'
+          video_path?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -1768,6 +1772,8 @@ export type Database = {
           video_url?: string | null
           resource_links?: Array<{ label: string; url: string }> | null
           preview?: boolean
+          video_source?: 'external' | 'storage'
+          video_path?: string | null
           created_at?: string
           updated_at?: string
         }
