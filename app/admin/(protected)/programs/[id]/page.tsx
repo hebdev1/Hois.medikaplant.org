@@ -2,6 +2,7 @@ import { notFound, redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { hasCapability, type AdminRole } from '../../admin-nav-config';
 import ProgramForm from '../program-form';
+import PhasesManager, { type PhaseRow } from '../phases-manager';
 import type { Database } from '@/types/database';
 
 type ProgramRow = Database['public']['Tables']['programs']['Row'];
@@ -41,6 +42,13 @@ export default async function AdminEditProgramPage({
   const program = programRaw as ProgramRow | null;
   if (!program) notFound();
 
+  const { data: phasesRaw } = await supabase
+    .from('program_phases')
+    .select('id, program_id, phase_num, title, sub, day_start, day_end')
+    .eq('program_id', params.id)
+    .order('phase_num', { ascending: true });
+  const phases = (phasesRaw ?? []) as PhaseRow[];
+
   return (
     <div className="p-5 md:p-8 lg:p-10 max-w-[1400px] mx-auto">
       <header className="mb-6">
@@ -57,7 +65,14 @@ export default async function AdminEditProgramPage({
           </div>
         )}
       </header>
-      <ProgramForm mode="edit" initial={program} />
+      <div className="grid gap-6">
+        <ProgramForm mode="edit" initial={program} />
+        <PhasesManager
+          programId={program.id}
+          phases={phases}
+          totalDays={program.total_days ?? null}
+        />
+      </div>
     </div>
   );
 }

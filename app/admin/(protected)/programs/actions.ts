@@ -331,3 +331,99 @@ export async function duplicateProgram(
   revalidatePath('/admin/programs');
   return { ok: true, newId };
 }
+
+// ─── Program phases ────────────────────────────────────────────────────────
+// The "Faz plan an" steps a member sees on /dashboard/programs. Each phase
+// covers a day range of the program; the dashboard derives fini/aktif/venn
+// from the member's current day, so admins only set the range + copy.
+
+export type PhaseState = { error?: string; ok?: boolean; id?: string };
+
+function readPhaseForm(formData: FormData) {
+  const get = (k: string) => (formData.get(k)?.toString() ?? '').trim();
+  const num = (k: string) => Math.max(0, Number(get(k)) || 0);
+  return {
+    phase_num: num('phase_num'),
+    title: get('title'),
+    sub: get('sub') || null,
+    day_start: num('day_start'),
+    day_end: num('day_end'),
+  };
+}
+
+/** Next free phase number so admins don't have to count rows. */
+async function nextPhaseNum(
+  sb: ReturnType<typeof createClient>,
+  programId: string
+) {
+  const { data } = await sb
+    .from('program_phases')
+    .select('phase_num')
+    .eq('program_id', programId)
+    .order('phase_num', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  return ((data as { phase_num: number } | null)?.phase_num ?? 0) + 1;
+}
+
+export async function savePhase(
+  programId: string,
+  phaseId: string | null,
+  _prev: PhaseState,
+  formData: FormData
+): Promise<PhaseState> {
+  const auth = await assertAdmin();
+  if (!auth.ok) return { error: auth.error };
+
+  const input = readPhaseForm(formData);
+  if (input.title.length < 2) return { error: 'Tit faz la twò kout.' };
+  if (input.day_start < 1) return { error: 'Jou kòmansman an dwe omwen 1.' };
+  if (input.day_end < input.day_start) {
+    return { error: 'Jou fen an dwe egal oswa apre jou kòmansman an.' };
+  }
+
+  const payload = { ...input, program_id: programId };
+
+  if (phaseId) {
+    const { error } = await auth.supabase
+      .from('program_phases')
+      .update(payload)
+      .eq('id', phaseId);
+    if (error) return { error: error.message };
+    revalidatePath(`/admin/programs/${programId}`);
+    revalidatePath('/dashboard/programs');
+    return { ok: true, id: phaseId };
+  }
+
+  const phase_num =
+    input.phase_num > 0
+      ? input.phase_num
+      : await nextPhaseNum(auth.supabase, programId);
+
+  const { data, error } = await auth.supabase
+    .from('program_phases')
+    .insert({ ...payload, phase_num })
+    .select('id')
+    .single();
+  if (error || !data) return { error: error?.message ?? 'Erè inkoni.' };
+  revalidatePath(`/admin/programs/${programId}`);
+  revalidatePath('/dashboard/programs');
+  return { ok: true, id: (data as { id: string }).id };
+}
+
+export async function deletePhase(
+  phaseId: string,
+  programId: string
+): Promise<PhaseState> {
+  const auth = await assertAdmin();
+  if (!auth.ok) return { error: auth.error };
+
+  const { error } = await auth.supabase
+    .from('program_phases')
+    .delete()
+    .eq('id', phaseId);
+  if (error) return { error: error.message };
+  revalidatePath(`/admin/programs/${programId}`);
+  revalidatePath('/dashboard/programs');
+  return { ok: true };
+}
