@@ -71,13 +71,13 @@ export default async function MyCoursesPage() {
         <header>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-forest-100 text-forest-700 text-xs font-semibold mb-3">
             <GraduationCap className="w-3.5 h-3.5" strokeWidth={2.2} />
-            Kou mwen yo
+            Klas mwen yo
           </div>
           <h1 className="font-display text-3xl md:text-4xl font-bold tracking-tight text-ink">
             Kontinye aprann
           </h1>
           <p className="mt-2 text-sm text-earth-600 max-w-2xl">
-            Kou ou enskri yo. Klike sou youn pou gade videyo yo oswa antre nan
+            Klas ou enskri yo. Klike sou youn pou gade videyo yo oswa antre nan
             sesyon Zoom an dirèk la.
           </p>
         </header>
@@ -86,13 +86,13 @@ export default async function MyCoursesPage() {
           <div className="rounded-2xl bg-cream-50 border border-dashed border-cream-300 p-10 text-center">
             <Inbox className="w-10 h-10 mx-auto text-earth-400 mb-3" strokeWidth={1.6} />
             <p className="text-sm text-earth-700 font-medium">
-              Ou poko enskri nan okenn kou.
+              Ou poko enskri nan okenn klas.
             </p>
             <Link
               href="/klas"
               className="mt-4 inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-forest-700 hover:bg-forest-800 text-cream-50 text-sm font-semibold transition"
             >
-              Dekouvri kou yo
+              Dekouvri klas yo
               <ChevronRight className="w-4 h-4" strokeWidth={2.4} />
             </Link>
           </div>
@@ -101,7 +101,7 @@ export default async function MyCoursesPage() {
             {courses.map((c) => (
               <Link
                 key={c.slug}
-                href={`/dashboard/kou/${c.slug}`}
+                href={`/dashboard/klas/${c.slug}`}
                 className="group bg-white border border-cream-200 rounded-2xl overflow-hidden shadow-card hover:shadow-cardHover transition"
               >
                 <div className="relative aspect-video bg-forest-100">
