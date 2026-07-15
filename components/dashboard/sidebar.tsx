@@ -6,6 +6,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import {
   LayoutDashboard,
   FolderOpen,
+  GraduationCap,
   Download,
   Activity,
   BookOpen,
@@ -46,6 +47,7 @@ type NavItem = {
 const NAV_ITEMS: readonly NavItem[] = [
   { href: '/dashboard', label: 'Tablodebò', icon: LayoutDashboard },
   { href: '/dashboard/programs', label: 'Pwogram mwen yo', icon: FolderOpen },
+  { href: '/dashboard/kou', label: 'Kou mwen yo', icon: GraduationCap },
   { href: '/dashboard/resources', label: 'Telechajman', icon: Download, badge: '12' },
   { href: '/dashboard/health', label: 'Swivi Sante', icon: Activity },
   { href: '/dashboard/guides', label: 'Gid & Konsèy', icon: BookOpen },
