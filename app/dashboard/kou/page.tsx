@@ -4,7 +4,7 @@ import { createClient } from '@/lib/supabase/server';
 import { getCurrentUser } from '@/lib/supabase/auth';
 import Topbar from '@/components/dashboard/topbar';
 
-export const metadata = { title: 'Kou mwen yo · MedikaPlant' };
+export const metadata = { title: 'Klas mwen yo · MedikaPlant' };
 export const dynamic = 'force-dynamic';
 
 const PLAN_LABEL: Record<string, string> = {
