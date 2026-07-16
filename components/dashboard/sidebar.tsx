@@ -17,6 +17,7 @@ import {
   X,
   MessagesSquare,
   Award,
+  Crown,
   type LucideIcon,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -52,6 +53,7 @@ const NAV_ITEMS: readonly NavItem[] = [
   { href: '/dashboard/health', label: 'Swivi Sante', icon: Activity },
   { href: '/dashboard/guides', label: 'Gid & Konsèy', icon: BookOpen },
   { href: '/dashboard/badges', label: 'Badj mwen yo', icon: Award },
+  { href: '/dashboard/vip', label: 'Espas VIP', icon: Crown },
   { href: '/dashboard/forum', label: 'Fowòm', icon: MessagesSquare, badge: 'NEW' },
   { href: '/dashboard/support', label: 'Sipò', icon: LifeBuoy },
   { href: '/dashboard/settings', label: 'Kont mwen', icon: UserCircle },

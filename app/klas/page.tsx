@@ -24,7 +24,7 @@ import { createClient } from '@/lib/supabase/server';
 export const metadata = {
   title: 'Klas · Hoïs Inivèsite',
   description:
-    'Dekouvri kou sou syans plant, Medsin Tradisyonèl Ayisyen, espirityalite HOÏS, nitrisyon, ak lavi natiwopatik. Aprann avèk yon èrboris epi devlope konesans ou atravè fòmasyon ki chita sou rechèch, eksperyans, ak pratik.',
+    'Dekouvri kou sou syans plant, Medsin Tradisyonèl Ayisyen, espirityalite HOÏS, nitrisyon, ak lavi natiwopatik. Aprann avèk yon Ton Vye epi devlope konesans ou atravè fòmasyon ki chita sou rechèch, eksperyans, ak pratik.',
 };
 
 export const dynamic = 'force-dynamic';

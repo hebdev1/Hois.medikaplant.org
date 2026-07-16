@@ -63,7 +63,7 @@ const TIMELINE = [
     year: '2026',
     title: 'Platfòm dijital konplè',
     body:
-      'Lansman aplikasyon Hoïs SaaS — swivi sante, gid, fowòm, ak yon èrboris an pèsòn.',
+      'Lansman aplikasyon Hoïs SaaS — swivi sante, gid, fowòm, ak yon Ton Vye an pèsòn.',
   },
 ];
 
@@ -194,7 +194,7 @@ export default function IstwaNouPage() {
               <p className="mt-6 text-ink-muted text-base md:text-lg leading-relaxed">
                 Misyon nou se konekte konesans natiropatik Ayisyèn ak yon
                 kominote dijital pou ke chak fanmi ka jwenn plant ki vrèman
-                geri, ak yon èrboris ki konnen sa li ap fè.
+                geri, ak yon Ton Vye ki konnen sa li ap fè.
               </p>
               <p className="mt-4 text-ink-muted text-base leading-relaxed">
                 Nou kwè medsin tradisyonèl la pa kont lasyans modèn — yo de
@@ -339,7 +339,7 @@ export default function IstwaNouPage() {
             </h2>
             <p className="mt-5 max-w-2xl mx-auto text-ink-muted text-base md:text-lg leading-relaxed">
               Yon pakèt manm ap deja sèvi ak plan Hoïs Inivèsite a. Chwazi pou
-              ou a, jwenn yon èrboris dedye, epi suiv pwogrè w yo nan tèl tan
+              ou a, jwenn yon Ton Vye dedye, epi suiv pwogrè w yo nan tèl tan
               reyèl.
             </p>
             <div className="mt-8 flex flex-wrap justify-center items-center gap-3">

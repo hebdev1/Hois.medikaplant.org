@@ -337,7 +337,7 @@ export default function DangerZone({
               maxLength={60}
               disabled={!canEditPersona || personaSaving}
               onChange={(e) => setPersonaName(e.target.value)}
-              placeholder="ex: Mèt Joseph, èrboris santiniye"
+              placeholder="ex: Mèt Joseph, Ton Vye"
               className="flex-1 px-3 py-2 text-sm bg-white border border-cream-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-forest-200 focus:border-forest-300 disabled:opacity-60 disabled:cursor-not-allowed"
             />
             <button
