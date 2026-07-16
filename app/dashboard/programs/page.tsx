@@ -3,6 +3,7 @@ import { ChevronRight, Flame, Sparkles, CheckCircle2, Pause as PauseIcon } from 
 import { createClient } from '@/lib/supabase/server';
 import { getCurrentUser } from '@/lib/supabase/auth';
 import Topbar from '@/components/dashboard/topbar';
+import PhaseProducts from '@/components/dashboard/phase-products';
 import ChecklistPanel, {
   type ChecklistItem,
 } from '@/components/dashboard/checklist-panel';
@@ -388,7 +389,16 @@ export default async function ProgramsPage() {
                           title={`${phase.title} (Jou ${phase.day_start}–${phase.day_end})`}
                           sub={phase.sub ?? ''}
                           status={status}
-                        />
+                        >
+                          {/* Auto-matched shop suggestions for this phase —
+                              same dictionary Doktè Maton uses, so future
+                              protocols work with no mapping step. */}
+                          <PhaseProducts
+                            title={phase.title}
+                            sub={phase.sub}
+                            programName={activeProgram.name}
+                          />
+                        </PhaseRow>
                       );
                     })}
                   </ul>
@@ -464,11 +474,13 @@ function PhaseRow({
   title,
   sub,
   status,
+  children,
 }: {
   num: number;
   title: string;
   sub: string;
   status: 'fini' | 'aktif' | 'venn';
+  children?: React.ReactNode;
 }) {
   const tone =
     status === 'fini'
@@ -477,27 +489,30 @@ function PhaseRow({
         ? { box: 'bg-gold-400 text-ink', chip: 'bg-gold-100 text-gold-700', label: 'Aktif' }
         : { box: 'bg-cream-200 text-earth-600', chip: 'bg-cream-100 text-earth-600 border border-cream-200', label: 'Pwochèn' };
   return (
-    <li className="flex items-center gap-3 p-3 rounded-xl border border-cream-200 bg-cream-50/40">
-      <span
-        className={cn(
-          'grid place-items-center w-10 h-10 rounded-xl font-display text-lg font-bold shrink-0',
-          tone.box
-        )}
-      >
-        {num}
-      </span>
-      <div className="flex-1 min-w-0">
-        <div className="text-sm font-semibold text-ink leading-tight">{title}</div>
-        <div className="text-xs text-earth-600 mt-0.5 leading-relaxed">{sub}</div>
+    <li className="p-3 rounded-xl border border-cream-200 bg-cream-50/40">
+      <div className="flex items-center gap-3">
+        <span
+          className={cn(
+            'grid place-items-center w-10 h-10 rounded-xl font-display text-lg font-bold shrink-0',
+            tone.box
+          )}
+        >
+          {num}
+        </span>
+        <div className="flex-1 min-w-0">
+          <div className="text-sm font-semibold text-ink leading-tight">{title}</div>
+          <div className="text-xs text-earth-600 mt-0.5 leading-relaxed">{sub}</div>
+        </div>
+        <span
+          className={cn(
+            'text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full shrink-0',
+            tone.chip
+          )}
+        >
+          {tone.label}
+        </span>
       </div>
-      <span
-        className={cn(
-          'text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full shrink-0',
-          tone.chip
-        )}
-      >
-        {tone.label}
-      </span>
+      {children}
     </li>
   );
 }
