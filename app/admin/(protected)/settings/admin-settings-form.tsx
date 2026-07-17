@@ -257,7 +257,7 @@ function PersonaSection({ initialPersona }: { initialPersona: string }) {
           value={value}
           onChange={(e) => setValue(e.target.value)}
           maxLength={60}
-          placeholder="ex: Mèt Joseph, Ton Vye"
+          placeholder="ex: Mèt Joseph, Ton vye"
           disabled={pending}
           className="flex-1 px-3 py-2 text-sm bg-white border border-cream-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-forest-200 focus:border-forest-300 disabled:opacity-60"
         />

@@ -51,7 +51,7 @@ const TOPICS: TopicOption[] = [
     value: 'partnership',
     label: 'Patenarya',
     Icon: Handshake,
-    body: 'Klinik, doktè, Ton Vye ki vle kolabore.',
+    body: 'Klinik, doktè, Ton vye ki vle kolabore.',
   },
   {
     value: 'press',

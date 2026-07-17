@@ -250,7 +250,7 @@ export default function GuideForm({
                 value={values.author_role}
                 onChange={(e) => set('author_role', e.target.value)}
                 className={inputClass}
-                placeholder="Èrboris santiniye"
+                placeholder="Ton vye"
               />
             </Field>
           </div>

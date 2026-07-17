@@ -236,7 +236,7 @@ export default function CourseForm({ mode, initial, categories }: Props) {
                 value={v.instructor_role}
                 onChange={(e) => set('instructor_role', e.target.value)}
                 className={inputClass}
-                placeholder="Èrboris santiniye"
+                placeholder="Ton vye"
               />
             </Field>
           </div>

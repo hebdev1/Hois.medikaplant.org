@@ -85,12 +85,12 @@ export default function TreatmentsSection({
       <section className="bg-white border border-cream-200 rounded-2xl p-5 md:p-6 shadow-card">
         <header className="mb-3">
           <h2 className="font-display text-lg font-bold text-ink">
-            Pwopozisyon <em className="text-forest-600 not-italic font-bold">èrboris ou</em>
+            Pwopozisyon <em className="text-forest-600 not-italic font-bold">Ton vye ou</em>
           </h2>
         </header>
         <div className="rounded-xl bg-cream-50 border border-dashed border-cream-200 p-6 text-center">
           <p className="text-sm text-earth-600">
-            Lè èrboris la voye yon medikaman, yon tizan, oswa yon konsèy pou ou,
+            Lè Ton vye la voye yon medikaman, yon tizan, oswa yon konsèy pou ou,
             ou pral wè li la a.
           </p>
         </div>
@@ -103,7 +103,7 @@ export default function TreatmentsSection({
       <header className="mb-4 flex items-center justify-between gap-3">
         <div>
           <h2 className="font-display text-lg font-bold text-ink">
-            Pwopozisyon <em className="text-forest-600 not-italic font-bold">èrboris ou</em>
+            Pwopozisyon <em className="text-forest-600 not-italic font-bold">Ton vye ou</em>
           </h2>
           <p className="text-xs text-earth-600 mt-0.5">
             Bazile sou mezi ou yo ak kondisyon ou yo.

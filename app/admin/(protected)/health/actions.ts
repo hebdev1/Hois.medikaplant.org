@@ -93,7 +93,7 @@ export async function createTreatment(
   // Email the member (best-effort, respects their email preference).
   await emailNotifyMember(auth.supabase, userId, {
     subject: 'Yon tretman pwopoze pou ou',
-    heading: 'Èrboris ou pwopoze yon tretman',
+    heading: 'Ton vye ou pwopoze yon tretman',
     body: [
       `Ou gen yon nouvo pwopozisyon: "${title}".`,
       'Konekte sou kont ou pou wè detay konplè yo — dòz, frekans, ak enstriksyon.',

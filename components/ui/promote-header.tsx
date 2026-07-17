@@ -66,7 +66,7 @@ const RESOURCES: Resource[] = [
   {
     href: '/klas',
     title: 'Klas Hoïs',
-    desc: 'Klas espirityèl ak èrboris ki disponib pou manm yo.',
+    desc: 'Klas espirityèl ak Ton vye ki disponib pou manm yo.',
     icon: <GraduationCap className="h-5 w-5" strokeWidth={1.8} />,
   },
   {

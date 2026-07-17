@@ -464,7 +464,7 @@ function buildCommentary({
   unit: string;
 }): { body: string; author: string } | null {
   if (count < 3 || trendPct === null) return null;
-  const author = 'Mèt Joseph, Ton Vye';
+  const author = 'Mèt Joseph, Ton vye';
   const noun =
     metric === 'blood_sugar'
       ? 'sik nan san'

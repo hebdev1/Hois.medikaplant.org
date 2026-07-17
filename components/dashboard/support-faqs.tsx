@@ -28,7 +28,7 @@ export default function SupportFaqs({ faqs, defaultOpenId }: SupportFaqsProps) {
           </h3>
         </header>
         <p className="text-sm text-earth-600">
-          Poko gen kesyon ki disponib. Voye yon mesaj nan chat la — èrboris la ap reponn.
+          Poko gen kesyon ki disponib. Voye yon mesaj nan chat la — Ton vye la ap reponn.
         </p>
       </section>
     );
