@@ -18,6 +18,7 @@ import {
   MessagesSquare,
   Award,
   Crown,
+  FlaskConical,
   type LucideIcon,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -52,6 +53,7 @@ const NAV_ITEMS: readonly NavItem[] = [
   { href: '/dashboard/resources', label: 'Telechajman', icon: Download, badge: '12' },
   { href: '/dashboard/health', label: 'Swivi Sante', icon: Activity },
   { href: '/dashboard/guides', label: 'Gid & Konsèy', icon: BookOpen },
+  { href: '/dashboard/reset-doz', label: 'Resèt ak Dòz', icon: FlaskConical },
   { href: '/dashboard/badges', label: 'Badj mwen yo', icon: Award },
   { href: '/dashboard/vip', label: 'Espas VIP', icon: Crown },
   { href: '/dashboard/forum', label: 'Fowòm', icon: MessagesSquare, badge: 'NEW' },
