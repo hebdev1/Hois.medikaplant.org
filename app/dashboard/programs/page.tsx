@@ -181,16 +181,25 @@ export default async function ProgramsPage() {
       )
     );
 
-    tasks = taskRows.map((t) => ({
-      id: t.id,
-      title: t.title,
-      meta: t.meta ?? '',
-      chip: t.chip_label ?? '',
-      chipKind: (['forest', 'gold', 'cream'].includes(t.chip_kind)
-        ? t.chip_kind
-        : 'forest') as TaskChipKind,
-      done: completedTaskIds.has(t.id),
-    }));
+    // Only surface the tasks the admin scheduled for the member's CURRENT
+    // day. Day-1 tasks show only on day 1, day-2 only on day 2, and so on.
+    // Tasks left without a day_number are treated as "every day" so legacy
+    // day-agnostic checklists keep working.
+    tasks = taskRows
+      .filter((t) => {
+        const day = (t as { day_number?: number | null }).day_number;
+        return day == null || day === dayOfPlan;
+      })
+      .map((t) => ({
+        id: t.id,
+        title: t.title,
+        meta: t.meta ?? '',
+        chip: t.chip_label ?? '',
+        chipKind: (['forest', 'gold', 'cream'].includes(t.chip_kind)
+          ? t.chip_kind
+          : 'forest') as TaskChipKind,
+        done: completedTaskIds.has(t.id),
+      }));
   }
 
   const isPaused = Boolean(activeEnrollment?.paused_at);
