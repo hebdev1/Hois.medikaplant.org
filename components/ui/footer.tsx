@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Leaf, Facebook, Instagram, Youtube, Mail } from 'lucide-react';
+import { Facebook, Instagram, Youtube, Mail } from 'lucide-react';
 
 const COLUMNS: { title: string; links: { label: string; href: string }[] }[] = [
   {
@@ -38,16 +38,13 @@ export default function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-5 gap-8 md:gap-12">
           {/* Brand */}
           <div className="col-span-2">
-            <Link href="/" className="flex items-center gap-2 mb-4">
-              <span className="grid place-items-center w-10 h-10 rounded-xl bg-brand-gradient text-white shadow-md">
-                <Leaf className="w-5 h-5" strokeWidth={2.4} />
-              </span>
-              <span className="flex flex-col leading-tight">
-                <span className="font-bold text-lg text-white">MedikaPlant</span>
-                <span className="text-[10px] uppercase tracking-[0.18em] text-brand-300 font-medium">
-                  Hoïs Inivèsite
-                </span>
-              </span>
+            <Link href="/" className="inline-flex items-center mb-4">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/logo-hois.png"
+                alt="Hoïs"
+                className="h-11 w-auto shrink-0"
+              />
             </Link>
             <p className="text-sm leading-relaxed max-w-sm">
               Platfòm natiropatik #1 nan kominote Ayisyèn nan, yon pon ant medsin tradisyonèl ak teknoloji modèn pou byennèt total ou.

@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import { Leaf } from 'lucide-react';
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -10,16 +9,13 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           backgroundSize: '24px 24px',
         }} aria-hidden />
         <div className="relative">
-          <Link href="/" className="flex items-center gap-2">
-            <span className="grid place-items-center w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm">
-              <Leaf className="w-5 h-5" strokeWidth={2.4} />
-            </span>
-            <span className="flex flex-col leading-tight">
-              <span className="font-bold text-lg">MedikaPlant</span>
-              <span className="text-[10px] uppercase tracking-[0.18em] text-white/70 font-medium">
-                Hoïs Inivèsite
-              </span>
-            </span>
+          <Link href="/" className="inline-flex items-center">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/logo-hois.png"
+              alt="Hoïs"
+              className="h-11 w-auto shrink-0"
+            />
           </Link>
         </div>
         <div className="relative">
