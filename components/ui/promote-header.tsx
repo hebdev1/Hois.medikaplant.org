@@ -3,7 +3,6 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import BrandLogo from './brand-logo';
 import {
   Leaf,
   BookOpen,
@@ -260,16 +259,8 @@ export default function PromoteHeader() {
                 <img
                   src="/logo-hois.png"
                   alt="Hoïs"
-                  className="h-9 sm:h-10 w-auto shrink-0"
+                  className="h-10 sm:h-12 w-auto shrink-0"
                 />
-                <span className="flex flex-col leading-tight">
-                  <span className="font-bold text-base sm:text-lg text-ink tracking-tight">
-                    MedikaPlant
-                  </span>
-                  <span className="text-[10px] uppercase tracking-[0.18em] text-brand-700 font-medium hidden sm:block">
-                    Hoïs Inivèsite
-                  </span>
-                </span>
               </Link>
 
             </div>
@@ -417,15 +408,12 @@ export default function PromoteHeader() {
               onClick={() => setOpen(false)}
               className="flex items-center gap-2"
             >
-              <BrandLogo size={36} className="shrink-0 rounded-xl shadow-md" />
-              <span className="flex flex-col leading-tight">
-                <span className="font-bold text-base text-ink">
-                  MedikaPlant
-                </span>
-                <span className="text-[10px] uppercase tracking-[0.18em] text-brand-700 font-medium">
-                  Hoïs Inivèsite
-                </span>
-              </span>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/logo-hois.png"
+                alt="Hoïs"
+                className="h-10 w-auto shrink-0"
+              />
             </Link>
             <button
               onClick={() => setOpen(false)}

@@ -12,7 +12,6 @@ import {
   BookOpen,
   LifeBuoy,
   UserCircle,
-  Leaf,
   LogOut,
   X,
   MessagesSquare,
@@ -135,16 +134,8 @@ export default function Sidebar({
               <img
                 src="/logo-hois.png"
                 alt="Hoïs"
-                className="h-9 w-auto shrink-0"
+                className="h-10 w-auto shrink-0"
               />
-              <span className="flex flex-col leading-tight min-w-0">
-                <span className="font-display font-bold text-lg text-forest-800 tracking-tight truncate">
-                  Medikaplant
-                </span>
-                <span className="font-serif italic text-[11px] text-earth-600 truncate">
-                  un pied à la fois
-                </span>
-              </span>
             </Link>
             {showClose && (
               <button
