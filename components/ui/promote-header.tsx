@@ -470,8 +470,9 @@ export default function PromoteHeader() {
             </div>
           </div>
 
-          {/* Actions */}
-          <div className="mt-4 grid grid-cols-2 gap-2">
+          {/* Actions — right-aligned so "Vin manm" sits at the drawer's right
+              edge instead of being stretched across half the width. */}
+          <div className="mt-4 flex items-center justify-end gap-2">
             <Link
               href="/auth/login"
               onClick={() => setOpen(false)}
