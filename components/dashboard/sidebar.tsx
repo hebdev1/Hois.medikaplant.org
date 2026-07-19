@@ -131,9 +131,12 @@ export default function Sidebar({
               className="flex items-center gap-2.5 min-w-0"
               onClick={onLinkClick}
             >
-              <span className="grid place-items-center w-10 h-10 rounded-xl bg-gradient-to-br from-forest-500 to-forest-800 text-white shadow-plant shrink-0">
-                <Leaf className="w-5 h-5" strokeWidth={2.2} />
-              </span>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/logo-hois.png"
+                alt="Hoïs"
+                className="h-9 w-auto shrink-0"
+              />
               <span className="flex flex-col leading-tight min-w-0">
                 <span className="font-display font-bold text-lg text-forest-800 tracking-tight truncate">
                   Medikaplant

@@ -256,7 +256,12 @@ export default function PromoteHeader() {
                 className="inline-flex items-center gap-2"
                 aria-label="MedikaPlant — Akèy"
               >
-                <BrandLogo size={36} className="shrink-0 rounded-xl shadow-md" />
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/logo-hois.png"
+                  alt="Hoïs"
+                  className="h-9 sm:h-10 w-auto shrink-0"
+                />
                 <span className="flex flex-col leading-tight">
                   <span className="font-bold text-base sm:text-lg text-ink tracking-tight">
                     MedikaPlant
