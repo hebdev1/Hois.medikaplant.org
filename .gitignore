@@ -39,3 +39,6 @@ next-env.d.ts
 .vercel
 
 .superpowers/
+
+# Local dev scratch (email previews, throwaway builds)
+scratch/

@@ -107,23 +107,9 @@ export async function POST(req: Request) {
     // next week's recap if they come back.
     if (nLogs + nTasks + nBadges === 0) continue;
 
-    const body: string[] = [
-      'Men yon koudèy sou aktivite ou semèn ki sot pase a:',
-    ];
-    if (nLogs > 0) body.push(`📊 ${nLogs} antre sou swivi sante w (sik, tansyon, pwa, kè…)`);
-    if (nTasks > 0) body.push(`✅ ${nTasks} tach pwotokòl ou konplete`);
-    if (nBadges > 0) body.push(`🏆 ${nBadges} nouvo badj ou debloke`);
-    body.push(
-      'Kontinye konsa — chak ti pa konte. Ou pral wè evolisyon w nan ' +
-        'pwochèn semèn lan.'
-    );
-
     await emailNotifyMember(supabase, profile.id, {
-      subject: '🌿 Rezime semèn ou — Hoïs MedikaPlant',
-      heading: 'Pwogrè w semèn sa a',
-      body,
-      linkPath: '/dashboard/health',
-      linkLabel: 'Wè detay sou tablodebò',
+      kind: 'weekly_summary',
+      vars: { nLogs, nTasks, nBadges },
       requirePref: 'weekly_summary_email',
     });
     sent++;

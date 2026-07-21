@@ -72,15 +72,13 @@ export async function POST(req: Request) {
   }
 
   await emailNotifyMember(supabase, userId, {
-    subject: `🏆 Felisitasyon — ou debloke "${badge.name}"`,
-    heading: `Yon nouvo badj pou ou : ${badge.name}`,
-    body: [
-      badge.sub ?? 'Yon mak rekonesans pou pwogrè w sou Hoïs.',
-      badge.description ??
-        'Kontinye konsa — chak ti pa nan pwotokòl la ap pòte yon nouvo rekonesans.',
-    ],
-    linkPath: `/dashboard/badges/${badge.slug}`,
-    linkLabel: 'Wè badj la',
+    kind: 'badge_unlock',
+    vars: {
+      badgeName: badge.name,
+      badgeSlug: badge.slug,
+      badgeSub: badge.sub,
+      badgeDescription: badge.description,
+    },
     requirePref: 'badge_unlock_email',
   });
 

@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createHmac, timingSafeEqual } from 'crypto';
 import { sendEmail } from '@/lib/email/resend';
+import { createServiceClient } from '@/lib/supabase/service';
+import { authCopy, authStyle, normalizeLang, type Lang } from '@/lib/email/copy';
+import { renderBrandedEmail } from '@/lib/email/template';
 
 // ───────────────────────────────────────────────────────────────────────────
 // Supabase Send Email Hook
@@ -8,8 +11,8 @@ import { sendEmail } from '@/lib/email/resend';
 // Supabase Auth fires every outgoing email (recovery, magic-link, signup
 // confirm, email change, invite, reauth) at this endpoint *instead of*
 // shipping its default English templates. We verify the request came from
-// Supabase using Standard Webhooks HMAC, render our own Kreyòl-branded
-// HTML, and ship via Resend.
+// Supabase using Standard Webhooks HMAC, render our own branded HTML in the
+// member's language (see lib/email/template.ts + copy.ts), and ship via Resend.
 //
 // Required env vars:
 //   SUPABASE_AUTH_HOOK_SECRET — the shared secret you paste into
@@ -132,123 +135,71 @@ function verifySignature(
 }
 
 // ───────────────────────────────────────────────────────────────────────────
-// Branded HTML templates per email type. Kept inline here so the hook is
-// self-contained; we could share with lib/email/notify.ts later if we
-// need both flows to drift in lockstep.
+// Language resolution. Emails render in the member's own language. Source of
+// truth is user_preferences.language; fall back to a language in
+// user_metadata (set at signup, if any), then Kreyòl. A lookup failure — a
+// missing service key or, for a brand-new signup, no preferences row yet —
+// must never block sending, so every path returns a valid Lang.
+// ───────────────────────────────────────────────────────────────────────────
+async function resolveLang(
+  userId: string,
+  userMeta?: Record<string, unknown> | null
+): Promise<Lang> {
+  try {
+    const sb = createServiceClient();
+    const { data } = await sb
+      .from('user_preferences')
+      .select('language')
+      .eq('user_id', userId)
+      .maybeSingle();
+    const stored = (data as { language?: string } | null)?.language;
+    if (stored) return normalizeLang(stored);
+  } catch {
+    // service key absent or row missing — fall through to metadata / default
+  }
+  const metaLang = userMeta?.language;
+  return normalizeLang(typeof metaLang === 'string' ? metaLang : undefined);
+}
+
+// ───────────────────────────────────────────────────────────────────────────
+// Render one auth email through the shared branded template. Copy + accent +
+// footer come from lib/email/copy.ts. Reauth is the only type with a code box
+// (the OTP) and a button that returns to the app rather than a verify link.
 // ───────────────────────────────────────────────────────────────────────────
 function renderEmail(
   payload: SupabaseEmailHookPayload,
-  verifyUrl: string
+  verifyUrl: string,
+  lang: Lang
 ): { subject: string; html: string } {
   const { user, email_data } = payload;
+  const type = email_data.email_action_type;
   const firstName =
     (user.user_metadata?.first_name as string | undefined)?.trim() ||
     (user.user_metadata?.full_name as string | undefined)?.split(' ')[0] ||
     user.email.split('@')[0];
 
-  switch (email_data.email_action_type) {
-    case 'recovery':
-      return {
-        subject: 'Reyajiste modpas ou — Hoïs MedikaPlant',
-        html: brandedTemplate({
-          firstName,
-          heading: 'Reyajiste modpas ou',
-          body: [
-            "Nou resevwa yon demand pou reyajiste modpas kont MedikaPlant ou.",
-            'Klike sou bouton anba a pou chwazi yon nouvo modpas. Lyen sa ap ekspire nan yon èdtan.',
-            "Si se pa ou ki te mande sa, ou ka inyore mesaj sa — kont ou rete an sekirite.",
-          ],
-          linkLabel: 'Chwazi yon nouvo modpas',
-          linkUrl: verifyUrl,
-        }),
-      };
+  const copy = authCopy(type, lang);
+  const { accent, footer } = authStyle(type);
+  const isReauth = type === 'reauthentication';
+  const siteUrl = (
+    process.env.NEXT_PUBLIC_SITE_URL || 'https://hoismedikaplant.com'
+  ).replace(/\/$/, '');
 
-    case 'magiclink':
-      return {
-        subject: 'Lyen koneksyon ou — Hoïs MedikaPlant',
-        html: brandedTemplate({
-          firstName,
-          heading: 'Konekte san modpas',
-          body: [
-            'Klike sou bouton anba a pou konekte sou kont MedikaPlant ou.',
-            'Lyen sa ap ekspire nan yon èdtan.',
-          ],
-          linkLabel: 'Konekte kounye a',
-          linkUrl: verifyUrl,
-        }),
-      };
+  const html = renderBrandedEmail({
+    lang,
+    accent,
+    footer,
+    firstName,
+    heading: copy.heading,
+    paragraphs: copy.paragraphs,
+    note: copy.note,
+    codeBox: isReauth ? email_data.token : undefined,
+    cta: copy.ctaLabel
+      ? { label: copy.ctaLabel, url: isReauth ? `${siteUrl}/dashboard` : verifyUrl }
+      : undefined,
+  });
 
-    case 'signup':
-      return {
-        subject: 'Konfime kont MedikaPlant ou',
-        html: brandedTemplate({
-          firstName,
-          heading: 'Byenveni nan Hoïs',
-          body: [
-            "Mèsi pou enskripsyon ou nan MedikaPlant — Hoïs Inivèsite.",
-            'Klike sou bouton anba a pou konfime imèl ou ak aktive kont ou.',
-          ],
-          linkLabel: 'Konfime imèl mwen',
-          linkUrl: verifyUrl,
-        }),
-      };
-
-    case 'invite':
-      return {
-        subject: 'Ou envite nan MedikaPlant — Hoïs Inivèsite',
-        html: brandedTemplate({
-          firstName,
-          heading: 'Yon envitasyon pou ou',
-          body: [
-            "Yon admin MedikaPlant envite ou rantre nan kominote Hoïs la.",
-            'Klike sou bouton anba a pou aktive kont ou ak chwazi modpas ou.',
-          ],
-          linkLabel: 'Aksepte envitasyon an',
-          linkUrl: verifyUrl,
-        }),
-      };
-
-    case 'email_change':
-    case 'email_change_new':
-      return {
-        subject: 'Konfime nouvo imèl ou',
-        html: brandedTemplate({
-          firstName,
-          heading: 'Konfime chanjman imèl ou',
-          body: [
-            'Klike sou bouton anba a pou konfime nouvo imèl ou pou kont MedikaPlant.',
-            'Si se pa ou ki te mande sa, inyore mesaj sa.',
-          ],
-          linkLabel: 'Konfime nouvo imèl',
-          linkUrl: verifyUrl,
-        }),
-      };
-
-    case 'reauthentication':
-      return {
-        subject: 'Kòd verifikasyon ou',
-        html: brandedTemplate({
-          firstName,
-          heading: 'Verifikasyon idantite',
-          body: [
-            `Antre kòd sa pou konplete operasyon w an: ${email_data.token}`,
-            "Si se pa ou ki te mande sa, chanje modpas ou kounye a.",
-          ],
-        }),
-      };
-
-    default:
-      return {
-        subject: 'MedikaPlant — yon mesaj otomatik',
-        html: brandedTemplate({
-          firstName,
-          heading: 'Yon mesaj otomatik',
-          body: ['Klike sou bouton an pou kontinye.'],
-          linkLabel: 'Kontinye',
-          linkUrl: verifyUrl,
-        }),
-      };
-  }
+  return { subject: copy.subject, html };
 }
 
 type SendTarget = { to: string; tokenHash: string };
@@ -335,81 +286,6 @@ function buildVerifyUrl(
   url.searchParams.set('token_hash', email_data.token_hash);
   url.searchParams.set('type', email_data.email_action_type);
   return url.toString();
-}
-
-/** Branded HTML shell. Inline styles only so mail clients render right. */
-function brandedTemplate({
-  firstName,
-  heading,
-  body,
-  linkUrl,
-  linkLabel,
-}: {
-  firstName: string;
-  heading: string;
-  body: string[];
-  linkUrl?: string;
-  linkLabel?: string;
-}): string {
-  const escape = (s: string) =>
-    s
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#39;');
-  const paragraphs = body
-    .map(
-      (p) =>
-        `<p style="margin:0 0 16px;color:#3f3a52;font-size:15px;line-height:1.6;">${escape(p)}</p>`
-    )
-    .join('');
-  const button =
-    linkUrl && linkLabel
-      ? `<div style="margin:24px 0 8px;">
-           <a href="${linkUrl}" style="display:inline-block;background:#587d17;color:#ffffff;text-decoration:none;font-weight:600;font-size:14px;padding:14px 28px;border-radius:9999px;">${escape(linkLabel)}</a>
-         </div>
-         <p style="margin:8px 0 0;color:#8a8699;font-size:11px;word-break:break-all;">
-           Si bouton an pa mache, kopye lyen sa nan navigatè ou:<br/>
-           <a href="${linkUrl}" style="color:#587d17;text-decoration:underline;">${linkUrl}</a>
-         </p>`
-      : '';
-
-  return `<!doctype html>
-<html lang="ht">
-  <body style="margin:0;padding:0;background:#f6f5f0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f6f5f0;padding:24px 0;">
-      <tr>
-        <td align="center">
-          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;background:#ffffff;border-radius:16px;overflow:hidden;border:1px solid #e7e5dd;">
-            <tr>
-              <td style="background:linear-gradient(135deg,#587d17,#354b0f);padding:24px 28px;">
-                <span style="color:#ffffff;font-size:18px;font-weight:700;letter-spacing:-0.01em;">MedikaPlant</span>
-                <span style="color:#d0e394;font-size:11px;text-transform:uppercase;letter-spacing:0.18em;display:block;margin-top:2px;">Hoïs Inivèsite</span>
-              </td>
-            </tr>
-            <tr>
-              <td style="padding:28px;">
-                <h1 style="margin:0 0 16px;color:#050040;font-size:22px;line-height:1.3;">${escape(heading)}</h1>
-                <p style="margin:0 0 16px;color:#3f3a52;font-size:15px;line-height:1.6;">Bonjou ${escape(firstName)},</p>
-                ${paragraphs}
-                ${button}
-              </td>
-            </tr>
-            <tr>
-              <td style="padding:18px 28px;border-top:1px solid #e7e5dd;">
-                <p style="margin:0;color:#8a8699;font-size:12px;line-height:1.5;">
-                  Ou resevwa imèl sa paske ou gen yon kont MedikaPlant. Pou
-                  nenpòt kesyon, reponn imèl sa epi yon admin ap kontakte ou.
-                </p>
-              </td>
-            </tr>
-          </table>
-        </td>
-      </tr>
-    </table>
-  </body>
-</html>`;
 }
 
 // ───────────────────────────────────────────────────────────────────────────
@@ -502,6 +378,7 @@ export async function POST(req: NextRequest) {
     }
 
     const targets = resolveTargets(payload);
+    const lang = await resolveLang(payload.user.id, payload.user.user_metadata);
     const replyTo =
       process.env.CONTACT_REPLY_TO || process.env.EMAIL_FROM || undefined;
 
@@ -509,13 +386,14 @@ export async function POST(req: NextRequest) {
     console.log(
       '[send-email] sending',
       payload.email_data.email_action_type,
+      `(${lang})`,
       'to',
       targets.map((t) => t.to).join(', ')
     );
 
     for (const target of targets) {
       const verifyUrl = buildVerifyUrl(payload, target.tokenHash);
-      const { subject, html } = renderEmail(payload, verifyUrl);
+      const { subject, html } = renderEmail(payload, verifyUrl, lang);
 
       const result = await sendEmail({ to: target.to, subject, html, replyTo });
 

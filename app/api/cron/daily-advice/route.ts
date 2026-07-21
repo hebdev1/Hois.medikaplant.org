@@ -131,9 +131,6 @@ export async function POST(req: Request) {
   }
 
   const adviceConds = new Set(advice.condition_tags ?? []);
-  const subject = `🌿 Konsèy plant jodi a${
-    advice.plant_name ? ` — ${advice.plant_name}` : ''
-  }`;
   const teaser = bodyExcerpt(advice.body_html);
 
   let sent = 0;
@@ -157,17 +154,8 @@ export async function POST(req: Request) {
     }
 
     await emailNotifyMember(supabase, profile.id, {
-      subject,
-      heading: advice.plant_name
-        ? `Konsèy jodi a — ${advice.plant_name}`
-        : 'Konsèy plant jodi a',
-      body: [
-        teaser,
-        'Ouvri tablodebò ou pou tande tout pwofondè konsèy la + bwè-l ' +
-          'an son si li disponib.',
-      ],
-      linkPath: '/dashboard',
-      linkLabel: 'Wè konsèy konplè a',
+      kind: 'daily_advice',
+      vars: { plantName: advice.plant_name, adviceExcerpt: teaser },
       requirePref: 'daily_advice_email',
     });
     sent++;
