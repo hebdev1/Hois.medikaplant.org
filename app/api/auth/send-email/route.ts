@@ -45,6 +45,10 @@ type SupabaseEmailHookPayload = {
   user: {
     id: string;
     email: string;
+    // Present only during an email change — the address the member is
+    // switching TO. Supabase does NOT put it in `email`, which stays the
+    // current address until the change is confirmed.
+    new_email?: string;
     user_metadata?: Record<string, unknown> | null;
   };
   email_data: {
@@ -133,17 +137,14 @@ function verifySignature(
 // need both flows to drift in lockstep.
 // ───────────────────────────────────────────────────────────────────────────
 function renderEmail(
-  payload: SupabaseEmailHookPayload
+  payload: SupabaseEmailHookPayload,
+  verifyUrl: string
 ): { subject: string; html: string } {
   const { user, email_data } = payload;
   const firstName =
     (user.user_metadata?.first_name as string | undefined)?.trim() ||
     (user.user_metadata?.full_name as string | undefined)?.split(' ')[0] ||
     user.email.split('@')[0];
-
-  // The action link Supabase wants us to embed. It contains the token
-  // hash + a redirect_to query param so the user lands back in our app.
-  const verifyUrl = buildVerifyUrl(payload);
 
   switch (email_data.email_action_type) {
     case 'recovery':
@@ -250,8 +251,57 @@ function renderEmail(
   }
 }
 
-/** Build the verification URL Supabase wants the user to click. */
-function buildVerifyUrl(payload: SupabaseEmailHookPayload): string {
+type SendTarget = { to: string; tokenHash: string };
+
+/**
+ * Who this hook invocation must email, and with which token.
+ *
+ * Every flow except email change is a single message to the account's
+ * address. Email change is the exception: the confirmation that actually
+ * completes the switch has to reach the NEW address and carry the NEW token
+ * (token_hash_new). With "Secure email change" enabled Supabase also wants
+ * the current address to confirm, using the original token — so we send to
+ * both when both tokens are present.
+ */
+function resolveTargets(payload: SupabaseEmailHookPayload): SendTarget[] {
+  const { user, email_data } = payload;
+  const action = email_data.email_action_type;
+
+  if (action === 'email_change' || action === 'email_change_new') {
+    const targets: SendTarget[] = [];
+
+    // Essential leg: confirm the new address with the new token.
+    if (user.new_email && email_data.token_hash_new) {
+      targets.push({ to: user.new_email, tokenHash: email_data.token_hash_new });
+    }
+    // Secure-change leg: confirm the current address with the original
+    // token — only when it's a distinct token from the new one.
+    if (
+      email_data.token_hash &&
+      email_data.token_hash !== email_data.token_hash_new
+    ) {
+      targets.push({ to: user.email, tokenHash: email_data.token_hash });
+    }
+    if (targets.length > 0) return targets;
+    // Fallback for older payloads that omit new_email / token_hash_new.
+    return [{ to: user.email, tokenHash: email_data.token_hash }];
+  }
+
+  return [{ to: user.email, tokenHash: email_data.token_hash }];
+}
+
+/**
+ * Build the verification URL Supabase wants the user to click.
+ *
+ * `tokenHash` is passed in rather than read off email_data because an email
+ * change produces TWO tokens — token_hash (current address) and
+ * token_hash_new (new address) — and each confirmation link must carry the
+ * one that matches its recipient.
+ */
+function buildVerifyUrl(
+  payload: SupabaseEmailHookPayload,
+  tokenHash: string
+): string {
   const { email_data } = payload;
 
   // We deliberately IGNORE email_data.redirect_to here. Supabase
@@ -451,42 +501,46 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const targets = resolveTargets(payload);
+    const replyTo =
+      process.env.CONTACT_REPLY_TO || process.env.EMAIL_FROM || undefined;
+
     // eslint-disable-next-line no-console
     console.log(
       '[send-email] sending',
       payload.email_data.email_action_type,
       'to',
-      payload.user.email
+      targets.map((t) => t.to).join(', ')
     );
 
-    const { subject, html } = renderEmail(payload);
+    for (const target of targets) {
+      const verifyUrl = buildVerifyUrl(payload, target.tokenHash);
+      const { subject, html } = renderEmail(payload, verifyUrl);
 
-    const result = await sendEmail({
-      to: payload.user.email,
-      subject,
-      html,
-      replyTo:
-        process.env.CONTACT_REPLY_TO || process.env.EMAIL_FROM || undefined,
-    });
+      const result = await sendEmail({ to: target.to, subject, html, replyTo });
 
-    if (!result.ok) {
-      // Loud server log so operators can see the actual Resend message in
-      // the Hostinger/Vercel runtime logs. Surface the message in the
-      // response body too — Supabase shows only the status code in the
-      // UI but the body still lands in their hook delivery log.
-      console.error('[send-email] Resend failed:', result.error);
-      return NextResponse.json(
-        {
-          error: {
-            message: result.error,
-            http_code: 500,
-            hint: result.error.includes('verify a domain')
-              ? 'Resend sandbox: you can only send to the email registered on your Resend account. Verify a custom domain in Resend → Domains and set EMAIL_FROM to use it.'
-              : undefined,
+      if (!result.ok) {
+        // Loud server log so operators can see the actual Resend message in
+        // the Hostinger/Vercel runtime logs. Surface the message in the
+        // response body too — Supabase shows only the status code in the
+        // UI but the body still lands in their hook delivery log.
+        console.error(
+          `[send-email] Resend failed for ${target.to}:`,
+          result.error
+        );
+        return NextResponse.json(
+          {
+            error: {
+              message: result.error,
+              http_code: 500,
+              hint: result.error.includes('verify a domain')
+                ? 'Resend sandbox: you can only send to the email registered on your Resend account. Verify a custom domain in Resend → Domains and set EMAIL_FROM to use it.'
+                : undefined,
+            },
           },
-        },
-        { status: 500 }
-      );
+          { status: 500 }
+        );
+      }
     }
 
     return NextResponse.json({ success: true });
