@@ -658,7 +658,7 @@ export default function SettingsForm({
       </SettingsSection>
 
       {/* ── Sekirite ───────────────────────────────────────────────────────── */}
-      <PasswordSection />
+      <PasswordSection currentEmail={profile.email ?? undefined} />
 
       {/* ── Zòn Danje ──────────────────────────────────────────────────────── */}
       <DangerZonePanel />

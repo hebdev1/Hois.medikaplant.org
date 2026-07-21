@@ -505,6 +505,57 @@ export async function changePassword(input: {
   return { ok: true };
 }
 
+// ─── Security: change email ─────────────────────────────────────────────────
+
+/**
+ * Starts an email change. Supabase does not swap the address immediately —
+ * it mails a confirmation link to the NEW address (and, when "Secure email
+ * change" is on, to the old one too). The member stays signed in with the
+ * old address until every link is clicked.
+ */
+export async function changeEmail(input: {
+  newEmail: string;
+  currentPassword: string;
+}): Promise<ProfileResult> {
+  const newEmail = input.newEmail.trim().toLowerCase();
+
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail)) {
+    return { ok: false, error: 'Adrès imel la pa valab.' };
+  }
+  if (!input.currentPassword) {
+    return { ok: false, error: 'Tape modpas ou pou konfime.' };
+  }
+
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user?.email) return { ok: false, error: 'Ou dwe konekte.' };
+
+  if (newEmail === user.email.toLowerCase()) {
+    return { ok: false, error: 'Se menm adrès imel ou genyen deja a.' };
+  }
+
+  // Same reauthentication rule as changePassword: re-prove the password
+  // before we let anyone point the account at a new address.
+  const { error: reauthError } = await supabase.auth.signInWithPassword({
+    email: user.email,
+    password: input.currentPassword,
+  });
+  if (reauthError) return { ok: false, error: 'Modpas la pa kòrèk.' };
+
+  const { error } = await supabase.auth.updateUser({ email: newEmail });
+  if (error) {
+    // Supabase reports a taken address generically; make it actionable.
+    if (/already|exist|registered/i.test(error.message)) {
+      return { ok: false, error: 'Gen yon lòt kont ki sèvi ak adrès sa a deja.' };
+    }
+    return { ok: false, error: error.message };
+  }
+
+  return { ok: true };
+}
+
 // ─── GDPR data export ───────────────────────────────────────────────────────
 
 export type ExportPayload = {
