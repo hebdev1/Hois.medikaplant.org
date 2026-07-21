@@ -77,7 +77,7 @@ export default function CourseCheckoutForm({
   const [expiry, setExpiry] = React.useState('');
 
   return (
-    <form action={formAction} className="space-y-5">
+    <form action={formAction} translate="no" className="notranslate space-y-5">
       {/* Account section — hidden when already signed in */}
       {!isAuthenticated && (
         <section className="bg-white border border-cream-200 rounded-2xl p-5 md:p-6 shadow-card space-y-4">

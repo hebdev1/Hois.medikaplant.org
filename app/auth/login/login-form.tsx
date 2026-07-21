@@ -32,7 +32,7 @@ export default function LoginForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="space-y-5">
+    <form onSubmit={onSubmit} translate="no" className="notranslate space-y-5">
       <div>
         <label className="text-sm font-medium text-ink">Email</label>
         <div className="mt-1 relative">

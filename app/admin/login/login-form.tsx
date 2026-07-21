@@ -10,7 +10,7 @@ export default function AdminLoginForm() {
   const [showPw, setShowPw] = React.useState(false);
 
   return (
-    <form action={action} className="space-y-4">
+    <form action={action} translate="no" className="notranslate space-y-4">
       <div>
         <label
           htmlFor="email"

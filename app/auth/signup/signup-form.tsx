@@ -105,7 +105,7 @@ export default function SignupForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="space-y-5">
+    <form onSubmit={onSubmit} translate="no" className="notranslate space-y-5">
       {planParam && (
         <div className="rounded-xl bg-brand-50 border border-brand-200 px-4 py-3 text-sm text-brand-800">
           Plan chwazi: <strong className="capitalize">Hoïs {planParam === 'basic' ? 'Bazilik' : planParam === 'premium' ? 'Sitwonèl' : 'Melis'}</strong>

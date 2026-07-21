@@ -168,7 +168,7 @@ export default function ResetPasswordForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="space-y-5">
+    <form onSubmit={onSubmit} translate="no" className="notranslate space-y-5">
       <div>
         <label className="text-sm font-medium text-ink">Nouvo modpas</label>
         <div className="mt-1 relative">
