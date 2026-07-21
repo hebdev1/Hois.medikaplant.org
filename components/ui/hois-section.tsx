@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Sparkles, ArrowRight } from 'lucide-react';
 import FeatureCarousel from '@/components/ui/feature-carousel';
+import { getSiteImages, imageKeys } from '@/lib/site-images';
 
 /**
  * Section "Kisa HOÏS ye?" sur la landing page. Précédemment composée de
@@ -10,7 +11,9 @@ import FeatureCarousel from '@/components/ui/feature-carousel';
  * Tradisyon) avec animation pill ↔ image et auto-play. Voir
  * CONTENT_VOICE.md pour le ton.
  */
-export default function HoisSection() {
+export default async function HoisSection() {
+  const siteImages = await getSiteImages();
+
   return (
     <section
       id="hois"
@@ -68,7 +71,9 @@ export default function HoisSection() {
         </div>
 
         {/* Animated carousel */}
-        <FeatureCarousel />
+        <FeatureCarousel
+          images={imageKeys('carousel').map((k) => siteImages[k])}
+        />
 
         {/* Sacred quote */}
         <blockquote className="mt-16 max-w-[820px] mx-auto text-center">

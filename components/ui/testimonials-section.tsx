@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { getSiteImages } from "@/lib/site-images";
 import { Quote } from 'lucide-react';
 
 type Testimonial = {
@@ -33,7 +34,8 @@ const TESTIMONIALS: Testimonial[] = [
   },
 ];
 
-export default function TestimonialsSection() {
+export default async function TestimonialsSection() {
+  const siteImages = await getSiteImages();
   return (
     <section className="relative w-full py-24 md:py-32 bg-white">
       <div className="max-w-[1400px] mx-auto px-4 md:px-12 lg:px-20 xl:px-32">
@@ -47,7 +49,7 @@ export default function TestimonialsSection() {
         </div>
 
         <div className="grid md:grid-cols-3 gap-6 md:gap-8">
-          {TESTIMONIALS.map((t) => (
+          {TESTIMONIALS.map((t, i) => (
             <article
               key={t.name}
               className="relative bg-white rounded-2xl p-7 border border-slate-200/70 shadow-card card-lift"
@@ -59,7 +61,7 @@ export default function TestimonialsSection() {
               <div className="mt-6 flex items-center gap-3 pt-5 border-t border-slate-100">
                 <div className="relative w-11 h-11 rounded-full overflow-hidden border-2 border-brand-100">
                   <Image
-                    src={t.avatar}
+                    src={siteImages[`testimonial-${i + 1}`] || t.avatar}
                     alt={t.name}
                     fill
                     sizes="44px"

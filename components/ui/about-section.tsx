@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { getSiteImages } from "@/lib/site-images";
 import { Leaf, Heart, Globe } from 'lucide-react';
 
 const PILLARS = [
@@ -19,7 +20,9 @@ const PILLARS = [
   },
 ];
 
-export default function AboutSection() {
+export default async function AboutSection() {
+  const siteImages = await getSiteImages();
+
   return (
     <section id="istwa" className="relative w-full py-24 md:py-32 bg-gradient-to-b from-brand-50/40 to-white">
       <div className="max-w-[1400px] mx-auto px-4 md:px-12 lg:px-20 xl:px-32">
@@ -28,7 +31,7 @@ export default function AboutSection() {
           <div className="relative">
             <div className="relative aspect-square rounded-[2rem] overflow-hidden shadow-card">
               <Image
-                src="https://images.unsplash.com/photo-1611078489935-0cb964de46d6?auto=format&fit=crop&w=900&q=80"
+                src={siteImages["about-1"]}
                 alt="Tradisyon natiropatik Ayisyen"
                 fill
                 sizes="(min-width: 1024px) 480px, 100vw"
@@ -37,7 +40,7 @@ export default function AboutSection() {
             </div>
             <div className="hidden md:block absolute -bottom-10 -right-6 w-56 h-56 rounded-2xl overflow-hidden shadow-card border-4 border-white">
               <Image
-                src="https://images.unsplash.com/photo-1518495973542-4542c06a5843?auto=format&fit=crop&w=600&q=80"
+                src={siteImages["about-2"]}
                 alt="Fèy ak plant"
                 fill
                 sizes="224px"

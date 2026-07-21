@@ -120,7 +120,12 @@ const wrap = (min: number, max: number, v: number) => {
   return ((((v - min) % rangeSize) + rangeSize) % rangeSize) + min;
 };
 
-export function FeatureCarousel() {
+export function FeatureCarousel({
+  /** Admin-managed overrides from /admin/imaj, in FEATURES order. */
+  images,
+}: {
+  images?: string[];
+} = {}) {
   const [step, setStep] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
 
@@ -272,7 +277,7 @@ export function FeatureCarousel() {
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src={feature.image}
+                    src={images?.[index] || feature.image}
                     alt={feature.label}
                     className={cn(
                       'w-full h-full object-cover transition-all duration-700',

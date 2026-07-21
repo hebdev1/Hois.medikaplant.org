@@ -18,6 +18,7 @@ import {
   GraduationCap,
   FlaskConical,
   Lightbulb,
+  Image as ImageIcon,
   Settings as SettingsIcon,
   type LucideIcon,
 } from 'lucide-react';
@@ -192,6 +193,7 @@ export const ADMIN_NAV_LINKS: readonly AdminNavLink[] = [
   { href: '/admin/subscriptions', label: 'Subscriptions', icon: CreditCard, capability: 'manage_subscriptions' },
   { href: '/admin/hubspot', label: 'HubSpot CRM', icon: Link2, capability: 'view_hubspot' },
   { href: '/admin/notifications', label: 'Notifications', icon: Bell, capability: 'broadcast_notifications' },
+  { href: '/admin/imaj', label: 'Imaj paj dakèy', icon: ImageIcon, capability: 'manage_resources' },
   { href: '/admin/suggestions', label: 'Sijesyon manm', icon: Lightbulb, capability: 'manage_self' },
   { href: '/admin/settings', label: 'Paramèt', icon: SettingsIcon, capability: 'manage_self' },
 ];

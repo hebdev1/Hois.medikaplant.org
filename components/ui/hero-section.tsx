@@ -54,7 +54,13 @@ const IMAGE_ALTS = [
   'Fèy, jenjanm ak konplèman natirèl sou mab',
 ];
 
-export default function HeroSection() {
+export default function HeroSection({
+  /** Admin-managed overrides from /admin/imaj; falls back to HERO_IMAGES. */
+  images,
+}: {
+  images?: string[];
+} = {}) {
+  const heroImages = images?.length ? images : HERO_IMAGES;
   return (
     <section
       id="akey"
@@ -71,7 +77,7 @@ export default function HeroSection() {
       />
 
       <ArcGalleryHero
-        images={HERO_IMAGES}
+        images={heroImages}
         altFor={(i) => IMAGE_ALTS[i] ?? `Plant ${i + 1}`}
         className="!bg-transparent"
         eyebrow={
