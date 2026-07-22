@@ -100,19 +100,23 @@ Events handled:
 | `checkout.session.completed` (mode `payment`) | insert `course_purchases` (`payment_reference` = payment-intent id, `status = 'paid'`, `amount_cents`, `currency = 'usd'`) + a `course_enrollments` row with `source = 'purchase'` |
 | `customer.subscription.created` / `.updated` | upsert the member's `subscriptions` row |
 | `customer.subscription.deleted` | mark the row `cancelled` |
-| `invoice.payment_failed` | log; keep access (see status mapping) |
+| `invoice.payment_failed` | mark the row `cancelled` — access is cut immediately (see status mapping) |
 
 `checkout.session.completed` in `subscription` mode needs no work — the
 subscription events carry the authoritative state.
 
 ### 4. Subscription row mapping
 `subscription_status` has exactly three values: `active`, `cancelled`,
-`expired`. Map Stripe onto them so a failed payment does not instantly cut
-access while Stripe is still retrying:
+`expired`. The founder chose to **cut access as soon as a payment fails**
+rather than carry members through Stripe's retry window:
 
-- Stripe `active`, `trialing`, `past_due` → **`active`**
-- Stripe `canceled`, `unpaid`, `incomplete_expired` → **`cancelled`**
+- Stripe `active`, `trialing` → **`active`**
+- Stripe `past_due`, `canceled`, `unpaid`, `incomplete_expired` → **`cancelled`**
 - `incomplete` → no row change (payment never completed)
+
+So `invoice.payment_failed` revokes access immediately. If the member fixes
+their card and Stripe recovers the invoice, `customer.subscription.updated`
+arrives with `active` and restores access automatically — no manual step.
 
 Also written: `plan` (from the price ID → plan lookup), `billing_cycle` (from
 the price's interval), `end_date` = `current_period_end`, `amount`,
@@ -193,10 +197,16 @@ tested end to end. Deployment is now a prerequisite, not a follow-up.
 
 ## Open item for the founder
 
-Stripe does not support businesses based in Haiti. The connected API key
-works for reads, but payouts require the Stripe account to be registered in a
-supported country. Confirm in Stripe Dashboard → Settings → Business before
-switching to live keys.
+This is about the **merchant** account, not the customer's card. Customers
+anywhere can pay with an international card — that part is fine. What Stripe
+requires is that the **business receiving the money** be registered in a
+country Stripe supports, and Stripe does not operate for businesses based in
+**Haiti**. If the account is registered there, payments may be collected but
+payouts cannot be settled.
+
+Confirm the registered country in Stripe Dashboard → Settings → Business
+**before switching to live keys**. The implementation is identical either
+way, so this does not block building — only going live.
 
 ## Acceptance
 
