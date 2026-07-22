@@ -271,20 +271,31 @@ function buildVerifyUrl(
     process.env.NEXT_PUBLIC_SITE_URL || 'https://hoismedikaplant.com'
   ).replace(/\/$/, '');
 
+  const action = email_data.email_action_type;
+  const isEmailChange = action === 'email_change' || action === 'email_change_new';
+
   const pathByAction: Record<string, string> = {
     recovery: '/auth/reset-password',
     magiclink: '/auth/login',
     signup: '/auth/login',
     invite: '/auth/login',
-    email_change: '/dashboard/settings',
-    email_change_new: '/dashboard/settings',
+    // Email change is applied server-side by /auth/confirm (verifyOtp), then
+    // it redirects the member to their settings. Landing straight on
+    // /dashboard/settings never completed the change.
+    email_change: '/auth/confirm',
+    email_change_new: '/auth/confirm',
     reauthentication: '/dashboard',
   };
-  const targetPath = pathByAction[email_data.email_action_type] ?? '/';
+  const targetPath = pathByAction[action] ?? '/';
 
   const url = new URL(`${siteUrl}${targetPath}`);
-  url.searchParams.set('token_hash', email_data.token_hash);
-  url.searchParams.set('type', email_data.email_action_type);
+  // Use the per-recipient token the caller resolved — an email change has a
+  // separate token for the new address (token_hash_new) vs the current one.
+  url.searchParams.set('token_hash', tokenHash);
+  // verifyOtp only accepts 'email_change'; the 'email_change_new' variant is a
+  // hook action type, not a valid OTP type.
+  url.searchParams.set('type', isEmailChange ? 'email_change' : action);
+  if (isEmailChange) url.searchParams.set('next', '/dashboard/settings');
   return url.toString();
 }
 
