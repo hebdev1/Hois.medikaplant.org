@@ -194,6 +194,49 @@ async function applyCoursePurchase(
   }
 }
 
+/** Same as applyCoursePurchase, but for the on-page Elements flow, which
+ *  produces a bare PaymentIntent rather than a Checkout Session. */
+async function applyCoursePurchaseFromIntent(
+  sb: ReturnType<typeof createServiceClient>,
+  intent: Stripe.PaymentIntent
+) {
+  const userId = intent.metadata?.user_id;
+  const courseId = intent.metadata?.course_id;
+  // Plan payments also produce PaymentIntents; those carry no course_id and
+  // are handled by the subscription events instead.
+  if (!userId || !courseId) return;
+
+  const { data: already } = await sb
+    .from('course_purchases')
+    .select('id')
+    .eq('payment_reference', intent.id)
+    .maybeSingle();
+
+  if (!already) {
+    await sb.from('course_purchases').insert({
+      course_id: courseId,
+      user_id: userId,
+      amount_cents: intent.amount_received || intent.amount,
+      currency: intent.currency ?? 'usd',
+      payment_reference: intent.id,
+      status: 'paid',
+    });
+  }
+
+  const { data: enrolled } = await sb
+    .from('course_enrollments')
+    .select('id')
+    .eq('course_id', courseId)
+    .eq('user_id', userId)
+    .maybeSingle();
+
+  if (!enrolled) {
+    await sb
+      .from('course_enrollments')
+      .insert({ course_id: courseId, user_id: userId, source: 'purchase' });
+  }
+}
+
 export async function POST(req: NextRequest) {
   const secret = process.env.STRIPE_WEBHOOK_SECRET;
   if (!secret) {
@@ -238,6 +281,13 @@ export async function POST(req: NextRequest) {
         if (session.mode === 'payment') await applyCoursePurchase(sb, session);
         break;
       }
+
+      case 'payment_intent.succeeded':
+        await applyCoursePurchaseFromIntent(
+          sb,
+          event.data.object as Stripe.PaymentIntent
+        );
+        break;
 
       case 'customer.subscription.created':
       case 'customer.subscription.updated':

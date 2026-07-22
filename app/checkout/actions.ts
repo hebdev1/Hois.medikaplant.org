@@ -3,7 +3,6 @@
 import { createClient } from '@/lib/supabase/server';
 import { siteUrl } from '@/lib/site-url';
 import { PLANS, isValidPlan, isValidCycle, type BillingCycle } from './plans';
-import { startPlanCheckout } from './stripe-actions';
 
 export type CheckoutState = {
   error?: string;
@@ -22,6 +21,8 @@ export type CheckoutState = {
    * called immediately after `signUp` / `signInWithPassword`.
    */
   redirectTo?: string;
+  /** Auth succeeded — the form should now show the card fields. */
+  authed?: boolean;
 };
 
 /**
@@ -52,8 +53,9 @@ export async function processCheckout(
   const cycle: BillingCycle = isValidCycle(cycleRaw) ? cycleRaw : 'yearly';
 
   // ── 2. Auth — login OR signup OR already signed-in ────────────────────
-  // No card validation here any more: the card is entered on Stripe's page,
-  // so no card data is ever submitted to this action.
+  // No card validation here: the card fields are Stripe Elements, so the
+  // number goes straight from the browser to Stripe and is never submitted
+  // to this action.
   const supabase = createClient();
   let {
     data: { user },
@@ -152,14 +154,9 @@ export async function processCheckout(
     }
   }
 
-  // ── 3. Hand off to Stripe ─────────────────────────────────────────────
-  // No money moves here and no plan is granted. We only mint a Stripe
-  // Checkout Session and send the member to it; the plan is activated later
-  // by the webhook, which is the only thing Stripe actually confirms to.
-  const session = await startPlanCheckout(plan.key, cycle);
-  if (session.error || !session.url) {
-    return { error: session.error ?? 'Peman an pa ka kòmanse.' };
-  }
-
-  return { redirectTo: session.url };
+  // ── 3. Authenticated — the card step happens on this same page ────────
+  // We deliberately do NOT redirect anywhere. The form now reveals the
+  // Stripe card fields inline; the member is only sent onward once Stripe
+  // confirms the payment.
+  return { authed: true };
 }

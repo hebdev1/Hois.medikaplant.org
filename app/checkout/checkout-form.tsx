@@ -18,6 +18,8 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 import { processCheckout, type CheckoutState } from './actions';
+import { createPlanIntent } from './elements-actions';
+import CardPayment from '@/components/checkout/card-payment';
 import { cn } from '@/lib/utils';
 
 type Mode = 'login' | 'signup';
@@ -78,6 +80,26 @@ export default function CheckoutForm({
   const [mode, setMode] = React.useState<Mode>('login');
   const [showPw, setShowPw] = React.useState(false);
   const [redirecting, setRedirecting] = React.useState(false);
+
+  // Once the member is identified (already signed in, or just authenticated
+  // by the action) we prepare the payment and reveal the card fields.
+  const readyToPay = signedIn || Boolean(state.authed);
+  const [intent, setIntent] = React.useState<{
+    clientSecret?: string;
+    returnPath?: string;
+    error?: string;
+  }>({});
+
+  React.useEffect(() => {
+    if (!readyToPay || intent.clientSecret || intent.error) return;
+    let alive = true;
+    createPlanIntent(plan, cycle).then((res) => {
+      if (alive) setIntent(res);
+    });
+    return () => {
+      alive = false;
+    };
+  }, [readyToPay, plan, cycle, intent.clientSecret, intent.error]);
 
   // If the server tells us to switch tabs (e.g. "account already exists"
   // during signup), honor that.
@@ -349,20 +371,38 @@ export default function CheckoutForm({
           Enfòmasyon pèman
         </h2>
 
-        {/* No card fields here on purpose. Card details are entered on
-            Stripe's own page, so they never touch our servers. */}
-        <div className="flex items-start gap-3 rounded-xl bg-brand-50 border border-brand-200 px-4 py-3.5">
-          <CreditCard
-            className="w-5 h-5 mt-0.5 shrink-0 text-brand-700"
-            strokeWidth={2.2}
-          />
-          <p className="text-sm text-ink-muted leading-relaxed">
-            Lè w klike bouton an, n ap voye w sou paj sekirize{' '}
-            <strong className="text-ink">Stripe</strong> pou w antre kat ou.
-            Nou pa janm wè ni konsève nimewo kat ou. Apre peman an, w ap
-            retounen sou kont ou otomatikman.
-          </p>
-        </div>
+        {/* Card fields appear here once the member is identified. They are
+            rendered by Stripe inside its own iframe, so the number never
+            reaches our servers even though it looks like a normal form. */}
+        {readyToPay ? (
+          intent.clientSecret ? (
+            <CardPayment
+              clientSecret={intent.clientSecret}
+              returnPath={intent.returnPath ?? `/dashboard?welcome=${plan}`}
+              amountLabel={`$${amount}`}
+            />
+          ) : intent.error ? (
+            <div className="flex items-start gap-2 rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
+              <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" strokeWidth={2.2} />
+              <span>{intent.error}</span>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2 text-sm text-ink-muted">
+              <Loader2 className="w-4 h-4 animate-spin" strokeWidth={2.2} />
+              N ap prepare peman an…
+            </div>
+          )
+        ) : (
+          <div className="flex items-start gap-3 rounded-xl bg-brand-50 border border-brand-200 px-4 py-3.5">
+            <CreditCard
+              className="w-5 h-5 mt-0.5 shrink-0 text-brand-700"
+              strokeWidth={2.2}
+            />
+            <p className="text-sm text-ink-muted leading-relaxed">
+              Konekte oswa kreye kont ou anwo a, epi chan kat la ap parèt la a.
+            </p>
+          </div>
+        )}
       </section>
 
       {state.error && (
@@ -375,7 +415,11 @@ export default function CheckoutForm({
         </div>
       )}
 
-      <SubmitButton amount={amount} signedIn={signedIn} mode={mode} />
+      {/* Once the card fields are up, CardPayment owns the pay button — a
+          second submit here would just re-run the auth step. */}
+      {!readyToPay && (
+        <SubmitButton amount={amount} signedIn={signedIn} mode={mode} />
+      )}
 
       <div className="flex items-center justify-center gap-2 text-xs text-ink-muted">
         <ShieldCheck className="w-3.5 h-3.5" strokeWidth={2.2} />
