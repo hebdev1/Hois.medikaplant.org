@@ -22,17 +22,6 @@ import { cn } from '@/lib/utils';
 
 type Mode = 'login' | 'signup';
 
-function formatCardNumber(value: string) {
-  const digits = value.replace(/\D/g, '').slice(0, 19);
-  return digits.replace(/(\d{4})(?=\d)/g, '$1 ').trim();
-}
-
-function formatExpiry(value: string) {
-  const digits = value.replace(/\D/g, '').slice(0, 4);
-  if (digits.length < 3) return digits;
-  return `${digits.slice(0, 2)}/${digits.slice(2)}`;
-}
-
 function SubmitButton({
   amount,
   signedIn,
@@ -88,8 +77,6 @@ export default function CheckoutForm({
 
   const [mode, setMode] = React.useState<Mode>('login');
   const [showPw, setShowPw] = React.useState(false);
-  const [cardNumber, setCardNumber] = React.useState('');
-  const [expiry, setExpiry] = React.useState('');
   const [redirecting, setRedirecting] = React.useState(false);
 
   // If the server tells us to switch tabs (e.g. "account already exists"
@@ -119,10 +106,11 @@ export default function CheckoutForm({
           <CheckCircle2 className="w-7 h-7" strokeWidth={2.2} />
         </span>
         <h2 className="font-display text-2xl font-bold text-ink">
-          Pèman pase!
+          N ap mennen w sou Stripe
         </h2>
         <p className="text-sm text-ink-muted mt-2 max-w-xs mx-auto leading-relaxed">
-          Plan ou aktif kounye a. N ap mennen ou nan tablodebò ou…
+          Antre kat ou sou paj sekirize a. Apre peman an, plan ou ap aktive
+          otomatikman epi w ap retounen sou tablodebò w.
         </p>
         <Loader2
           className="w-5 h-5 animate-spin text-brand-600 mx-auto mt-4"
@@ -361,79 +349,19 @@ export default function CheckoutForm({
           Enfòmasyon pèman
         </h2>
 
-        <div className="space-y-4">
-          <div>
-            <label className="text-xs font-semibold text-ink-muted uppercase tracking-wide">
-              Non sou kat la
-            </label>
-            <input
-              type="text"
-              name="cardholder_name"
-              required
-              autoComplete="cc-name"
-              className="mt-1 w-full px-4 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-brand-500 focus:ring-2 focus:ring-brand-100 outline-none transition"
-              placeholder="Jean Baptiste"
-            />
-          </div>
-
-          <div>
-            <label className="text-xs font-semibold text-ink-muted uppercase tracking-wide">
-              Nimewo kat
-            </label>
-            <div className="mt-1 relative">
-              <CreditCard
-                className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-ink-muted"
-                strokeWidth={2.2}
-              />
-              <input
-                type="text"
-                name="card_number"
-                required
-                inputMode="numeric"
-                autoComplete="cc-number"
-                value={cardNumber}
-                onChange={(e) => setCardNumber(formatCardNumber(e.target.value))}
-                className="w-full pl-10 pr-4 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-brand-500 focus:ring-2 focus:ring-brand-100 outline-none transition font-mono tracking-wider"
-                placeholder="4242 4242 4242 4242"
-                maxLength={23}
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="text-xs font-semibold text-ink-muted uppercase tracking-wide">
-                Dat ekspirasyon
-              </label>
-              <input
-                type="text"
-                name="expiry"
-                required
-                inputMode="numeric"
-                autoComplete="cc-exp"
-                value={expiry}
-                onChange={(e) => setExpiry(formatExpiry(e.target.value))}
-                className="mt-1 w-full px-4 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-brand-500 focus:ring-2 focus:ring-brand-100 outline-none transition font-mono"
-                placeholder="MM/YY"
-                maxLength={5}
-              />
-            </div>
-            <div>
-              <label className="text-xs font-semibold text-ink-muted uppercase tracking-wide">
-                CVC
-              </label>
-              <input
-                type="text"
-                name="cvc"
-                required
-                inputMode="numeric"
-                autoComplete="cc-csc"
-                className="mt-1 w-full px-4 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-brand-500 focus:ring-2 focus:ring-brand-100 outline-none transition font-mono"
-                placeholder="123"
-                maxLength={4}
-              />
-            </div>
-          </div>
+        {/* No card fields here on purpose. Card details are entered on
+            Stripe's own page, so they never touch our servers. */}
+        <div className="flex items-start gap-3 rounded-xl bg-brand-50 border border-brand-200 px-4 py-3.5">
+          <CreditCard
+            className="w-5 h-5 mt-0.5 shrink-0 text-brand-700"
+            strokeWidth={2.2}
+          />
+          <p className="text-sm text-ink-muted leading-relaxed">
+            Lè w klike bouton an, n ap voye w sou paj sekirize{' '}
+            <strong className="text-ink">Stripe</strong> pou w antre kat ou.
+            Nou pa janm wè ni konsève nimewo kat ou. Apre peman an, w ap
+            retounen sou kont ou otomatikman.
+          </p>
         </div>
       </section>
 
@@ -454,11 +382,6 @@ export default function CheckoutForm({
         Pèman an sekirite · Anile nenpòt lè · Sipò 24/7
       </div>
 
-      <div className="rounded-xl bg-amber-50 border border-amber-200 px-4 py-3 text-xs text-amber-800">
-        <strong>Mod demo:</strong> Nimewo kat la pa pwoseze. Itilize{' '}
-        <code className="font-mono">4242 4242 4242 4242</code> ak nenpòt dat
-        ekspirasyon nan lavni a.
-      </div>
     </form>
   );
 }

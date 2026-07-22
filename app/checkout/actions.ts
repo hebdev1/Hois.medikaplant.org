@@ -1,9 +1,9 @@
 'use server';
 
-import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
 import { siteUrl } from '@/lib/site-url';
 import { PLANS, isValidPlan, isValidCycle, type BillingCycle } from './plans';
+import { startPlanCheckout } from './stripe-actions';
 
 export type CheckoutState = {
   error?: string;
@@ -46,33 +46,14 @@ export async function processCheckout(
   }
   const plan = PLANS[planRaw];
 
-  // Validate cycle but never trust the price from the client — the edge
-  // function re-derives it from get_plan_price() server-side.
+  // Validate the cycle, but never trust a price from the client — the amount
+  // comes from the Stripe price ID stored server-side.
   const cycleRaw = formData.get('cycle')?.toString() ?? 'yearly';
   const cycle: BillingCycle = isValidCycle(cycleRaw) ? cycleRaw : 'yearly';
 
-  // ── 2. Card details (mock validation) ──────────────────────────────────
-  const cardholderName =
-    formData.get('cardholder_name')?.toString().trim() ?? '';
-  const cardNumber =
-    formData.get('card_number')?.toString().replace(/\s+/g, '') ?? '';
-  const expiry = formData.get('expiry')?.toString().trim() ?? '';
-  const cvc = formData.get('cvc')?.toString().trim() ?? '';
-
-  if (!cardholderName || cardholderName.length < 2) {
-    return { error: 'Tanpri antre non sou kat la.' };
-  }
-  if (!/^\d{13,19}$/.test(cardNumber)) {
-    return { error: 'Nimewo kat la pa valid.' };
-  }
-  if (!/^(0[1-9]|1[0-2])\/?\d{2}$/.test(expiry)) {
-    return { error: 'Dat ekspirasyon an pa valid (MM/YY).' };
-  }
-  if (!/^\d{3,4}$/.test(cvc)) {
-    return { error: 'Kòd CVC la pa valid.' };
-  }
-
-  // ── 3. Auth — login OR signup OR already signed-in ────────────────────
+  // ── 2. Auth — login OR signup OR already signed-in ────────────────────
+  // No card validation here any more: the card is entered on Stripe's page,
+  // so no card data is ever submitted to this action.
   const supabase = createClient();
   let {
     data: { user },
@@ -171,30 +152,14 @@ export async function processCheckout(
     }
   }
 
-  // ── 4. Process checkout via edge function ─────────────────────────────
-  const paymentReference = `mock_${Date.now()}_${Math.random()
-    .toString(36)
-    .slice(2, 10)}`;
-
-  const { data: invokeData, error: invokeError } =
-    await supabase.functions.invoke('checkout', {
-      body: {
-        plan: plan.key,
-        billing_cycle: cycle,
-        payment_reference: paymentReference,
-      },
-    });
-
-  if (invokeError) {
-    return {
-      error: `Pèman pa pase: ${invokeError.message ?? 'Erè inkoni.'}`,
-    };
-  }
-  const result = invokeData as { ok?: boolean; error?: string } | null;
-  if (!result?.ok) {
-    return { error: result?.error ?? 'Pèman pa pase.' };
+  // ── 3. Hand off to Stripe ─────────────────────────────────────────────
+  // No money moves here and no plan is granted. We only mint a Stripe
+  // Checkout Session and send the member to it; the plan is activated later
+  // by the webhook, which is the only thing Stripe actually confirms to.
+  const session = await startPlanCheckout(plan.key, cycle);
+  if (session.error || !session.url) {
+    return { error: session.error ?? 'Peman an pa ka kòmanse.' };
   }
 
-  revalidatePath('/dashboard');
-  return { redirectTo: `/dashboard?welcome=${plan.key}` };
+  return { redirectTo: session.url };
 }

@@ -31,21 +31,6 @@ function dollars(cents: number): string {
   return `$${(cents / 100).toFixed(2)}`;
 }
 
-// Lightweight card-number formatter that inserts a space every 4 digits.
-function formatCardNumber(raw: string): string {
-  return raw
-    .replace(/\D/g, '')
-    .slice(0, 19)
-    .replace(/(.{4})/g, '$1 ')
-    .trim();
-}
-
-function formatExpiry(raw: string): string {
-  const digits = raw.replace(/\D/g, '').slice(0, 4);
-  if (digits.length < 3) return digits;
-  return `${digits.slice(0, 2)}/${digits.slice(2)}`;
-}
-
 export default function CourseCheckoutForm({
   slug,
   priceCents,
@@ -72,9 +57,6 @@ export default function CourseCheckoutForm({
       window.location.assign(state.redirectTo);
     }
   }, [state.redirectTo]);
-
-  const [cardNumber, setCardNumber] = React.useState('');
-  const [expiry, setExpiry] = React.useState('');
 
   return (
     <form action={formAction} translate="no" className="notranslate space-y-5">
@@ -180,70 +162,26 @@ export default function CourseCheckoutForm({
         </section>
       )}
 
-      {/* Card section */}
+      {/* Payment section */}
       <section className="bg-white border border-cream-200 rounded-2xl p-5 md:p-6 shadow-card space-y-4">
         <header className="inline-flex items-center gap-2 mb-1">
           <CreditCard className="w-4 h-4 text-brand-700" strokeWidth={2.4} />
           <h2 className="font-display text-sm font-bold uppercase tracking-wide text-ink">
-            Detay kat la
+            Peman
           </h2>
         </header>
 
-        <Field label="Non sou kat la" required>
-          <input
-            type="text"
-            name="cardholder_name"
-            required
-            className={inputClass}
-            placeholder="Jean Baptiste"
-          />
-        </Field>
-
-        <Field label="Nimewo kat" required>
-          <input
-            type="text"
-            name="card_number"
-            required
-            value={cardNumber}
-            onChange={(e) => setCardNumber(formatCardNumber(e.target.value))}
-            className={cn(inputClass, 'font-mono tracking-wider')}
-            placeholder="4242 4242 4242 4242"
-            inputMode="numeric"
-            autoComplete="cc-number"
-          />
-        </Field>
-
-        <div className="grid grid-cols-2 gap-3">
-          <Field label="Dat ekspirasyon (MM/YY)" required>
-            <input
-              type="text"
-              name="expiry"
-              required
-              value={expiry}
-              onChange={(e) => setExpiry(formatExpiry(e.target.value))}
-              className={cn(inputClass, 'font-mono')}
-              placeholder="12/28"
-              inputMode="numeric"
-              autoComplete="cc-exp"
-            />
-          </Field>
-          <Field label="CVC" required>
-            <input
-              type="text"
-              name="cvc"
-              required
-              className={cn(inputClass, 'font-mono')}
-              placeholder="123"
-              maxLength={4}
-              inputMode="numeric"
-              autoComplete="cc-csc"
-            />
-          </Field>
-        </div>
+        {/* No card fields on purpose — the member enters their card on
+            Stripe's own page, so it never reaches our servers. */}
+        <p className="text-sm text-earth-600 leading-relaxed">
+          Lè w klike bouton an, n ap voye w sou paj sekirize{' '}
+          <strong className="text-ink">Stripe</strong> pou w antre kat ou.
+          Apre peman an, w ap enskri nan kou a otomatikman.
+        </p>
 
         <p className="text-[11px] text-earth-500 inline-flex items-center gap-1.5">
           <Lock className="w-3 h-3" strokeWidth={2.4} />
-          Tranzaksyon w sekirize. Nou pa kenbe okenn detay kat sou sèvè nou.
+          Nou pa janm wè ni kenbe okenn detay kat sou sèvè nou.
         </p>
       </section>
 

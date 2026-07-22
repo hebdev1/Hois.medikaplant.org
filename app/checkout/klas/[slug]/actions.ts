@@ -1,13 +1,14 @@
 'use server';
 
-import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
 import { siteUrl } from '@/lib/site-url';
+import { startCourseCheckout } from '@/app/checkout/stripe-actions';
 
 // Course checkout — anyone (subscribed or not) can buy a paid course.
-// Pattern mirrors /checkout/actions.ts (login OR signup OR already-in)
-// but skips the plan selection. Mock card validation since the rest of
-// the app still uses the mock-pay path.
+// Pattern mirrors /checkout/actions.ts (login OR signup OR already-in) but
+// skips plan selection. This action authenticates and checks seats, then
+// hands off to Stripe; the purchase and enrolment are recorded by the
+// webhook once Stripe confirms payment.
 
 export type CourseCheckoutState = {
   error?: string;
@@ -21,6 +22,7 @@ type Course = {
   title: string;
   price_cents: number | null;
   active: boolean;
+  seat_capacity: number | null;
 };
 
 async function loadCourse(slug: string): Promise<Course | null> {
@@ -29,7 +31,7 @@ async function loadCourse(slug: string): Promise<Course | null> {
   const sb = supabase as any;
   const { data } = await sb
     .from('courses')
-    .select('id, slug, title, price_cents, active')
+    .select('id, slug, title, price_cents, active, seat_capacity')
     .eq('slug', slug)
     .maybeSingle();
   return (data ?? null) as Course | null;
@@ -50,26 +52,9 @@ export async function processCourseCheckout(
     };
   }
 
-  // ── 2. Mock card validation (same shape as plan checkout) ─────────────
-  const cardholderName = formData.get('cardholder_name')?.toString().trim() ?? '';
-  const cardNumber = formData.get('card_number')?.toString().replace(/\s+/g, '') ?? '';
-  const expiry = formData.get('expiry')?.toString().trim() ?? '';
-  const cvc = formData.get('cvc')?.toString().trim() ?? '';
-
-  if (!cardholderName || cardholderName.length < 2) {
-    return { error: 'Tanpri antre non sou kat la.' };
-  }
-  if (!/^\d{13,19}$/.test(cardNumber)) {
-    return { error: 'Nimewo kat la pa valid.' };
-  }
-  if (!/^(0[1-9]|1[0-2])\/?\d{2}$/.test(expiry)) {
-    return { error: 'Dat ekspirasyon an pa valid (MM/YY).' };
-  }
-  if (!/^\d{3,4}$/.test(cvc)) {
-    return { error: 'Kòd CVC la pa valid.' };
-  }
-
-  // ── 3. Auth — login OR signup OR already signed-in ────────────────────
+  // ── 2. Auth — login OR signup OR already signed-in ────────────────────
+  // No card validation here any more: the card is entered on Stripe's page,
+  // so no card data is ever submitted to this action.
   const supabase = createClient();
   let {
     data: { user },
@@ -145,48 +130,30 @@ export async function processCourseCheckout(
     }
   }
 
-  // ── 4. Persist purchase + grant enrollment via the SECURITY DEFINER RPC
-  // The RPC re-derives the price from the DB (we never trust client
-  // amounts) and is responsible for the seat-cap check + idempotent
-  // enrollment row.
-  const paymentReference = `mock_klas_${Date.now()}_${Math.random()
-    .toString(36)
-    .slice(2, 10)}`;
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const sb = supabase as any;
-  const { data: result, error: rpcError } = await sb.rpc('purchase_course', {
-    p_course_id: course.id,
-    p_amount_cents: course.price_cents,
-    p_payment_reference: paymentReference,
-  });
-  if (rpcError) {
-    return { error: `Pèman pa pase: ${rpcError.message}` };
-  }
-  const res = result as
-    | { ok: true }
-    | { ok: false; error: string; capacity?: number; expected?: number };
-  if (!res?.ok) {
-    switch (res?.error) {
-      case 'course_full':
-        return {
-          error: `Klas la deja konplè (${res.capacity ?? ''} plas). Achat anile.`,
-        };
-      case 'amount_mismatch':
-        return {
-          error:
-            'Pri klas la chanje pandan w t ap peye. Aktyalize paj la epi eseye ankò.',
-        };
-      case 'not_purchasable':
-        return { error: 'Klas sa a pa disponib pou achte separe.' };
-      case 'course_inactive':
-        return { error: 'Klas sa a poko aktif.' };
-      default:
-        return { error: res?.error ?? 'Pèman pa pase.' };
+  // ── 3. Seat check, then hand off to Stripe ────────────────────────────
+  // The purchase itself is recorded by the webhook, so the old
+  // purchase_course RPC can no longer run it — that function derives the
+  // buyer from auth.uid(), which does not exist in a webhook request.
+  //
+  // Its seat-cap check still matters though, so do it HERE, before taking
+  // any money: refusing a full class up front is far better than charging
+  // someone and failing to enrol them.
+  if (course.seat_capacity != null) {
+    const { count } = await supabase
+      .from('course_enrollments')
+      .select('id', { count: 'exact', head: true })
+      .eq('course_id', course.id);
+    if ((count ?? 0) >= course.seat_capacity) {
+      return {
+        error: `Klas la deja konplè (${course.seat_capacity} plas).`,
+      };
     }
   }
 
-  revalidatePath('/dashboard');
-  revalidatePath(`/klas/${slug}`);
-  return { redirectTo: `/klas/${slug}?purchased=1` };
+  const session = await startCourseCheckout(course.id);
+  if (session.error || !session.url) {
+    return { error: session.error ?? 'Peman an pa ka kòmanse.' };
+  }
+
+  return { redirectTo: session.url };
 }

@@ -710,6 +710,7 @@ export type Database = {
           last_name: string | null
           phone: string | null
           plan: Database["public"]["Enums"]["plan_type"]
+          stripe_customer_id: string | null
           postal_code: string | null
           region: string | null
           role: Database["public"]["Enums"]["user_role"]
@@ -738,6 +739,7 @@ export type Database = {
           last_name?: string | null
           phone?: string | null
           plan?: Database["public"]["Enums"]["plan_type"]
+          stripe_customer_id?: string | null
           postal_code?: string | null
           region?: string | null
           role?: Database["public"]["Enums"]["user_role"]
@@ -766,6 +768,7 @@ export type Database = {
           last_name?: string | null
           phone?: string | null
           plan?: Database["public"]["Enums"]["plan_type"]
+          stripe_customer_id?: string | null
           postal_code?: string | null
           region?: string | null
           role?: Database["public"]["Enums"]["user_role"]
@@ -1188,6 +1191,24 @@ export type Database = {
         }
         Relationships: []
       }
+      stripe_events: {
+        Row: {
+          id: string
+          received_at: string
+          type: string
+        }
+        Insert: {
+          id: string
+          received_at?: string
+          type: string
+        }
+        Update: {
+          id?: string
+          received_at?: string
+          type?: string
+        }
+        Relationships: []
+      }
       subscriptions: {
         Row: {
           amount: number | null
@@ -1197,6 +1218,8 @@ export type Database = {
           id: string
           payment_reference: string | null
           plan: Database["public"]["Enums"]["plan_type"]
+          stripe_price_id: string | null
+          stripe_subscription_id: string | null
           start_date: string
           status: Database["public"]["Enums"]["subscription_status"]
           updated_at: string
@@ -1210,6 +1233,8 @@ export type Database = {
           id?: string
           payment_reference?: string | null
           plan: Database["public"]["Enums"]["plan_type"]
+          stripe_price_id?: string | null
+          stripe_subscription_id?: string | null
           start_date?: string
           status?: Database["public"]["Enums"]["subscription_status"]
           updated_at?: string
@@ -1223,6 +1248,8 @@ export type Database = {
           id?: string
           payment_reference?: string | null
           plan?: Database["public"]["Enums"]["plan_type"]
+          stripe_price_id?: string | null
+          stripe_subscription_id?: string | null
           start_date?: string
           status?: Database["public"]["Enums"]["subscription_status"]
           updated_at?: string

@@ -3,6 +3,7 @@
 import React from 'react';
 import { Lock, Eye, EyeOff, Loader2, CheckCircle2, AlertCircle, KeyRound, Mail } from 'lucide-react';
 import { changePassword, changeEmail } from '@/app/dashboard/settings/actions';
+import BillingPortalButton from './billing-portal-button';
 
 type Status = 'idle' | 'saving' | 'success' | 'error';
 
@@ -228,6 +229,10 @@ export default function PasswordSection({ currentEmail }: { currentEmail?: strin
 
         <div className="pt-5 border-t border-cream-200/60">
           <EmailRow currentEmail={currentEmail} />
+        </div>
+
+        <div className="pt-5 border-t border-cream-200/60">
+          <BillingPortalButton />
         </div>
 
         <div className="pt-5 border-t border-cream-200/60">

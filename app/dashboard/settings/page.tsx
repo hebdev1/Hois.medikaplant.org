@@ -89,6 +89,7 @@ function defaultProfile(userId: string, email: string): ProfileRow {
     last_name: null,
     avatar_url: null,
     plan: 'basic',
+    stripe_customer_id: null,
     role: 'user',
     suspended: false,
     date_of_birth: null,
