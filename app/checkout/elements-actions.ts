@@ -126,6 +126,28 @@ export async function createPlanIntent(
   }
 }
 
+/**
+ * Has the signed-in member got an active subscription yet? Polled by the
+ * card form after a successful payment so it can wait for the webhook to
+ * activate the plan before sending the member to the dashboard — otherwise
+ * the no-active-plan gate would bounce them to the pricing section in the
+ * split second before Stripe's event lands.
+ */
+export async function hasActiveSubscription(): Promise<boolean> {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return false;
+
+  const { count } = await supabase
+    .from('subscriptions')
+    .select('id', { count: 'exact', head: true })
+    .eq('user_id', user.id)
+    .eq('status', 'active');
+  return (count ?? 0) > 0;
+}
+
 /** Prepare a one-off course purchase for on-page payment. */
 export async function createCourseIntent(
   courseId: string

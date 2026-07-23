@@ -33,15 +33,23 @@ if (!key) {
 const stripe = new Stripe(key);
 const mode = key.startsWith('sk_live_') ? 'LIVE' : 'TEST';
 
-const products = await stripe.products.list({ limit: 100, active: true });
-const prices = await stripe.prices.list({ limit: 100, active: true });
+// Include inactive too, so an archived product still shows up.
+const products = await stripe.products.list({ limit: 100, active: undefined });
+const prices = await stripe.prices.list({ limit: 100, active: undefined });
 
-console.log(`\nMòd: ${mode}\n`);
+console.log(`\nMòd: ${mode}`);
+console.log(`Total pwodwi nan kont sa a: ${products.data.length}\n`);
 
-const hois = products.data.filter((p) => /ho[ïi]s/i.test(p.name));
+const hois = products.data.filter((p) => /ho[ïi]s/i.test(p.name ?? ''));
 if (hois.length === 0) {
   console.log('Okenn pwodwi "Hoïs" jwenn nan mòd sa a.');
-  console.log('Sonje: pwodwi Test yo pa egziste an Live, e vice versa.');
+  console.log('Sonje: pwodwi Test yo pa egziste an Live, e vice versa.\n');
+  if (products.data.length > 0) {
+    console.log('Men tout pwodwi ki NAN kont/mòd sa a:');
+    for (const p of products.data) {
+      console.log(`   ${p.id}  «${p.name}»  ${p.active ? '' : '(archived)'}`);
+    }
+  }
 }
 
 for (const product of hois) {

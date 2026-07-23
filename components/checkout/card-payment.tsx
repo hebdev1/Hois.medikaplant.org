@@ -9,6 +9,7 @@ import {
   useElements,
 } from '@stripe/react-stripe-js';
 import { Loader2, Lock, AlertCircle } from 'lucide-react';
+import { hasActiveSubscription } from '@/app/checkout/elements-actions';
 
 // The publishable key is meant to be public — it only identifies the account
 // and can create nothing on its own.
@@ -58,6 +59,7 @@ function CardForm({ returnPath, amountLabel }: Props) {
   const stripe = useStripe();
   const elements = useElements();
   const [pending, setPending] = React.useState(false);
+  const [activating, setActivating] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
 
   async function onSubmit(e: React.FormEvent) {
@@ -83,7 +85,20 @@ function CardForm({ returnPath, amountLabel }: Props) {
     }
 
     if (paymentIntent && paymentIntent.status === 'succeeded') {
-      // Paid. The webhook activates the plan; go to the destination.
+      // Paid. The plan is activated by the webhook, which lands a moment
+      // later — so wait for it here rather than navigating straight to the
+      // dashboard, where the no-active-plan gate would bounce us to the
+      // pricing section before the subscription row exists.
+      setActivating(true);
+      for (let i = 0; i < 12; i++) {
+        if (await hasActiveSubscription()) {
+          window.location.assign(returnPath);
+          return;
+        }
+        await new Promise((r) => setTimeout(r, 1500));
+      }
+      // Timed out waiting (~18s). The payment is done and the webhook will
+      // still land; go anyway rather than trapping the member here.
       window.location.assign(returnPath);
       return;
     }
@@ -105,10 +120,15 @@ function CardForm({ returnPath, amountLabel }: Props) {
 
       <button
         type="submit"
-        disabled={!stripe || pending}
+        disabled={!stripe || pending || activating}
         className="w-full inline-flex items-center justify-center gap-2 bg-brand-gradient hover:brightness-110 disabled:opacity-60 text-white font-semibold px-6 py-4 rounded-xl transition shadow-lg"
       >
-        {pending ? (
+        {activating ? (
+          <>
+            <Loader2 className="w-4 h-4 animate-spin" strokeWidth={2.4} />
+            N ap aktive plan ou…
+          </>
+        ) : pending ? (
           <>
             <Loader2 className="w-4 h-4 animate-spin" strokeWidth={2.4} />
             Ap trete peman an…
