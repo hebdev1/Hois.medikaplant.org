@@ -70,6 +70,26 @@ export async function updateSession(request: NextRequest) {
     return response;
   }
 
+  // ── 1b. Suspended members are out, immediately ─────────────────────────
+  // Suspending bans the auth account, which blocks new logins and kills
+  // token refresh — but an access token already in hand stays valid until it
+  // expires (up to an hour). This check closes that window: the moment an
+  // admin suspends someone, their next page load ends the session.
+  {
+    const { data: suspendedRow } = await supabase
+      .from('profiles')
+      .select('suspended')
+      .eq('id', user.id)
+      .maybeSingle();
+    if ((suspendedRow as { suspended: boolean } | null)?.suspended) {
+      await supabase.auth.signOut();
+      const url = request.nextUrl.clone();
+      url.pathname = isAdminRoute ? '/admin/login' : '/auth/login';
+      url.search = '?error=suspended';
+      return NextResponse.redirect(url);
+    }
+  }
+
   // ── 2. Authed: read role from JWT claim (set by custom_access_token_hook).
   //    Falls back to a DB read if the hook hasn't populated user_metadata
   //    yet — that path only fires for sessions issued BEFORE the hook was

@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
+import { createServiceClient } from '@/lib/supabase/service';
 import { emailNotifyMember } from '@/lib/email/notify';
 import { syncMemberToHubspot } from '@/lib/hubspot/sync';
 import type { Database } from '@/types/database';
@@ -260,6 +261,23 @@ export async function setUserSuspended(
   // Don't let an admin suspend themselves
   if (auth.user.id === userId && suspended) {
     return { ok: false, error: 'Ou pa ka sispann pwòp kont ou.' };
+  }
+
+  // Ban the auth account FIRST. The `suspended` flag alone is only a label —
+  // nothing in the auth path reads it — so without this the member keeps
+  // signing in and using the site normally. Banning is what actually stops
+  // them: Supabase refuses the login and kills token refresh, so any open
+  // session dies as soon as it tries to renew.
+  const admin = createServiceClient();
+  const { error: banError } = await admin.auth.admin.updateUserById(userId, {
+    // Effectively permanent; lifted by setting it back to 'none'.
+    ban_duration: suspended ? '876000h' : 'none',
+  });
+  if (banError) {
+    return {
+      ok: false,
+      error: `Pa ka ${suspended ? 'sispann' : 'reaktive'} kont lan: ${banError.message}`,
+    };
   }
 
   const { data: updated, error } = await auth.supabase
@@ -659,14 +677,16 @@ export async function adminDeleteUser(
     return { ok: false, error: 'Ou pa ka efase pwòp tèt ou nan admin.' };
   }
 
-  // Delete the profile — this cascades to subscriptions, health_logs,
-  // user_preferences, user_medical_info, treatment_recommendations, etc.
-  // The auth.users row remains; use the user-side delete-user Edge Function
-  // for a complete auth wipeout.
-  const { error } = await auth.supabase
-    .from('profiles')
-    .delete()
-    .eq('id', userId);
+  // Delete the AUTH account, not just the profile. profiles.id is a foreign
+  // key onto auth.users with ON DELETE CASCADE, so removing the auth row also
+  // removes the profile and everything hanging off it (subscriptions,
+  // health_logs, user_preferences, user_medical_info, …).
+  //
+  // Deleting only the profile — which is what this used to do — left the auth
+  // account alive, so the person could still sign in, now with no profile
+  // behind them.
+  const admin = createServiceClient();
+  const { error } = await admin.auth.admin.deleteUser(userId);
   if (error) return { ok: false, error: error.message };
 
   revalidatePath('/admin/users');

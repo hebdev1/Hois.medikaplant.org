@@ -6,6 +6,8 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { Mail, Lock, Loader2 } from 'lucide-react';
 
+const SUSPENDED_MSG = 'Kont ou sispann. Kontakte sipò a pou plis enfòmasyon.';
+
 export default function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -15,7 +17,11 @@ export default function LoginForm() {
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [loading, setLoading] = React.useState(false);
-  const [error, setError] = React.useState<string | null>(null);
+  // The middleware redirects a suspended member here with ?error=suspended
+  // after ending their session, so explain it rather than showing a bare form.
+  const [error, setError] = React.useState<string | null>(
+    searchParams.get('error') === 'suspended' ? SUSPENDED_MSG : null
+  );
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -24,7 +30,13 @@ export default function LoginForm() {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     setLoading(false);
     if (error) {
-      setError(error.message);
+      // A suspended member is banned at the auth level, and Supabase reports
+      // that in English ("User is banned"). Translate it into something the
+      // member can act on instead of a raw API string.
+      const banned = /banned|user_banned/i.test(
+        `${error.message} ${(error as { code?: string }).code ?? ''}`
+      );
+      setError(banned ? SUSPENDED_MSG : error.message);
       return;
     }
     router.push(redirect);
