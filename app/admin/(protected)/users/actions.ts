@@ -686,6 +686,23 @@ export async function adminDeleteUser(
   // account alive, so the person could still sign in, now with no profile
   // behind them.
   const admin = createServiceClient();
+
+  // Storage is not covered by the FK cascade, so avatars would be orphaned.
+  // The member-side delete-user Edge Function already does this; keep both
+  // deletion paths equivalent. Non-fatal: never block the deletion itself.
+  try {
+    const { data: avatarFiles } = await admin.storage
+      .from('public-assets')
+      .list(`avatars/${userId}`);
+    if (avatarFiles && avatarFiles.length > 0) {
+      await admin.storage
+        .from('public-assets')
+        .remove(avatarFiles.map((f) => `avatars/${userId}/${f.name}`));
+    }
+  } catch {
+    // ignore — an orphaned avatar is not a reason to keep the account
+  }
+
   const { error } = await admin.auth.admin.deleteUser(userId);
   if (error) return { ok: false, error: error.message };
 
