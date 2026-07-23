@@ -60,11 +60,21 @@ function CardForm({ returnPath, amountLabel }: Props) {
   const elements = useElements();
   const [pending, setPending] = React.useState(false);
   const [activating, setActivating] = React.useState(false);
+  // Whether every card field is filled in. Driven by the PaymentElement's
+  // own change event, so we can require completion before charging.
+  const [cardComplete, setCardComplete] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!stripe || !elements) return;
+
+    // Require the card fields to be filled first. This blocks a submit on an
+    // empty form with a clear message instead of anything else happening.
+    if (!cardComplete) {
+      setError('Tanpri ranpli tout enfòmasyon kat la anvan w peye.');
+      return;
+    }
 
     setPending(true);
     setError(null);
@@ -109,7 +119,13 @@ function CardForm({ returnPath, amountLabel }: Props) {
 
   return (
     <form onSubmit={onSubmit} className="space-y-4">
-      <PaymentElement options={{ layout: 'tabs' }} />
+      <PaymentElement
+        options={{ layout: 'tabs' }}
+        onChange={(ev) => {
+          setCardComplete(ev.complete);
+          if (ev.complete) setError(null);
+        }}
+      />
 
       {error && (
         <div className="flex items-start gap-2 rounded-xl bg-rose-50 border border-rose-200 px-4 py-3 text-sm text-rose-800">
