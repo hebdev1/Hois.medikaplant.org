@@ -36,28 +36,60 @@ jobs:
 
             echo "→ Ale nan dosye app la"
             cd "${{ secrets.HOSTINGER_APP_PATH }}"
+            echo "   dosye: $(pwd)"
 
             echo "→ Rale dènye kòd la depi origin/main"
             git fetch --all --prune
             git reset --hard origin/main
+            echo "   komit: $(git rev-parse --short HEAD) — $(git log -1 --pretty=%s)"
 
             # NEXT_PUBLIC_* dwe prezan PANDAN build la, otreman paj la parèt
-            # san style. Nou enjekte yo isit soti nan GitHub Secrets pou
-            # build la toujou konplè, kèlkeswa jan Hostinger konfigire env.
-            export NEXT_PUBLIC_SUPABASE_URL="${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}"
-            export NEXT_PUBLIC_SUPABASE_ANON_KEY="${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}"
-            export NEXT_PUBLIC_SITE_URL="${{ secrets.NEXT_PUBLIC_SITE_URL }}"
+            # san style. Nou enjekte yo isit soti nan GitHub Secrets.
+            #
+            # ⚠️  Yo eksporte SÈLMAN si sekrè a gen yon valè. Yon `export VAR=""`
+            # ta ranplase (epi efase) valè ki nan .env sèvè a — se konsa yon
+            # sekrè ki bliye ka kraze yon build ki t ap byen mache.
+            if [ -n "${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}" ]; then
+              export NEXT_PUBLIC_SUPABASE_URL="${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}"
+            fi
+            if [ -n "${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}" ]; then
+              export NEXT_PUBLIC_SUPABASE_ANON_KEY="${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}"
+            fi
+            if [ -n "${{ secrets.NEXT_PUBLIC_SITE_URL }}" ]; then
+              export NEXT_PUBLIC_SITE_URL="${{ secrets.NEXT_PUBLIC_SITE_URL }}"
+            fi
+            if [ -n "${{ secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY }}" ]; then
+              export NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY="${{ secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY }}"
+            fi
 
             echo "→ Enstale depandans yo (npm ci)"
             npm ci
 
             echo "→ Rebati (npm run build)"
+            BUILD_ID_BEFORE="$(cat .next/BUILD_ID 2>/dev/null || echo none)"
             npm run build
+            BUILD_ID_AFTER="$(cat .next/BUILD_ID 2>/dev/null || echo none)"
+            echo "   BUILD_ID: ${BUILD_ID_BEFORE} → ${BUILD_ID_AFTER}"
 
-            # Rekòmanse app la. Konfigirasyon Node.js Hostinger (Passenger)
-            # rekòmanse lè fichye tmp/restart.txt la chanje. Si enstalasyon w
-            # sèvi ak PM2 pito, ranplase liy sa a pa: pm2 reload all
+            # Si .next pa rejenere, app la ap kontinye sèvi ansyen kòd la —
+            # se pi gwo pyèj la, epi li konn pase san bri. Kanpe la.
+            if [ "${BUILD_ID_AFTER}" = "none" ]; then
+              echo "✗ Build la pa pwodwi .next — deplwaman an KANPE"
+              exit 1
+            fi
+            if [ "${BUILD_ID_AFTER}" = "${BUILD_ID_BEFORE}" ]; then
+              echo "⚠ BUILD_ID pa chanje — verifye si build la reyèlman kouri"
+            fi
+
+            # Rekòmanse app la. San sa, pwosesis Node a kontinye sèvi ansyen
+            # build ki nan memwa l — sit la p ap chanje menm si build la reyisi.
             echo "→ Rekòmanse app la"
-            mkdir -p tmp && touch tmp/restart.txt
+            if command -v pm2 >/dev/null 2>&1; then
+              pm2 reload all || pm2 restart all
+              echo "   rekòmanse via pm2"
+            else
+              mkdir -p tmp && touch tmp/restart.txt
+              echo "   rekòmanse via Passenger (tmp/restart.txt)"
+            fi
 
-            echo "✓ Deplwaman fini"
+            echo "✓ Deplwaman fini — komit $(git rev-parse --short HEAD), build ${BUILD_ID_AFTER}"
