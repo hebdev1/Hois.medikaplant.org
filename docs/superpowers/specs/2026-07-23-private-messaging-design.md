@@ -32,7 +32,7 @@ an unread badge is not currently possible.
 | Conversation or announcement | **Two-way** — the member can reply |
 | Where the member sees it | **A small floating message box** in the dashboard |
 | Build approach | **Reuse the support chat tables** (approach A) |
-| Widget placement | **Stack above the existing floating buttons** — the suggestion box stays |
+| Widget placement | **Replaces the suggestion box** — one button carries both |
 
 ## Approach
 
@@ -86,16 +86,22 @@ A client component mounted in the dashboard layout:
 `/dashboard/support` stays as the full-page view of the same conversation; the
 widget is a shortcut, not a second inbox.
 
-### 4. Widget placement
-The bottom-right corner already stacks three floating controls:
+### 4. Widget placement — and absorbing the suggestion box
+The bottom-right corner stacks three floating controls today:
 `translate-switcher` (`bottom-4`, z-100), `remed-finder` (`bottom-16`, z-95),
-`suggestion-box` (`bottom-28`, z-99). The message box goes **above them**
-(`bottom-40`), keeping the same rounded-pill styling. The suggestion box is
-left in place.
+`suggestion-box` (`bottom-28`, z-99). Adding a fourth would crowd it, so the
+message box **takes the suggestion box's place** (`bottom-28`) and the standalone
+suggestion button is removed. The corner keeps **three** buttons.
 
-Accepted trade-off: four stacked buttons is visually busy. If it proves
-cluttered in use, the suggestion box is the natural one to fold into the
-message box later — both are "talk to Hoïs" — but that is not part of this work.
+Both live inside the one panel, as two tabs:
+
+- **Mesaj** — the conversation (default tab; carries the unread badge).
+- **Sijesyon** — the existing suggestion form.
+
+The suggestion path is **not** rewritten: it still writes to `user_suggestions`
+and still surfaces at `/admin/suggestions`. Only its entry point moves, so no
+existing workflow is lost — the founder keeps the dedicated suggestions screen
+rather than having suggestions dissolve into chat messages.
 
 ## Non-goals
 
@@ -103,7 +109,9 @@ message box later — both are "talk to Hoïs" — but that is not part of this 
 - No attachments, no group messages, no admin-to-many broadcast (the
   notifications system already covers broadcast).
 - No change to how members open their own support requests.
-- The suggestion box is not removed or merged.
+- The suggestion **feature** is not changed — only where members reach it. It
+  keeps its table (`user_suggestions`) and its admin screen
+  (`/admin/suggestions`); suggestions do not become chat messages.
 
 ## Acceptance
 
@@ -114,4 +122,7 @@ message box later — both are "talk to Hoïs" — but that is not part of this 
 - A message from either side appears without a page refresh.
 - The member is emailed when an admin writes.
 - `/dashboard/support` shows the same conversation — not a duplicate.
+- The corner has **three** floating buttons, not four: the standalone
+  suggestion button is gone and its form lives in the message panel.
+- Submitting a suggestion from the panel still lands in `/admin/suggestions`.
 - `tsc --noEmit` and `next build` pass.
