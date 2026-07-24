@@ -44,10 +44,19 @@ async function getOrCreateCustomer(
     metadata: { user_id: userId },
   });
 
-  await sb
+  // Must persist — otherwise every checkout mints a new Stripe customer and
+  // the Billing Portal has no customer to open. Surface a write failure
+  // instead of swallowing it: it means the service-role key cannot write.
+  const { error: saveError } = await sb
     .from('profiles')
     .update({ stripe_customer_id: customer.id })
     .eq('id', userId);
+  if (saveError) {
+    console.error('[stripe] could not save stripe_customer_id', saveError);
+    throw new Error(
+      'Pa ka anrejistre kliyan Stripe la. Verifye SUPABASE_SERVICE_ROLE_KEY sou sèvè a.'
+    );
+  }
 
   return customer.id;
 }

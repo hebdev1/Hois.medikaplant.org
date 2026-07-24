@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import { Check, Leaf, ArrowLeft, Lock } from 'lucide-react';
+import { Check, ArrowLeft, Lock } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import {
   PLANS,
@@ -50,16 +50,13 @@ export default async function CheckoutPage({
     <main className="min-h-screen bg-slate-50">
       <header className="bg-white border-b border-slate-200">
         <div className="max-w-[1280px] mx-auto px-4 md:px-12 py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <span className="grid place-items-center w-9 h-9 rounded-xl bg-brand-gradient text-white shadow">
-              <Leaf className="w-4 h-4" strokeWidth={2.4} />
-            </span>
-            <span className="flex flex-col leading-tight">
-              <span className="font-bold text-ink text-sm">MedikaPlant</span>
-              <span className="text-[10px] uppercase tracking-[0.18em] text-brand-700 font-medium">
-                Hoïs Inivèsite
-              </span>
-            </span>
+          <Link href="/" className="inline-flex items-center">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/logo-hois.png"
+              alt="Hoïs"
+              className="h-9 w-auto shrink-0"
+            />
           </Link>
           <Link
             href="/#pri"

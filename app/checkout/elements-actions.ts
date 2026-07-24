@@ -65,10 +65,22 @@ async function getOrCreateCustomer(
     name: fullName ?? undefined,
     metadata: { user_id: userId },
   });
-  await sb
+
+  // Persisting this is not optional: without it we mint a brand-new Stripe
+  // customer on every checkout and the Billing Portal has nothing to open.
+  // A silent failure here is exactly how that stayed invisible, so surface it —
+  // it means the service-role key cannot write (RLS is being applied).
+  const { error: saveError } = await sb
     .from('profiles')
     .update({ stripe_customer_id: customer.id })
     .eq('id', userId);
+  if (saveError) {
+    console.error('[stripe] could not save stripe_customer_id', saveError);
+    throw new Error(
+      'Pa ka anrejistre kliyan Stripe la. Verifye SUPABASE_SERVICE_ROLE_KEY sou sèvè a.'
+    );
+  }
+
   return customer.id;
 }
 
