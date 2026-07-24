@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import { getCurrentUser } from '@/lib/supabase/auth';
 import Sidebar from '@/components/dashboard/sidebar';
 import UserAppearance from '@/components/dashboard/user-appearance';
-import SuggestionBox from '@/components/dashboard/suggestion-box';
+import MessageBox from '@/components/dashboard/message-box';
 import type { Database } from '@/types/database';
 
 type PrefsRow = Database['public']['Tables']['user_preferences']['Row'];
@@ -143,7 +143,7 @@ export default async function DashboardLayout({
         />
         <div className="flex-1 min-w-0">{children}</div>
       </div>
-      <SuggestionBox />
+      <MessageBox />
     </UserAppearance>
   );
 }

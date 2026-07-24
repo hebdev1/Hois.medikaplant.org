@@ -150,6 +150,61 @@ export async function simulateAgentReply(
   return { ok: true, message: data as MessageRow };
 }
 
+// ─── Read-only fetch for the floating widget (never creates a thread) ───────
+// Used on dashboard load to compute the unread badge. getOrCreateThread would
+// mint an empty thread for every visitor, so the widget uses this first and
+// only creates a thread when the member actually opens the chat.
+export async function getMemberThread(): Promise<
+  | { ok: true; data: ThreadWithMessages | null }
+  | { ok: false; error: string }
+> {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, error: 'Ou dwe konekte.' };
+
+  const { data: existing } = await supabase
+    .from('support_threads')
+    .select('*')
+    .eq('user_id', user.id)
+    .order('last_message_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  const thread = existing as ThreadRow | null;
+  if (!thread) return { ok: true, data: null };
+
+  const { data: msgs } = await supabase
+    .from('support_messages')
+    .select('*')
+    .eq('thread_id', thread.id)
+    .order('created_at', { ascending: true });
+
+  return { ok: true, data: { thread, messages: (msgs ?? []) as MessageRow[] } };
+}
+
+// ─── Mark the conversation read (clears the unread badge) ───────────────────
+
+export async function markThreadRead(
+  threadId: string
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, error: 'Ou dwe konekte.' };
+
+  // Only the owner may stamp this (enforced again by RLS).
+  const { error } = await supabase
+    .from('support_threads')
+    .update({ member_last_read_at: new Date().toISOString() })
+    .eq('id', threadId)
+    .eq('user_id', user.id);
+  if (error) return { ok: false, error: error.message };
+  return { ok: true };
+}
+
 // ─── Close a thread ─────────────────────────────────────────────────────────
 
 export async function markThreadResolved(

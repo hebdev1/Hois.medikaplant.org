@@ -1158,6 +1158,7 @@ export type Database = {
           created_at: string
           id: string
           last_message_at: string
+          member_last_read_at: string | null
           status: Database["public"]["Enums"]["support_thread_status"]
           subject: string | null
           updated_at: string
@@ -1171,6 +1172,7 @@ export type Database = {
           created_at?: string
           id?: string
           last_message_at?: string
+          member_last_read_at?: string | null
           status?: Database["public"]["Enums"]["support_thread_status"]
           subject?: string | null
           updated_at?: string
@@ -1184,6 +1186,7 @@ export type Database = {
           created_at?: string
           id?: string
           last_message_at?: string
+          member_last_read_at?: string | null
           status?: Database["public"]["Enums"]["support_thread_status"]
           subject?: string | null
           updated_at?: string

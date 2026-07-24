@@ -660,6 +660,73 @@ export async function inviteAdmin(
   return { ok: true, invite: row, invite_url };
 }
 
+// ─── Private message: admin STARTS a conversation with a member ─────────────
+// The support chat only ever let members open a thread and admins reply.
+// This lets an admin reach out first, from the member's profile. It reuses
+// the same support_threads / support_messages the member already sees in
+// their message box, so there is one conversation, not a parallel inbox.
+export async function adminSendMessage(
+  userId: string,
+  body: string
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  const text = body.trim();
+  if (!text) return { ok: false, error: 'Mesaj la vid.' };
+  if (text.length > 4000) {
+    return { ok: false, error: 'Mesaj la twò long (maks 4000 karaktè).' };
+  }
+
+  const auth = await assertAdmin();
+  if (!auth.ok) return { ok: false, error: auth.error };
+
+  // Find the member's most-recent thread, or open a new one. Admins may
+  // insert threads via the "Admins manage all threads" policy.
+  const { data: existing } = await auth.supabase
+    .from('support_threads')
+    .select('id')
+    .eq('user_id', userId)
+    .order('last_message_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  let threadId = (existing as { id: string } | null)?.id ?? null;
+
+  if (!threadId) {
+    const { data: created, error: createErr } = await auth.supabase
+      .from('support_threads')
+      .insert({ user_id: userId, subject: 'Mesaj Hoïs', status: 'open' })
+      .select('id')
+      .single();
+    if (createErr || !created) {
+      return { ok: false, error: createErr?.message ?? 'Pa ka kreye konvèsasyon an.' };
+    }
+    threadId = (created as { id: string }).id;
+  }
+
+  // Post the message through the same RPC the reply flow uses: it inserts
+  // an 'agent' message, stamps the agent's name on the thread, and reopens
+  // it if it was resolved.
+  const { error: sendErr } = await auth.supabase.rpc('admin_send_support_reply', {
+    p_thread_id: threadId,
+    p_body: text,
+  });
+  if (sendErr) return { ok: false, error: sendErr.message };
+
+  // Best-effort email so the member knows to look, even if they are offline.
+  await emailNotifyMember(auth.supabase, userId, {
+    subject: 'Yon nouvo mesaj nan MedikaPlant',
+    heading: 'Ou gen yon mesaj',
+    body: [
+      'Yon manm ekip Hoïs voye yon mesaj ba ou.',
+      'Konekte sou kont ou pou li li epi reponn.',
+    ],
+    linkPath: '/dashboard/support',
+    linkLabel: 'Wè mesaj la',
+  });
+
+  revalidatePath(`/admin/users/${userId}`);
+  return { ok: true };
+}
+
 // ─── Hard delete (last-resort) ──────────────────────────────────────────────
 // We keep this gated behind a confirmation phrase to mirror the user-side
 // danger zone. Cascading FKs handle everything downstream.
