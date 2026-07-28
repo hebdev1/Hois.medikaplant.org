@@ -12,10 +12,12 @@ import { Loader2, Lock, AlertCircle } from 'lucide-react';
 import { hasActiveSubscription } from '@/app/checkout/elements-actions';
 
 // The publishable key is meant to be public — it only identifies the account
-// and can create nothing on its own.
-const stripePromise = loadStripe(
-  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ?? ''
-);
+// and can create nothing on its own. But it is BAKED IN AT BUILD TIME, so if
+// the deploy built without it, Stripe.js never loads and confirmPayment does
+// nothing — the card looks accepted yet the PaymentIntent stays
+// `requires_payment_method` and the plan never activates. Guard it loudly.
+const PUBLISHABLE_KEY = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ?? '';
+const stripePromise = PUBLISHABLE_KEY ? loadStripe(PUBLISHABLE_KEY) : null;
 
 type Props = {
   /** From createPlanIntent / createCourseIntent. */
@@ -34,6 +36,19 @@ type Props = {
  * leaves the member on this page with the reason shown.
  */
 export default function CardPayment(props: Props) {
+  // No key baked into this build → Stripe.js cannot load. Say so plainly
+  // instead of showing a card form that silently fails on submit.
+  if (!stripePromise) {
+    return (
+      <div className="flex items-start gap-2 rounded-xl bg-rose-50 border border-rose-200 px-4 py-3 text-sm text-rose-800">
+        <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" strokeWidth={2.4} />
+        <span>
+          Peman an pa disponib pou kounye a (konfigirasyon Stripe la manke).
+          Tanpri kontakte sipò a — nou ap ranje l touswit.
+        </span>
+      </div>
+    );
+  }
   return (
     <Elements
       stripe={stripePromise}
@@ -67,7 +82,15 @@ function CardForm({ returnPath, amountLabel }: Props) {
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!stripe || !elements) return;
+    if (!stripe || !elements) {
+      // Stripe.js failed to initialise (bad/empty publishable key). Never let
+      // the click do nothing — that is the silent trap that looked like the
+      // payment "not passing".
+      setError(
+        'Sistèm peman an poko pare. Rechaje paj la; si l kontinye, kontakte sipò.'
+      );
+      return;
+    }
 
     // Require the card fields to be filled first. This blocks a submit on an
     // empty form with a clear message instead of anything else happening.
