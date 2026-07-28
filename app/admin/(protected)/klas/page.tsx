@@ -19,12 +19,13 @@ import KlasTabBar from './tab-bar';
 import CategoryEditor from './category-editor';
 import PageConfigEditor from './page-config-editor';
 import CourseRowActions from './course-row-actions';
+import StatsTab from './stats-tab';
 import { cn } from '@/lib/utils';
 
 export const metadata = { title: 'Admin · Klas' };
 export const dynamic = 'force-dynamic';
 
-type SearchParams = { tab?: 'courses' | 'categories' | 'config' };
+type SearchParams = { tab?: 'courses' | 'categories' | 'stats' | 'config' };
 
 type CourseRow = {
   id: string;
@@ -141,8 +142,9 @@ export default async function AdminKlasPage({
       .order('display_order', { ascending: true }),
     sb.from('klas_page_config').select('*').eq('id', 1).maybeSingle(),
     // Count enrollments per course so we can show "X / Y plas okipe"
-    // chips inline. Aggregating in TS is fine here — counts are small.
-    sb.from('course_enrollments').select('course_id'),
+    // chips inline. `source` also feeds the Estatistik tab's paid-vs-free
+    // breakdown. Aggregating in TS is fine here — counts are small.
+    sb.from('course_enrollments').select('course_id, source'),
   ]);
 
   const courses = (coursesRes.data ?? []) as CourseRow[];
@@ -150,12 +152,32 @@ export default async function AdminKlasPage({
   const config = (configRes.data ?? null) as PageConfigRow | null;
   const categoryById = new Map(categories.map((c) => [c.id, c]));
 
+  const enrollments = (enrollmentsRes.data ?? []) as Array<{
+    course_id: string;
+    source: 'click' | 'purchase' | 'subscription' | 'admin_grant';
+  }>;
+
   const enrollmentCountByCourse = new Map<string, number>();
-  for (const row of ((enrollmentsRes.data ?? []) as Array<{ course_id: string }>)) {
+  for (const row of enrollments) {
     enrollmentCountByCourse.set(
       row.course_id,
       (enrollmentCountByCourse.get(row.course_id) ?? 0) + 1
     );
+  }
+
+  // Real course revenue lives only in paid purchases; fetch them just for the
+  // Estatistik tab so ordinary catalog edits stay cheap.
+  let purchases: Array<{
+    course_id: string;
+    amount_cents: number;
+    purchased_at: string;
+  }> = [];
+  if (tab === 'stats') {
+    const { data: purchaseRows } = await sb
+      .from('course_purchases')
+      .select('course_id, amount_cents, purchased_at')
+      .eq('status', 'paid');
+    purchases = (purchaseRows ?? []) as typeof purchases;
   }
 
   return (
@@ -211,6 +233,13 @@ export default async function AdminKlasPage({
         />
       )}
       {tab === 'categories' && <CategoriesTab categories={categories} />}
+      {tab === 'stats' && (
+        <StatsTab
+          courses={courses}
+          enrollments={enrollments}
+          purchases={purchases}
+        />
+      )}
       {tab === 'config' && <PageConfigEditor initial={config} />}
     </div>
   );

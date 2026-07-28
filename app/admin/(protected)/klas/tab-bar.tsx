@@ -3,10 +3,11 @@ import {
   GraduationCap,
   FolderTree,
   SlidersHorizontal,
+  BarChart3,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-type Tab = 'courses' | 'categories' | 'config';
+type Tab = 'courses' | 'categories' | 'stats' | 'config';
 
 const TABS: Array<{
   key: Tab;
@@ -16,6 +17,7 @@ const TABS: Array<{
 }> = [
   { key: 'courses', label: 'Kou', icon: GraduationCap, countKey: 'courses' },
   { key: 'categories', label: 'Kategori', icon: FolderTree, countKey: 'categories' },
+  { key: 'stats', label: 'Estatistik', icon: BarChart3 },
   { key: 'config', label: 'Konfigirasyon paj', icon: SlidersHorizontal },
 ];
 
