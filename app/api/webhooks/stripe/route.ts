@@ -129,8 +129,16 @@ async function applySubscription(
       .from('subscriptions')
       .update(row)
       .eq('id', (existing as { id: string }).id);
+  } else if (status === 'active') {
+    // Only a real, paid activation creates a row. A 'cancelled' event with no
+    // existing row means an incomplete/abandoned checkout that never became a
+    // paid subscription — recording it (even as cancelled) would clutter the
+    // admin panel and the accounting with a payment that never happened.
+    await sb
+      .from('subscriptions')
+      .insert({ ...row, start_date: new Date().toISOString() });
   } else {
-    await sb.from('subscriptions').insert({ ...row, start_date: new Date().toISOString() });
+    return; // nothing paid, nothing to cancel — leave no trace
   }
 
   // A member who now pays through Stripe should not also carry an older

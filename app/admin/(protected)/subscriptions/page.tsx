@@ -106,15 +106,22 @@ export default async function AdminSubscriptionsPage({
   );
 
   // ── Stats (computed over ALL subs, ignoring filters) ────────────────────
-  const now = Date.now();
-  const thirtyDaysAgo = now - 30 * 86400000;
+  // A subscription only counts as real revenue when it is an ACTIVE Stripe
+  // subscription. Everything else — cancelled, incomplete, the free 'basic'
+  // created at signup, the old mock demos, manual admin grants — is access
+  // without a card payment, so it must never inflate the money figures.
+  const isPaid = (s: SubRow) =>
+    s.status === 'active' && s.stripe_subscription_id != null;
+  const isFreeActive = (s: SubRow) =>
+    s.status === 'active' && s.stripe_subscription_id == null;
 
   const stats = {
-    totalRevenue: subs.reduce((s, x) => s + (x.amount ?? 0), 0),
-    activeCount: subs.filter((s) => s.status === 'active').length,
-    thisMonthCount: subs.filter(
-      (s) => new Date(s.created_at).getTime() > thirtyDaysAgo
-    ).length,
+    // Real money collected (active Stripe subscriptions only).
+    paidRevenue: subs.filter(isPaid).reduce((sum, s) => sum + (s.amount ?? 0), 0),
+    // Members actually paying by card.
+    payingMembers: subs.filter(isPaid).length,
+    // Members with access but no payment (signup default, mock, grants).
+    freeMembers: subs.filter(isFreeActive).length,
     cancelledCount: subs.filter((s) => s.status === 'cancelled').length,
   };
 
@@ -130,10 +137,10 @@ export default async function AdminSubscriptionsPage({
   ).map((plan) => ({
     plan,
     label: PLAN_LABEL[plan],
-    activeCount: subs.filter((s) => s.plan === plan && s.status === 'active')
-      .length,
+    // Paying (active Stripe) members on this plan, and the money they bring.
+    activeCount: subs.filter((s) => s.plan === plan && isPaid(s)).length,
     revenue: subs
-      .filter((s) => s.plan === plan)
+      .filter((s) => s.plan === plan && isPaid(s))
       .reduce((sum, s) => sum + (s.amount ?? 0), 0),
     accent: PLAN_ACCENT[plan],
   }));
@@ -185,20 +192,20 @@ export default async function AdminSubscriptionsPage({
       <section className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
         <StatCard
           icon={TrendingUp}
-          label="Revni total"
-          value={`$${stats.totalRevenue.toFixed(0)}`}
+          label="Revni reyèl (Stripe)"
+          value={`$${stats.paidRevenue.toFixed(0)}`}
           tone="bg-emerald-100 text-emerald-700"
         />
         <StatCard
           icon={Sparkles}
-          label="Aktif kounye a"
-          value={`${stats.activeCount}`}
+          label="Manm k ap peye"
+          value={`${stats.payingMembers}`}
           tone="bg-forest-100 text-forest-700"
         />
         <StatCard
           icon={CalendarDays}
-          label="Nouvo 30 jou"
-          value={`${stats.thisMonthCount}`}
+          label="Manm gratis"
+          value={`${stats.freeMembers}`}
           tone="bg-amber-100 text-amber-700"
         />
         <StatCard
@@ -230,7 +237,7 @@ export default async function AdminSubscriptionsPage({
                   {b.activeCount}
                 </div>
                 <div className="text-[11px] text-earth-600 mt-1">
-                  abònman aktif
+                  manm k ap peye
                 </div>
               </div>
               <div className="text-right">
