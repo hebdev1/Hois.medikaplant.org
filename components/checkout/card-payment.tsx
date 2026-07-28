@@ -80,8 +80,13 @@ function CardForm({ returnPath, amountLabel }: Props) {
   const [cardComplete, setCardComplete] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
 
-  async function onSubmit(e: React.FormEvent) {
-    e.preventDefault();
+  // Triggered by the pay button's onClick — NOT a form submit. This card UI
+  // renders INSIDE the checkout page's auth <form>, and HTML/React nested
+  // forms are invalid: a nested submit bubbles to the outer form, which
+  // navigates the page away before confirmPayment can run — leaving the
+  // PaymentIntent stuck at `requires_payment_method` and bouncing the member
+  // to pricing. Using a plain button + onClick keeps confirmation isolated.
+  async function onSubmit() {
     if (!stripe || !elements) {
       // Stripe.js failed to initialise (bad/empty publishable key). Never let
       // the click do nothing — that is the silent trap that looked like the
@@ -141,7 +146,7 @@ function CardForm({ returnPath, amountLabel }: Props) {
   }
 
   return (
-    <form onSubmit={onSubmit} className="space-y-4">
+    <div className="space-y-4">
       <PaymentElement
         options={{ layout: 'tabs' }}
         onChange={(ev) => {
@@ -158,7 +163,8 @@ function CardForm({ returnPath, amountLabel }: Props) {
       )}
 
       <button
-        type="submit"
+        type="button"
+        onClick={onSubmit}
         disabled={!stripe || pending || activating}
         className="w-full inline-flex items-center justify-center gap-2 bg-brand-gradient hover:brightness-110 disabled:opacity-60 text-white font-semibold px-6 py-4 rounded-xl transition shadow-lg"
       >
@@ -179,6 +185,6 @@ function CardForm({ returnPath, amountLabel }: Props) {
           </>
         )}
       </button>
-    </form>
+    </div>
   );
 }
