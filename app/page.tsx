@@ -9,6 +9,13 @@ import CtaSection from '@/components/ui/cta-section';
 import Footer from '@/components/ui/footer';
 import { getSiteImages, imageKeys } from '@/lib/site-images';
 
+// Homepage content (site images, marketing copy) changes rarely and is the
+// same for everyone, so serve it from a static ISR cache instead of rendering
+// it on every visit. This is what takes TTFB from ~1.4s down to tens of ms.
+// The cache refreshes at most every 10 minutes, or instantly when an admin
+// saves a new image (revalidatePath('/') in the image action).
+export const revalidate = 600;
+
 export default async function HomePage() {
   // Admin-managed graphics (/admin/imaj). Unset slots fall back to the
   // defaults compiled into lib/site-image-slots.ts.

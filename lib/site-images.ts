@@ -1,5 +1,5 @@
 import { cache } from 'react';
-import { createClient } from '@/lib/supabase/server';
+import { createPublicClient } from '@/lib/supabase/public';
 import { SITE_IMAGE_SLOTS } from './site-image-slots';
 
 export type SiteImageMap = Record<string, string>;
@@ -18,7 +18,7 @@ export const getSiteImages = cache(async (): Promise<SiteImageMap> => {
 
   try {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const sb = createClient() as any;
+    const sb = createPublicClient() as any;
     const { data } = await sb.from('site_images').select('key, url');
     for (const row of (data ?? []) as Array<{ key: string; url: string }>) {
       if (row.url) map[row.key] = row.url;

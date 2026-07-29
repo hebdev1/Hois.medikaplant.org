@@ -70,43 +70,57 @@ export async function updateSession(request: NextRequest) {
     return response;
   }
 
+  // ── Authed: gather every per-request read in ONE parallel batch ────────
+  // Hostinger→Supabase round-trips dominate dashboard navigation, so we pay
+  // that latency once (Promise.all) instead of firing these checks one after
+  // another. Same reads, same rules — just not sequential:
+  //   • suspended — always (closes the suspend→token-still-valid window)
+  //   • role — only when the JWT claim didn't carry it (pre-hook sessions)
+  //   • active subscription — only for a member (non-admin) on /dashboard
+  const metadataRole = (user.user_metadata as { app_role?: string } | null)
+    ?.app_role;
+  const roleInJwt = metadataRole === 'admin' || metadataRole === 'user';
+  const isAdminFromJwt = metadataRole === 'admin';
+  // When the JWT lacks the claim we can't yet know admin-ness, so fetch the
+  // subscription for any member route and simply ignore it if the DB role
+  // turns out to be admin.
+  const needsSub = isMemberRoute && !isAdminFromJwt;
+
+  const [suspendedRes, roleRes, subRes] = await Promise.all([
+    supabase.from('profiles').select('suspended').eq('id', user.id).maybeSingle(),
+    roleInJwt
+      ? Promise.resolve(null)
+      : supabase.from('profiles').select('role').eq('id', user.id).maybeSingle(),
+    needsSub
+      ? supabase
+          .from('subscriptions')
+          .select('id', { count: 'exact', head: true })
+          .eq('user_id', user.id)
+          .eq('status', 'active')
+      : Promise.resolve(null),
+  ]);
+
   // ── 1b. Suspended members are out, immediately ─────────────────────────
   // Suspending bans the auth account, which blocks new logins and kills
   // token refresh — but an access token already in hand stays valid until it
   // expires (up to an hour). This check closes that window: the moment an
   // admin suspends someone, their next page load ends the session.
-  {
-    const { data: suspendedRow } = await supabase
-      .from('profiles')
-      .select('suspended')
-      .eq('id', user.id)
-      .maybeSingle();
-    if ((suspendedRow as { suspended: boolean } | null)?.suspended) {
-      await supabase.auth.signOut();
-      const url = request.nextUrl.clone();
-      url.pathname = isAdminRoute ? '/admin/login' : '/auth/login';
-      url.search = '?error=suspended';
-      return NextResponse.redirect(url);
-    }
+  if ((suspendedRes?.data as { suspended: boolean } | null)?.suspended) {
+    await supabase.auth.signOut();
+    const url = request.nextUrl.clone();
+    url.pathname = isAdminRoute ? '/admin/login' : '/auth/login';
+    url.search = '?error=suspended';
+    return NextResponse.redirect(url);
   }
 
-  // ── 2. Authed: read role from JWT claim (set by custom_access_token_hook).
-  //    Falls back to a DB read if the hook hasn't populated user_metadata
-  //    yet — that path only fires for sessions issued BEFORE the hook was
-  //    enabled in the dashboard. Once the user signs in again the hook
-  //    runs and we hit the fast path forever after.
-  const metadataRole = (user.user_metadata as { app_role?: string } | null)
-    ?.app_role;
+  // ── 2. Role: JWT claim (fast, no round-trip) or the DB fallback above ──
+  //    The fallback only fires for sessions issued BEFORE the access-token
+  //    hook was enabled; once the user signs in again we hit the fast path.
   let role: 'user' | 'admin' = 'user';
-  if (metadataRole === 'admin' || metadataRole === 'user') {
-    role = metadataRole;
+  if (roleInJwt) {
+    role = metadataRole as 'user' | 'admin';
   } else {
-    const { data: profileRaw } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', user.id)
-      .maybeSingle();
-    role = (profileRaw as { role: 'user' | 'admin' } | null)?.role ?? 'user';
+    role = (roleRes?.data as { role: 'user' | 'admin' } | null)?.role ?? 'user';
   }
   const isAdmin = role === 'admin';
 
@@ -154,13 +168,9 @@ export async function updateSession(request: NextRequest) {
   // /dashboard or any sub-path) they must purchase a new plan before
   // regaining access. Admins are exempt from this gate.
   if (!isAdmin && isMemberRoute) {
-    const { count } = await supabase
-      .from('subscriptions')
-      .select('id', { count: 'exact', head: true })
-      .eq('user_id', user.id)
-      .eq('status', 'active');
-
-    if ((count ?? 0) === 0) {
+    // Already fetched above in the parallel batch (needsSub).
+    const count = (subRes as { count: number | null } | null)?.count ?? 0;
+    if (count === 0) {
       const url = request.nextUrl.clone();
       url.search = '';
       url.pathname = '/checkout';
