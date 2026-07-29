@@ -11,11 +11,31 @@ export type Block =
 export type Lesson = { title: string; time?: string; blocks: Block[] };
 
 export type QuizQuestion = {
+  type?: 'single' | 'multiple' | 'short'; // default 'single'
   q: string;
-  choices: string[];
-  correct: number; // index into choices
+  choices?: string[]; // single/multiple: the options
+  correct?: number; // single: index of the correct option
+  correctSet?: number[]; // multiple: indexes of all correct options
+  answer?: string; // short: accepted answer(s), separated by "|"
   feedback?: string;
 };
+
+// Remove every answer key before content is sent to the browser, so a student
+// cannot read the answers from the page source. Grading runs server-side
+// (gradeAnswer) against the full content, which stays on the server.
+export function stripQuizAnswers(
+  content: ModuleContent | null
+): ModuleContent | null {
+  if (!content?.quiz) return content;
+  return {
+    ...content,
+    quiz: content.quiz.map((q) => ({
+      type: q.type,
+      q: q.q,
+      choices: q.choices,
+    })),
+  };
+}
 
 export type ModuleContent = {
   objective?: string;

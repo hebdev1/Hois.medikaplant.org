@@ -14,11 +14,15 @@ import {
   Loader2,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { markModuleComplete } from '@/app/klas/[slug]/progress-actions';
+import {
+  markModuleComplete,
+  gradeAnswer,
+} from '@/app/klas/[slug]/progress-actions';
 import type {
   InteractiveModule,
   CourseOverview,
   Block,
+  QuizQuestion,
 } from '@/lib/klas/course-content';
 
 type Props = {
@@ -49,8 +53,6 @@ export default function InteractiveCourse({
     () => new Set(initialCompleted)
   );
   const [pending, setPending] = React.useState(false);
-  // answers keyed `${moduleId}:${questionIndex}` → chosen choice index
-  const [answers, setAnswers] = React.useState<Record<string, number>>({});
 
   const total = modules.length;
   const doneCount = modules.filter((m) => completed.has(m.id)).length;
@@ -174,8 +176,6 @@ export default function InteractiveCourse({
             key={activeModule.id}
             module={activeModule}
             index={modules.findIndex((m) => m.id === activeModule.id)}
-            answers={answers}
-            setAnswers={setAnswers}
           />
         ) : null}
 
@@ -354,13 +354,9 @@ function OverviewPanel({
 function ModulePanel({
   module: m,
   index,
-  answers,
-  setAnswers,
 }: {
   module: InteractiveModule;
   index: number;
-  answers: Record<string, number>;
-  setAnswers: React.Dispatch<React.SetStateAction<Record<string, number>>>;
 }) {
   const c = m.content;
   return (
@@ -412,67 +408,145 @@ function ModulePanel({
       {c?.quiz && c.quiz.length > 0 && (
         <div className="rounded-2xl bg-white border border-cream-200 p-5 space-y-5">
           <h3 className="font-display font-bold text-ink">Tcheke sa w aprann</h3>
-          {c.quiz.map((q, qi) => {
-            const key = `${m.id}:${qi}`;
-            const chosen = answers[key];
-            const answered = chosen !== undefined;
+          {c.quiz.map((q, qi) => (
+            <QuizQuestionView key={qi} moduleId={m.id} qi={qi} q={q} />
+          ))}
+        </div>
+      )}
+    </article>
+  );
+}
+
+// One quiz question — single choice (radio), multiple choice (checkboxes) or
+// short answer. Grading is done by the server (gradeAnswer): the correct answer
+// is never in the client, so a student cannot read it from the page.
+function QuizQuestionView({
+  moduleId,
+  qi,
+  q,
+}: {
+  moduleId: string;
+  qi: number;
+  q: QuizQuestion;
+}) {
+  const type = q.type ?? 'single';
+  const [single, setSingle] = React.useState<number | null>(null);
+  const [multi, setMulti] = React.useState<Set<number>>(new Set());
+  const [text, setText] = React.useState('');
+  const [pending, setPending] = React.useState(false);
+  const [result, setResult] = React.useState<{
+    correct: boolean;
+    feedback?: string;
+    answerText?: string;
+  } | null>(null);
+
+  const canSubmit =
+    type === 'single'
+      ? single !== null
+      : type === 'multiple'
+        ? multi.size > 0
+        : text.trim().length > 0;
+
+  async function submit() {
+    if (result || !canSubmit || pending) return;
+    setPending(true);
+    const response =
+      type === 'single' ? single! : type === 'multiple' ? [...multi] : text;
+    const r = await gradeAnswer(moduleId, qi, response).catch(() => ({
+      correct: false,
+    }));
+    setResult(r);
+    setPending(false);
+  }
+
+  return (
+    <div className="space-y-2">
+      <p className="text-sm font-semibold text-ink">{q.q}</p>
+
+      {type === 'short' ? (
+        <input
+          value={text}
+          disabled={!!result}
+          onChange={(e) => setText(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') submit();
+          }}
+          className="w-full text-sm px-3 py-2 rounded-lg border border-cream-200 bg-white focus:outline-none focus:ring-2 focus:ring-forest-200 disabled:opacity-70"
+          placeholder="Repons ou…"
+        />
+      ) : (
+        <div className="grid gap-2">
+          {(q.choices ?? []).map((choice, ci) => {
+            const chosen = type === 'single' ? single === ci : multi.has(ci);
             return (
-              <div key={qi} className="space-y-2">
-                <p className="text-sm font-semibold text-ink">{q.q}</p>
-                <div className="grid gap-2">
-                  {q.choices.map((choice, ci) => {
-                    const isCorrect = ci === q.correct;
-                    const isChosen = ci === chosen;
-                    return (
-                      <button
-                        key={ci}
-                        type="button"
-                        disabled={answered}
-                        onClick={() =>
-                          setAnswers((prev) => ({ ...prev, [key]: ci }))
-                        }
-                        className={cn(
-                          'text-left text-sm px-3 py-2 rounded-lg border transition',
-                          !answered &&
-                            'border-cream-200 hover:border-forest-300 bg-white',
-                          answered &&
-                            isCorrect &&
-                            'border-forest-300 bg-forest-50 text-forest-900',
-                          answered &&
-                            isChosen &&
-                            !isCorrect &&
-                            'border-rose-300 bg-rose-50 text-rose-900',
-                          answered &&
-                            !isChosen &&
-                            !isCorrect &&
-                            'border-cream-200 opacity-60'
-                        )}
-                      >
-                        {choice}
-                        {answered && isCorrect && ' ✓'}
-                        {answered && isChosen && !isCorrect && ' ✗'}
-                      </button>
-                    );
-                  })}
-                </div>
-                {answered && q.feedback && (
-                  <p
-                    className={cn(
-                      'text-xs px-3 py-2 rounded-lg',
-                      chosen === q.correct
-                        ? 'bg-forest-50 text-forest-800'
-                        : 'bg-rose-50 text-rose-800'
-                    )}
-                  >
-                    {q.feedback}
-                  </p>
+              <button
+                key={ci}
+                type="button"
+                disabled={!!result}
+                onClick={() => {
+                  if (result) return;
+                  if (type === 'single') setSingle(ci);
+                  else
+                    setMulti((prev) => {
+                      const n = new Set(prev);
+                      if (n.has(ci)) n.delete(ci);
+                      else n.add(ci);
+                      return n;
+                    });
+                }}
+                className={cn(
+                  'text-left text-sm px-3 py-2 rounded-lg border transition flex items-center gap-2',
+                  chosen
+                    ? 'border-forest-400 bg-forest-50'
+                    : 'border-cream-200 hover:border-forest-300 bg-white'
                 )}
-              </div>
+              >
+                <span
+                  className={cn(
+                    'grid place-items-center w-4 h-4 shrink-0 border',
+                    type === 'multiple' ? 'rounded' : 'rounded-full',
+                    chosen
+                      ? 'bg-forest-600 border-forest-600'
+                      : 'border-earth-400'
+                  )}
+                >
+                  {chosen && (
+                    <CheckCircle2 className="w-3 h-3 text-white" strokeWidth={3} />
+                  )}
+                </span>
+                {choice}
+              </button>
             );
           })}
         </div>
       )}
-    </article>
+
+      {!result ? (
+        <button
+          type="button"
+          onClick={submit}
+          disabled={!canSubmit || pending}
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-forest-700 hover:bg-forest-800 disabled:opacity-50 text-cream-50 text-sm font-semibold"
+        >
+          {pending && <Loader2 className="w-3.5 h-3.5 animate-spin" strokeWidth={2.4} />}
+          Verifye
+        </button>
+      ) : (
+        <p
+          className={cn(
+            'text-xs px-3 py-2 rounded-lg',
+            result.correct
+              ? 'bg-forest-50 text-forest-800'
+              : 'bg-rose-50 text-rose-800'
+          )}
+        >
+          {result.correct
+            ? '✓ Kòrèk!'
+            : `✗ Bon repons: ${result.answerText ?? ''}`}
+          {result.feedback ? ` — ${result.feedback}` : ''}
+        </p>
+      )}
+    </div>
   );
 }
 

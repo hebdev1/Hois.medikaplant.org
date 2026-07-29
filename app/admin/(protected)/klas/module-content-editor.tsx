@@ -60,7 +60,10 @@ export default function ModuleContentEditor({
 
   // ── quiz helpers ──
   const addQ = () =>
-    setQuiz((q) => [...q, { q: '', choices: ['', ''], correct: 0, feedback: '' }]);
+    setQuiz((q) => [
+      ...q,
+      { type: 'single', q: '', choices: ['', ''], correct: 0, feedback: '' },
+    ]);
   const setQ = (i: number, patch: Partial<QuizQuestion>) =>
     setQuiz((q) => q.map((qq, x) => (x === i ? { ...qq, ...patch } : qq)));
   const rmQ = (i: number) => setQuiz((q) => q.filter((_, x) => x !== i));
@@ -152,41 +155,102 @@ export default function ModuleContentEditor({
           <span className={labelCls}>Quiz</span>
           <AddBtn onClick={addQ}>Ajoute kesyon</AddBtn>
         </div>
-        {quiz.map((q, i) => (
-          <div key={i} className="rounded-xl border border-cream-200 p-3 space-y-2 bg-cream-50">
-            <div className="flex gap-2">
-              <input
-                value={q.q}
-                onChange={(e) => setQ(i, { q: e.target.value })}
-                className={inputCls}
-                placeholder="Kesyon an"
-              />
-              <RmBtn onClick={() => rmQ(i)} />
-            </div>
-            <label className="text-[11px] text-earth-600">
-              Chwa (yon pa liy) — make nimewo bon repons lan anba
-            </label>
-            <textarea
-              value={q.choices.join('\n')}
-              onChange={(e) =>
-                setQ(i, { choices: e.target.value.split('\n') })
-              }
-              rows={3}
-              className={inputCls}
-              placeholder={'Repons 1\nRepons 2\nRepons 3'}
-            />
-            <div className="flex gap-2 items-center">
-              <label className="text-[11px] text-earth-600">Bon repons #</label>
-              <input
-                type="number"
-                min={1}
-                max={q.choices.length}
-                value={q.correct + 1}
-                onChange={(e) =>
-                  setQ(i, { correct: Math.max(0, Number(e.target.value) - 1) })
-                }
-                className={inputCls + ' max-w-[70px]'}
-              />
+        {quiz.map((q, i) => {
+          const qtype = q.type ?? 'single';
+          const isChoice = qtype === 'single' || qtype === 'multiple';
+          return (
+            <div
+              key={i}
+              className="rounded-xl border border-cream-200 p-3 space-y-2 bg-cream-50"
+            >
+              <div className="flex gap-2">
+                <select
+                  value={qtype}
+                  onChange={(e) =>
+                    setQ(i, { type: e.target.value as QuizQuestion['type'] })
+                  }
+                  className={inputCls + ' max-w-[150px]'}
+                >
+                  <option value="single">Chwa inik</option>
+                  <option value="multiple">Chwa miltip</option>
+                  <option value="short">Repons kout</option>
+                </select>
+                <input
+                  value={q.q}
+                  onChange={(e) => setQ(i, { q: e.target.value })}
+                  className={inputCls}
+                  placeholder="Kesyon an"
+                />
+                <RmBtn onClick={() => rmQ(i)} />
+              </div>
+
+              {isChoice && (
+                <>
+                  <label className="text-[11px] text-earth-600">
+                    Chwa (yon pa liy)
+                  </label>
+                  <textarea
+                    value={(q.choices ?? []).join('\n')}
+                    onChange={(e) =>
+                      setQ(i, { choices: e.target.value.split('\n') })
+                    }
+                    rows={3}
+                    className={inputCls}
+                    placeholder={'Repons 1\nRepons 2\nRepons 3'}
+                  />
+                </>
+              )}
+              {qtype === 'single' && (
+                <div className="flex gap-2 items-center">
+                  <label className="text-[11px] text-earth-600">Bon repons #</label>
+                  <input
+                    type="number"
+                    min={1}
+                    max={(q.choices ?? []).length}
+                    value={(q.correct ?? 0) + 1}
+                    onChange={(e) =>
+                      setQ(i, {
+                        correct: Math.max(0, Number(e.target.value) - 1),
+                      })
+                    }
+                    className={inputCls + ' max-w-[70px]'}
+                  />
+                </div>
+              )}
+              {qtype === 'multiple' && (
+                <div>
+                  <label className="text-[11px] text-earth-600">
+                    Bon repons # yo (separe ak vigil, egz. 1,3)
+                  </label>
+                  <input
+                    value={(q.correctSet ?? []).map((n) => n + 1).join(',')}
+                    onChange={(e) =>
+                      setQ(i, {
+                        correctSet: e.target.value
+                          .split(',')
+                          .map((s) => Number(s.trim()) - 1)
+                          .filter((n) => Number.isInteger(n) && n >= 0),
+                      })
+                    }
+                    className={inputCls}
+                    placeholder="1,3"
+                  />
+                </div>
+              )}
+              {qtype === 'short' && (
+                <div>
+                  <label className="text-[11px] text-earth-600">
+                    Bon repons (separe ak « | » si plizyè aksepte)
+                  </label>
+                  <input
+                    value={q.answer ?? ''}
+                    onChange={(e) => setQ(i, { answer: e.target.value })}
+                    className={inputCls}
+                    placeholder="egz. glisid | idrat kabòn"
+                  />
+                </div>
+              )}
+
               <input
                 value={q.feedback ?? ''}
                 onChange={(e) => setQ(i, { feedback: e.target.value })}
@@ -194,8 +258,8 @@ export default function ModuleContentEditor({
                 placeholder="Fidbak (poukisa)"
               />
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

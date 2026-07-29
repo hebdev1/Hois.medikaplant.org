@@ -22,9 +22,10 @@ import { createClient } from '@/lib/supabase/server';
 import { sanitizeGuideHtml } from '@/lib/sanitize-html';
 import CoursePageFrame from '@/components/klas/course-page-frame';
 import InteractiveCourse from '@/components/klas/interactive-course';
-import type {
-  CourseOverview,
-  InteractiveModule,
+import {
+  stripQuizAnswers,
+  type CourseOverview,
+  type InteractiveModule,
 } from '@/lib/klas/course-content';
 import EnrollButton from './enroll-button';
 
@@ -265,7 +266,9 @@ export default async function CourseDetailPage({
             .eq('course_id', course.id)
         : Promise.resolve({ data: [] }),
     ]);
-    const interactiveModules = (modulesRes.data ?? []) as InteractiveModule[];
+    const interactiveModules = (
+      (modulesRes.data ?? []) as InteractiveModule[]
+    ).map((mod) => ({ ...mod, content: stripQuizAnswers(mod.content) }));
     const completedIds = (
       (progressRes.data ?? []) as { module_id: string }[]
     ).map((r) => r.module_id);
