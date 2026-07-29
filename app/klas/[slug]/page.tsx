@@ -145,17 +145,6 @@ export default async function CourseDetailPage({
   const course = courseRaw as CourseRow | null;
   if (!course) notFound();
 
-  // A course with a full designed landing page takes over the entire page —
-  // no default hero, aside or module list — so it reads as its own standalone
-  // page inside the site chrome. The frame isolates its styles and scripts.
-  if (course.page_html && course.page_html.trim().length > 0) {
-    return (
-      <main className="min-h-screen bg-white">
-        <CoursePageFrame html={course.page_html} />
-      </main>
-    );
-  }
-
   // Pull seat state + per-user enrollment state in parallel with the
   // already-existing fan-out. The enrollment lookup is cheap because of
   // the UNIQUE(course_id, user_id) constraint giving us an index hit.
@@ -251,6 +240,39 @@ export default async function CourseDetailPage({
     memberPlan !== null &&
     (PLAN_RANK[memberPlan] ?? 0) >= (PLAN_RANK[course.plan_required] ?? 99);
   const isFreeWithSubscription = meetsPlan;
+
+  // A course with a full designed landing page takes over the whole page — no
+  // default hero/aside/module list — so it reads as its own standalone page.
+  // That designed page carries no checkout of its own, so the app's payment /
+  // enrolment logic rides along in a sticky bar pinned to the bottom.
+  if (course.page_html && course.page_html.trim().length > 0) {
+    return (
+      <main className="min-h-screen bg-white">
+        <CoursePageFrame html={course.page_html} />
+        <div className="sticky bottom-0 z-40 border-t border-cream-200 bg-white/95 backdrop-blur px-4 py-3 shadow-[0_-6px_24px_-10px_rgba(0,0,0,0.25)]">
+          <div className="mx-auto max-w-md">
+            <EnrollButton
+              courseId={course.id}
+              slug={course.slug}
+              seatCapacity={course.seat_capacity}
+              seatsTaken={seatsTaken}
+              alreadyEnrolled={alreadyEnrolled}
+              isAuthenticated={!!user}
+              isFreeWithSubscription={
+                isFreeWithSubscription && course.price_cents === null
+              }
+              isPaidCourse={
+                course.price_cents !== null && course.price_cents > 0
+              }
+              priceCents={course.price_cents}
+              planRequired={course.plan_required}
+              upgradeHref={planHref}
+            />
+          </div>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-screen bg-white">
