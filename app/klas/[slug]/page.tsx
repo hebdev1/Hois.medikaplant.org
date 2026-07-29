@@ -145,6 +145,17 @@ export default async function CourseDetailPage({
   const course = courseRaw as CourseRow | null;
   if (!course) notFound();
 
+  // A course with a full designed landing page takes over the entire page —
+  // no default hero, aside or module list — so it reads as its own standalone
+  // page inside the site chrome. The frame isolates its styles and scripts.
+  if (course.page_html && course.page_html.trim().length > 0) {
+    return (
+      <main className="min-h-screen bg-white">
+        <CoursePageFrame html={course.page_html} />
+      </main>
+    );
+  }
+
   // Pull seat state + per-user enrollment state in parallel with the
   // already-existing fan-out. The enrollment lookup is cheap because of
   // the UNIQUE(course_id, user_id) constraint giving us an index hit.
@@ -429,28 +440,19 @@ export default async function CourseDetailPage({
           </aside>
         </header>
 
-        {/* ── BODY ──────────────────────────────────────────────────────── */}
-        {course.page_html && course.page_html.trim().length > 0 ? (
-          // A full designed landing page overrides the rich-text body, in an
-          // isolated iframe so its own <style>/layout render untouched.
-          <section className="mb-12">
-            <CoursePageFrame html={course.page_html} />
+        {/* ── BODY (rich html) ──────────────────────────────────────────── */}
+        {course.body_html && course.body_html.trim().length > 0 && (
+          <section className="mb-12 max-w-3xl">
+            <h2 className="font-display text-2xl md:text-3xl font-bold text-ink mb-5">
+              Sou klas sa a
+            </h2>
+            <div
+              className="guide-rich-body text-base text-ink leading-relaxed"
+              dangerouslySetInnerHTML={{
+                __html: sanitizeGuideHtml(course.body_html),
+              }}
+            />
           </section>
-        ) : (
-          course.body_html &&
-          course.body_html.trim().length > 0 && (
-            <section className="mb-12 max-w-3xl">
-              <h2 className="font-display text-2xl md:text-3xl font-bold text-ink mb-5">
-                Sou klas sa a
-              </h2>
-              <div
-                className="guide-rich-body text-base text-ink leading-relaxed"
-                dangerouslySetInnerHTML={{
-                  __html: sanitizeGuideHtml(course.body_html),
-                }}
-              />
-            </section>
-          )
         )}
 
         {/* ── MODULES ───────────────────────────────────────────────────── */}

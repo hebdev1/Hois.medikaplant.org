@@ -1,45 +1,59 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
-// Renders a full, self-contained course landing page (its own <style>, fonts
-// and layout) inside an isolated iframe so its CSS can never leak into — or be
-// stripped by — the host app. The frame stays same-origin, which lets us read
-// the content height and grow it to fit (no inner scrollbar).
+// Renders a full, self-contained course page (its own <style>, fonts, layout
+// and — for our own compiled pages — a bundled React runtime for interactive
+// tabs/quizzes) inside an isolated iframe so nothing leaks either way.
 //
-// `html` is either a same-origin URL/path to a static HTML file (e.g. a
-// designer-built page committed under /public) or a raw HTML string pasted in
-// the admin. Both render the same way; only the iframe source differs.
+// `html` is either a same-origin URL/path to a static HTML file we built
+// (trusted → scripts allowed) or a raw HTML string pasted in the admin
+// (untrusted → scripts withheld). Height tracks the content so the whole
+// course scrolls as one page with no inner scrollbar.
 export default function CoursePageFrame({ html }: { html: string }) {
   const ref = useRef<HTMLIFrameElement>(null);
-  const [height, setHeight] = useState(1200);
+  const [height, setHeight] = useState(1400);
   const value = html.trim();
   const isUrl = value.startsWith('/') || /^https?:\/\//i.test(value);
 
-  function fit() {
-    try {
-      const doc = ref.current?.contentDocument;
-      if (doc?.body) setHeight(doc.body.scrollHeight + 24);
-    } catch {
-      /* cross-origin guard — ignore */
+  useEffect(() => {
+    const iframe = ref.current;
+    if (!iframe) return;
+    let observer: ResizeObserver | null = null;
+
+    function attach() {
+      try {
+        const doc = iframe!.contentDocument;
+        if (!doc?.body) return;
+        const measure = () =>
+          setHeight(
+            Math.max(doc.body.scrollHeight, doc.documentElement.scrollHeight)
+          );
+        measure();
+        // The bundled course app re-renders on tab/quiz interaction, which
+        // changes the height — keep the frame in step.
+        observer = new ResizeObserver(measure);
+        observer.observe(doc.body);
+      } catch {
+        /* cross-origin — cannot measure; leave the fallback height */
+      }
     }
-  }
+
+    iframe.addEventListener('load', attach);
+    if (iframe.contentDocument?.readyState === 'complete') attach();
+    return () => {
+      iframe.removeEventListener('load', attach);
+      observer?.disconnect();
+    };
+  }, [value]);
 
   return (
     <iframe
       ref={ref}
       {...(isUrl ? { src: value } : { srcDoc: value })}
       title="Paj konplè kou a"
-      loading="lazy"
-      // allow-same-origin lets us measure height; withholding allow-scripts
-      // means no pasted <script> can ever run — content + CSS only.
-      sandbox="allow-same-origin"
-      onLoad={() => {
-        fit();
-        // Fonts/images can reflow after load; re-measure a couple of times.
-        setTimeout(fit, 400);
-        setTimeout(fit, 1500);
-      }}
+      // Trusted compiled pages run their scripts; pasted HTML never does.
+      sandbox={isUrl ? 'allow-scripts allow-same-origin' : 'allow-same-origin'}
       style={{ width: '100%', height, border: 'none', display: 'block' }}
     />
   );
