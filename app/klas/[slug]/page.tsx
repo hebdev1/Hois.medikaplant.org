@@ -255,7 +255,7 @@ export default async function CourseDetailPage({
     const [modulesRes, progressRes] = await Promise.all([
       sb
         .from('course_modules')
-        .select('id, title, duration_text, display_order, content')
+        .select('id, title, duration_text, display_order, content, preview')
         .eq('course_id', course.id)
         .order('display_order', { ascending: true }),
       user
@@ -266,9 +266,18 @@ export default async function CourseDetailPage({
             .eq('course_id', course.id)
         : Promise.resolve({ data: [] }),
     ]);
-    const interactiveModules = (
+    // Members with access (enrolled, or their plan covers the course) see every
+    // module. Everyone else sees ONLY modules the admin marked as preview — the
+    // rest are filtered out server-side, so their content never reaches the
+    // browser at all.
+    const hasFullAccess = alreadyEnrolled || isFreeWithSubscription;
+    const allInteractive = (
       (modulesRes.data ?? []) as InteractiveModule[]
     ).map((mod) => ({ ...mod, content: stripQuizAnswers(mod.content) }));
+    const interactiveModules = hasFullAccess
+      ? allInteractive
+      : allInteractive.filter((mod) => mod.preview === true);
+    const lockedCount = allInteractive.length - interactiveModules.length;
     const completedIds = (
       (progressRes.data ?? []) as { module_id: string }[]
     ).map((r) => r.module_id);
@@ -297,6 +306,7 @@ export default async function CourseDetailPage({
           initialCompleted={completedIds}
           canSaveProgress={!!user}
           cta={cta}
+          lockedCount={lockedCount}
         />
       </main>
     );

@@ -64,4 +64,5 @@ export type InteractiveModule = {
   duration_text: string | null;
   display_order: number;
   content: ModuleContent | null;
+  preview?: boolean;
 };

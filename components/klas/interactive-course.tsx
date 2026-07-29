@@ -12,6 +12,7 @@ import {
   ShieldAlert,
   Clock,
   Loader2,
+  Lock,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
@@ -35,6 +36,7 @@ type Props = {
   initialCompleted: string[];
   canSaveProgress: boolean;
   cta?: { href: string; label: string } | null;
+  lockedCount?: number;
 };
 
 export default function InteractiveCourse({
@@ -47,6 +49,7 @@ export default function InteractiveCourse({
   initialCompleted,
   canSaveProgress,
   cta,
+  lockedCount = 0,
 }: Props) {
   const [active, setActive] = React.useState<string>('overview');
   const [completed, setCompleted] = React.useState<Set<string>>(
@@ -170,7 +173,13 @@ export default function InteractiveCourse({
       {/* ── Panel ── */}
       <main className="max-w-4xl mx-auto px-4 md:px-8 py-6 md:py-10">
         {active === 'overview' ? (
-          <OverviewPanel overview={overview} modules={modules} onStart={() => modules[0] && go(modules[0].id)} />
+          <OverviewPanel
+            overview={overview}
+            modules={modules}
+            lockedCount={lockedCount}
+            cta={cta}
+            onStart={() => modules[0] && go(modules[0].id)}
+          />
         ) : activeModule ? (
           <ModulePanel
             key={activeModule.id}
@@ -263,10 +272,14 @@ function TabButton({
 function OverviewPanel({
   overview,
   modules,
+  lockedCount,
+  cta,
   onStart,
 }: {
   overview: CourseOverview | null;
   modules: InteractiveModule[];
+  lockedCount: number;
+  cta?: { href: string; label: string } | null;
   onStart: () => void;
 }) {
   return (
@@ -333,6 +346,23 @@ function OverviewPanel({
           ))}
         </ol>
       </div>
+      {lockedCount > 0 && (
+        <div className="rounded-2xl bg-forest-50 border border-forest-200 p-4 flex items-center gap-3 flex-wrap">
+          <Lock className="w-5 h-5 text-forest-700 shrink-0" strokeWidth={2.2} />
+          <p className="text-sm text-forest-900 flex-1 min-w-[180px]">
+            <strong>{lockedCount} modil an plis</strong> disponib apre ou achte
+            kou a.
+          </p>
+          {cta && (
+            <Link
+              href={cta.href}
+              className="shrink-0 inline-flex items-center gap-1 bg-forest-700 hover:bg-forest-800 text-cream-50 px-4 py-2 rounded-full text-sm font-semibold"
+            >
+              {cta.label}
+            </Link>
+          )}
+        </div>
+      )}
       {overview?.disclaimer && (
         <p className="rounded-xl bg-amber-50 border border-amber-200 px-4 py-3 text-xs text-amber-900">
           {overview.disclaimer}
