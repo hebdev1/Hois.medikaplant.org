@@ -42,6 +42,7 @@ type Initial = {
   slug: string;
   description: string;
   body_html: string | null;
+  page_html: string | null;
   cover_image_url: string | null;
   instructor_name: string;
   instructor_role: string | null;
@@ -90,6 +91,7 @@ export default function CourseForm({ mode, initial, categories }: Props) {
     slug: initial?.slug ?? '',
     description: initial?.description ?? '',
     body_html: initial?.body_html ?? '',
+    page_html: initial?.page_html ?? '',
     cover_image_url: initial?.cover_image_url ?? '',
     instructor_name: initial?.instructor_name ?? 'Hoïs Inivèsite',
     instructor_role: initial?.instructor_role ?? '',
@@ -174,6 +176,20 @@ export default function CourseForm({ mode, initial, categories }: Props) {
               placeholder="Plan modil yo, sa moun nan ap aprann, prerequis…"
             />
             <input type="hidden" name="body_html" value={v.body_html} />
+          </Field>
+          <Field
+            label="Paj konplè (HTML pèsonalize)"
+            help="Opsyonèl. Kole HTML endepandan yon paj konplè (ak pwòp style li). Lè l plen, li ranplase deskripsyon an sou paj piblik la, nan yon kad izole. Kite l vid pou paj estanda a."
+          >
+            <textarea
+              name="page_html"
+              value={v.page_html}
+              onChange={(e) => set('page_html', e.target.value)}
+              className={cn(inputClass, 'resize-y font-mono text-xs')}
+              rows={8}
+              placeholder="<!DOCTYPE html> … paj konplè kou a …"
+              spellCheck={false}
+            />
           </Field>
         </Section>
 

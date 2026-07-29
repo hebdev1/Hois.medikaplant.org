@@ -1,0 +1,1414 @@
+<!DOCTYPE html><html lang="ht"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Syans Nitrisyon la · HOÏSMedikaplant.com</title>
+
+
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --ink:#16241c; --herb:#23533b; --herb-soft:#3e7355; --leaf:#6fa06b;
+    --paper:#f4efe3; --paper-2:#ece4d3; --card:#fcf9f1;
+    --turmeric:#d1932a; --turmeric-soft:#f0dcae; --hibiscus:#a83048;
+    --line:#ddd2bd; --muted:#5e6559; --muted-2:#857c66;
+    --shadow:0 1px 0 rgba(22,36,28,.04), 0 18px 40px -28px rgba(22,36,28,.5);
+    --radius:14px; --brand-pink:#e75fa4; --brand-teal:#1fa6d6;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;
+    background: radial-gradient(1200px 600px at 85% -10%, #efe8d6 0%, transparent 60%), var(--paper);
+    color:var(--ink); font-family:"Instrument Sans",system-ui,sans-serif; font-size:17px; line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--herb)}
+  a:hover{color:var(--ink)}
+  .wrap{max-width:960px;margin:0 auto;padding:0 24px}
+  .eyebrow{font-size:12.5px;letter-spacing:.18em;text-transform:uppercase;font-weight:600;color:var(--herb-soft);margin:0 0 10px;display:flex;align-items:center;gap:10px}
+  header.hero{padding:56px 0 26px;position:relative;overflow:hidden}
+  .mark{display:flex;align-items:center;gap:12px;margin-bottom:34px}
+  .brandbar{display:flex;align-items:center;gap:16px;margin-bottom:34px;flex-wrap:wrap}
+  .brand-logo{background:radial-gradient(circle at 30% 30%, #f0dcae, #d1932a 55%, #8a6a12);border-radius:50%;height:74px;width:74px;flex:none;box-shadow:inset 0 0 0 3px #fffdf8}
+  .brand-div{width:1px;height:42px;background:var(--line)}
+  .brand-plat{line-height:1.28}
+  .brand-plat .ak{display:block;font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;color:var(--herb-soft)}
+  .brand-plat .url{display:block;font-family:"Fraunces",serif;font-size:18px;font-weight:600;letter-spacing:-.01em}
+  .brand-plat .url .h{color:var(--brand-pink)}
+  .brand-plat .url .m{color:var(--brand-teal)}
+  .brand-plat .url .d{color:var(--muted-2);font-weight:500}
+  .foot .brandbar{margin-bottom:14px}
+  .foot .brand-logo{height:48px;width:48px}
+  .foot .brand-plat .url{font-size:15.5px}
+  .foot-links{margin-top:10px;font-weight:600;color:var(--herb);letter-spacing:.01em}
+  @media (max-width:680px){.brand-logo{height:60px;width:60px}.brand-div{display:none}}
+  h1{font-family:"Fraunces",serif;font-weight:600;font-size:clamp(40px,7vw,68px);line-height:1.02;letter-spacing:-.02em;margin:0 0 18px;max-width:16ch}
+  h1 em{font-style:italic;color:var(--herb)}
+  .lede{font-size:clamp(18px,2.4vw,20px);max-width:56ch;color:#2e3a30;margin:0 0 26px}
+  .chips{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:6px}
+  .chip{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:7px 15px;font-size:13.5px;font-weight:500;color:var(--ink);display:inline-flex;align-items:center;gap:8px}
+  .chip b{color:var(--herb);font-weight:600}
+  .chip .dot{width:6px;height:6px;border-radius:50%;background:var(--turmeric)}
+  .progress-bar{position:sticky;top:0;z-index:40;background:rgba(244,239,227,.86);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);padding:11px 0}
+  .progress-inner{display:flex;align-items:center;gap:16px}
+  .track{flex:1;height:8px;background:var(--paper-2);border-radius:999px;overflow:hidden;border:1px solid var(--line)}
+  .fill{height:100%;background:linear-gradient(90deg,var(--leaf),var(--herb));transition:width .5s cubic-bezier(.2,.7,.2,1)}
+  .progress-label{font-size:13px;font-weight:600;color:var(--muted);white-space:nowrap}
+  .progress-label b{color:var(--herb)}
+  nav.tabs{padding:22px 0 10px}
+  .tabrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .partsep{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--turmeric);padding:0 4px 0 8px;border-left:2px solid var(--turmeric-soft);margin-left:2px;white-space:nowrap}
+  .tab.part2[aria-selected="false"] .num{background:var(--turmeric-soft);color:#8a6a12;border-color:#e6cf9a}
+  .tab.bonus[aria-selected="false"] .num{background:#f6e4e8;color:#8a2338;border-color:#eccdd3}
+  .partsep.bonus{color:var(--hibiscus);border-left-color:#eccdd3}
+  .cur-part.bonus{color:var(--hibiscus)}
+  .cur-part{margin:26px 0 4px;font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--herb)}
+  .cur-part.two{color:var(--turmeric)}
+  .safety{background:#fbeef0;border:1px solid #e6c2ca;border-left:4px solid var(--hibiscus);border-radius:12px;padding:16px 20px;margin:18px 0}
+  .safety .lab{font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--hibiscus);margin-bottom:6px;display:flex;align-items:center;gap:7px}
+  .safety p{margin:0 0 8px;font-size:15px}
+  .safety p:last-child{margin:0}
+  .safety b{color:#8a2338}
+  .gi-scale{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:16px 0 18px}
+  .gi-cell{border-radius:10px;padding:14px 12px;border:1px solid var(--line);text-align:center}
+  .gi-cell .nm{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px}
+  .gi-cell .rng{font-family:"Fraunces",serif;font-size:24px;font-weight:600;line-height:1}
+  .gi-cell .ds{font-size:12.5px;color:var(--muted);margin-top:6px}
+  .gi-low{background:#eaf4e4;border-color:#cbe4c2}.gi-low .rng,.gi-low .nm{color:#2f6a34}
+  .gi-med{background:#fbf1da;border-color:#eeddb4}.gi-med .rng,.gi-med .nm{color:#a9791b}
+  .gi-high{background:#fbe9ec;border-color:#eecdd4}.gi-high .rng,.gi-high .nm{color:#a83048}
+  .tablewrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:14px 0 18px}
+  .foodtable{width:100%;border-collapse:collapse;font-size:14.5px;min-width:520px}
+  .foodtable th{text-align:left;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted-2);border-bottom:2px solid var(--line);padding:9px 10px}
+  .foodtable td{border-bottom:1px solid var(--line);padding:10px;vertical-align:top}
+  .foodtable td .bino{font-style:italic;color:var(--muted);font-size:12.5px;display:block}
+  .foodtable td strong{color:var(--herb)}
+  .foodtable tr:hover td{background:var(--card)}
+  .tab{font-family:"Instrument Sans",sans-serif;font-size:14px;font-weight:600;background:transparent;border:1px solid var(--line);color:var(--muted);padding:9px 15px;border-radius:999px;cursor:pointer;display:inline-flex;align-items:center;gap:9px;transition:all .18s}
+  .tab:hover{border-color:var(--herb-soft);color:var(--herb)}
+  .tab[aria-selected="true"]{background:var(--herb);border-color:var(--herb);color:#f4efe3}
+  .tab .num{font-size:11px;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;background:var(--paper-2);color:var(--muted);border:1px solid var(--line)}
+  .tab[aria-selected="true"] .num{background:rgba(255,255,255,.16);color:#f4efe3;border-color:transparent}
+  .tab .tick{width:16px;height:16px;color:var(--leaf);display:none}
+  .tab.done .tick{display:block}
+  .tab.done .num{display:none}
+  .tab[aria-selected="true"].done .tick{color:#cfe6c9}
+  .panel{padding:14px 0 40px;animation:fade .35s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .plate{position:relative;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:30px 30px 26px;margin:6px 0 30px;box-shadow:var(--shadow);overflow:hidden}
+  .plate::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:linear-gradient(180deg,var(--turmeric),var(--hibiscus))}
+  .plate-botanical{position:absolute;right:-30px;top:-20px;opacity:.10;pointer-events:none}
+  .plate-top{display:flex;align-items:flex-start;gap:20px}
+  .plate-no{flex:none;width:58px;height:58px;border-radius:12px;background:var(--herb);color:var(--paper);display:grid;place-items:center;font-family:"Fraunces",serif;font-size:26px;font-weight:600;box-shadow:var(--shadow)}
+  .plate h2{font-family:"Fraunces",serif;font-weight:600;font-size:clamp(26px,4vw,34px);line-height:1.08;letter-spacing:-.01em;margin:2px 0 4px;max-width:22ch}
+  .plate .meta{font-size:13.5px;color:var(--muted);font-weight:500}
+  .obj{margin:22px 0 4px;padding:20px 22px;background:var(--paper);border:1px dashed var(--line);border-radius:12px}
+  .obj .lab{font-size:12px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;color:var(--turmeric);margin-bottom:10px}
+  .obj ul{margin:0;padding-left:20px}
+  .obj li{margin:6px 0}
+  .lesson{border-top:1px solid var(--line);padding:30px 0 6px}
+  .lesson:first-of-type{border-top:none}
+  .lesson-head{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+  .lesson-tag{font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;color:var(--hibiscus)}
+  .lesson-time{font-size:12.5px;color:var(--muted-2);margin-left:auto;font-weight:500}
+  .lesson h3{font-family:"Fraunces",serif;font-weight:600;font-size:23px;letter-spacing:-.01em;margin:2px 0 12px}
+  .lesson p{margin:0 0 14px;color:#2b352c}
+  .lesson h4{font-size:16px;font-weight:600;margin:20px 0 8px;color:var(--herb)}
+  .lesson ul,.lesson ol{margin:0 0 14px;padding-left:22px}
+  .lesson li{margin:7px 0}
+  .lesson strong{color:var(--ink)}
+  .term{color:var(--herb);font-weight:600;font-style:normal;border-bottom:1.5px dotted var(--leaf)}
+  .keybox{background:linear-gradient(180deg,#fbf6e8,#f7efd9);border:1px solid var(--turmeric-soft);border-left:4px solid var(--turmeric);border-radius:10px;padding:16px 18px;margin:16px 0 18px}
+  .keybox .lab{font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;color:#a9791b;margin-bottom:6px}
+  .keybox p{margin:0;font-size:15.5px}
+  .mythbox{background:#fbeef0;border:1px solid #eccdd3;border-left:4px solid var(--hibiscus);border-radius:10px;padding:14px 18px;margin:14px 0}
+  .mythbox .m{font-weight:600;color:var(--hibiscus);font-size:14px;margin-bottom:4px}
+  .mythbox .t{font-size:15px;margin:0}
+  .mythbox .t b{color:var(--herb)}
+  .activity{background:var(--herb);color:#eef3ea;border-radius:var(--radius);padding:24px 26px;margin:26px 0;box-shadow:var(--shadow)}
+  .activity .lab{font-size:12px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;color:#bcd7b8;margin-bottom:8px}
+  .activity h3{font-family:"Fraunces",serif;color:#fff;margin:0 0 10px;font-size:22px;font-weight:600}
+  .activity p{margin:0 0 10px;color:#dce7d7}
+  .activity ol{margin:6px 0 0;padding-left:22px}
+  .activity li{margin:7px 0;color:#e7efe3}
+  .quiz{margin:30px 0 8px}
+  .quiz-head{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+  .quiz-head .lab{font-size:12px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;color:var(--turmeric)}
+  .quiz h3{font-family:"Fraunces",serif;font-weight:600;font-size:22px;margin:0 0 4px}
+  .q{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px 22px;margin:14px 0}
+  .q .qtext{font-weight:600;margin:0 0 14px}
+  .q .qtext .n{color:var(--turmeric);margin-right:6px;font-family:"Fraunces",serif}
+  .opt{display:flex;width:100%;text-align:left;background:var(--paper);border:1px solid var(--line);border-radius:9px;padding:12px 14px;margin:8px 0;font:inherit;font-size:15.5px;cursor:pointer;transition:all .15s;color:var(--ink);align-items:center;gap:11px}
+  .opt:hover:not(:disabled){border-color:var(--herb-soft);background:#fff}
+  .opt .bul{width:20px;height:20px;border-radius:50%;border:2px solid var(--line);flex:none;display:grid;place-items:center}
+  .opt.correct{background:#e9f4e4;border-color:var(--leaf);color:#1f4a2e;font-weight:600}
+  .opt.correct .bul{border-color:var(--leaf);background:var(--leaf)}
+  .opt.wrong{background:#fbe9ec;border-color:var(--hibiscus);color:#8a2338}
+  .opt.wrong .bul{border-color:var(--hibiscus)}
+  .opt:disabled{cursor:default}
+  .qfb{font-size:14.5px;margin:12px 0 0;padding:11px 14px;border-radius:8px;display:none}
+  .qfb.show{display:block}
+  .qfb.ok{background:#e9f4e4;color:#265c37}
+  .qfb.no{background:#fbe9ec;color:#8a2338}
+  .modnav{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:34px;padding-top:24px;border-top:1px solid var(--line)}
+  .btn{font:inherit;font-weight:600;font-size:15px;cursor:pointer;border-radius:10px;padding:12px 20px;border:1px solid var(--herb);transition:all .18s;display:inline-flex;align-items:center;gap:9px}
+  .btn.primary{background:var(--herb);color:var(--paper)}
+  .btn.primary:hover{background:var(--ink)}
+  .btn.ghost{background:transparent;color:var(--herb)}
+  .btn.ghost:hover{background:var(--card)}
+  .btn.done-btn.is-done{background:var(--leaf);border-color:var(--leaf);color:#123a1a}
+  .modnav .spacer{flex:1}
+  .how{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:26px 0}
+  .how .cell{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 18px}
+  .how .cell .ic{color:var(--herb);margin-bottom:10px}
+  .how .cell h4{margin:0 0 6px;font-family:"Fraunces",serif;font-size:17px;font-weight:600}
+  .how .cell p{margin:0;font-size:14.5px;color:var(--muted)}
+  .curriculum{margin:20px 0 8px}
+  .cur-item{display:flex;gap:18px;align-items:baseline;padding:16px 0;border-top:1px solid var(--line);cursor:pointer}
+  .cur-item:hover h4{color:var(--herb)}
+  .cur-no{font-family:"Fraunces",serif;font-size:22px;font-weight:600;color:var(--turmeric);flex:none;width:36px}
+  .cur-body h4{margin:0 0 3px;font-size:18px;font-weight:600;transition:color .15s}
+  .cur-body p{margin:0;color:var(--muted);font-size:14.5px}
+  .cur-time{margin-left:auto;font-size:13px;color:var(--muted-2);white-space:nowrap;font-weight:500;flex:none}
+  .disclaimer{background:var(--paper-2);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin:30px 0 10px;font-size:13.5px;color:var(--muted)}
+  .disclaimer b{color:var(--ink)}
+  footer.foot{border-top:1px solid var(--line);padding:30px 0 60px;margin-top:20px;color:var(--muted);font-size:13.5px}
+  footer.foot .mark{margin-bottom:14px}
+  :focus-visible{outline:3px solid var(--turmeric);outline-offset:2px;border-radius:6px}
+  @media (prefers-reduced-motion:reduce){*{animation:none !important;transition:none !important;scroll-behavior:auto !important}}
+  @media (max-width:680px){
+    body{font-size:16px} .how{grid-template-columns:1fr} .plate{padding:24px 20px}
+    .plate-top{gap:14px} .plate-no{width:48px;height:48px;font-size:21px}
+    .lesson-time{margin-left:0;width:100%} .cur-time{display:none}
+  }
+</style></head><body>
+
+
+
+<div class="progress-bar">
+  <div class="wrap progress-inner">
+    <span class="progress-label">Pwogrè · <b>{{ pct }}%</b></span>
+    <div class="track"><div class="fill" style="{{ fillStyle }}"></div></div>
+    <span class="progress-label"><b>{{ doneCount }}</b> / 8 modil</span>
+  </div>
+</div>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="brandbar">
+      <span class="brand-logo" role="img" aria-label="Logo Medikaplant"></span>
+      <span class="brand-div" aria-hidden="true"></span>
+      <span class="brand-plat">
+        <span class="ak">Akademi · Edikasyon Nitrisyon</span>
+        <span class="url"><span class="h">HOÏS</span><span class="m">Medikaplant</span><span class="d">.com</span></span>
+      </span>
+    </div>
+
+    <p class="eyebrow">Kou gratis, nan pwòp rit ou</p>
+    <h1>Syans <em>Nitrisyon</em> la</h1>
+    <p class="lede">Yon chemen klè, ki baze sou syans, pou soti nan konfizyon rive nan konfyans. Aprann sa kò w bezwen vre, kijan pou w li deklarasyon sou manje ak lespri kritik, epi kijan pou w bati yon fason manje ki matche ak lavi w ak kilti w — san mòd pasajè, san laperèz.</p>
+
+    <div class="chips">
+      <span class="chip"><span class="dot"></span><b>18 èdtan</b> antou</span>
+      <span class="chip"><span class="dot"></span><b>8 modil</b> + bonis</span>
+      <span class="chip"><span class="dot"></span>Nan pwòp rit ou</span>
+      <span class="chip"><span class="dot"></span>Fèt pou moun ki kòmanse</span>
+      <span class="chip"><span class="dot"></span>Pati 2 : sik nan san &amp; dyabèt</span>
+    </div>
+  </div>
+</header>
+
+<nav class="tabs" aria-label="Modil kou a">
+  <div class="wrap">
+    <div class="tabrow" role="tablist">
+      <button class="tab" role="tab" aria-selected="{{ tabSelected.p0 }}" onClick="{{ nav.go0 }}">Apèsi</button>
+      <button class="tab" role="tab" aria-selected="{{ tabSelected.p1 }}" onClick="{{ nav.go1 }}"><span class="num">1</span><svg class="tick" viewBox="0 0 16 16" fill="none"><path d="M3 8.5l3.2 3.2L13 5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Fondasyon</button>
+      <button class="tab" role="tab" aria-selected="{{ tabSelected.p2 }}" onClick="{{ nav.go2 }}"><span class="num">2</span><svg class="tick" viewBox="0 0 16 16" fill="none"><path d="M3 8.5l3.2 3.2L13 5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Makronitriman yo</button>
+      <button class="tab" role="tab" aria-selected="{{ tabSelected.p3 }}" onClick="{{ nav.go3 }}"><span class="num">3</span><svg class="tick" viewBox="0 0 16 16" fill="none"><path d="M3 8.5l3.2 3.2L13 5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Mikwonitriman yo</button>
+      <button class="tab" role="tab" aria-selected="{{ tabSelected.p4 }}" onClick="{{ nav.go4 }}"><span class="num">4</span><svg class="tick" viewBox="0 0 16 16" fill="none"><path d="M3 8.5l3.2 3.2L13 5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Kraze Manti yo</button>
+      <button class="tab" role="tab" aria-selected="{{ tabSelected.p5 }}" onClick="{{ nav.go5 }}"><span class="num">5</span><svg class="tick" viewBox="0 0 16 16" fill="none"><path d="M3 8.5l3.2 3.2L13 5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Manje pou Lavi</button>
+      <span class="partsep" aria-hidden="true">Pati 2</span>
+      <button class="tab part2" role="tab" aria-selected="{{ tabSelected.p6 }}" onClick="{{ nav.go6 }}"><span class="num">6</span><svg class="tick" viewBox="0 0 16 16" fill="none"><path d="M3 8.5l3.2 3.2L13 5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Sik nan San &amp; IG</button>
+      <button class="tab part2" role="tab" aria-selected="{{ tabSelected.p7 }}" onClick="{{ nav.go7 }}"><span class="num">7</span><svg class="tick" viewBox="0 0 16 16" fill="none"><path d="M3 8.5l3.2 3.2L13 5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Manje &amp; Pwotokòl</button>
+      <button class="tab part2" role="tab" aria-selected="{{ tabSelected.p8 }}" onClick="{{ nav.go8 }}"><span class="num">8</span><svg class="tick" viewBox="0 0 16 16" fill="none"><path d="M3 8.5l3.2 3.2L13 5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Viv Byen</button>
+      <span class="partsep bonus" aria-hidden="true">Bonis</span>
+      <button class="tab bonus" role="tab" aria-selected="{{ tabSelected.p9 }}" onClick="{{ nav.go9 }}"><span class="num">9</span><svg class="tick" viewBox="0 0 16 16" fill="none"><path d="M3 8.5l3.2 3.2L13 5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Lwil Kwit</button>
+    </div>
+  </div>
+</nav>
+
+<main class="wrap">
+
+<section class="panel" id="p0" role="tabpanel" style="{{ panelStyle.p0 }}">
+  <div class="how">
+    <div class="cell">
+      <svg class="ic" width="26" height="26" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="16" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M7 9h10M7 13h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      <h4>Li nan pwòp rit ou</h4>
+      <p>Chak modil se yon leson endepandan de 2 èdtan. Sispann nenpòt kilè, retounen lè w pare.</p>
+    </div>
+    <div class="cell">
+      <svg class="ic" width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M12 3l2.5 5.5L20 9l-4 4 1 6-5-3-5 3 1-6-4-4 5.5-.5L12 3z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
+      <h4>Tcheke sa w aprann</h4>
+      <p>Yon egzèsis refleksyon ak yon ti tès kout fèmen chak modil, pou konesans lan rete.</p>
+    </div>
+    <div class="cell">
+      <svg class="ic" width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <h4>Swiv pwogrè w</h4>
+      <p>Make chak modil fini epi gade ba pwogrè a ranpli pandan w ap avanse nan kou a.</p>
+    </div>
+  </div>
+
+  <div class="obj">
+    <div class="lab">Nan fen kou sa a, ou va kapab</div>
+    <ul>
+      <li>Eksplike sa nitriman ye ak nonmen nitriman kò w bezwen.</li>
+      <li>Rekonèt bon sous glisid, pwoteyin, grès, vitamin ak mineral.</li>
+      <li>Repere fo syans, maketing sou "detoks" ak manti sou rejim — epi rezone ak prèv olye de kwè tout bagay.</li>
+      <li>Bati yon asyèt ekilibre ak manje konplè, ki gen ladan rasin, fwi ak fèy nan kwizin ayisyen.</li>
+      <li>Genyen yon relasyon kal ak an sante ak manje, san laperèz ak san restriksyon.</li>
+    </ul>
+  </div>
+
+  <p style="margin:26px 0 -4px;color:#2b352c;max-width:60ch">Kou a fèt an de pati. <strong>Pati 1 (Modil 1–5)</strong> bati fondasyon nitrisyon w. <strong>Pati 2 (Modil 6–8)</strong> mete konesans sa a nan aksyon sou youn nan pi gwo defi sante nan kominote nou an: kenbe sik nan san estab epi manje byen ak dyabèt. Yon ti <strong>modil bonis</strong> fèmen kou a ak pi bon lwil natirèl pou kwit manje.</p>
+
+  <div class="obj">
+    <div class="lab">Pati 2 · Apre pati dyabèt la, ou va kapab</div>
+    <ul>
+      <li>Eksplike kijan kò a jere glikoz, ak sa dyabèt ak rezistans ensilin ye vre.</li>
+      <li>Itilize Endèks Glisemik ak Chaj Glisemik pou jije kijan yon repa ap afekte sik nan san.</li>
+      <li>Bati asyèt ak repa ki bon pou sik nan san avèk manje ayisyen chak jou.</li>
+      <li>Swiv pwotokòl senp ak san danje pou kenbe enèji ak sik nan san estab — ansanm ak swen medikal.</li>
+    </ul>
+  </div>
+
+  <div class="cur-part">Pati 1 · Fondasyon nitrisyon</div>
+  <div class="curriculum">
+    <div class="cur-item" onClick="{{ nav.go1 }}">
+      <span class="cur-no">01</span>
+      <div class="cur-body"><h4>Fondasyon — Kisa Nitrisyon Ye Vre</h4><p>Nitriman, dijesyon, enèji ak mikwobyòm trip la.</p></div>
+      <span class="cur-time">2 èdtan</span>
+    </div>
+    <div class="cur-item" onClick="{{ nav.go2 }}">
+      <span class="cur-no">02</span>
+      <div class="cur-body"><h4>Makronitriman yo</h4><p>Glisid, pwoteyin ak grès — wòl yo, kalite yo ak sous yo.</p></div>
+      <span class="cur-time">2 èdtan</span>
+    </div>
+    <div class="cur-item" onClick="{{ nav.go3 }}">
+      <span class="cur-no">03</span>
+      <div class="cur-body"><h4>Mikwonitriman, Dlo &amp; Manje Konplè</h4><p>Vitamin, mineral, idratasyon ak dansite nitrisyonèl.</p></div>
+      <span class="cur-time">2 èdtan</span>
+    </div>
+    <div class="cur-item" onClick="{{ nav.go4 }}">
+      <span class="cur-no">04</span>
+      <div class="cur-body"><h4>Panse ak Lespri Kritik — Kraze Manti sou Rejim</h4><p>Fo syans, rejim pasajè ak li etikèt manje.</p></div>
+      <span class="cur-time">2 èdtan</span>
+    </div>
+    <div class="cur-item" onClick="{{ nav.go5 }}">
+      <span class="cur-no">05</span>
+      <div class="cur-body"><h4>Manje Byen pou Lavi &amp; Kominote a</h4><p>Asyèt ekilibre, bon relasyon ak manje, ak sajès plant tradisyonèl.</p></div>
+      <span class="cur-time">2 èdtan</span>
+    </div>
+  </div>
+
+  <div class="cur-part two">Pati 2 · Jere sik nan san &amp; dyabèt</div>
+  <div class="curriculum">
+    <div class="cur-item" onClick="{{ nav.go6 }}">
+      <span class="cur-no">06</span>
+      <div class="cur-body"><h4>Sik nan San &amp; Endèks Glisemik la</h4><p>Glikoz, ensilin, baz dyabèt, IG ak chaj glisemik.</p></div>
+      <span class="cur-time">2 èdtan</span>
+    </div>
+    <div class="cur-item" onClick="{{ nav.go7 }}">
+      <span class="cur-no">07</span>
+      <div class="cur-body"><h4>Manje pou Jere Sik nan San — Manje &amp; Pwotokòl</h4><p>Asyèt pou sik nan san, estrateji pou aplati eklate, manje fonksyonèl ayisyen.</p></div>
+      <span class="cur-time">2 èdtan</span>
+    </div>
+    <div class="cur-item" onClick="{{ nav.go8 }}">
+      <span class="cur-no">08</span>
+      <div class="cur-body"><h4>Viv Byen ak Dyabèt — Abitid, Siveyans &amp; Sekirite</h4><p>Mouvman, dòmi, siveyans, sekirite medikaman, ak yon plan pou lavi.</p></div>
+      <span class="cur-time">2 èdtan</span>
+    </div>
+  </div>
+
+  <div class="cur-part bonus">Bonis · Pi bon lwil natirèl pou kwit manje</div>
+  <div class="curriculum">
+    <div class="cur-item" onClick="{{ nav.go9 }}">
+      <span class="cur-no">09</span>
+      <div class="cur-body"><h4>Pi Bon Lwil Natirèl pou Kwit Manje</h4><p>Grès &amp; pwen fimen, sis lwil natirèl, ak ki lwil pou ki travay.</p></div>
+      <span class="cur-time">2 èdtan</span>
+    </div>
+  </div>
+
+  <div class="disclaimer">
+    <b>Yon nòt enpòtan.</b> Kou sa a se enfòmasyon nitrisyon edikatif, se pa yon konsèy medikal, dyagnostik oswa tretman. Li pa ranplase konsèy yon doktè, yon enfimyè oswa yon pwofesyonèl nitrisyon ki kalifye. Kote yo mansyone plant, yo diskite yo kòm <b>sipò tradisyonèl</b> ak manje — jamè kòm yon remèd. Si w ansent, malad, oswa w ap pran medikaman, pale ak yon pwofesyonèl sante anvan w chanje rejim ou. <em>Deklarasyon sa yo pa te evalye pa FDA.</em>
+  </div>
+
+  <div class="modnav">
+    <div class="spacer"></div>
+    <button class="btn primary" onClick="{{ nav.go1 }}">Kòmanse Modil 1 &rarr;</button>
+  </div>
+</section>
+
+<section class="panel" id="p1" role="tabpanel" style="{{ panelStyle.p1 }}">
+  <div class="plate">
+    <svg class="plate-botanical" width="200" height="200" viewBox="0 0 200 200" fill="none"><path d="M100 190C100 190 40 150 40 90C40 55 65 40 82 52C95 61 100 80 100 80C100 80 105 61 118 52C135 40 160 55 160 90C160 150 100 190 100 190Z" fill="#23533b"/><path d="M100 80V190M100 110C80 105 60 90 52 78M100 130C120 125 140 110 148 98" stroke="#d1932a" stroke-width="2"/></svg>
+    <div class="plate-top">
+      <div class="plate-no">1</div>
+      <div>
+        <h2>Fondasyon — Kisa Nitrisyon Ye Vre</h2>
+        <p class="meta">Anviwon 2 èdtan · 4 leson + refleksyon + tès pou tcheke tèt ou</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="obj">
+    <div class="lab">Objektif · Nan modil sa a, w ap</div>
+    <ul>
+      <li>Defini nitrisyon epi nonmen nitriman kò w bezwen.</li>
+      <li>Swiv manje sou wout li nan sistèm dijestif la.</li>
+      <li>Konprann sa yon "kalori" ye — ak poukisa kalite manje pi enpòtan pase kontwòl chif.</li>
+      <li>Fè konesans ak mikwobyòm trip la epi konprann poukisa fib nouri l.</li>
+    </ul>
+  </div>
+
+  <div class="lesson">
+    <div class="lesson-head"><span class="lesson-tag">Leson 1.1</span><span class="lesson-time">~25 min</span></div>
+    <h3>Sa "nitrisyon" vle di</h3>
+    <p><span class="term">Nitrisyon</span> se etid kijan manje nouri kò a: kijan nou pran l, kraze l, absòbe l, epi itilize l pou grandi, repare, deplase ak reflechi. Chak pwosesis nan kò w — yon bat kè, yon panse, geri yon blesi — fonksyone ak materyèl ki soti nan sa w te manje oswa bwè.</p>
+    <p>Manje ba nou <strong>nitriman</strong>, sibstans kò a bezwen pou l fonksyone. Espesyalis nitrisyon klase yo an sis kategori:</p>
+    <ul>
+      <li><strong>Glisid</strong> — kabiran prensipal kò a chak jou.</li>
+      <li><strong>Pwoteyin</strong> — materyo pou misk, po, anzim ak plis ankò.</li>
+      <li><strong>Grès</strong> — enèji konsantre, plis wòl estriktirèl esansyèl.</li>
+      <li><strong>Vitamin</strong> — ti kantite, gwo travay, depi vizyon jouk kayabo san.</li>
+      <li><strong>Mineral</strong> — tankou fè ak kalsyòm, pou zo, san ak siyal.</li>
+      <li><strong>Dlo</strong> — mitan kote chak reyaksyon fèt.</li>
+    </ul>
+    <p>Twa premye yo — glisid, pwoteyin ak grès — rele <span class="term">makronitriman</span> paske nou bezwen yo an gwo ("makro") kantite epi yo bay enèji. Vitamin ak mineral yo se <span class="term">mikwonitriman</span> : nou bezwen yo an ti ("mikwo") kantite, men yo pa mwens enpòtan.</p>
+    <div class="keybox"><div class="lab">Lide kle a</div><p>Pa gen yon sèl manje ni yon sèl nitriman ki "tout bagay." Sante soti nan <strong>modèl jeneral</strong> sa w manje pandan jou ak semenn — se pa yon sèl engredyan majik.</p></div>
+  </div>
+
+  <div class="lesson">
+    <div class="lesson-head"><span class="lesson-tag">Leson 1.2</span><span class="lesson-time">~30 min</span></div>
+    <h3>Wout manje a: kijan dijesyon fonksyone</h3>
+    <p>Dijesyon se kijan kò w kraze manje an ti moso ase piti pou l ka absòbe. Swiv yon bouche:</p>
+    <ul>
+      <li><strong>Bouch</strong> — moulen kraze manje a epi saliv kòmanse dijere anmidon avèk yon anzim yo rele amilaz.</li>
+      <li><strong>Lestomak</strong> — brase miskilè melanje manje ak asid ak anzim pepsin, ki kòmanse kraze pwoteyin fè yon likid epè.</li>
+      <li><strong>Ti trip la</strong> — pi gwo evènman an. Se la pifò dijesyon ak prèske tout absòpsyon fèt. Pankreyas la ajoute anzim, epi bil ki soti nan fwa a ede kraze grès. Nitriman pase nan miray trip la pou antre nan san.</li>
+      <li><strong>Gwo trip la (kolon)</strong> — dlo reabsòbe, epi milya bakteri nan trip la fèmante fib ki rive jwenn yo. Sa ki rete a se dechè.</li>
+    </ul>
+    <p>Se poutèt sa <strong>kijan</strong> yon manje bati enpòtan. Yon zoranj antye rive ak fib ki ralanti dijesyon; menm sik la kòm ji antre vit. Menm "sik," men yon wout totalman diferan.</p>
+  </div>
+
+  <div class="lesson">
+    <div class="lesson-head"><span class="lesson-tag">Leson 1.3</span><span class="lesson-time">~30 min</span></div>
+    <h3>Enèji ak kalori, san laperèz</h3>
+    <p>Yon <span class="term">kalori</span> se senpleman yon inite enèji — yon mezi konbyen kabiran yon manje ka bay. Kò w depanse enèji sou tout bagay, menm lè w ap dòmi oswa respire. Twa nitriman ki bay enèji yo lage kantite diferan:</p>
+    <ul>
+      <li>Glisid : anviwon <strong>4 kalori</strong> pou chak gram</li>
+      <li>Pwoteyin : anviwon <strong>4 kalori</strong> pou chak gram</li>
+      <li>Grès : anviwon <strong>9 kalori</strong> pou chak gram</li>
+    </ul>
+    <p>An gwo, lè enèji ki antre ak enèji ki sòti ekilibre nan tan, pwa a rete estab. Men kalori se sèlman <strong>yon</strong> fason pou gade bagay, epi li etwat. 200 kalori pwa ak 200 kalori soda afekte satyete w, sik nan san w ak nitrisyon w yon fason byen diferan. Kou sa a montre w reflechi sou <strong>kalite ak modèl manje</strong>, se pa konte ak siveye chak bouche — sa ki fè plis mal pase byen pou anpil moun.</p>
+    <div class="keybox"><div class="lab">Chanje pwenn vi a</div><p>Kalori dekri enèji; yo pa dekri nourisman. Manje konplè ba w fib, vitamin ak mineral "gratis" ansanm ak enèji yo. Se sa ki objektif reyèl la.</p></div>
+  </div>
+
+  <div class="lesson">
+    <div class="lesson-head"><span class="lesson-tag">Leson 1.4</span><span class="lesson-time">~30 min</span></div>
+    <h3>Mikwobyòm trip ou</h3>
+    <p>Kolon ou lakay milya mikwòb — <span class="term">mikwobyòm trip la</span>. Byen lwen de senp pasaje, bakteri sa yo fèmante fib, pwodwi konpoze itil, antrene sistèm iminitè w epi enfliyanse kijan w santi w. Yon rejim varye, plen fib, nouri yon mikwobyòm varye, ki lye ak yon pi bon sante dijestif ak jeneral.</p>
+    <p>Sa ki tann ede l:</p>
+    <ul>
+      <li><strong>Fib nan anpil plant</strong> — legim, fwi, pwa, grenn antye, rasin ak tibèkil.</li>
+      <li><strong>Varyete</strong> — diferan plant nouri diferan mikwòb. Divèsite nan asyèt la bati divèsite nan trip la.</li>
+      <li><strong>Manje fèmante</strong> — manje fèmante tradisyonèl ajoute kilti vivan pou kèk moun.</li>
+    </ul>
+    <p>Ou pa bezwen siplemantasyon chè pou w gen yon trip an sante. Nan pifò ka, <strong>manje plis vrè plant</strong> se bagay ki pi pisan ou ka fè.</p>
+  </div>
+
+  <div class="activity">
+    <div class="lab">Egzèsis refleksyon</div>
+    <h3>Kat yon sèl repa</h3>
+    <p>Chwazi yon repa w te manje dènyèman. Sou papye oswa nan nòt ou:</p>
+    <ol>
+      <li>Nonmen chak manje epi devine ki kategori nitriman li bay.</li>
+      <li>Sèkle chak sous <strong>fib</strong> (plant, pwa, grenn antye, rasin).</li>
+      <li>Mande tèt ou : èske yon ti chanjman ta ka ajoute yon legim, yon fwi, oswa yon sous fib nan manje konplè?</li>
+    </ol>
+    <p>Pa gen move repons — se sou wè manje w ak nouvo je.</p>
+  </div>
+
+  <div class="quiz">
+    <div class="quiz-head"><span class="lab">Tès pou tcheke tèt ou</span></div>
+    <h3>Tès modil 1</h3>
+    <sc-for list="{{ quizVM.q1 }}" as="q" hint-placeholder-count="4">
+      <div class="q">
+        <p class="qtext"><span class="n">Q{{ q.qNum }}.</span> {{ q.text }}</p>
+        <sc-for list="{{ q.options }}" as="opt" hint-placeholder-count="3">
+          <button class="{{ opt.cls }}" disabled="{{ q.disabled }}" onClick="{{ opt.onClick }}"><span class="bul"></span>{{ opt.text }}</button>
+        </sc-for>
+        <div class="{{ q.fbCls }}">{{ q.fbText }}</div>
+      </div>
+    </sc-for>
+  </div>
+
+  <div class="modnav">
+    <button class="btn ghost" onClick="{{ nav.go0 }}">&larr; Apèsi</button>
+    <button class="{{ doneBtnClass.1 }}" onClick="{{ doneToggle.d1 }}">{{ doneBtnText.1 }}</button>
+    <div class="spacer"></div>
+    <button class="btn primary" onClick="{{ nav.go2 }}">Modil 2 &rarr;</button>
+  </div>
+</section>
+
+<section class="panel" id="p2" role="tabpanel" style="{{ panelStyle.p2 }}">
+  <div class="plate">
+    <svg class="plate-botanical" width="200" height="200" viewBox="0 0 200 200" fill="none"><path d="M100 190C100 190 40 150 40 90C40 55 65 40 82 52C95 61 100 80 100 80C100 80 105 61 118 52C135 40 160 55 160 90C160 150 100 190 100 190Z" fill="#23533b"/><path d="M100 80V190M100 110C80 105 60 90 52 78M100 130C120 125 140 110 148 98" stroke="#d1932a" stroke-width="2"/></svg>
+    <div class="plate-top">
+      <div class="plate-no">2</div>
+      <div>
+        <h2>Makronitriman yo</h2>
+        <p class="meta">Anviwon 2 èdtan · 4 leson + refleksyon + tès pou tcheke tèt ou</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="obj">
+    <div class="lab">Objektif · Nan modil sa a, w ap</div>
+    <ul>
+      <li>Konprann glisid, ak poukisa "glisid" pa ènmi w.</li>
+      <li>Aprann sa pwoteyin fè ak kote pou jwenn li — nan bèt ak plant.</li>
+      <li>Dekouvri poukisa grès esansyèl, ak ki grès pou prefere.</li>
+      <li>Konbine twa yo nan yon asyèt ekilibre.</li>
+    </ul>
+  </div>
+
+  <div class="lesson">
+    <div class="lesson-head"><span class="lesson-tag">Leson 2.1</span><span class="lesson-time">~30 min</span></div>
+    <h3>Glisid — makronitriman moun pa konprann byen</h3>
+    <p><span class="term">Glisid</span> se kabiran prefere kò a chak jou, espesyalman pou sèvo ak misk. Yo gen de gwo kalite:</p>
+    <ul>
+      <li><strong>Glisid senp</strong> — sik ki dijere vit. Yo jwenn natirèlman nan fwi ak lèt, men yo ajoute tou nan sikri, soda ak anpil manje nan pakè.</li>
+      <li><strong>Glisid konplèks</strong> — anmidon ak fib ki dijere pi dousman epi bay yon enèji pi estab. Yo jwenn nan grenn antye, pwa, ak rasin anmidonik tankou yanm, patat, manyòk ak bannann.</li>
+    </ul>
+    <p><span class="term">Fib</span> se yon glisid espesyal nou pa ka dijere nèt — epi se sa menm ki objektif la. Li ralanti absòpsyon sik, kenbe w plen, nouri trip la, epi sipòte bon fonksyone trip. Pifò moun benefisye ak <strong>plis</strong> fib, pa mwens.</p>
+    <div class="mythbox"><div class="m">Manti</div><p class="t">"Glisid fè w gwosi." <b>Reyalite:</b> se kalite ak kantite ki konte, se pa mo a "glisid." Glisid manje konplè tankou pwa, legim ak grenn antye se baz nan rejim ki pi an sante nan mond lan. Se pwodwi trè rafine ak plen sik ki merite w limite yo.</p></div>
+  </div>
+
+  <div class="lesson">
+    <div class="lesson-head"><span class="lesson-tag">Leson 2.2</span><span class="lesson-time">~30 min</span></div>
+    <h3>Pwoteyin — materyo kò a</h3>
+    <p><span class="term">Pwoteyin</span> bati epi repare prèske tout bagay: misk, po, cheve, anzim, antikò. Pwoteyin fèt ak <span class="term">asid amine</span>. Nan 20 yo, nèf yo "esansyèl" — kò a pa ka fè yo, kidonk manje dwe founi yo.</p>
+    <h4>Konplè kont enkonplè</h4>
+    <p>Yon <strong>pwoteyin konplè</strong> gen tout nèf asid amine esansyèl yo. Manje bèt (vyann, pwason, ze, pwodwi lèt) konplè, epi kèk plant tankou soja tou. Pifò pwoteyin plant "enkonplè" pou kont yo — men manje yon <strong>varyete</strong> pandan jounen an (pa egzanp pwa <em>ak</em> diri, yon konbinezon klasik nan kwizin ayisyen — diri ak pwa) kouvri fasilman tout asid amine w bezwen.</p>
+    <h4>Kote pou jwenn li</h4>
+    <ul>
+      <li><strong>Bèt :</strong> pwason, poul, ze, vyann, pwodwi lèt.</li>
+      <li><strong>Plant :</strong> pwa ak lantiy, pistach, nwa ak grenn, soja, ak grenn antye.</li>
+    </ul>
+    <p>Pifò granmoun an sante bezwen apeprè <strong>0,8 gram pwoteyin pou chak kilogram pwa kò chak jou</strong> kòm yon referans jeneral — repa ekilibre òdinè kouvri sa fasilman. Ou <em>pa</em> bezwen kantite ekstrèm oswa poud chè pou w an sante.</p>
+  </div>
+
+  <div class="lesson">
+    <div class="lesson-head"><span class="lesson-tag">Leson 2.3</span><span class="lesson-time">~30 min</span></div>
+    <h3>Grès — esansyèl, se pa ènmi w</h3>
+    <p>Pandan ane, grès te blame pou tout bagay, men kò w reyèlman bezwen l: pou absòbe sèten vitamin, pwoteje ògàn, bati manbràn selil ak sipòte sèvo a. Sa ki enpòtan se <strong>kalite</strong> a:</p>
+    <ul>
+      <li><strong>Grès ensatire</strong> (prefere sa yo) — nan lwil oliv, zaboka, nwa, grenn ak pwason gra. Ladan yo genyen grès <strong>omega-3</strong> ki lye ak sante kè ak sèvo.</li>
+      <li><strong>Grès satire</strong> (modere sa yo) — nan vyann gra, bè, ak kokoye. Yo bon nan ekilib; pa bon pou baze chak repa sou yo.</li>
+      <li><strong>Grès trans</strong> (evite yo) — grès atifisyèl ki te souvan nan manje fri ak manje trè transfòme; danjere pou kè a.</li>
+    </ul>
+    <div class="mythbox"><div class="m">Manti</div><p class="t">"San grès vle di an sante." <b>Reyalite:</b> lè yo retire grès nan manje transfòme, yo souvan ajoute sik ak lòt additif pou ranplase gou a. Yon etikèt "san grès" pa di w anyen sou si yon manje bon pou ou.</p></div>
+  </div>
+
+  <div class="lesson">
+    <div class="lesson-head"><span class="lesson-tag">Leson 2.4</span><span class="lesson-time">~25 min</span></div>
+    <h3>Mete makro yo ansanm</h3>
+    <p>Ou pa bezwen peze manje oswa jwenn pwopòsyon egzat. Yon gid senp ak fleksib pou pifò repa:</p>
+    <ul>
+      <li><strong>½ asyèt la :</strong> legim ak fwi.</li>
+      <li><strong>¼ asyèt la :</strong> yon sous pwoteyin (pwa, pwason, ze, poul, vyann).</li>
+      <li><strong>¼ asyèt la :</strong> glisid manje konplè (grenn antye, oswa rasin tankou yanm, bannann, patat).</li>
+      <li><strong>Yon ti bon grès :</strong> yon ti lwil, yon ti zaboka, yon ponyen nwa.</li>
+    </ul>
+    <p>Yon sèl imaj sa a ekilibre kalmman tout twa makronitriman yo — pa gen kalkil pou fè.</p>
+  </div>
+
+  <div class="activity">
+    <div class="lab">Egzèsis refleksyon</div>
+    <h3>Bati yon asyèt ekilibre</h3>
+    <p>Ak manje w reyèlman manje epi w ka achte lokalman, konsevwa yon repa ki swiv gid mwatye-asyèt la:</p>
+    <ol>
+      <li>Chwazi yon legim ak/oswa yon fwi pou mwatye asyèt la.</li>
+      <li>Chwazi yon pwoteyin — eseye youn ki soti nan plant, tankou pwa, omwen yon fwa.</li>
+      <li>Ajoute yon glisid manje konplè (yon rasin oswa grenn antye).</li>
+      <li>Fini ak yon ti kantite bon grès.</li>
+    </ol>
+    <p>Ekri l. Sa a vin premye repa ekilibre w ap sèvi tout tan.</p>
+  </div>
+
+  <div class="quiz">
+    <div class="quiz-head"><span class="lab">Tès pou tcheke tèt ou</span></div>
+    <h3>Tès modil 2</h3>
+    <sc-for list="{{ quizVM.q2 }}" as="q" hint-placeholder-count="4">
+      <div class="q">
+        <p class="qtext"><span class="n">Q{{ q.qNum }}.</span> {{ q.text }}</p>
+        <sc-for list="{{ q.options }}" as="opt" hint-placeholder-count="3">
+          <button class="{{ opt.cls }}" disabled="{{ q.disabled }}" onClick="{{ opt.onClick }}"><span class="bul"></span>{{ opt.text }}</button>
+        </sc-for>
+        <div class="{{ q.fbCls }}">{{ q.fbText }}</div>
+      </div>
+    </sc-for>
+  </div>
+
+  <div class="modnav">
+    <button class="btn ghost" onClick="{{ nav.go1 }}">&larr; Modil 1</button>
+    <button class="{{ doneBtnClass.2 }}" onClick="{{ doneToggle.d2 }}">{{ doneBtnText.2 }}</button>
+    <div class="spacer"></div>
+    <button class="btn primary" onClick="{{ nav.go3 }}">Modil 3 &rarr;</button>
+  </div>
+</section>
+
+<section class="panel" id="p3" role="tabpanel" style="{{ panelStyle.p3 }}">
+  <div class="plate">
+    <svg class="plate-botanical" width="200" height="200" viewBox="0 0 200 200" fill="none"><path d="M100 190C100 190 40 150 40 90C40 55 65 40 82 52C95 61 100 80 100 80C100 80 105 61 118 52C135 40 160 55 160 90C160 150 100 190 100 190Z" fill="#23533b"/><path d="M100 80V190M100 110C80 105 60 90 52 78M100 130C120 125 140 110 148 98" stroke="#d1932a" stroke-width="2"/></svg>
+    <div class="plate-top">
+      <div class="plate-no">3</div>
+      <div>
+        <h2>Mikwonitriman, Dlo &amp; Manje Konplè</h2>
+        <p class="meta">Anviwon 2 èdtan · 4 leson + refleksyon + tès pou tcheke tèt ou</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="obj">
+    <div class="lab">Objektif · Nan modil sa a, w ap</div>
+    <ul>
+      <li>Aprann sa vitamin fè ak kote yo soti.</li>
+      <li>Fè konesans ak mineral kle yo — fè, kalsyòm, potasyòm, zenk, yòd.</li>
+      <li>Konprann idratasyon ak konbyen dlo ou reyèlman bezwen.</li>
+      <li>Wè poukisa manje konplè pi bon pase manje trè transfòme pou dansite nitrisyonèl.</li>
+    </ul>
+  </div>
+
+  <div class="lesson">
+    <div class="lesson-head"><span class="lesson-tag">Leson 3.1</span><span class="lesson-time">~30 min</span></div>
+    <h3>Vitamin — ti kantite, gwo travay</h3>
+    <p><span class="term">Vitamin</span> yo bezwen an ti kantite men yo kenbe sistèm vital yo ap fonksyone. Yo tonbe an de fanmi:</p>
+    <ul>
+      <li><strong>Soluble nan grès (A, D, E, K)</strong> — estoke nan grès ak fwa kò a, absòbe ansanm ak grès nan manje. Vitamin A sipòte vizyon ak iminite; D sipòte zo ak iminite (epi po fè l ak solèy); E pwoteje selil; K ede san kaye.</li>
+      <li><strong>Soluble nan dlo (konplèks B ak C)</strong> — pa estoke anpil, kidonk nou bezwen yo regilyèman. Vitamin B yo ede lage enèji nan manje; vitamin C sipòte iminite, po ak absòpsyon fè.</li>
+    </ul>
+    <p>Pi bon "miltivitamin" se yon asyèt plen koulè. Fèy vèt fonse, fwi ak legim jòn oswa wouj, pwa ak grenn antye ant yo kouvri pifò bezwen yo.</p>
+  </div>
+
+  <div class="lesson">
+    <div class="lesson-head"><span class="lesson-tag">Leson 3.2</span><span class="lesson-time">~30 min</span></div>
+    <h3>Mineral — eleman esansyèl kò a</h3>
+    <ul>
+      <li><strong>Fè</strong> — pote oksijèn nan san. Fè ba lakòz fatig ak anemi. <strong>Fè hèm</strong> (vyann, pwason) absòbe fasil; <strong>fè non-hèm</strong> (pwa, fèy vèt, lantiy) absòbe pi byen lè w manje l ak vitamin C — pa egzanp pwa ak tomat oswa yon ti sitwon.</li>
+      <li><strong>Kalsyòm</strong> — bati zo ak dan epi ede misk ak nè. Yo jwenn nan pwodwi lèt, ti pwason ak zo, fèy vèt ak kèk pwa.</li>
+      <li><strong>Potasyòm</strong> — ekilibre likid epi ede regile tansyon. Rich nan bannann, bannann, pwa ak anpil legim.</li>
+      <li><strong>Zenk</strong> — sipòte iminite ak geri blesi. Nan vyann, fwidmè, pwa, nwa ak grenn.</li>
+      <li><strong>Yòd</strong> — glann tiwoyid bezwen l pou regile metabolis. Soti nan sèl yode, fwidmè ak pwodwi lèt.</li>
+    </ul>
+    <div class="keybox"><div class="lab">Ti konsèy pratik</div><p>Konbine manje enpòtan. Vitamin C nan yon tomat, mango oswa sitwon ka ogmante anpil konbyen fè w absòbe nan sous plant nan menm repa a.</p></div>
+  </div>
+
+  <div class="lesson">
+    <div class="lesson-head"><span class="lesson-tag">Leson 3.3</span><span class="lesson-time">~25 min</span></div>
+    <h3>Idratasyon — nitriman moun bliye</h3>
+    <p>Dlo fè pifò nan kò w epi se mitan pou chak reyaksyon. Li regile tanperati, amòti jwenti, pote nitriman epi retire dechè. Menm yon dezidratasyon lejè ka lakòz tèt fè mal, fatig ak move konsantrasyon.</p>
+    <h4>Konbyen?</h4>
+    <p>Bezwen chanje selon gwosè kò, chalè ak aktivite — kidonk règ strik "egzakteman 8 vè" a se yon manti. Yon pi bon gid: bwè lè w swaf, bwè plis nan chalè oswa lè w aktif, epi tcheke siy ki pi senp la — <strong>pipi jòn klè</strong> anjeneral vle di w byen idrate; nwa vle di bwè plis. Manje konte tou : fwi ak legim se sitou dlo.</p>
+    <p>Dlo se pi bon bwason default la. Soda ak ji plen sik idrate w men yo pote anpil sik; trete yo kòm okazyonèl, pa chak jou.</p>
+  </div>
+
+  <div class="lesson">
+    <div class="lesson-head"><span class="lesson-tag">Leson 3.4</span><span class="lesson-time">~30 min</span></div>
+    <h3>Manje konplè kont manje trè transfòme</h3>
+    <p><span class="term">Manje konplè</span> se manje ki pre eta natirèl yo — yon pwa, yon mango, yon pwason, yon yanm. Nati anbale yo ak fib, vitamin ak mineral ansanm. <span class="term">Manje trè transfòme</span> se pwodwi endistriyèl ak long lis engredyan, sik ajoute, anmidon rafine, sèl ak additif — panse bwason dous, ti gou nan pakè ak repa enstantane.</p>
+    <p>Diferans lan se <strong>dansite nitrisyonèl</strong> : konbyen nouriti w jwenn pou chak bouche. Manje konplè bay anpil; manje trè transfòme souvan bay enèji san anpil lòt bagay, epi fasil pou manje twòp.</p>
+    <p>Objektif la se pa pèfeksyon oswa koupab. Se yon direksyon senp : <strong>plis manje konplè, pi souvan</strong> — sitou fwi, legim, pwa ak rasin ki deja nan kè kwizin ayisyen an.</p>
+    <div class="mythbox"><div class="m">Manti</div><p class="t">"Fre toujou pi bon pase konjele." <b>Reyalite:</b> fwi ak legim konjele yo keyi mi epi konjele vit, sa ki kenbe pifò nitriman yo. Yo se yon fason abòdab, san gaspiyay, pou manje byen.</p></div>
+  </div>
+
+  <div class="activity">
+    <div class="lab">Egzèsis refleksyon</div>
+    <h3>Manje lakansyèl la</h3>
+    <p>Pandan de pwochen jou yo, eseye manje manje ak <strong>senk koulè diferan</strong> — pa egzanp vèt (fèy), wouj (tomat), jòn (mango, joumou), mov (berejèn), blan/mawon (pwa, rasin).</p>
+    <ol>
+      <li>Fè lis sa w rive manje, pa koulè.</li>
+      <li>Remake ki koulè ki pi difisil pou ou jwenn.</li>
+      <li>Planifye yon manje fasil, abòdab, pou ranpli twou sa a.</li>
+    </ol>
+  </div>
+
+  <div class="quiz">
+    <div class="quiz-head"><span class="lab">Tès pou tcheke tèt ou</span></div>
+    <h3>Tès modil 3</h3>
+    <sc-for list="{{ quizVM.q3 }}" as="q" hint-placeholder-count="4">
+      <div class="q">
+        <p class="qtext"><span class="n">Q{{ q.qNum }}.</span> {{ q.text }}</p>
+        <sc-for list="{{ q.options }}" as="opt" hint-placeholder-count="3">
+          <button class="{{ opt.cls }}" disabled="{{ q.disabled }}" onClick="{{ opt.onClick }}"><span class="bul"></span>{{ opt.text }}</button>
+        </sc-for>
+        <div class="{{ q.fbCls }}">{{ q.fbText }}</div>
+      </div>
+    </sc-for>
+  </div>
+
+  <div class="modnav">
+    <button class="btn ghost" onClick="{{ nav.go2 }}">&larr; Modil 2</button>
+    <button class="{{ doneBtnClass.3 }}" onClick="{{ doneToggle.d3 }}">{{ doneBtnText.3 }}</button>
+    <div class="spacer"></div>
+    <button class="btn primary" onClick="{{ nav.go4 }}">Modil 4 &rarr;</button>
+  </div>
+</section>
+
+<section class="panel" id="p4" role="tabpanel" style="{{ panelStyle.p4 }}">
+  <div class="plate">
+    <svg class="plate-botanical" width="200" height="200" viewBox="0 0 200 200" fill="none"><path d="M100 190C100 190 40 150 40 90C40 55 65 40 82 52C95 61 100 80 100 80C100 80 105 61 118 52C135 40 160 55 160 90C160 150 100 190 100 190Z" fill="#23533b"/><path d="M100 80V190M100 110C80 105 60 90 52 78M100 130C120 125 140 110 148 98" stroke="#d1932a" stroke-width="2"/></svg>
+    <div class="plate-top">
+      <div class="plate-no">4</div>
+      <div>
+        <h2>Panse ak Lespri Kritik — Kraze Manti sou Rejim</h2>
+        <p class="meta">Anviwon 2 èdtan · 4 leson + refleksyon + tès pou tcheke tèt ou</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="obj">
+    <div class="lab">Objektif · Nan modil sa a, w ap</div>
+    <ul>
+      <li>Rekonèt drapo wouj fo syans nitrisyon.</li>
+      <li>Kraze kèk nan manti sou rejim ki pi komen yo.</li>
+      <li>Peze rejim pasajè popilè kont prèv reyèl.</li>
+      <li>Li etikèt manje ak maketing ak yon je kritik.</li>
+    </ul>
+  </div>
+
+  <div class="lesson">
+    <div class="lesson-head"><span class="lesson-tag">Leson 4.1</span><span class="lesson-time">~30 min</span></div>
+    <h3>Kijan pou repere fo syans</h3>
+    <p>Nitrisyon plen ak deklarasyon ki gen konfyans ki sanble syantifik men yo pa ye. Aprann siy avètisman yo, epi pifò manti tonbe pou kont yo:</p>
+    <ul>
+      <li><strong>Pwomès mirak</strong> — yon sèl manje, te oswa siplemantasyon ki "fonn grès," "detoksifye" oswa "geri" se yon drapo wouj. Nitrisyon reyèl travay dousman, atravè modèl jeneral.</li>
+      <li><strong>"Detoks" ak "netwayaj"</strong> — fwa ak ren ou deja detoksifye kò w chak jou. Pa gen ji oswa te ki fè travay sa a pi byen.</li>
+      <li><strong>Mo laperèz</strong> — "toksin," "pwazon," yon sèl manje "move." Laperèz vann pwodwi; li raman reflete syans lan.</li>
+      <li><strong>Y ap vann yon bagay</strong> — si deklarasyon an mande w achte pwodwi vandè a, fè plis atansyon.</li>
+      <li><strong>Korelasyon ≠ kozalite</strong> — "moun ki manje X pi an sante" pa pwouve X ki <em>koze</em> l. Moun ki an pi bon sante souvan diferan nan anpil fason anmenmtan.</li>
+    </ul>
+    <div class="keybox"><div class="lab">Yon tès senp</div><p>Mande : <strong>Ki moun ki di sa, kisa yo ap vann, epi ki kote prèv la ye?</strong> Bon konsèy akeyi kesyon sa yo.</p></div>
+  </div>
+
+  <div class="lesson">
+    <div class="lesson-head"><span class="lesson-tag">Leson 4.2</span><span class="lesson-time">~30 min</span></div>
+    <h3>Manti komen, kraze</h3>
+    <div class="mythbox"><div class="m">Manti</div><p class="t">"Manje apre 8è diswa fè w gwosi." <b>Reyalite:</b> kò w pa gade lè. Se enèji total ak kalite manje pandan tout jounen an ki konte — pa lè egzat ou manje.</p></div>
+    <div class="mythbox"><div class="m">Manti</div><p class="t">"Sik se pwazon / ki fè depandans tankou dwòg." <b>Reyalite:</b> twòp sik ajoute pa ideyal, men sik se pa pwazon. Fwi antye — ak sik li a — an sante. Se <em>kantite</em> sik ajoute ki merite atansyon.</p></div>
+    <div class="mythbox"><div class="m">Manti</div><p class="t">"'Manje pwòp' se yon règ syantifik." <b>Reyalite:</b> "pwòp" pa gen okenn definisyon medikal. Si w pouse l twò lwen, li ka lakòz koupab ak dezòd manje. Manje se pa "pwòp" oswa "sal" — se jis manje.</p></div>
+    <div class="mythbox"><div class="m">Manti</div><p class="t">"Te detoks netwaye sistèm ou." <b>Reyalite:</b> anpil senpleman aji kòm laksatif oswa dyiretik, ki lakòz pèt dlo — se pa yon vrè "detoksifikasyon." Kèk ka danjere.</p></div>
+  </div>
+
+  <div class="lesson">
+    <div class="lesson-head"><span class="lesson-tag">Leson 4.3</span><span class="lesson-time">~30 min</span></div>
+    <h3>Rejim pasajè anba mikwoskòp</h3>
+    <p>Rejim popilè yo pa otomatikman "move" — men souvan yo egzajere. Yon pwenn vi ekilibre:</p>
+    <ul>
+      <li><strong>Trè ba nan glisid / keto</strong> — ka mennen nan pèt pwa kout tèm, men li restriktif ak difisil pou kenbe, epi li koupe glisid manje konplè ki nourisan. Se pa yon repons inivèsèl.</li>
+      <li><strong>Jèn entèmitan</strong> — travay pou kèk moun kòm yon fason pou manje mwens antou. Se pa mayik; rezilta yo soti nan manje mwens, se pa lè a menm. Li pa apwopriye pou tout moun.</li>
+      <li><strong>Ji netwayaj</strong> — retire fib, ba nan pwoteyin, epi nenpòt "rezilta" rapid se sitou dlo. Se pa yon amelyorasyon sante.</li>
+    </ul>
+    <p>Modèl ki dèyè prèske chak rejim ki "mache": li fè moun manje plis manje konplè epi mwens manje trè transfòme. Se sa ki vrè leson an — epi ou ka fè l san yon plan ekstrèm ak chè.</p>
+    <div class="keybox"><div class="lab">Verite onèt la</div><p>"Pi bon rejim" lan se youn ki ekilibre, abòdab, ki nan pwòp kilti w, epi dirab pandan ane — pa semenn. Si yon plan pa ka dire, rezilta l yo pa ka dire nonplis.</p></div>
+  </div>
+
+  <div class="lesson">
+    <div class="lesson-head"><span class="lesson-tag">Leson 4.4</span><span class="lesson-time">~25 min</span></div>
+    <h3>Li etikèt ak maketing</h3>
+    <p>Anbalaj fèt pou vann, se pa pou enfòme. Kèk konpetans ede anpil:</p>
+    <ul>
+      <li><strong>Li lis engredyan an.</strong> Engredyan yo klase pa pwa, pi gwo a anvan. Yon ti lis manje w rekonèt anjeneral se yon bon siy.</li>
+      <li><strong>Jwenn sik ajoute a.</strong> Li kache anba anpil non — siwo, dextroz, konsantre, ak mo ki fini ak "-oz."</li>
+      <li><strong>Pa fè konfyans devan an.</strong> "Natirèl," "lejè," "ranfòse iminite" ak "sipè manje" se mo maketing, souvan san definisyon strik. Vrè enfòmasyon an dèyè.</li>
+      <li><strong>Fè atansyon ak oreyòl sante a.</strong> Yon sèl deklarasyon ki sanble an sante ("wo nan pwoteyin!") pa fè yon pwodwi trè transfòme vin yon manje ki bon pou sante.</li>
+    </ul>
+  </div>
+
+  <div class="activity">
+    <div class="lab">Egzèsis refleksyon</div>
+    <h3>Vin yon detektiv manti</h3>
+    <p>Jwenn yon deklarasyon nitrisyon nan rezo sosyal, yon piblisite, oswa yon etikèt pwodwi. Epi kesyone l:</p>
+    <ol>
+      <li>Kisa egzakteman yo ap pwomèt?</li>
+      <li>Ki moun ki benefisye si w kwè l? Èske y ap vann yon bagay?</li>
+      <li>Èske gen vrè prèv, oswa jis yon temwayaj ak laperèz?</li>
+      <li>Ekri yon fraz ki eksplike si w kwè l kounye a — ak poukisa.</li>
+    </ol>
+  </div>
+
+  <div class="quiz">
+    <div class="quiz-head"><span class="lab">Tès pou tcheke tèt ou</span></div>
+    <h3>Tès modil 4</h3>
+    <sc-for list="{{ quizVM.q4 }}" as="q" hint-placeholder-count="4">
+      <div class="q">
+        <p class="qtext"><span class="n">Q{{ q.qNum }}.</span> {{ q.text }}</p>
+        <sc-for list="{{ q.options }}" as="opt" hint-placeholder-count="3">
+          <button class="{{ opt.cls }}" disabled="{{ q.disabled }}" onClick="{{ opt.onClick }}"><span class="bul"></span>{{ opt.text }}</button>
+        </sc-for>
+        <div class="{{ q.fbCls }}">{{ q.fbText }}</div>
+      </div>
+    </sc-for>
+  </div>
+
+  <div class="modnav">
+    <button class="btn ghost" onClick="{{ nav.go3 }}">&larr; Modil 3</button>
+    <button class="{{ doneBtnClass.4 }}" onClick="{{ doneToggle.d4 }}">{{ doneBtnText.4 }}</button>
+    <div class="spacer"></div>
+    <button class="btn primary" onClick="{{ nav.go5 }}">Modil 5 &rarr;</button>
+  </div>
+</section>
+
+<section class="panel" id="p5" role="tabpanel" style="{{ panelStyle.p5 }}">
+  <div class="plate">
+    <svg class="plate-botanical" width="200" height="200" viewBox="0 0 200 200" fill="none"><path d="M100 190C100 190 40 150 40 90C40 55 65 40 82 52C95 61 100 80 100 80C100 80 105 61 118 52C135 40 160 55 160 90C160 150 100 190 100 190Z" fill="#23533b"/><path d="M100 80V190M100 110C80 105 60 90 52 78M100 130C120 125 140 110 148 98" stroke="#d1932a" stroke-width="2"/></svg>
+    <div class="plate-top">
+      <div class="plate-no">5</div>
+      <div>
+        <h2>Manje Byen pou Lavi &amp; Kominote a</h2>
+        <p class="meta">Anviwon 2 èdtan · 4 leson + gwo egzèsis final + dènye tès</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="obj">
+    <div class="lab">Objektif · Nan modil sa a, w ap</div>
+    <ul>
+      <li>Tounen tout sa w aprann an abitid manje senp ak dirab.</li>
+      <li>Bati yon relasyon kal, an sante, ak manje.</li>
+      <li>Konprann kijan bezwen chanje selon etap lavi ak sitiyasyon.</li>
+      <li>Konekte nitrisyon ak sajès plant tradisyonèl — fason Medikaplant.</li>
+    </ul>
+  </div>
+
+  <div class="lesson">
+    <div class="lesson-head"><span class="lesson-tag">Leson 5.1</span><span class="lesson-time">~25 min</span></div>
+    <h3>Abitid ki dire</h3>
+    <p>Chanjman ki dire soti nan ti abitid ki repete — se pa volonte ewoyik. Kèk ki fè pifò travay la san w pa remake:</p>
+    <ul>
+      <li><strong>Ankre repa yo nan manje konplè</strong> — bati sou legim, pwa, grenn antye, rasin, fwi, pwason oswa ze.</li>
+      <li><strong>Fè yon ti amelyorasyon a lafwa</strong> — yon legim anplis, dlo olye de soda, fwi olye de yon ti gou sikre. Ti viktwa yo akimile.</li>
+      <li><strong>Planifye yon ti kras</strong> — deside repa yo davans fè chwa an sante a vin chwa fasil la.</li>
+      <li><strong>Kenbe fleksibilite</strong> — gen plas pou manje selebrasyon. Ekilib, pa pèfeksyon, se sa ki dirab.</li>
+    </ul>
+  </div>
+
+  <div class="lesson">
+    <div class="lesson-head"><span class="lesson-tag">Leson 5.2</span><span class="lesson-time">~30 min</span></div>
+    <h3>Yon relasyon an sante ak manje</h3>
+    <p>Kijan w santi w sou manje enpòtan menm jan ak sa ki nan asyèt la. Nitrisyon ta dwe diminye estrès, se pa ajoute l.</p>
+    <ul>
+      <li><strong>Pa gen manje "bon" oswa "move."</strong> Tout manje ka antre. Koupab se pa yon engredyan.</li>
+      <li><strong>Manje ak atansyon.</strong> Ralanti, remake grangou ak satyete, epi jwi manje w san distraksyon.</li>
+      <li><strong>Kilti w gen plas nan asyèt ou.</strong> Manje ayisyen tradisyonèl — pwa, diri, bannann, fèy vèt, pwason, fwi — nourisan. Ou pa janm bezwen abandone eritaj ou pou w manje byen.</li>
+      <li><strong>Fè atansyon ak ekstrèm yo.</strong> Règ strik, koupe tout yon gwoup manje nèt, oswa obsede sou manje "pwòp" ka fè kò a ak lespri a mal.</li>
+    </ul>
+    <div class="keybox"><div class="lab">Si manje vin difisil</div><p>Si manje ba w ankyete, koupab oswa yon pèt kontwòl ki pèsiste, sa merite atansyon ak jantiyès. Tanpri kontakte yon doktè oswa pwofesyonèl sante ou fè konfyans — sipò ede, epi ou merite l.</p></div>
+  </div>
+
+  <div class="lesson">
+    <div class="lesson-head"><span class="lesson-tag">Leson 5.3</span><span class="lesson-time">~25 min</span></div>
+    <h3>Nitrisyon atravè lavi ak sitiyasyon</h3>
+    <p>Bezwen chanje selon etap lavi. Sa a se yon apèsi jeneral, se pa yon konsèy pèsonèl — pou spesifik, wè yon pwofesyonèl sante.</p>
+    <ul>
+      <li><strong>Timoun</strong> grandi vit epi bezwen anpil nitriman pou enèji, sèvo ak zo. Varyete ak repa regilye enpòtan.</li>
+      <li><strong>Gwosès</strong> ogmante bezwen pou sèten nitriman tankou folat ak fè; gid medikal enpòtan isit la.</li>
+      <li><strong>Granmoun aje</strong> benefisye ak ase pwoteyin pou pwoteje misk, epi atansyon ak vitamin B12, vitamin D, kalsyòm ak rete idrate.</li>
+      <li><strong>Manje byen ak yon ti bidjè</strong> — pwa, ze, pwodwi sezon, legim konjele, rasin ak grenn antye se manje abòdab ki plen nitriman. Bon nitrisyon pa mande "sipè manje" chè.</li>
+    </ul>
+  </div>
+
+  <div class="lesson">
+    <div class="lesson-head"><span class="lesson-tag">Leson 5.4</span><span class="lesson-time">~30 min</span></div>
+    <h3>Manje, plant ak konesans tradisyonèl</h3>
+    <p>Nan Medikaplant, nou onore sajès plant ayisyen ansanm ak syans nitrisyon modèn. Anpil plant valè nan tradisyon se tou <strong>manje</strong> ki nouri, epi se yon bèl kote toude mond yo rankontre:</p>
+    <ul>
+      <li><strong>Moringa (<em>Moringa oleifera</em>, benzoliv)</strong> — fèy li yo reyèlman plen nitriman, rich an vitamin ak mineral, epi yo se yon fèy manje ki gen valè.</li>
+      <li><strong>Ibiskis (<em>Hibiscus sabdariffa</em>, ibiskis / bisap)</strong> — moun jwi l tradisyonèlman kòm yon bwason rafrechisan, yon pati byen koni nan eritaj plant la.</li>
+      <li><strong>Pwa, fèy vèt, rasin ak fwi twopikal</strong> — manje ayisyen chak jou ki, an tèm nitrisyon, se ekselan chwa.</li>
+    </ul>
+    <p>De prensip kenbe sa a ankre ak onèt:</p>
+    <ol>
+      <li><strong>Manje an premye.</strong> Yon rejim manje konplè varye se fondasyon an. Plant ak fèy se <em>sipò tradisyonèl</em> — konpayon pou bon manje, jamè yon ranplasman pou li oswa pou swen medikal.</li>
+      <li><strong>Respekte prèv la.</strong> Nou ka renmen epi onore tradisyon <em>epi</em> panse ak lespri kritik. Lè nou pa fè deklarasyon egzajere, nou pwoteje ni kominote nou an ni diyite konesans lan menm.</li>
+    </ol>
+    <div class="disclaimer">
+      <b>Rapèl.</b> Plant yo mansyone isit la pataje kòm sipò tradisyonèl ak manje, se pa kòm medikaman, dyagnostik oswa tretman. Anyen nan kou sa a se pa yon deklarasyon medikal. Konsilte toujou yon pwofesyonèl sante ki kalifye pou enkyetid sante oswa anvan w konbine plant ak medikaman. <em>Deklarasyon sa yo pa te evalye pa FDA.</em>
+    </div>
+  </div>
+
+  <div class="activity">
+    <div class="lab">Egzèsis final</div>
+    <h3>Plan nourisman yon semenn pou ou</h3>
+    <p>Reyini tout kou a ansanm. Konsevwa yon plan reyalis ou ka reyèlman swiv:</p>
+    <ol>
+      <li>Fè kwomi asyèt ekilibre pou kèk jou ak manje w renmen epi w ka achte lokalman.</li>
+      <li>Mete omwen yon repa ak pwoteyin plant ak yon varyete koulè.</li>
+      <li>Chwazi <strong>yon</strong> ti abitid nan Modil 5 pou pratike pandan tout semenn.</li>
+      <li>Ekri yon manti w te konn kwè — ak verite w ta di yon zanmi kounye a.</li>
+    </ol>
+    <p>Kenbe plan sa a. Se prèv sa w aprann.</p>
+  </div>
+
+  <div class="quiz">
+    <div class="quiz-head"><span class="lab">Dènye tès</span></div>
+    <h3>Tès modil 5</h3>
+    <sc-for list="{{ quizVM.q5 }}" as="q" hint-placeholder-count="4">
+      <div class="q">
+        <p class="qtext"><span class="n">Q{{ q.qNum }}.</span> {{ q.text }}</p>
+        <sc-for list="{{ q.options }}" as="opt" hint-placeholder-count="3">
+          <button class="{{ opt.cls }}" disabled="{{ q.disabled }}" onClick="{{ opt.onClick }}"><span class="bul"></span>{{ opt.text }}</button>
+        </sc-for>
+        <div class="{{ q.fbCls }}">{{ q.fbText }}</div>
+      </div>
+    </sc-for>
+  </div>
+
+  <div class="modnav">
+    <button class="btn ghost" onClick="{{ nav.go4 }}">&larr; Modil 4</button>
+    <button class="{{ doneBtnClass.5 }}" onClick="{{ doneToggle.d5 }}">{{ doneBtnText.5 }}</button>
+    <div class="spacer"></div>
+    <button class="btn primary" onClick="{{ nav.go6 }}">Kontinye nan Pati 2 &rarr;</button>
+  </div>
+</section>
+
+<section class="panel" id="p6" role="tabpanel" style="{{ panelStyle.p6 }}">
+  <div class="plate">
+    <svg class="plate-botanical" width="200" height="200" viewBox="0 0 200 200" fill="none"><path d="M100 190C100 190 40 150 40 90C40 55 65 40 82 52C95 61 100 80 100 80C100 80 105 61 118 52C135 40 160 55 160 90C160 150 100 190 100 190Z" fill="#23533b"/><path d="M100 80V190M100 110C80 105 60 90 52 78M100 130C120 125 140 110 148 98" stroke="#d1932a" stroke-width="2"/></svg>
+    <div class="plate-top">
+      <div class="plate-no">6</div>
+      <div>
+        <h2>Sik nan San &amp; Endèks Glisemik la</h2>
+        <p class="meta">Pati 2 · Anviwon 2 èdtan · 4 leson + refleksyon + tès pou tcheke tèt ou</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="obj">
+    <div class="lab">Objektif · Nan modil sa a, w ap</div>
+    <ul>
+      <li>Swiv glikoz atravè kò w epi fè konesans ak òmòn ensilin.</li>
+      <li>Konprann sa dyabèt ak rezistans ensilin ye vre.</li>
+      <li>Li Endèks Glisemik la — vitès pou glisid yo.</li>
+      <li>Ajoute pyès ki manke a : Chaj Glisemik, ki pran an kont gwosè pòsyon an.</li>
+    </ul>
+  </div>
+
+  <div class="lesson">
+    <div class="lesson-head"><span class="lesson-tag">Leson 6.1</span><span class="lesson-time">~25 min</span></div>
+    <h3>Sik nan san 101 : glikoz ak ensilin</h3>
+    <p>Sonje nan Pati 1 : glisid se kabiran rapid prensipal kò w. Lè w manje yo, dijesyon kraze yo tounen <span class="term">glikoz</span> — yon sik senp ki antre nan san w. Se sa ki "sik nan san w."</p>
+    <p>Glikoz pa ka antre nan selil ou pou kont li. Li bezwen yon kle. Kle sa a se <span class="term">ensilin</span>, yon òmòn pankreyas la fè. Men tout sik la an kat etap:</p>
+    <ol>
+      <li>Ou manje glisid → dijesyon tounen yo glikoz.</li>
+      <li>Glikoz antre nan san → sik nan san monte.</li>
+      <li>Pankreyas la lage ensilin.</li>
+      <li>Ensilin kite selil yo pran glikoz pou enèji (oswa estoke) → sik nan san desann tounen.</li>
+    </ol>
+    <p>Apre yon repa <strong>ekilibre</strong>, sik nan san monte dousman epi retounen kal. Apre yon repa glisid rafine ki fèt vit — panse pen blan ak soda — li ka monte anlè epi kraze desann, ki kite w fatige epi grangou ankò. Tout jwèt Pati 2 a senp : <strong>kenbe sik nan san estab, pa gen wo-ba.</strong></p>
+    <div class="keybox"><div class="lab">Imajine l</div><p>Sik nan san estab se yon ti mòn dous. Yon eklate glisid rafine se yon falèz monte swiv yon falèz desann. Menm enèji sou papye — men yon jounen totalman diferan.</p></div>
+  </div>
+
+  <div class="lesson">
+    <div class="lesson-head"><span class="lesson-tag">Leson 6.2</span><span class="lesson-time">~30 min</span></div>
+    <h3>Kisa dyabèt ye?</h3>
+    <p><span class="term">Dyabèt</span> se yon kondisyon kote glikoz nan san rete twò wo, paske ensilin swa pa travay byen oswa pa gen ase ladan l. Ak tan, sik nan san ki toujou wo fatige veso san yo, kè a, ren yo, je yo ak nè yo — se poutèt sa sik nan san estab enpòtan anpil.</p>
+    <h4>Prensipal kalite yo</h4>
+    <ul>
+      <li><strong>Kalite 1</strong> — sistèm iminitè a atake selil ki fè ensilin yo, kidonk kò a pwodwi ti kras oswa okenn. Moun ki gen Kalite 1 bezwen terapi ensilin pou tout lavi yo. Se <strong>pa</strong> koze pa rejim oswa fason w viv, epi manje pa ka anpeche l oswa "geri" l. Bon nitrisyon sipòte l; li pa janm ranplase ensilin.</li>
+      <li><strong>Kalite 2</strong> — fòm ki pi komen an. Selil yo vin rezistan a ensilin, ak/oswa pankreyas la pa ka swiv demand lan. Li fòme pa jenetik, laj, pwa, aktivite ak fason moun manje. Bon nouvèl la : pou anpil moun, manje, mouvman ak swen medikal ansanm ka amelyore l anpil.</li>
+      <li><strong>Predyabèt</strong> — sik nan san pi wo pase nòmal men se poko Kalite 2. Panse l tankou yon limyè avètisman ak yon opòtinite : se etap sa a kote abitid chak jou fè pi gwo diferans lan.</li>
+    </ul>
+    <p><span class="term">Rezistans ensilin</span> se moteur trankil dèyè Kalite 2 ak predyabèt : "kle" a toujou egziste, men "seri" selil yo vin di, kidonk pankreyas la dwe pwodwi plis ak plis ensilin pou fè menm travay la. Manje estab, plen fib, manje konplè, ak mouvman ede kenbe seri sa yo travay byen.</p>
+    <div class="safety">
+      <div class="lab">⚠ Enpòtan · Nòt sekirite</div>
+      <p><b>Manje sipòte swen dyabèt — li pa ranplase l.</b> Modil sa a se edikasyon, se pa yon plan tretman. Dyabèt toujou dwe jere ak yon doktè, enfimyè oswa pwofesyonèl nitrisyon ki konnen sitiyasyon w.</p>
+      <p>Pa gen manje, fèy oswa te ki geri dyabèt. Nenpòt moun ki di w sispann medikaman w ap mete w an danje.</p>
+    </div>
+  </div>
+
+  <div class="lesson">
+    <div class="lesson-head"><span class="lesson-tag">Leson 6.3</span><span class="lesson-time">~30 min</span></div>
+    <h3>Endèks Glisemik la — yon vitès pou glisid</h3>
+    <p>Men yon sipriz ki chanje syans nitrisyon : <strong>tout glisid pa aji menm jan.</strong> Kèk manje anmidonik monte sik nan san <em>pi vit</em> pase kèk manje sikre. Pou kaptire sa, Doktè David Jenkins ak ekip li kreye <span class="term">Endèks Glisemik la (IG)</span> nan ane 1981.</p>
+    <p>IG se yon echèl de 0 a 100 ki klase ki vitès yon manje glisid monte glikoz nan san. Glikoz pi pi a se pwen referans lan epi li fè 100. Pi wo IG a, pi vit ak pi wo eklate a.</p>
+    <div class="gi-scale">
+      <div class="gi-cell gi-low"><div class="nm">IG ba</div><div class="rng">≤ 55</div><div class="ds">Enèji lage dousman — chwazi souvan</div></div>
+      <div class="gi-cell gi-med"><div class="nm">IG mwayen</div><div class="rng">56–69</div><div class="ds">Yon efè modere sou sik nan san</div></div>
+      <div class="gi-cell gi-high"><div class="nm">IG wo</div><div class="rng">≥ 70</div><div class="ds">Sik monte vit — jwi ak atansyon</div></div>
+    </div>
+    <h4>Anviwon kote manje komen yo tonbe</h4>
+    <ul>
+      <li><strong>IG ba (chwazi souvan) :</strong> pwa, lantiy, pwa chich, avwan, lòj, pen grenn antye, pifò legim non-anmidonik, ak pifò fwi fre.</li>
+      <li><strong>IG wo (modere) :</strong> pen blan, diri blan rafine, seryal sikre, soda, gato, sikri ak ti gou trè transfòme.</li>
+    </ul>
+    <p>Ou remake modèl la? Manje IG ba tann yo se <strong>manje konplè ak plen fib</strong>; manje IG wo tann yo se <strong>rafine ak transfòme</strong>. Tout sa w te aprann nan Pati 1 deja pwente w nan bon direksyon an.</p>
+  </div>
+
+  <div class="lesson">
+    <div class="lesson-head"><span class="lesson-tag">Leson 6.4</span><span class="lesson-time">~30 min</span></div>
+    <h3>Pyès ki manke a : Chaj Glisemik</h3>
+    <p>IG gen yon pwen avèg : li sèlman mezire <strong>vitès</strong>, se pa <strong>kantite</strong>. Li di w ki vitès glisid nan yon manje frape san w — men se pa konbyen glisid ki reyèlman nan asyèt ou. Se la <span class="term">Chaj Glisemik la (CG)</span> antre.</p>
+    <div class="keybox"><div class="lab">Fòmil la (san estrès)</div><p>Chaj Glisemik = (IG × gram glisid nan pòsyon w) ÷ 100. CG ba se 10 oswa mwens, mwayen se 11–19, wo se 20 oswa plis. Ou raman ap kalkile l — ou jis bezwen lide a : <strong>kalite × kantite.</strong></p></div>
+    <p>Egzanp klasik la se melon dlo. IG li wo — men yon tranch nòmal se sitou dlo ak trè ti kras glisid, kidonk <em>chaj</em> li ba. Manje yon pòsyon rezonab apèn deplase sik nan san w. Leson an : IG yon manje enpòtan, men <strong>gwosè pòsyon w enpòtan menm jan.</strong></p>
+    <h4>Sa ki fè IG yon manje monte oswa desann</h4>
+    <p>Ou gen plis kontwòl pase w ta panse. Menm manje a ka frape pi dousman oswa pi vit selon:</p>
+    <ul>
+      <li><strong>Fib</strong> — plis fib ralanti monte a.</li>
+      <li><strong>Transfòmasyon</strong> — pi rafine ak kraze li ye, pi vit li frape (avwan antye bat avwan enstantane).</li>
+      <li><strong>Kwit manje</strong> — kwit ki pi long, pi mou monte IG; pi fèm ("al dente") kenbe l pi ba.</li>
+      <li><strong>Matirite</strong> — yon bannann oswa bannann mi gen yon IG pi wo pase yon vèt.</li>
+      <li><strong>Konbinezon</strong> — manje glisid <em>ak</em> pwoteyin, bon grès ak/oswa asid ralanti tout bagay.</li>
+    </ul>
+    <p>Dènye pwen sa a se pon an pou rive nan Modil 7, kote nou tounen tout sa a an repa ou ka reyèlman manje.</p>
+  </div>
+
+  <div class="activity">
+    <div class="lab">Egzèsis refleksyon</div>
+    <h3>Detektiv IG</h3>
+    <p>San w pa gade anyen, klase sa yo an <strong>pwobableman ba</strong>, <strong>mwayen</strong> oswa <strong>wo</strong> IG, epi eksplike rezonman w : pwa nwa, pen blan, yon bannann vèt, soda, avwan, yon mango mi, lantiy.</p>
+    <ol>
+      <li>Ki endis ou te itilize — fib, transfòmasyon, matirite?</li>
+      <li>Chwazi sèl manje IG wo w manje pi souvan, epi note yon fason pou ralanti l (konbine l, chanje l, oswa diminye pòsyon an).</li>
+    </ol>
+  </div>
+
+  <div class="quiz">
+    <div class="quiz-head"><span class="lab">Tès pou tcheke tèt ou</span></div>
+    <h3>Tès modil 6</h3>
+    <sc-for list="{{ quizVM.q6 }}" as="q" hint-placeholder-count="4">
+      <div class="q">
+        <p class="qtext"><span class="n">Q{{ q.qNum }}.</span> {{ q.text }}</p>
+        <sc-for list="{{ q.options }}" as="opt" hint-placeholder-count="3">
+          <button class="{{ opt.cls }}" disabled="{{ q.disabled }}" onClick="{{ opt.onClick }}"><span class="bul"></span>{{ opt.text }}</button>
+        </sc-for>
+        <div class="{{ q.fbCls }}">{{ q.fbText }}</div>
+      </div>
+    </sc-for>
+  </div>
+
+  <div class="modnav">
+    <button class="btn ghost" onClick="{{ nav.go5 }}">&larr; Modil 5</button>
+    <button class="{{ doneBtnClass.6 }}" onClick="{{ doneToggle.d6 }}">{{ doneBtnText.6 }}</button>
+    <div class="spacer"></div>
+    <button class="btn primary" onClick="{{ nav.go7 }}">Modil 7 &rarr;</button>
+  </div>
+</section>
+
+<section class="panel" id="p7" role="tabpanel" style="{{ panelStyle.p7 }}">
+  <div class="plate">
+    <svg class="plate-botanical" width="200" height="200" viewBox="0 0 200 200" fill="none"><path d="M100 190C100 190 40 150 40 90C40 55 65 40 82 52C95 61 100 80 100 80C100 80 105 61 118 52C135 40 160 55 160 90C160 150 100 190 100 190Z" fill="#23533b"/><path d="M100 80V190M100 110C80 105 60 90 52 78M100 130C120 125 140 110 148 98" stroke="#d1932a" stroke-width="2"/></svg>
+    <div class="plate-top">
+      <div class="plate-no">7</div>
+      <div>
+        <h2>Manje pou Jere Sik nan San — Manje &amp; Pwotokòl</h2>
+        <p class="meta">Pati 2 · Anviwon 2 èdtan · 4 leson + refleksyon + tès pou tcheke tèt ou</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="obj">
+    <div class="lab">Objektif · Nan modil sa a, w ap</div>
+    <ul>
+      <li>Bati asyèt Medikaplant lan pou sik nan san estab.</li>
+      <li>Itilize estrateji pratik — konbine, lòd ak chanjman — pou aplati eklate.</li>
+      <li>Fè konesans ak manje ayisyen ki sipòte sik nan san estab.</li>
+      <li>Adopte yon lis senp senk kesyon anvan chak repa.</li>
+    </ul>
+  </div>
+
+  <div class="lesson">
+    <div class="lesson-head"><span class="lesson-tag">Leson 7.1</span><span class="lesson-time">~30 min</span></div>
+    <h3>Asyèt Medikaplant pou sik nan san estab</h3>
+    <p>Ou te wè asyèt ekilibre a nan Pati 1. Men li ankò, ajiste pou sik nan san. Se yon senp sib vizyèl — pa gen peze, pa gen kalkil:</p>
+    <ul>
+      <li><strong>50% — legim ak fèy vèt</strong> (legim ak fèy). Non-anmidonik, plen fib, chaj glisemik ba.</li>
+      <li><strong>20% — pwa ak legumino</strong> (pwa). Pwoteyin plant plis fib soluble — yon ewo pou sik nan san.</li>
+      <li><strong>15% — rasin oswa grenn antye</strong> (rasin / grenn antye). Glisid konplèks ki dijere dousman.</li>
+      <li><strong>10% — bon grès</strong> (bon grès). Ralanti dijesyon epi ajoute plis dire.</li>
+      <li><strong>5% — pwason, ze oswa vyann meg</strong>. Yon ti ankraj pwoteyin.</li>
+    </ul>
+    <p>Poukisa asyèt sa a kenbe sik nan san kal : gwo volim fib nan de premye pòsyon yo <strong>diminye chaj glisemik repa a</strong>, ralanti dijesyon, epi ede w santi w plen. Rasin ak grenn antye yo pote glisid konplèks ki lage enèji dousman, pandan grès ak pwoteyin fini l nan wòl sipò. Sa a matche byen ak "metòd asyèt dyabèt" ki byen itilize — ou deja an avans.</p>
+    <div class="keybox"><div class="lab">Yon sèl imaj, gwo efè</div><p>Ranpli mwatye asyèt ou ak legim epi yon bon kiyè pwa, epi ou deja diminye chaj glisemik repa a anvan menm w te panse ak yon sèl chif.</p></div>
+  </div>
+
+  <div class="lesson">
+    <div class="lesson-head"><span class="lesson-tag">Leson 7.2</span><span class="lesson-time">~30 min</span></div>
+    <h3>Estrateji ki aplati eklate a</h3>
+    <p>Men mouvman chak jou ki kenbe sik nan san estab. Panse yo tankou zouti, se pa règ:</p>
+    <ul>
+      <li><strong>Pa janm manje yon glisid rapid "toutouni."</strong> Toujou konbine glisid ak pwoteyin, bon grès ak/oswa fib. Diri pou kont li eklate; diri ak pwa, legim ak yon ti zaboka se yon lòt repa nèt.</li>
+      <li><strong>Chwazi entak sou rafine.</strong> Grenn antye ak rasin olye de pen blan, diri blan ak farin rafine.</li>
+      <li><strong>Kòmanse ak legim ak legumino.</strong> Plis plant nan asyèt la prèske toujou vle di yon chaj pi ba.</li>
+      <li><strong>Fwi antye, se pa ji.</strong> Fib nan fwi antye ralanti sik la; ji retire l.</li>
+      <li><strong>Fè atansyon ak pòsyon an.</strong> Sonje <em>chaj</em> glisemik — menm yon bon glisid nan yon gwo pòsyon akimile.</li>
+      <li><strong>Eseye lòd manje a.</strong> Kèk etid sijere manje legim ak pwoteyin anvan, epi glisid anmidonik la an dènye, mennen nan yon monte pi dous.</li>
+      <li><strong>Kwit ak entèlijans.</strong> Anmidon pi fèm, mwens kwit, ak bannann mwens mi gen yon IG pi ba.</li>
+      <li><strong>Rete regilye.</strong> Repa ki byen konsistan ede — epi sote repa ka fè bagay yo vire mal, sitou si w ap pran medikaman.</li>
+    </ul>
+    <h4>Chanjman chak jou (nan gid manje Medikaplant lan)</h4>
+    <div class="tablewrap">
+      <table class="foodtable">
+        <thead><tr><th>Olye de</th><th>Chwazi</th><th>Poukisa li ede sik nan san</th></tr></thead>
+        <tbody>
+          <tr><td>Soda / bwason sikre</td><td>Dlo oswa te fèy san sik</td><td>Retire yon gwo sous sik ajoute ak kalori vid.</td></tr>
+          <tr><td>Pen blan</td><td>Patat oswa bannann vèt</td><td>Plis fib ak anmidon rezistan — yon monte pi ba, pi dous.</td></tr>
+          <tr><td>Ti gou transfòme</td><td>Fwi fre oswa pistach griye</td><td>Ranplase sèl, sik ak lwil rafine ak fib ak bon grès.</td></tr>
+          <tr><td>Kib bouyon komèsyal</td><td>Lay, zonyon, ten, pèsi &amp; fèy</td><td>Gwo diminisyon sodyòm pandan w ajoute gou ak konpoze plant.</td></tr>
+          <tr><td>Diri blan chak repa</td><td>Ajoute pwa ak legim nan asyèt la</td><td>Ogmante pwoteyin ak fib epi diminye chaj glisemik repa a.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="lesson">
+    <div class="lesson-head"><span class="lesson-tag">Leson 7.3</span><span class="lesson-time">~30 min</span></div>
+    <h3>Manje fonksyonèl ayisyen pou sik nan san estab</h3>
+    <p>Ou pa bezwen "sipè manje" enpòte. Anpil manje ayisyen chak jou se ekselan alye pou sik nan san estab. Se <strong>manje plen nitriman, se pa tretman</strong> — yo ede kòm pati nan modèl jeneral la.</p>
+    <div class="tablewrap">
+      <table class="foodtable">
+        <thead><tr><th>Manje</th><th>Poukisa li sipòte sik nan san estab</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Pwa</strong> — pwa nwa / wouj<span class="bino">Phaseolus vulgaris</span></td><td>Pwoteyin plant ak fib soluble ak ensoluble; IG ba epi dijere dousman. Kwit byen pwa wouj yo.</td></tr>
+          <tr><td><strong>Kalalou</strong><span class="bino">Abelmoschus esculentus</span></td><td>Fib soluble ak mikilaj tradisyonèlman lye ak sik nan san ak kolestewòl pi estab; ajoute vitamin C ak folat.</td></tr>
+          <tr><td><strong>Bannann vèt</strong><span class="bino">Musa × paradisiaca</span></td><td>Anmidon rezistan aji tankou fib epi pwodwi yon monte glikoz pi dous pase bannann mi.</td></tr>
+          <tr><td><strong>Patat</strong><span class="bino">Ipomoea batatas</span></td><td>Glisid konplèks ak fib ak beta-karotèn; pi dous sou sik nan san pase anmidon rafine (li toujou yon glisid — fè atansyon ak pòsyon an).</td></tr>
+          <tr><td><strong>Zaboka</strong><span class="bino">Persea americana</span></td><td>Grès monoensatire, fib ak potasyòm; grès la ralanti ki vitès yon repa monte sik nan san.</td></tr>
+          <tr><td><strong>Pistach / wowoli</strong><span class="bino">Arachis hypogaea · Sesamum indicum</span></td><td>Bon grès ak fib — ideyal pou konbine ak glisid pou anpeche yon eklate.</td></tr>
+          <tr><td><strong>Pitimi</strong><span class="bino">Pennisetum glaucum</span></td><td>Yon grenn antye, san glitèn, ki dijere pi dousman pase grenn rafine.</td></tr>
+          <tr><td><strong>Lay · Jenjanm · Safran peyi</strong><span class="bino">Allium sativum · Zingiber officinale · Curcuma longa</span></td><td>Etidye pou yon dous sipò kadyometabolik; sitou, yo ajoute gou san sèl oswa sik. (Konbine safran peyi ak pwav nwa ak yon ti grès.)</td></tr>
+          <tr><td><strong>Sadin</strong><span class="bino">Sardina spp.</span></td><td>Grès omega-3 ak pwoteyin san glisid; sipòte sante kè, sa ki enpòtan paske dyabèt ogmante risk kadyovaskilè.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Tèm lan konsistan : fib, bon grès ak pwoteyin plant — menm twa ewo yo nan Pati 1 — se egzakteman sa sik nan san estab bezwen.</p>
+  </div>
+
+  <div class="lesson">
+    <div class="lesson-head"><span class="lesson-tag">Leson 7.4</span><span class="lesson-time">~25 min</span></div>
+    <h3>Lis senk kesyon anvan repa w</h3>
+    <p>Men yon pwotokòl ou ka pote pou tout lavi. Anvan yon repa, poze senk kesyon rapid sa yo — yo reyini tout sa ki nan Pati 2 a:</p>
+    <ol>
+      <li><strong>Konbyen fib</strong> repa sa a genyen?</li>
+      <li><strong>Ki IG li</strong>, an gwo — antye ak dousman, oswa rafine ak vit?</li>
+      <li><strong>Konbyen</strong> mwen pral manje? (Sa se chaj glisemik la.)</li>
+      <li><strong>Èske li konplè oswa trè transfòme?</strong></li>
+      <li><strong>Èske m ap konbine l</strong> ak pwoteyin ak bon grès?</li>
+    </ol>
+    <div class="keybox"><div class="lab">Pwenn lan</div><p>Ou pa bezwen memorize chif oswa pote yon tablo. Senk kesyon sa yo fè travay tout modil la, chak fwa w manje.</p></div>
+  </div>
+
+  <div class="activity">
+    <div class="lab">Egzèsis refleksyon</div>
+    <h3>Rebati yon repa ki eklate</h3>
+    <p>Pran yon repa klasik ak gwo chaj — yon gwo asyèt diri blan ak yon soda sikre — epi rebati l pou kenbe sik nan san estab:</p>
+    <ol>
+      <li>Aplike asyèt la : kisa ki ale nan pòsyon legim ak pwa yo?</li>
+      <li>Fè de chanjman nan tablo chanjman an.</li>
+      <li>Ajoute yon konbinezon (pwoteyin ak/oswa bon grès) pou ralanti monte a.</li>
+      <li>Pase nouvo repa w la nan lis senk kesyon an.</li>
+    </ol>
+    <p>Ekri repa rebati w la — se yon modèl ou ka reyitilize.</p>
+  </div>
+
+  <div class="quiz">
+    <div class="quiz-head"><span class="lab">Tès pou tcheke tèt ou</span></div>
+    <h3>Tès modil 7</h3>
+    <sc-for list="{{ quizVM.q7 }}" as="q" hint-placeholder-count="4">
+      <div class="q">
+        <p class="qtext"><span class="n">Q{{ q.qNum }}.</span> {{ q.text }}</p>
+        <sc-for list="{{ q.options }}" as="opt" hint-placeholder-count="3">
+          <button class="{{ opt.cls }}" disabled="{{ q.disabled }}" onClick="{{ opt.onClick }}"><span class="bul"></span>{{ opt.text }}</button>
+        </sc-for>
+        <div class="{{ q.fbCls }}">{{ q.fbText }}</div>
+      </div>
+    </sc-for>
+  </div>
+
+  <div class="modnav">
+    <button class="btn ghost" onClick="{{ nav.go6 }}">&larr; Modil 6</button>
+    <button class="{{ doneBtnClass.7 }}" onClick="{{ doneToggle.d7 }}">{{ doneBtnText.7 }}</button>
+    <div class="spacer"></div>
+    <button class="btn primary" onClick="{{ nav.go8 }}">Modil 8 &rarr;</button>
+  </div>
+</section>
+
+<section class="panel" id="p8" role="tabpanel" style="{{ panelStyle.p8 }}">
+  <div class="plate">
+    <svg class="plate-botanical" width="200" height="200" viewBox="0 0 200 200" fill="none"><path d="M100 190C100 190 40 150 40 90C40 55 65 40 82 52C95 61 100 80 100 80C100 80 105 61 118 52C135 40 160 55 160 90C160 150 100 190 100 190Z" fill="#23533b"/><path d="M100 80V190M100 110C80 105 60 90 52 78M100 130C120 125 140 110 148 98" stroke="#d1932a" stroke-width="2"/></svg>
+    <div class="plate-top">
+      <div class="plate-no">8</div>
+      <div>
+        <h2>Viv Byen ak Dyabèt — Abitid, Siveyans &amp; Sekirite</h2>
+        <p class="meta">Pati 2 · Anviwon 2 èdtan · 4 leson + gwo egzèsis final + dènye tès</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="obj">
+    <div class="lab">Objektif · Nan modil sa a, w ap</div>
+    <ul>
+      <li>Wè kijan mouvman, dòmi, estrès ak dlo afekte sik nan san.</li>
+      <li>Konprann siveyans ak kijan pou travay san danje ak ekip swen w.</li>
+      <li>Repere manti sou dyabèt ak "remèd mirak" danjere.</li>
+      <li>Bati yon plan dirab, ki nan pwòp kilti w, w ka kenbe pou tout lavi.</li>
+    </ul>
+  </div>
+
+  <div class="lesson">
+    <div class="lesson-head"><span class="lesson-tag">Leson 8.1</span><span class="lesson-time">~25 min</span></div>
+    <h3>Pi lwen pase asyèt la : levye stil de vi yo</h3>
+    <p>Manje pwisan, men li pa aji pou kont li. Kat abitid chak jou fasonnen sik nan san w tou:</p>
+    <ul>
+      <li><strong>Deplase kò w.</strong> Misk k ap travay rale glikoz soti nan san pou enèji, epi aktivite regilye fè selil ou vin pi sansib a ensilin — kidonk "kle yo" travay pi byen. Menm yon mach chak jou apre repa ede.</li>
+      <li><strong>Dòmi byen.</strong> Move oswa kout dòmi agrave rezistans ensilin epi eksite grangou ak anvi manje nan pwochen jou a.</li>
+      <li><strong>Jere estrès.</strong> Òmòn estrès monte sik nan san. Repo, koneksyon ak kalm se pati nan swen sik nan san, se pa yon liks.</li>
+      <li><strong>Bwè dlo.</strong> Dlo se pi bon bwason default; rete idrate sipòte sik nan san an sante, pandan bwason sikre pouse l nan move direksyon.</li>
+    </ul>
+    <p>Ajoute sou bon manje, abitid sa yo miltipliye benefis la. Pa gen youn ki dramatik pou kont li — ansanm, pandan mwa, yo chanje tout bagay.</p>
+  </div>
+
+  <div class="lesson">
+    <div class="lesson-head"><span class="lesson-tag">Leson 8.2</span><span class="lesson-time">~30 min</span></div>
+    <h3>Siveyans ak ekip swen w</h3>
+    <p>Jere sik nan san byen se yon <strong>travay ekip</strong>. Abitid ki pi enpòtan nan tout modil sa a se rete konekte ak yon doktè, enfimyè oswa pwofesyonèl nitrisyon ki konnen w.</p>
+    <ul>
+      <li><strong>Tès glikoz nan san</strong> montre nivo w nan moman an.</li>
+      <li><strong>HbA1c</strong> se yon tès san ki reflete mwayèn sik nan san w pandan anviwon twa mwa — yon pi gwo vizyon ekip swen w itilize pou gide desizyon yo.</li>
+    </ul>
+    <p>Chif sa yo se zouti pou li <em>ansanm ak</em> yon pwofesyonèl, ki ka mete yo nan kontèks epi ajiste plan w.</p>
+    <div class="safety">
+      <div class="lab">⚠ Sekirite kritik · Sekirite ki enpòtan anpil</div>
+      <p><b>Si w pran medikaman dyabèt — sitou ensilin oswa sulfonilire — pale ak moun ki preskri l anvan w chanje fason w manje.</b> Dòz medikaman w matche ak konsomasyon glisid abityèl ou. Si sibitman w manje pi mwens glisid ak menm dòz la, sik nan san w ka desann trè danjre (ipoglisemi).</p>
+      <p>Sa pa vle di "pa manje pi an sante." Li vle di <b>chanje manje w ak medikaman w ansanm, ak ekip swen w</b> — pou yo ka ajiste san danje. Aprann siy avètisman pèsonèl ou pou sik nan san wo ak ba ansanm ak yo, epi konnen sa pou fè pou chak.</p>
+    </div>
+  </div>
+
+  <div class="lesson">
+    <div class="lesson-head"><span class="lesson-tag">Leson 8.3</span><span class="lesson-time">~30 min</span></div>
+    <h3>Manti ak fo "remèd"</h3>
+    <p>Dyabèt atire plis fo syans pase prèske nenpòt lòt sijè sante. Itilize konpetans lespri kritik Modil 4 la epi kenbe pozisyon w:</p>
+    <div class="mythbox"><div class="m">Manti</div><p class="t">"Te / fèy / siplemantasyon sa a geri dyabèt." <b>Reyalite:</b> anyen pa geri dyabèt. Manje ak fèy ka <em>sipòte</em> yon modèl an sante, men nenpòt pwodwi ki di w sispann medikaman w danjere.</p></div>
+    <div class="mythbox"><div class="m">Manti</div><p class="t">"Moun ki gen dyabèt pa ka janm manje diri, fwi oswa glisid ankò." <b>Reyalite:</b> se sou <em>kalite, kantite, konbinezon ak modèl jeneral</em> — se pa entèdi tout gwoup manje. Fwi antye ak glisid manje konplè, nan pòsyon rezonab, gen plas nan asyèt la.</p></div>
+    <div class="mythbox"><div class="m">Manti</div><p class="t">"Pwodwi make 'san sik' ak 'dyabetik' se san limit." <b>Reyalite:</b> anpil toujou monte sik nan san, koute plis, epi trè transfòme. Li etikèt la; yon manje konplè souvan se pi bon chwa a.</p></div>
+    <div class="mythbox"><div class="m">Manti</div><p class="t">"Si li anmè oswa chè, li dwe yon remèd." <b>Reyalite:</b> gou ak pri se pa prèv. Jije ak syans ak modèl jeneral la, se pa maketing.</p></div>
+    <p>Li etikèt ak yon je pou dyabèt : gade pi lwen pase devan pakè a rive nan <strong>glisid total, fib ak sik ajoute yo</strong>, epi tcheke <strong>gwosè pòsyon</strong> chif yo reprezante.</p>
+  </div>
+
+  <div class="lesson">
+    <div class="lesson-head"><span class="lesson-tag">Leson 8.4</span><span class="lesson-time">~25 min</span></div>
+    <h3>Yon plan w ka kenbe pou tout lavi</h3>
+    <p>Pi bon plan pou sik nan san se pa pi strik la — se youn ou va toujou ap swiv ane pwochen. Dirab bat pèfeksyon, epi nan pwòp kilti w bat sa w prete. Mennen tout kou a lakay ou ak ankraj chak jou sa yo:</p>
+    <ul>
+      <li>Prefere manje <strong>lokal, sezon</strong> lè w kapab.</li>
+      <li>Ranpli <strong>mwatye asyèt la ak legim</strong>, epi manje <strong>pwa regilyèman</strong>.</li>
+      <li>Chwazi <strong>rasin ak grenn antye</strong> olye de anmidon rafine.</li>
+      <li>Fè <strong>dlo</strong> bwason prensipal ou, epi asezone ak <strong>fèy</strong> olye de sèl.</li>
+      <li>Jwi <strong>fwi antye chak jou</strong>, kwit manje lakay, <strong>deplase chak jou</strong>, epi separe repa ak fanmi.</li>
+    </ul>
+    <p>Konsistans pandan mwa ak ane konte pi plis pase nenpòt sèl repa oswa engredyan. Ti kras, ki repete, kiltirèl, jantiy — se sa ki yon plan ki dire.</p>
+  </div>
+
+  <div class="activity">
+    <div class="lab">Egzèsis final</div>
+    <h3>Semenn ou ki bon pou sik nan san</h3>
+    <p>Reyini Pati 2 an yon bagay ou reyèlman ka viv ladan l:</p>
+    <ol>
+      <li>Planifye asyèt ekilibre pou twa jou ak asyèt Medikaplant lan, vrè manje ayisyen, ak omwen de manje fonksyonèl nan Modil 7.</li>
+      <li>Chwazi de abitid stil de vi nan Modil 8 pou pratike pandan tout semenn.</li>
+      <li>Ekri pwòp vèsyon w nan lis senk kesyon anvan repa a.</li>
+      <li>Nonmen yon manti dyabèt ou p ap janm kwè ankò — ak verite w ta di yon vwazen olye de sa a.</li>
+      <li>Note yon bagay w ap mande doktè oswa pwofesyonèl nitrisyon w nan pwochen vizit ou.</li>
+    </ol>
+  </div>
+
+  <div class="disclaimer">
+    <b>Nòt final Medikaplant.</b> Kou sa a se sèlman enfòmasyon edikatif. Se pa yon konsèy medikal, epi li pa dyagnostike, trete, geri oswa anpeche okenn maladi. Dyabèt ak sik nan san dwe jere ak yon pwofesyonèl sante kalifye ki konnen sitiyasyon w — pa janm chanje rejim oswa medikaman w pou kont ou, sitou si w pran ensilin oswa lòt medikaman ki diminye sik. Plant ak fèy yo pataje kòm sipò tradisyonèl ak manje, jamè kòm yon remèd. Konsèy isit la baze sou syans nitrisyon jeneral, ki toujou ap evolye, epi bezwen chak moun diferan. <em>Deklarasyon sa yo pa te evalye pa FDA.</em>
+  </div>
+
+  <div class="quiz">
+    <div class="quiz-head"><span class="lab">Dènye tès</span></div>
+    <h3>Tès modil 8</h3>
+    <sc-for list="{{ quizVM.q8 }}" as="q" hint-placeholder-count="4">
+      <div class="q">
+        <p class="qtext"><span class="n">Q{{ q.qNum }}.</span> {{ q.text }}</p>
+        <sc-for list="{{ q.options }}" as="opt" hint-placeholder-count="3">
+          <button class="{{ opt.cls }}" disabled="{{ q.disabled }}" onClick="{{ opt.onClick }}"><span class="bul"></span>{{ opt.text }}</button>
+        </sc-for>
+        <div class="{{ q.fbCls }}">{{ q.fbText }}</div>
+      </div>
+    </sc-for>
+  </div>
+
+  <div class="modnav">
+    <button class="btn ghost" onClick="{{ nav.go7 }}">&larr; Modil 7</button>
+    <button class="{{ doneBtnClass.8 }}" onClick="{{ doneToggle.d8 }}">{{ doneBtnText.8 }}</button>
+    <div class="spacer"></div>
+    <button class="btn primary" onClick="{{ nav.go9 }}">Bonis : Lwil Kwit &rarr;</button>
+  </div>
+</section>
+
+<section class="panel" id="p9" role="tabpanel" style="{{ panelStyle.p9 }}">
+  <div class="plate">
+    <svg class="plate-botanical" width="200" height="200" viewBox="0 0 200 200" fill="none"><path d="M100 190C100 190 40 150 40 90C40 55 65 40 82 52C95 61 100 80 100 80C100 80 105 61 118 52C135 40 160 55 160 90C160 150 100 190 100 190Z" fill="#23533b"/><path d="M100 80V190M100 110C80 105 60 90 52 78M100 130C120 125 140 110 148 98" stroke="#d1932a" stroke-width="2"/></svg>
+    <div class="plate-top">
+      <div class="plate-no">9</div>
+      <div>
+        <h2>Pi Bon Lwil Natirèl pou Kwit Manje</h2>
+        <p class="meta">Modil bonis · anviwon 2 èdtan · 4 leson + refleksyon + tès pou tcheke tèt ou</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="obj">
+    <div class="lab">Objektif · Nan bonis sa a, w ap</div>
+    <ul>
+      <li>Konprann poukisa lwil ou kwit ak li enpòtan menm jan ak manje a menm.</li>
+      <li>Aprann syans grès yo ak "pwen fimen" — ak poukisa li deside lwil la.</li>
+      <li>Fè konesans ak sis lwil natirèl epi sa chak fè pi byen.</li>
+      <li>Matche bon lwil ak bon travay, epi konsève yo pou yo rete bon.</li>
+    </ul>
+  </div>
+
+  <div class="lesson">
+    <div class="lesson-head"><span class="lesson-tag">Leson 9.1</span><span class="lesson-time">~30 min</span></div>
+    <h3>Poukisa lwil kwit ou enpòtan</h3>
+    <p>Men yon prensip Medikaplant ki merite kadre : <strong>sa w kwit ak li enpòtan menm jan ak sa w kwit la.</strong> Lwil natirèl se pa jis yon fason pou anpeche manje kole nan chodyè a — yo pote asid gra esansyèl, vitamin ak antioksidan ki nouri chak selil. Chanje grès twò rafine oswa ki pa bon pou bon lwil natirèl se youn nan amelyorasyon ki pi trankil, ki gen pi gwo enpak ou ka fè.</p>
+    <h4>Yon ti rapèl sou grès (soti nan Modil 2)</h4>
+    <ul>
+      <li><strong>Monoensatire</strong> — zetwal zanmitay kè a nan lwil oliv ak zaboka.</li>
+      <li><strong>Poliensatire</strong> — ladan yo gen grès omega-3 ak omega-6 nan lwil chanv ak grenn rezen.</li>
+      <li><strong>Satire</strong> — pi wo nan lwil kokoye; bon nan modèrasyon, pi bon pa kòm baz chak jou w.</li>
+    </ul>
+    <h4>Lide ki deside tout bagay : pwen fimen an</h4>
+    <p>Chak lwil gen yon <span class="term">pwen fimen</span> — tanperati kote li kòmanse boule, fimen, epi kase. Pase pwen sa a, yon lwil pèdi bon konpoze li yo epi fòme lòt ki danjere. Kidonk règ la senp:</p>
+    <ul>
+      <li><strong>Kwit ak anpil chalè</strong> (fri, griye, fou, air fryer) bezwen yon lwil ak <strong>pwen fimen wo</strong> tankou zaboka.</li>
+      <li><strong>Lwil delika yo</strong> (chanv, oliv ekstra vyèj, sezam) se pou <strong>chalè ba oswa fini</strong> — pa janm fri fon.</li>
+    </ul>
+    <p>Ou va wè tou <span class="term">presyon fret</span> sou bon boutèy: sa vle di yo te prije lwil la san anpil chalè, ki pwoteje nitriman li yo. Epi yon lòt lide Medikaplant pou pote atravè modil sa a:</p>
+    <div class="keybox"><div class="lab">Prensip wotasyon an</div><p>Pa gen yon sèl lwil ki fè tout bagay. Pi bon estrateji a se <strong>wote plizyè lwil natirèl</strong> pandan semenn nan, kidonk kò w jwenn yon pi gwo ranje grès, vitamin ak antioksidan — menm jan ak manje yon varyete plant.</p></div>
+  </div>
+
+  <div class="lesson">
+    <div class="lesson-head"><span class="lesson-tag">Leson 9.2</span><span class="lesson-time">~30 min</span></div>
+    <h3>De cheval-batay chak jou : oliv &amp; zaboka</h3>
+    <h4>Lwil oliv ekstra vyèj — <em>Olea europaea</em></h4>
+    <p>Youn nan manje ki pi etidye sou tè a epi yon pilye nan rejim Mediterane a. Li rich an <strong>asid oleyik</strong> ak <strong>polifenòl</strong> (tankou oleyoropen, idroksitiwozòl ak oleokantal), ki ansanm lye ak:</p>
+    <ul>
+      <li><strong>Sante kè</strong> — kolestewòl LDL ("move") pi ba, HDL ("bon") pi wo, mwens enflamasyon, pi bon sikilasyon.</li>
+      <li><strong>Sipò sèvo</strong> — antioksidan ki ede pwoteje selil sèvo pandan n ap vin gen laj.</li>
+      <li><strong>Pwoteksyon trip ak selil</strong> — polifenòl nouri yon mikwobyòm an sante epi defann selil kont domaj oksidatif.</li>
+    </ul>
+    <p><strong>Pi bon pou:</strong> salad, koule sou legim kwit, sòs, kwit chalè ba-a-mwayen, ak fini. Sa a se lwil <strong>chak jou</strong> ou.</p>
+    <h4>Lwil zaboka — <em>Persea americana</em></h4>
+    <p>Prèske menm bon grès ak lwil oliv, men ak yon <strong>pwen fimen wo</strong> — ki fè l chwa pou chalè. Li pote tou <strong>lutèn</strong> (sipòte je yo) epi ede kò w absòbe vitamin ki soluble nan grès <strong>A, D, E ak K</strong>.</p>
+    <p><strong>Pi bon pou:</strong> fri, griye, boukannen, air fryer, babekyou — nenpòt kote chalè a wo.</p>
+    <div class="keybox"><div class="lab">Kit demaraj de lwil</div><p>Si w kenbe sèlman de lwil, fè yo sa yo: <strong>oliv ekstra vyèj pou chak jou ak fini, zaboka pou chalè wo.</strong> Ansanm yo kouvri byen pifò nan kwit manje ou.</p></div>
+  </div>
+
+  <div class="lesson">
+    <div class="lesson-head"><span class="lesson-tag">Leson 9.3</span><span class="lesson-time">~30 min</span></div>
+    <h3>Espesyalis yo : kokoye, grenn rezen, chanv &amp; sezam</h3>
+    <h4>Lwil kokoye — <em>Cocos nucifera</em></h4>
+    <p>Rich an <strong>triglise chèn mwayen (MCT)</strong>, ke kò a tounen enèji rapid, ak asid lorik/kaprilik/kaprik ki montre aktivite antimikwobyèn nan etid laboratwa. Men men nòt onèt la dirèkteman soti nan gid Medikaplant lan:</p>
+    <div class="mythbox"><div class="m">Verifikasyon reyalite</div><p class="t">Lwil kokoye souvan vann tankou yon "sipè manje mirak." <b>Verite a:</b> li wo an grès <em>satire</em>, kidonk itilize l ak modérasyon — oliv ak zaboka rete pi bon chwa chak jou. Ekselan pou fè patisri, smoothie, kwit chalè mwayen ak kèk resèt remèd fèy.</p></div>
+    <h4>Lwil grenn rezen — <em>Vitis vinifera</em></h4>
+    <p>Yon bon sous <strong>vitamin E</strong> ak yon gou net, kidonk li p ap chanje gou yon plat. Grès poliensatire li yo sipòte sante kadyovaskilè lè yo ranplase grès ki mwens bon. <strong>Pi bon pou:</strong> kwit manje, patisri, mayonèz fèt lakay, salad — chèche <strong>presyon fret</strong>.</p>
+    <h4>Lwil grenn chanv — <em>Cannabis sativa</em></h4>
+    <p>Yon balans <strong>omega-3 ak omega-6</strong> ekselan, plis <strong>GLA</strong> (asid gama-linolenik). Lye ak sipò sèvo (memwa, aprantisaj, konsantrasyon), veso san an sante, ak konfò po (po sèk, ekzema). <strong>Pa janm fri avè l</strong> — chalè detwi grès delika li yo. <strong>Pi bon pou:</strong> salad, smoothie, yogout, legim fret.</p>
+    <h4>Lwil sezam — <em>Sesamum indicum</em></h4>
+    <p>Yon lwil tradisyonèl itilize pandan milye ane nan kwizin Azyatik ak Afriken. Li pote <strong>sezamin</strong>, <strong>sezamolin</strong> ak vitamin E — lignan antioksidan lye ak yon pi bon pwofil kolestewòl ak sante zo. Kèk etid sijere li ka sipòte kontwòl sik nan san <em>kòm pati nan yon rejim ekilibre</em> (yon bèl rapèl Pati 2). <strong>Pi bon pou:</strong> soup, legim kwit, marinad, salad, ak fini.</p>
+  </div>
+
+  <div class="lesson">
+    <div class="lesson-head"><span class="lesson-tag">Leson 9.4</span><span class="lesson-time">~30 min</span></div>
+    <h3>Ki lwil pou ki travay — ak kijan pou konsève yo</h3>
+    <div class="tablewrap">
+      <table class="foodtable">
+        <thead><tr><th>Travay la</th><th>Pi bon lwil</th></tr></thead>
+        <tbody>
+          <tr><td>Kwit manje chak jou</td><td><strong>Oliv ekstra vyèj</strong> (Olea europaea)</td></tr>
+          <tr><td>Fri / chalè wo</td><td><strong>Zaboka</strong> (Persea americana)</td></tr>
+          <tr><td>Salad</td><td>Oliv · grenn chanv</td></tr>
+          <tr><td>Fè gato</td><td>Zaboka · kokoye</td></tr>
+          <tr><td>Smoothie</td><td>Grenn chanv · kokoye</td></tr>
+          <tr><td>Fini (gou apre kwit)</td><td>Sezam · oliv</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <h4>Konsève yo byen</h4>
+    <ul>
+      <li>Kenbe lwil nan yon <strong>boutèy fèmen, lwen limyè ak chalè</strong> — toude fè yo rans.</li>
+      <li><strong>Pa janm chofe yon lwil jouk li fimen</strong> — chalè wo detwi bon konpoze yo.</li>
+      <li>Sonje : tout lwil <strong>plen kalori</strong>, kidonk menm bon lwil itilize ak mezi. <em>Plis pa toujou pi bon — bon kantite a bat gwo kantite a.</em></li>
+    </ul>
+    <div class="safety">
+      <div class="lab">⚠ Prekosyon</div>
+      <p>Moun ki gen alèji ak <b>kokoye, sezam oswa rezen</b> dwe fè atansyon. Si w pran medikaman pou <b>kolestewòl, tansyon oswa sik nan san</b>, pale ak yon pwofesyonèl sante anvan w chanje lwil oswa rejim abityèl ou.</p>
+      <p><b>Lwil natirèl se manje, se pa medikaman.</b> Pa gen lwil ki geri maladi oswa "detoksifye" kò a pou kont li — men byen chwazi, kòm pati nan yon rejim ekilibre, yo ede pwoteje kè a, sèvo a ak selil yo.</p>
+    </div>
+    <div class="disclaimer">
+      <b>Nòt Medikaplant.</b> Bonis sa a se sèlman enfòmasyon edikatif epi li pa ranplase konsèy yon pwofesyonèl sante kalifye. Referans nitrisyon : USDA FoodData Central ak NIH Office of Dietary Supplements. Non botanik yo swiv konvansyon Medikaplant. <em>Deklarasyon sa yo pa te evalye pa FDA.</em>
+    </div>
+  </div>
+
+  <div class="activity">
+    <div class="lab">Egzèsis refleksyon</div>
+    <h3>Bati etajè lwil ou</h3>
+    <p>Konsevwa yon wotasyon lwil senp, abòdab pou kwizin ou:</p>
+    <ol>
+      <li>Chwazi de cheval-batay chak jou w (endis: youn pou chak jou, youn pou chalè wo).</li>
+      <li>Ajoute yon oswa de espesyalis ki matche ak kijan w reyèlman kwit manje.</li>
+      <li>Ekri ki lwil w ap chwazi nan twa sitiyasyon reyèl semenn sa a — yon salad, yon plat fri, ak yon fini.</li>
+      <li>Note yon grès twò rafine w itilize kounye a ke yon lwil natirèl ta ka ranplase.</li>
+    </ol>
+  </div>
+
+  <div class="quiz">
+    <div class="quiz-head"><span class="lab">Tès pou tcheke tèt ou</span></div>
+    <h3>Tès modil bonis</h3>
+    <sc-for list="{{ quizVM.q9 }}" as="q" hint-placeholder-count="4">
+      <div class="q">
+        <p class="qtext"><span class="n">Q{{ q.qNum }}.</span> {{ q.text }}</p>
+        <sc-for list="{{ q.options }}" as="opt" hint-placeholder-count="3">
+          <button class="{{ opt.cls }}" disabled="{{ q.disabled }}" onClick="{{ opt.onClick }}"><span class="bul"></span>{{ opt.text }}</button>
+        </sc-for>
+        <div class="{{ q.fbCls }}">{{ q.fbText }}</div>
+      </div>
+    </sc-for>
+  </div>
+
+  <div class="modnav">
+    <button class="btn ghost" onClick="{{ nav.go8 }}">&larr; Modil 8</button>
+    <button class="{{ doneBtnClass.9 }}" onClick="{{ doneToggle.d9 }}">{{ doneBtnText.9 }}</button>
+    <div class="spacer"></div>
+    <button class="btn primary" onClick="{{ nav.go0 }}">Fini &rarr; Apèsi</button>
+  </div>
+</section>
+
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <div class="brandbar">
+      <span class="brand-logo" role="img" aria-label="Logo Medikaplant"></span>
+      <span class="brand-plat">
+        <span class="ak">Akademi · Edikasyon Nitrisyon</span>
+        <span class="url"><span class="h">HOÏS</span><span class="m">Medikaplant</span><span class="d">.com</span></span>
+      </span>
+    </div>
+    <p>Syans Nitrisyon la — yon kou gratis, nan pwòp rit ou. Sèlman enfòmasyon edikatif; se pa yon konsèy medikal. Plant yo diskite kòm sipò tradisyonèl ak manje. <em>Deklarasyon sa yo pa te evalye pa FDA.</em></p>
+    <p class="foot-links">HOÏSMedikaplant.com · Medikaplant.org · MedikaplantShop.com</p>
+  </div>
+</footer>
+
+</body></html>

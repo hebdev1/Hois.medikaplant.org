@@ -20,6 +20,7 @@ import PromoteHeader from '@/components/ui/promote-header';
 import Footer from '@/components/ui/footer';
 import { createClient } from '@/lib/supabase/server';
 import { sanitizeGuideHtml } from '@/lib/sanitize-html';
+import CoursePageFrame from '@/components/klas/course-page-frame';
 import EnrollButton from './enroll-button';
 
 export const dynamic = 'force-dynamic';
@@ -30,6 +31,7 @@ type CourseRow = {
   title: string;
   description: string;
   body_html: string | null;
+  page_html: string | null;
   cover_image_url: string | null;
   instructor_name: string;
   instructor_role: string | null;
@@ -427,19 +429,28 @@ export default async function CourseDetailPage({
           </aside>
         </header>
 
-        {/* ── BODY (rich html) ──────────────────────────────────────────── */}
-        {course.body_html && course.body_html.trim().length > 0 && (
-          <section className="mb-12 max-w-3xl">
-            <h2 className="font-display text-2xl md:text-3xl font-bold text-ink mb-5">
-              Sou klas sa a
-            </h2>
-            <div
-              className="guide-rich-body text-base text-ink leading-relaxed"
-              dangerouslySetInnerHTML={{
-                __html: sanitizeGuideHtml(course.body_html),
-              }}
-            />
+        {/* ── BODY ──────────────────────────────────────────────────────── */}
+        {course.page_html && course.page_html.trim().length > 0 ? (
+          // A full designed landing page overrides the rich-text body, in an
+          // isolated iframe so its own <style>/layout render untouched.
+          <section className="mb-12">
+            <CoursePageFrame html={course.page_html} />
           </section>
+        ) : (
+          course.body_html &&
+          course.body_html.trim().length > 0 && (
+            <section className="mb-12 max-w-3xl">
+              <h2 className="font-display text-2xl md:text-3xl font-bold text-ink mb-5">
+                Sou klas sa a
+              </h2>
+              <div
+                className="guide-rich-body text-base text-ink leading-relaxed"
+                dangerouslySetInnerHTML={{
+                  __html: sanitizeGuideHtml(course.body_html),
+                }}
+              />
+            </section>
+          )
         )}
 
         {/* ── MODULES ───────────────────────────────────────────────────── */}
