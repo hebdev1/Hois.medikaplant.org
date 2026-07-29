@@ -125,6 +125,24 @@ const LANG_VALUES = ['ht', 'fr', 'en'] as const;
 
 export type CourseState = { error?: string; ok?: boolean; id?: string };
 
+// Build the course "Apèsi" (overview) object for interactive courses from the
+// simple form fields. Returns null when nothing was entered.
+function buildOverview(fd: FormData): unknown {
+  const g = (k: string) => (fd.get(k)?.toString() ?? '').trim();
+  const intro = g('overview_intro');
+  const objectives = g('overview_objectives')
+    .split('\n')
+    .map((s) => s.trim())
+    .filter(Boolean);
+  const disclaimer = g('overview_disclaimer');
+  if (!intro && objectives.length === 0 && !disclaimer) return null;
+  return {
+    intro: intro || undefined,
+    objectives,
+    disclaimer: disclaimer || undefined,
+  };
+}
+
 function readCourseForm(formData: FormData) {
   const get = (k: string) => (formData.get(k)?.toString() ?? '').trim();
   const tags = get('tags')
@@ -140,6 +158,8 @@ function readCourseForm(formData: FormData) {
     description: get('description'),
     body_html: get('body_html') || null,
     page_html: get('page_html') || null,
+    kind: get('kind') === 'interactive' ? 'interactive' : 'video',
+    overview: buildOverview(formData),
     cover_image_url: get('cover_image_url') || null,
     instructor_name: get('instructor_name') || 'Hoïs Inivèsite',
     instructor_role: get('instructor_role') || null,
@@ -206,6 +226,8 @@ export async function saveCourse(
     description: input.description,
     body_html: input.body_html,
     page_html: input.page_html,
+    kind: input.kind,
+    overview: input.overview,
     cover_image_url: input.cover_image_url,
     instructor_name: input.instructor_name,
     instructor_role: input.instructor_role,
@@ -376,12 +398,25 @@ export async function saveModule(
     return { error: 'Upload yon fichye videyo, oswa chwazi "Lyen ekstèn".' };
   }
 
+  // Optional interactive content (lessons/quiz), authored as JSON by the
+  // content builder and carried in a hidden field.
+  const contentRaw = formData.get('content')?.toString() ?? '';
+  let content: unknown = null;
+  if (contentRaw.trim()) {
+    try {
+      content = JSON.parse(contentRaw);
+    } catch {
+      return { error: 'Kontni entèraktif la pa valab (fòma JSON).' };
+    }
+  }
+
   // Keep the two sources mutually exclusive so playback is unambiguous.
   const payload = {
     ...input,
     course_id: courseId,
     video_url: input.video_source === 'external' ? input.video_url : null,
     video_path: input.video_source === 'storage' ? input.video_path : null,
+    content,
   };
 
   if (moduleId) {

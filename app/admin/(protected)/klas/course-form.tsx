@@ -178,6 +178,57 @@ export default function CourseForm({ mode, initial, categories }: Props) {
             <input type="hidden" name="body_html" value={v.body_html} />
           </Field>
           <Field
+            label="Kalite kou"
+            help="Videyo = modil videyo klasik. Entèraktif = leson + quiz ak ba pwogrè (kou dinamik)."
+          >
+            <select
+              name="kind"
+              defaultValue={(initial as { kind?: string } | undefined)?.kind ?? 'video'}
+              className={inputClass}
+            >
+              <option value="video">Videyo</option>
+              <option value="interactive">Entèraktif (leson + quiz)</option>
+            </select>
+          </Field>
+          <Field
+            label="Apèsi — Entwodiksyon"
+            help="Sèlman pou kou entèraktif. Parèt sou tab «Apèsi» a."
+          >
+            <textarea
+              name="overview_intro"
+              defaultValue={
+                (initial as { overview?: { intro?: string } } | undefined)
+                  ?.overview?.intro ?? ''
+              }
+              rows={2}
+              className={cn(inputClass, 'resize-y')}
+              placeholder="Yon fraz oswa de ki entwodui kou a."
+            />
+          </Field>
+          <Field label="Apèsi — Objektif yo (yon pa liy)">
+            <textarea
+              name="overview_objectives"
+              defaultValue={(
+                (initial as { overview?: { objectives?: string[] } } | undefined)
+                  ?.overview?.objectives ?? []
+              ).join('\n')}
+              rows={3}
+              className={cn(inputClass, 'resize-y')}
+              placeholder={'Sa elèv la ap kapab fè #1\nSa elèv la ap kapab fè #2'}
+            />
+          </Field>
+          <Field label="Apèsi — Avètisman (opsyonèl)">
+            <input
+              name="overview_disclaimer"
+              defaultValue={
+                (initial as { overview?: { disclaimer?: string } } | undefined)
+                  ?.overview?.disclaimer ?? ''
+              }
+              className={inputClass}
+              placeholder="Egz. enfòmasyon edikatif, pa konsèy medikal."
+            />
+          </Field>
+          <Field
             label="Paj konplè (HTML pèsonalize)"
             help="Opsyonèl. Kole HTML endepandan yon paj konplè (ak pwòp style li). Lè l plen, li ranplase deskripsyon an sou paj piblik la, nan yon kad izole. Kite l vid pou paj estanda a."
           >

@@ -20,6 +20,8 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { createClient as createBrowserClient } from '@/lib/supabase/client';
+import ModuleContentEditor from './module-content-editor';
+import type { ModuleContent } from '@/lib/klas/course-content';
 import {
   saveModule,
   deleteModule,
@@ -442,6 +444,20 @@ function ModuleForm({
         description="Lè aktif, modil sa a parèt sou pòsyon piblik /klas/[slug] la menm pou vizitè ki pa abone."
         defaultChecked={initial?.preview ?? false}
       />
+
+      <details className="rounded-xl border border-cream-200 p-3">
+        <summary className="text-xs font-bold uppercase tracking-wider text-earth-600 cursor-pointer">
+          Kontni entèraktif (leson · quiz) — pou kou dinamik
+        </summary>
+        <div className="mt-3">
+          <ModuleContentEditor
+            initial={
+              (initial as unknown as { content?: ModuleContent | null })
+                ?.content ?? null
+            }
+          />
+        </div>
+      </details>
 
       <SaveBar
         state={state}
