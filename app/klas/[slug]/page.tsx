@@ -21,6 +21,11 @@ import Footer from '@/components/ui/footer';
 import { createClient } from '@/lib/supabase/server';
 import { sanitizeGuideHtml } from '@/lib/sanitize-html';
 import CoursePageFrame from '@/components/klas/course-page-frame';
+import InteractiveCourse from '@/components/klas/interactive-course';
+import type {
+  CourseOverview,
+  InteractiveModule,
+} from '@/lib/klas/course-content';
 import EnrollButton from './enroll-button';
 
 export const dynamic = 'force-dynamic';
@@ -32,6 +37,8 @@ type CourseRow = {
   description: string;
   body_html: string | null;
   page_html: string | null;
+  kind: string;
+  overview: CourseOverview | null;
   cover_image_url: string | null;
   instructor_name: string;
   instructor_role: string | null;
@@ -240,6 +247,57 @@ export default async function CourseDetailPage({
     memberPlan !== null &&
     (PLAN_RANK[memberPlan] ?? 0) >= (PLAN_RANK[course.plan_required] ?? 99);
   const isFreeWithSubscription = meetsPlan;
+
+  // Interactive courses render natively: modules + saved progress + quizzes.
+  // Public so anyone can view/buy; progress only saves for a logged-in member.
+  if (course.kind === 'interactive') {
+    const [modulesRes, progressRes] = await Promise.all([
+      sb
+        .from('course_modules')
+        .select('id, title, duration_text, display_order, content')
+        .eq('course_id', course.id)
+        .order('display_order', { ascending: true }),
+      user
+        ? sb
+            .from('course_module_progress')
+            .select('module_id')
+            .eq('user_id', user.id)
+            .eq('course_id', course.id)
+        : Promise.resolve({ data: [] }),
+    ]);
+    const interactiveModules = (modulesRes.data ?? []) as InteractiveModule[];
+    const completedIds = (
+      (progressRes.data ?? []) as { module_id: string }[]
+    ).map((r) => r.module_id);
+    const priceLbl = course.price_cents
+      ? `$${(course.price_cents / 100).toFixed(2)}`
+      : null;
+    const cta = alreadyEnrolled
+      ? null
+      : {
+          href: priceLbl ? `/checkout/klas/${course.slug}` : planHref,
+          label: priceLbl ? `Achte pou ${priceLbl}` : 'Enskri nan kou a',
+        };
+    return (
+      <main className="min-h-screen">
+        <InteractiveCourse
+          courseId={course.id}
+          title={course.title}
+          lede={course.description}
+          chips={[
+            `${interactiveModules.length} modil`,
+            LEVEL_LABEL[course.level] ?? course.level,
+            priceLbl ?? 'Enkli nan plan',
+          ]}
+          overview={course.overview}
+          modules={interactiveModules}
+          initialCompleted={completedIds}
+          canSaveProgress={!!user}
+          cta={cta}
+        />
+      </main>
+    );
+  }
 
   // A course with a full designed landing page takes over the whole page — no
   // default hero/aside/module list — so it reads as its own standalone page.
