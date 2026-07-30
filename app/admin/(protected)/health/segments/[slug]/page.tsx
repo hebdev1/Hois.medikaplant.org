@@ -4,6 +4,7 @@ import { ChevronLeft, Layers, ExternalLink, Activity } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { describeCondition } from '@/lib/conditions/catalog';
 import SegmentBroadcastForm from './broadcast-form';
+import SegmentTreatmentForm from './segment-treatment-form';
 import { hasCapability, type AdminRole } from '../../../admin-nav-config';
 
 export const dynamic = 'force-dynamic';
@@ -197,6 +198,11 @@ export default async function SegmentDetailPage({
         {/* ── Broadcast aside ──────────────────────────────────────────── */}
         <aside>
           <SegmentBroadcastForm
+            slug={slug}
+            label={info.label}
+            memberIds={members.map((m) => m.user_id)}
+          />
+          <SegmentTreatmentForm
             slug={slug}
             label={info.label}
             memberIds={members.map((m) => m.user_id)}
