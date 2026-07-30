@@ -345,6 +345,15 @@ export default async function CourseDetailPage({
     );
   }
 
+  // On the public course page, a visitor who has not enrolled (and whose plan
+  // doesn't cover the course) sees ONLY the preview modules — the rest are
+  // hidden entirely until they buy, not just badged as locked.
+  const canSeeAllModules = alreadyEnrolled || isFreeWithSubscription;
+  const visibleModules = canSeeAllModules
+    ? modules
+    : modules.filter((m) => m.preview);
+  const lockedModuleCount = modules.length - visibleModules.length;
+
   return (
     <main className="min-h-screen bg-white">
       <PromoteHeader />
@@ -554,18 +563,36 @@ export default async function CourseDetailPage({
             Plan klas la
           </h2>
           <p className="text-sm text-ink-muted mb-6">
-            {modules.length > 0
-              ? `${modules.length} modil — ${modules.filter((m) => m.preview).length} ki gen preview gratis.`
-              : 'Plan klas la ap vin disponib talè konsa.'}
+            {modules.length === 0
+              ? 'Plan klas la ap vin disponib talè konsa.'
+              : canSeeAllModules
+                ? `${modules.length} modil.`
+                : `${visibleModules.length} modil gratis pou wè kounye a${
+                    lockedModuleCount > 0
+                      ? ` — ${lockedModuleCount} lòt apre ou achte kou a`
+                      : ''
+                  }.`}
           </p>
 
-          {modules.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-5 py-8 text-center text-sm text-earth-600">
-              Otè klas la ap travay sou modil yo. Tcheke ankò byento.
-            </div>
+          {visibleModules.length === 0 ? (
+            lockedModuleCount > 0 ? (
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 px-5 py-10 text-center">
+                <Lock
+                  className="w-6 h-6 mx-auto mb-2 text-earth-500"
+                  strokeWidth={2}
+                />
+                <p className="text-sm text-earth-700 font-medium">
+                  {lockedModuleCount} modil disponib apre ou achte kou a.
+                </p>
+              </div>
+            ) : (
+              <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-5 py-8 text-center text-sm text-earth-600">
+                Otè klas la ap travay sou modil yo. Tcheke ankò byento.
+              </div>
+            )
           ) : (
             <ol className="space-y-3">
-              {modules.map((m) => (
+              {visibleModules.map((m) => (
                 <li key={m.id}>
                   <details className="group rounded-2xl border border-slate-200 bg-white hover:border-brand-300 transition-colors overflow-hidden">
                     <summary className="flex items-start gap-3 p-5 cursor-pointer list-none">
@@ -693,6 +720,18 @@ export default async function CourseDetailPage({
                 </li>
               ))}
             </ol>
+          )}
+          {visibleModules.length > 0 && lockedModuleCount > 0 && (
+            <div className="mt-3 rounded-2xl bg-forest-50 border border-forest-200 px-4 py-3 flex items-center gap-2 text-sm text-forest-900">
+              <Lock
+                className="w-4 h-4 shrink-0 text-forest-700"
+                strokeWidth={2.2}
+              />
+              <span>
+                <strong>{lockedModuleCount} modil an plis</strong> apre ou achte
+                kou a.
+              </span>
+            </div>
           )}
         </section>
 
