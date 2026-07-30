@@ -66,7 +66,8 @@ function formatDate(iso: string | null | undefined): string {
 
 function formatCurrency(amount: number | null | undefined): string {
   if (amount == null) return '—';
-  return `$${amount.toFixed(0)}`;
+  // Show cents so the amount matches Stripe exactly (e.g. $121.50, not $122).
+  return `$${amount.toFixed(2)}`;
 }
 
 export default async function AdminSubscriptionsPage({
