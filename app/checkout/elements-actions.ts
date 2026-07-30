@@ -205,19 +205,12 @@ export async function createCourseIntent(
       return { error: 'Stripe pa bay yon sekrè pou konfime peman an.' };
     }
 
-    // Route by membership after payment: a plan member keeps courses in their
-    // dashboard ("Klas mwen yo"); a non-member lands in the standalone student
-    // area (courses are independent of subscriptions).
-    const { count: activeSubs } = await sb
-      .from('subscriptions')
-      .select('id', { count: 'exact', head: true })
-      .eq('user_id', member.userId)
-      .eq('status', 'active');
-    const isMember = (activeSubs ?? 0) > 0;
-
+    // Every course buyer — member or not — lands in the student area (/aprann),
+    // the one redirect that works for everyone (a non-member can't reach
+    // /dashboard). Courses are independent of subscriptions.
     return {
       clientSecret: intent.client_secret,
-      returnPath: isMember ? '/dashboard/kou' : '/aprann',
+      returnPath: '/aprann',
     };
   } catch (e) {
     console.error('[stripe] course intent failed', e);

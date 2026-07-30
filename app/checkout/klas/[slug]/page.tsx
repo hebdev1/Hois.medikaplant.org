@@ -20,7 +20,7 @@ type Course = {
   title: string;
   description: string;
   cover_image_url: string | null;
-  price_cents: number;
+  price_cents: number | null;
   seat_capacity: number | null;
   instructor_name: string;
   instructor_role: string | null;
@@ -59,10 +59,9 @@ export default async function CourseCheckoutPage({
   const course = courseRaw as Course | null;
   if (!course || !course.active) notFound();
 
-  // Course must actually be for sale here. NULL/0 price = subscription-only.
-  if (!course.price_cents || course.price_cents <= 0) {
-    redirect(`/klas/${course.slug}`);
-  }
+  // Free courses (no price) go through this same checkout — the account step,
+  // just no payment.
+  const isFree = !course.price_cents || course.price_cents <= 0;
 
   // If user already bought + enrolled, route them straight to the dashboard.
   const {
@@ -76,7 +75,7 @@ export default async function CourseCheckoutPage({
       .eq('user_id', user.id)
       .maybeSingle();
     if (existing) {
-      redirect(`/klas/${course.slug}?already_owned=1`);
+      redirect('/aprann');
     }
   }
 
@@ -144,7 +143,7 @@ export default async function CourseCheckoutPage({
                   Total
                 </span>
                 <span className="font-display text-3xl font-bold text-ink">
-                  {dollars(course.price_cents)}
+                  {isFree ? 'Gratis' : dollars(course.price_cents ?? 0)}
                 </span>
               </div>
 
@@ -219,8 +218,9 @@ export default async function CourseCheckoutPage({
             ) : (
               <CourseCheckoutForm
                 slug={course.slug}
-                priceCents={course.price_cents}
+                priceCents={course.price_cents ?? 0}
                 isAuthenticated={!!user}
+                isFree={isFree}
               />
             )}
           </div>

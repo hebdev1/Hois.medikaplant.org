@@ -23,6 +23,7 @@ type Props = {
   slug: string;
   priceCents: number;
   isAuthenticated: boolean;
+  isFree: boolean;
 };
 
 type Mode = 'login' | 'signup';
@@ -35,6 +36,7 @@ export default function CourseCheckoutForm({
   slug,
   priceCents,
   isAuthenticated,
+  isFree,
 }: Props) {
   const router = useRouter();
   const action = processCourseCheckout.bind(null, slug);
@@ -162,31 +164,50 @@ export default function CourseCheckoutForm({
         </section>
       )}
 
-      {/* Payment section */}
-      <section className="bg-white border border-cream-200 rounded-2xl p-5 md:p-6 shadow-card space-y-4">
-        <header className="inline-flex items-center gap-2 mb-1">
-          <CreditCard className="w-4 h-4 text-brand-700" strokeWidth={2.4} />
-          <h2 className="font-display text-sm font-bold uppercase tracking-wide text-ink">
-            Peman
-          </h2>
-        </header>
+      {/* Payment section — only for paid courses. A free course skips it
+          entirely: the account step above is all that's needed. */}
+      {isFree ? (
+        <section className="bg-forest-50 border border-forest-200 rounded-2xl p-5 md:p-6 space-y-2">
+          <header className="inline-flex items-center gap-2">
+            <CheckCircle2
+              className="w-4 h-4 text-forest-700"
+              strokeWidth={2.4}
+            />
+            <h2 className="font-display text-sm font-bold uppercase tracking-wide text-forest-800">
+              Klas gratis
+            </h2>
+          </header>
+          <p className="text-sm text-forest-800/90 leading-relaxed">
+            Klas sa a gratis. Pa gen anyen pou peye — lè w klike bouton an, w ap
+            enskri epi n ap mennen w nan Espas Elèv la pou w kòmanse.
+          </p>
+        </section>
+      ) : (
+        <section className="bg-white border border-cream-200 rounded-2xl p-5 md:p-6 shadow-card space-y-4">
+          <header className="inline-flex items-center gap-2 mb-1">
+            <CreditCard className="w-4 h-4 text-brand-700" strokeWidth={2.4} />
+            <h2 className="font-display text-sm font-bold uppercase tracking-wide text-ink">
+              Peman
+            </h2>
+          </header>
 
-        {/* No card fields on purpose — the member enters their card on
-            Stripe's own page, so it never reaches our servers. */}
-        <p className="text-sm text-earth-600 leading-relaxed">
-          Lè w klike bouton an, n ap voye w sou paj sekirize{' '}
-          <strong className="text-ink">Stripe</strong> pou w antre kat ou.
-          Apre peman an, w ap enskri nan kou a otomatikman.
-        </p>
+          {/* No card fields on purpose — the member enters their card on
+              Stripe's own page, so it never reaches our servers. */}
+          <p className="text-sm text-earth-600 leading-relaxed">
+            Lè w klike bouton an, n ap voye w sou paj sekirize{' '}
+            <strong className="text-ink">Stripe</strong> pou w antre kat ou.
+            Apre peman an, w ap enskri nan kou a otomatikman.
+          </p>
 
-        <p className="text-[11px] text-earth-500 inline-flex items-center gap-1.5">
-          <Lock className="w-3 h-3" strokeWidth={2.4} />
-          Nou pa janm wè ni kenbe okenn detay kat sou sèvè nou.
-        </p>
-      </section>
+          <p className="text-[11px] text-earth-500 inline-flex items-center gap-1.5">
+            <Lock className="w-3 h-3" strokeWidth={2.4} />
+            Nou pa janm wè ni kenbe okenn detay kat sou sèvè nou.
+          </p>
+        </section>
+      )}
 
       {/* Submit + state */}
-      <SubmitBar priceCents={priceCents} state={state} />
+      <SubmitBar priceCents={priceCents} state={state} isFree={isFree} />
     </form>
   );
 }
@@ -194,9 +215,11 @@ export default function CourseCheckoutForm({
 function SubmitBar({
   priceCents,
   state,
+  isFree,
 }: {
   priceCents: number;
   state: CourseCheckoutState;
+  isFree: boolean;
 }) {
   const { pending } = useFormStatus();
   return (
@@ -208,10 +231,12 @@ function SubmitBar({
       >
         {pending ? (
           <Loader2 className="w-4 h-4 animate-spin" strokeWidth={2.4} />
+        ) : isFree ? (
+          <CheckCircle2 className="w-4 h-4" strokeWidth={2.4} />
         ) : (
           <Lock className="w-4 h-4" strokeWidth={2.4} />
         )}
-        Peye {dollars(priceCents)} epi jwenn aksè
+        {isFree ? 'Enskri gratis kounye a' : `Peye ${dollars(priceCents)} epi jwenn aksè`}
       </button>
 
       {state.error && (
@@ -223,12 +248,16 @@ function SubmitBar({
       {state.redirectTo && (
         <div className="flex items-center gap-2 rounded-xl bg-forest-50 border border-forest-200 px-4 py-3 text-sm text-forest-800">
           <CheckCircle2 className="w-4 h-4 shrink-0" strokeWidth={2.4} />
-          <span>Pèman pase. Mwen ap mennen w nan klas la…</span>
+          <span>
+            {isFree
+              ? 'Ou enskri! Mwen ap mennen w nan Espas Elèv la…'
+              : 'Pèman pase. Mwen ap mennen w nan klas la…'}
+          </span>
         </div>
       )}
 
       <p className="text-[11px] text-earth-500 text-center">
-        Lè w peye, ou aksepte{' '}
+        Lè w {isFree ? 'enskri' : 'peye'}, ou aksepte{' '}
         <Link href="/konfidansyalite" className="underline">
           kondisyon yo
         </Link>

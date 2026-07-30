@@ -93,12 +93,6 @@ const LANGUAGE_LABEL: Record<string, string> = {
   en: 'English',
 };
 
-const PLAN_LABEL: Record<string, string> = {
-  basic: 'Hoïs Bazilik',
-  premium: 'Hoïs Sitwonèl',
-  vip: 'Hoïs Melis',
-};
-
 const PLAN_HREF: Record<string, string> = {
   basic: '/checkout?plan=basic',
   premium: '/checkout?plan=premium',
@@ -106,7 +100,8 @@ const PLAN_HREF: Record<string, string> = {
 };
 
 function priceLabel(cents: number | null): string {
-  if (cents === null || cents === undefined) return 'Enkli nan abònman';
+  // No price (or zero) means the course is free.
+  if (!cents || cents <= 0) return 'Gratis';
   return `$${(cents / 100).toFixed(2)}`;
 }
 
@@ -284,11 +279,13 @@ export default async function CourseDetailPage({
     const priceLbl = course.price_cents
       ? `$${(course.price_cents / 100).toFixed(2)}`
       : null;
+    // Paid and free interactive courses both go through the course checkout —
+    // the account step then either takes payment or enrols for free.
     const cta = alreadyEnrolled
       ? null
       : {
-          href: priceLbl ? `/checkout/klas/${course.slug}` : planHref,
-          label: priceLbl ? `Achte pou ${priceLbl}` : 'Enskri nan kou a',
+          href: `/checkout/klas/${course.slug}`,
+          label: priceLbl ? `Achte pou ${priceLbl}` : 'Enskri gratis',
         };
     return (
       <main className="min-h-screen">
@@ -299,7 +296,7 @@ export default async function CourseDetailPage({
           chips={[
             `${interactiveModules.length} modil`,
             LEVEL_LABEL[course.level] ?? course.level,
-            priceLbl ?? 'Enkli nan plan',
+            priceLbl ?? 'Gratis',
           ]}
           overview={course.overview}
           modules={interactiveModules}
@@ -323,12 +320,10 @@ export default async function CourseDetailPage({
         <div className="sticky bottom-0 z-40 border-t border-cream-200 bg-white/95 backdrop-blur px-4 py-3 shadow-[0_-6px_24px_-10px_rgba(0,0,0,0.25)]">
           <div className="mx-auto max-w-md">
             <EnrollButton
-              courseId={course.id}
               slug={course.slug}
               seatCapacity={course.seat_capacity}
               seatsTaken={seatsTaken}
               alreadyEnrolled={alreadyEnrolled}
-              isAuthenticated={!!user}
               isPaidCourse={
                 course.price_cents !== null && course.price_cents > 0
               }
@@ -472,21 +467,17 @@ export default async function CourseDetailPage({
                   {priceLabel(course.price_cents)}
                 </div>
                 <div className="text-xs text-ink-muted mt-0.5">
-                  Plan{' '}
-                  <span className="font-semibold">
-                    {PLAN_LABEL[course.plan_required] ?? course.plan_required}
-                  </span>{' '}
-                  oswa pi wo
+                  {course.price_cents && course.price_cents > 0
+                    ? 'Yon sèl acha · aksè pou tout lavi'
+                    : 'Aksè gratis · pa bezwen abònman'}
                 </div>
               </div>
 
               <EnrollButton
-                courseId={course.id}
                 slug={course.slug}
                 seatCapacity={course.seat_capacity}
                 seatsTaken={seatsTaken}
                 alreadyEnrolled={alreadyEnrolled}
-                isAuthenticated={!!user}
                 isPaidCourse={
                   course.price_cents !== null && course.price_cents > 0
                 }

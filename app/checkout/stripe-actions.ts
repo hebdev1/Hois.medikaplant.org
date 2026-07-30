@@ -180,7 +180,10 @@ export async function startCourseCheckout(
       payment_intent_data: {
         metadata: { user_id: member.userId, course_id: course.id },
       },
-      success_url: siteUrl(`/dashboard/klas/${course.slug}?achte=1`),
+      // Every course buyer — member or not — lands in the student area. A
+      // non-member can't reach /dashboard (subscription gate), so /aprann is
+      // the one redirect that works for everyone.
+      success_url: siteUrl('/aprann?achte=1'),
       cancel_url: siteUrl(`/checkout/klas/${course.slug}?canceled=1`),
     });
 

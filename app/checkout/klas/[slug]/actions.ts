@@ -46,11 +46,8 @@ export async function processCourseCheckout(
   const course = await loadCourse(slug);
   if (!course) return { error: 'Klas la pa egziste.' };
   if (!course.active) return { error: 'Klas sa a poko aktif.' };
-  if (!course.price_cents || course.price_cents <= 0) {
-    return {
-      error: 'Klas sa a enkli nan abònman — pa gen achte separe.',
-    };
-  }
+  // A course with no price is free — same flow (account step), but no payment.
+  const isFree = !course.price_cents || course.price_cents <= 0;
 
   // ── 2. Auth — login OR signup OR already signed-in ────────────────────
   // No card validation here any more: the card is entered on Stripe's page,
@@ -148,6 +145,31 @@ export async function processCourseCheckout(
         error: `Klas la deja konplè (${course.seat_capacity} plas).`,
       };
     }
+  }
+
+  // Free course: no payment — enrol right away and send them to the student
+  // area (the redirect page for every course buyer on the platform).
+  if (isFree) {
+    if (!user) return { error: 'Ou dwe konekte pou enskri.' };
+    // Use the same SECURITY DEFINER RPC the public page uses: it derives the
+    // user from the session, re-checks capacity/active atomically, and is
+    // idempotent — so we don't depend on an upsert conflict target.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: enrollData, error: enrollError } = await (supabase as any).rpc(
+      'enroll_in_course',
+      { p_course_id: course.id }
+    );
+    if (enrollError) return { error: enrollError.message };
+    const r = enrollData as { ok: boolean; error?: string; capacity?: number } | null;
+    if (r && r.ok === false) {
+      if (r.error === 'course_full') {
+        return {
+          error: `Klas la deja konplè (${r.capacity ?? course.seat_capacity} plas).`,
+        };
+      }
+      return { error: r.error ?? 'Enskripsyon an pa pase.' };
+    }
+    return { redirectTo: '/aprann' };
   }
 
   const session = await startCourseCheckout(course.id);
