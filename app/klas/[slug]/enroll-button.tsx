@@ -21,17 +21,8 @@ type Props = {
   seatsTaken: number;
   alreadyEnrolled: boolean;
   isAuthenticated: boolean;
-  isFreeWithSubscription: boolean;
   isPaidCourse: boolean;
   priceCents: number | null;
-  planRequired: string;
-  upgradeHref: string;
-};
-
-const PLAN_LABEL: Record<string, string> = {
-  basic: 'Bazilik',
-  premium: 'Sitwonèl',
-  vip: 'Melis',
 };
 
 function dollars(cents: number): string {
@@ -45,11 +36,8 @@ export default function EnrollButton({
   seatsTaken,
   alreadyEnrolled,
   isAuthenticated,
-  isFreeWithSubscription,
   isPaidCourse,
   priceCents,
-  planRequired,
-  upgradeHref,
 }: Props) {
   const router = useRouter();
   const [pending, setPending] = React.useState(false);
@@ -76,7 +64,7 @@ export default function EnrollButton({
       if (res.ok) {
         setFeedback({
           kind: 'success',
-          message: 'Ou enskri ak siksè. Ale nan tablodebò w pou kòmanse.',
+          message: 'Ou enskri ak siksè! Ale nan Espas Elèv la pou kòmanse.',
         });
         router.refresh();
       } else {
@@ -98,11 +86,11 @@ export default function EnrollButton({
     return (
       <div className="space-y-2">
         <Link
-          href="/dashboard"
+          href="/aprann"
           className="block w-full text-center bg-forest-700 hover:bg-forest-800 text-cream-50 px-5 py-3 rounded-full font-medium transition shadow-md inline-flex items-center justify-center gap-2"
         >
           <CheckCircle2 className="w-4 h-4" strokeWidth={2.4} />
-          Ou deja enskri  ale nan tablodebò
+          Ou deja enskri — ale nan Espas Elèv
         </Link>
         {seatsLeft !== null && (
           <p className="text-[11px] text-ink-muted text-center">
@@ -154,24 +142,7 @@ export default function EnrollButton({
     );
   }
 
-  // ─── State 3b: free course but member needs a higher plan ───────────────
-  if (!isFreeWithSubscription) {
-    return (
-      <div className="space-y-2">
-        <Link
-          href={upgradeHref}
-          className="block w-full text-center bg-brand-gradient hover:brightness-110 text-white px-5 py-3 rounded-full font-medium transition shadow-md"
-        >
-          Achte klas ou a epi kòmanse aprann tousuit.
-        </Link>
-        {seatsLeft !== null && seatsLeft <= 10 && (
-          <SeatsLeftBadge seatsLeft={seatsLeft} seatCapacity={seatCapacity!} />
-        )}
-      </div>
-    );
-  }
-
-  // ─── State 4: included with current/future subscription ─────────────────
+  // ─── State 4: free course — any signed-in user can enrol (no plan gate) ──
   return (
     <div className="space-y-2">
       <button

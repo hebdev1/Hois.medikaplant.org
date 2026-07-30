@@ -16,5 +16,10 @@ export const config = {
   // Note: /checkout is intentionally NOT listed — it is reachable
   // anonymously and does its own inline auth; the no-active-plan redirect
   // that sends members to /checkout fires from the /dashboard branch.
-  matcher: ['/dashboard/:path*', '/admin/:path*', '/auth/:path*'],
+  matcher: [
+    '/dashboard/:path*',
+    '/admin/:path*',
+    '/auth/:path*',
+    '/aprann/:path*',
+  ],
 };

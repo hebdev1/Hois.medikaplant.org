@@ -44,6 +44,10 @@ export async function updateSession(request: NextRequest) {
   // the login/signup inline while they purchase. Only /dashboard requires a
   // session up front.
   const isMemberRoute = pathname.startsWith('/dashboard');
+  // The student area is open to any signed-in course buyer — no active
+  // subscription required (courses are independent of plans). It still needs
+  // a session, and the pages inside gate on enrolment.
+  const isLearnRoute = pathname.startsWith('/aprann');
   const isMemberAuthRoute =
     pathname.startsWith('/auth/login') || pathname.startsWith('/auth/signup');
 
@@ -56,8 +60,8 @@ export async function updateSession(request: NextRequest) {
       url.pathname = '/admin/login';
       return NextResponse.redirect(url);
     }
-    // /dashboard/* or /checkout → /auth/login?redirect=…
-    if (isMemberRoute) {
+    // /dashboard/* or /aprann/* → /auth/login?redirect=…
+    if (isMemberRoute || isLearnRoute) {
       const url = request.nextUrl.clone();
       const originalSearch = request.nextUrl.search;
       const originalPlan = request.nextUrl.searchParams.get('plan');

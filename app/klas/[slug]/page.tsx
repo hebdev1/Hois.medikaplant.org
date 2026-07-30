@@ -270,7 +270,7 @@ export default async function CourseDetailPage({
     // module. Everyone else sees ONLY modules the admin marked as preview — the
     // rest are filtered out server-side, so their content never reaches the
     // browser at all.
-    const hasFullAccess = alreadyEnrolled || isFreeWithSubscription;
+    const hasFullAccess = alreadyEnrolled;
     const allInteractive = (
       (modulesRes.data ?? []) as InteractiveModule[]
     ).map((mod) => ({ ...mod, content: stripQuizAnswers(mod.content) }));
@@ -329,15 +329,10 @@ export default async function CourseDetailPage({
               seatsTaken={seatsTaken}
               alreadyEnrolled={alreadyEnrolled}
               isAuthenticated={!!user}
-              isFreeWithSubscription={
-                isFreeWithSubscription && course.price_cents === null
-              }
               isPaidCourse={
                 course.price_cents !== null && course.price_cents > 0
               }
               priceCents={course.price_cents}
-              planRequired={course.plan_required}
-              upgradeHref={planHref}
             />
           </div>
         </div>
@@ -348,7 +343,9 @@ export default async function CourseDetailPage({
   // On the public course page, a visitor who has not enrolled (and whose plan
   // doesn't cover the course) sees ONLY the preview modules — the rest are
   // hidden entirely until they buy, not just badged as locked.
-  const canSeeAllModules = alreadyEnrolled || isFreeWithSubscription;
+  // Course access is independent of any subscription — only enrolment (a
+  // purchase, or a free enrol) reveals the full plan.
+  const canSeeAllModules = alreadyEnrolled;
   const visibleModules = canSeeAllModules
     ? modules
     : modules.filter((m) => m.preview);
@@ -490,15 +487,10 @@ export default async function CourseDetailPage({
                 seatsTaken={seatsTaken}
                 alreadyEnrolled={alreadyEnrolled}
                 isAuthenticated={!!user}
-                isFreeWithSubscription={
-                  isFreeWithSubscription && course.price_cents === null
-                }
                 isPaidCourse={
                   course.price_cents !== null && course.price_cents > 0
                 }
                 priceCents={course.price_cents}
-                planRequired={course.plan_required}
-                upgradeHref={planHref}
               />
 
               {course.format !== 'video' && course.zoom_schedule?.text && (
