@@ -24,15 +24,11 @@ export default function StudentLoginPage() {
         <div className="absolute -left-20 bottom-8 w-64 h-64 rounded-full bg-gold-400/10" />
 
         <div className="relative">
-          <Link href="/" className="inline-flex items-center gap-2.5">
-            <span className="grid place-items-center w-10 h-10 rounded-full bg-gold-400 text-forest-900 font-display font-bold text-lg">
-              H
-            </span>
-            <span className="leading-tight">
-              <span className="block font-display text-lg font-semibold">Hoïs</span>
-              <span className="block text-[10px] uppercase tracking-[0.16em] text-brand-300 font-semibold">
-                Inivèsite
-              </span>
+          <Link href="/" className="inline-flex flex-col gap-1.5">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo-hois.png" alt="Hoïs" className="h-10 w-auto self-start" />
+            <span className="pl-0.5 text-[10px] uppercase tracking-[0.16em] text-brand-300 font-semibold">
+              Inivèsite
             </span>
           </Link>
         </div>
@@ -76,14 +72,10 @@ export default function StudentLoginPage() {
           {/* Mobile logo (the left panel is hidden on small screens) */}
           <Link
             href="/"
-            className="md:hidden inline-flex items-center gap-2 mb-8"
+            className="md:hidden inline-block mb-8"
           >
-            <span className="grid place-items-center w-9 h-9 rounded-full bg-gold-400 text-forest-900 font-display font-bold">
-              H
-            </span>
-            <span className="font-display text-lg font-semibold text-ink">
-              Hoïs
-            </span>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo-hois.png" alt="Hoïs" className="h-9 w-auto" />
           </Link>
 
           <span className="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-[0.16em] text-forest-700 font-semibold">

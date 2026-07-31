@@ -47,15 +47,11 @@ export default async function AprannLayout({
     <div className="min-h-screen bg-cream-50 md:flex">
       {/* Sidebar (desktop) */}
       <aside className="hidden md:flex md:w-64 md:flex-col md:sticky md:top-0 md:h-screen bg-forest-900 text-cream-50 p-6">
-        <Link href="/aprann" className="flex items-center gap-2.5 mb-9">
-          <span className="grid place-items-center w-9 h-9 rounded-full bg-gold-400 text-forest-900 font-display font-bold text-lg">
-            H
-          </span>
-          <span className="leading-tight">
-            <span className="block font-display text-lg font-semibold">Hoïs</span>
-            <span className="block text-[10px] uppercase tracking-[0.16em] text-brand-400/90 font-semibold">
-              Inivèsite
-            </span>
+        <Link href="/aprann" className="mb-9 inline-flex flex-col gap-1.5">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo-hois.png" alt="Hoïs" className="h-9 w-auto self-start" />
+          <span className="pl-0.5 text-[10px] uppercase tracking-[0.16em] text-brand-400/90 font-semibold">
+            Inivèsite
           </span>
         </Link>
 
@@ -111,10 +107,9 @@ export default async function AprannLayout({
       {/* Top bar (mobile) */}
       <header className="md:hidden sticky top-0 z-30 flex items-center justify-between gap-2 bg-forest-900 text-cream-50 px-4 py-3">
         <Link href="/aprann" className="inline-flex items-center gap-2 min-w-0">
-          <span className="grid place-items-center w-8 h-8 rounded-full bg-gold-400 text-forest-900 font-display font-bold shrink-0">
-            H
-          </span>
-          <span className="inline-flex items-center gap-1.5 text-sm font-semibold truncate">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo-hois.png" alt="Hoïs" className="h-6 w-auto shrink-0" />
+          <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-cream-100/90 truncate">
             <LibraryBig
               className="w-4 h-4 text-brand-400 shrink-0"
               strokeWidth={2.2}
