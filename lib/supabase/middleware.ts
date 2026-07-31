@@ -60,13 +60,13 @@ export async function updateSession(request: NextRequest) {
       url.pathname = '/admin/login';
       return NextResponse.redirect(url);
     }
-    // /dashboard/* or /aprann/* → /auth/login?redirect=…
+    // /dashboard/* → the member login; /aprann/* → the dedicated student login.
     if (isMemberRoute || isLearnRoute) {
       const url = request.nextUrl.clone();
       const originalSearch = request.nextUrl.search;
       const originalPlan = request.nextUrl.searchParams.get('plan');
       url.search = '';
-      url.pathname = '/auth/login';
+      url.pathname = isLearnRoute ? '/etidyan/login' : '/auth/login';
       url.searchParams.set('redirect', `${pathname}${originalSearch}`);
       if (originalPlan) url.searchParams.set('plan', originalPlan);
       return NextResponse.redirect(url);
