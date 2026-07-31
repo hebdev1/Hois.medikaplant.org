@@ -65,6 +65,21 @@ export default function InteractiveCourse({
   const idx = order.indexOf(active);
   const activeModule = modules.find((m) => m.id === active) ?? null;
 
+  // Sequential gating: a module unlocks once the one before it is completed.
+  // Module 1 is always open, and any completed module stays open to revisit.
+  const isUnlocked = (i: number) =>
+    i <= 0 ||
+    completed.has(modules[i - 1].id) ||
+    completed.has(modules[i].id);
+
+  const activeIdx = activeModule
+    ? modules.findIndex((m) => m.id === activeModule.id)
+    : -1;
+  const nextModuleLocked =
+    activeIdx >= 0 &&
+    activeIdx + 1 < modules.length &&
+    !isUnlocked(activeIdx + 1);
+
   function go(to: string) {
     setActive(to);
     if (typeof window !== 'undefined') window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -158,15 +173,21 @@ export default function InteractiveCourse({
             label="Apèsi"
             onClick={() => go('overview')}
           />
-          {modules.map((m, i) => (
-            <TabButton
-              key={m.id}
-              active={active === m.id}
-              done={completed.has(m.id)}
-              label={`${i + 1}. ${m.title}`}
-              onClick={() => go(m.id)}
-            />
-          ))}
+          {modules.map((m, i) => {
+            const locked = !isUnlocked(i);
+            return (
+              <TabButton
+                key={m.id}
+                active={active === m.id}
+                done={completed.has(m.id)}
+                locked={locked}
+                label={`${i + 1}. ${m.title}`}
+                onClick={() => {
+                  if (!locked) go(m.id);
+                }}
+              />
+            );
+          })}
         </div>
       </nav>
 
@@ -178,6 +199,7 @@ export default function InteractiveCourse({
             modules={modules}
             lockedCount={lockedCount}
             cta={cta}
+            isUnlocked={isUnlocked}
             onStart={() => modules[0] && go(modules[0].id)}
           />
         ) : activeModule ? (
@@ -190,41 +212,58 @@ export default function InteractiveCourse({
 
         {/* ── Modnav ── */}
         {activeModule && (
-          <div className="mt-10 flex items-center justify-between gap-3 border-t border-cream-200 pt-6">
-            <button
-              type="button"
-              onClick={() => idx > 0 && go(order[idx - 1])}
-              disabled={idx <= 1}
-              className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-semibold text-earth-700 hover:text-ink disabled:opacity-40 transition"
-            >
-              <ArrowLeft className="w-4 h-4" strokeWidth={2.2} /> Anvan
-            </button>
-            <button
-              type="button"
-              onClick={() => toggleComplete(activeModule.id)}
-              className={cn(
-                'inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold transition shadow-sm',
-                completed.has(activeModule.id)
-                  ? 'bg-forest-100 text-forest-800'
-                  : 'bg-forest-700 hover:bg-forest-800 text-cream-50'
-              )}
-            >
-              {pending ? (
-                <Loader2 className="w-4 h-4 animate-spin" strokeWidth={2.2} />
-              ) : (
-                <CheckCircle2 className="w-4 h-4" strokeWidth={2.2} />
-              )}
-              {completed.has(activeModule.id) ? 'Modil fini ✓' : 'Make modil fini'}
-            </button>
-            <button
-              type="button"
-              onClick={() => idx < order.length - 1 && go(order[idx + 1])}
-              disabled={idx >= order.length - 1}
-              className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-semibold text-earth-700 hover:text-ink disabled:opacity-40 transition"
-            >
-              Pwochen <ArrowRight className="w-4 h-4" strokeWidth={2.2} />
-            </button>
-          </div>
+          <>
+            <div className="mt-10 flex items-center justify-between gap-3 border-t border-cream-200 pt-6">
+              <button
+                type="button"
+                onClick={() => idx > 0 && go(order[idx - 1])}
+                disabled={idx <= 1}
+                className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-semibold text-earth-700 hover:text-ink disabled:opacity-40 transition"
+              >
+                <ArrowLeft className="w-4 h-4" strokeWidth={2.2} /> Anvan
+              </button>
+              <button
+                type="button"
+                onClick={() => toggleComplete(activeModule.id)}
+                className={cn(
+                  'inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold transition shadow-sm',
+                  completed.has(activeModule.id)
+                    ? 'bg-forest-100 text-forest-800'
+                    : 'bg-forest-700 hover:bg-forest-800 text-cream-50'
+                )}
+              >
+                {pending ? (
+                  <Loader2 className="w-4 h-4 animate-spin" strokeWidth={2.2} />
+                ) : (
+                  <CheckCircle2 className="w-4 h-4" strokeWidth={2.2} />
+                )}
+                {completed.has(activeModule.id) ? 'Modil fini ✓' : 'Make modil fini'}
+              </button>
+              <button
+                type="button"
+                onClick={() =>
+                  idx < order.length - 1 &&
+                  !nextModuleLocked &&
+                  go(order[idx + 1])
+                }
+                disabled={idx >= order.length - 1 || nextModuleLocked}
+                title={
+                  nextModuleLocked
+                    ? 'Fini modil sa a pou w debloke pwochen an'
+                    : undefined
+                }
+                className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-semibold text-earth-700 hover:text-ink disabled:opacity-40 transition"
+              >
+                Pwochen <ArrowRight className="w-4 h-4" strokeWidth={2.2} />
+              </button>
+            </div>
+            {nextModuleLocked && (
+              <p className="mt-3 flex items-center justify-center gap-1.5 text-center text-xs text-earth-600">
+                <Lock className="w-3 h-3" strokeWidth={2.2} />
+                Make modil sa a fini pou w debloke pwochen modil la.
+              </p>
+            )}
+          </>
         )}
       </main>
 
@@ -240,11 +279,13 @@ export default function InteractiveCourse({
 function TabButton({
   active,
   done,
+  locked = false,
   label,
   onClick,
 }: {
   active: boolean;
   done: boolean;
+  locked?: boolean;
   label: string;
   onClick: () => void;
 }) {
@@ -252,14 +293,21 @@ function TabButton({
     <button
       type="button"
       onClick={onClick}
+      disabled={locked}
+      aria-disabled={locked}
+      title={locked ? 'Fini modil anvan an pou w debloke sa a' : undefined}
       className={cn(
         'inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition',
-        active
-          ? 'bg-forest-700 text-cream-50 shadow-sm'
-          : 'bg-cream-100 text-earth-700 hover:bg-cream-200'
+        locked
+          ? 'bg-cream-100 text-earth-400 cursor-not-allowed'
+          : active
+            ? 'bg-forest-700 text-cream-50 shadow-sm'
+            : 'bg-cream-100 text-earth-700 hover:bg-cream-200'
       )}
     >
-      {done ? (
+      {locked ? (
+        <Lock className="w-3.5 h-3.5" strokeWidth={2.2} />
+      ) : done ? (
         <CheckCircle2 className="w-3.5 h-3.5 text-forest-500" strokeWidth={2.4} />
       ) : (
         <Circle className="w-3.5 h-3.5 opacity-50" strokeWidth={2.2} />
@@ -274,12 +322,14 @@ function OverviewPanel({
   modules,
   lockedCount,
   cta,
+  isUnlocked,
   onStart,
 }: {
   overview: CourseOverview | null;
   modules: InteractiveModule[];
   lockedCount: number;
   cta?: { href: string; label: string } | null;
+  isUnlocked: (i: number) => boolean;
   onStart: () => void;
 }) {
   return (
@@ -325,25 +375,47 @@ function OverviewPanel({
       <div>
         <h3 className="font-display font-bold text-ink mb-3">Modil yo</h3>
         <ol className="space-y-2">
-          {modules.map((m, i) => (
-            <li
-              key={m.id}
-              className="flex items-center gap-3 rounded-xl bg-white border border-cream-200 px-4 py-3"
-            >
-              <span className="grid place-items-center w-6 h-6 rounded-full bg-forest-100 text-forest-700 text-xs font-bold shrink-0">
-                {i + 1}
-              </span>
-              <span className="text-sm font-semibold text-ink flex-1">
-                {m.title}
-              </span>
-              {m.duration_text && (
-                <span className="inline-flex items-center gap-1 text-[11px] text-earth-600">
-                  <Clock className="w-3 h-3" strokeWidth={2.2} />
-                  {m.duration_text}
+          {modules.map((m, i) => {
+            const locked = !isUnlocked(i);
+            return (
+              <li
+                key={m.id}
+                className={cn(
+                  'flex items-center gap-3 rounded-xl border px-4 py-3',
+                  locked
+                    ? 'bg-cream-50 border-cream-200 opacity-75'
+                    : 'bg-white border-cream-200'
+                )}
+              >
+                <span
+                  className={cn(
+                    'grid place-items-center w-6 h-6 rounded-full text-xs font-bold shrink-0',
+                    locked
+                      ? 'bg-cream-200 text-earth-500'
+                      : 'bg-forest-100 text-forest-700'
+                  )}
+                >
+                  {i + 1}
                 </span>
-              )}
-            </li>
-          ))}
+                <span className="text-sm font-semibold text-ink flex-1">
+                  {m.title}
+                </span>
+                {locked ? (
+                  <Lock
+                    className="w-3.5 h-3.5 text-earth-400 shrink-0"
+                    strokeWidth={2.2}
+                  />
+                ) : (
+                  m.duration_text && (
+                    <span className="inline-flex items-center gap-1 text-[11px] text-earth-600">
+                      <Clock className="w-3 h-3" strokeWidth={2.2} />
+                      {m.duration_text}
+                    </span>
+                  )
+                )}
+              </li>
+            );
+          })}
         </ol>
       </div>
       {lockedCount > 0 && (
