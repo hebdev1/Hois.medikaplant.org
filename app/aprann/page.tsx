@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { getCurrentUser } from '@/lib/supabase/auth';
+import PurchaseProcessing from './purchase-processing';
 
 export const dynamic = 'force-dynamic';
 
@@ -34,7 +35,11 @@ function pctOf(done: number, total: number) {
   return total > 0 ? Math.round((done / total) * 100) : 0;
 }
 
-export default async function AprannPage() {
+export default async function AprannPage({
+  searchParams,
+}: {
+  searchParams: { achte?: string; t?: string };
+}) {
   const supabase = createClient();
   const user = await getCurrentUser();
   if (!user) redirect('/auth/login?redirect=/aprann');
@@ -82,6 +87,16 @@ export default async function AprannPage() {
     }
   }
   const courseIds = enrolled.map((c) => c.id);
+
+  // Portal is for course buyers only. Nobody enrolled = not a student: send
+  // them to the catalogue — unless they just paid (?achte=1), in which case
+  // wait out the brief window before the Stripe webhook records the enrolment.
+  if (enrolled.length === 0) {
+    if (searchParams?.achte) {
+      return <PurchaseProcessing attempt={Number(searchParams.t ?? 0)} />;
+    }
+    redirect('/klas');
+  }
 
   // Total modules + which modules this member finished, per course.
   const doneByCourse = new Map<string, Set<string>>();

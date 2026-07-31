@@ -14,6 +14,7 @@ import {
   Sparkles,
   ArrowRight,
 } from 'lucide-react';
+import { studentPortalNav } from '@/app/aprann/portal-access';
 
 // ───────────────────────────────────────────────────────────────────────────
 // MedikaPlant landing header — adapted from the generic "PromoteHeader"
@@ -92,6 +93,22 @@ export default function PromoteHeader() {
   const pathname = usePathname() ?? '/';
   const [open, setOpen] = React.useState(false);
   const [scrolled, setScrolled] = React.useState(false);
+  // "Potay etidyan" shows only for course buyers (and logged-out visitors, who
+  // may be buyers who just need to log in). Resolved client-side so the public
+  // pages that render this header stay server-cached.
+  const [showPortal, setShowPortal] = React.useState(false);
+
+  React.useEffect(() => {
+    let alive = true;
+    studentPortalNav()
+      .then((r) => {
+        if (alive) setShowPortal(r.show);
+      })
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, []);
 
   // Track scroll position so we can ramp the header's frosted-glass
   // effect after the user moves past the announcement bar. A single
@@ -351,6 +368,15 @@ export default function PromoteHeader() {
 
             {/* Right: CTAs (desktop) */}
             <div className="hidden items-center gap-2 md:flex">
+              {showPortal && (
+                <Link
+                  href="/aprann"
+                  className="inline-flex h-9 items-center gap-1.5 rounded-full px-4 text-sm font-semibold bg-forest-700 text-cream-50 hover:bg-forest-800 shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forest-300"
+                >
+                  <GraduationCap className="h-4 w-4" strokeWidth={2.2} />
+                  Potay etidyan
+                </Link>
+              )}
               <Link href="/auth/login" className={secondaryBtn}>
                 Konekte
               </Link>
@@ -469,6 +495,18 @@ export default function PromoteHeader() {
               ))}
             </div>
           </div>
+
+          {/* Student portal — full-width so course buyers spot their door first */}
+          {showPortal && (
+            <Link
+              href="/aprann"
+              onClick={() => setOpen(false)}
+              className="mt-4 inline-flex w-full items-center justify-center gap-1.5 rounded-full px-4 py-2.5 text-sm font-semibold bg-forest-700 text-cream-50 hover:bg-forest-800 shadow-md"
+            >
+              <GraduationCap className="h-4 w-4" strokeWidth={2.2} />
+              Potay etidyan
+            </Link>
+          )}
 
           {/* Actions — right-aligned so "Vin manm" sits at the drawer's right
               edge instead of being stretched across half the width. */}

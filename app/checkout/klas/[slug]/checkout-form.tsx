@@ -45,7 +45,10 @@ export default function CourseCheckoutForm({
     {}
   );
 
-  const [mode, setMode] = React.useState<Mode>('login');
+  // Default to sign-up: buying a course is where a new student registers, and
+  // that email + password is exactly what they'll use to log into the portal
+  // afterwards. Returning buyers flip to "M gen yon kont".
+  const [mode, setMode] = React.useState<Mode>('signup');
   // Switch to login pane when the server suggests the email already exists.
   React.useEffect(() => {
     if (state.switchToLogin) setMode('login');
@@ -75,18 +78,6 @@ export default function CourseCheckoutForm({
             <div className="inline-flex p-1 bg-cream-100 rounded-xl border border-cream-200">
               <button
                 type="button"
-                onClick={() => setMode('login')}
-                className={cn(
-                  'px-3 py-1.5 text-xs font-semibold rounded-lg transition',
-                  mode === 'login'
-                    ? 'bg-white text-forest-800 shadow-sm'
-                    : 'text-earth-600'
-                )}
-              >
-                M gen yon kont
-              </button>
-              <button
-                type="button"
                 onClick={() => setMode('signup')}
                 className={cn(
                   'px-3 py-1.5 text-xs font-semibold rounded-lg transition',
@@ -97,8 +88,28 @@ export default function CourseCheckoutForm({
               >
                 Kreye yon kont
               </button>
+              <button
+                type="button"
+                onClick={() => setMode('login')}
+                className={cn(
+                  'px-3 py-1.5 text-xs font-semibold rounded-lg transition',
+                  mode === 'login'
+                    ? 'bg-white text-forest-800 shadow-sm'
+                    : 'text-earth-600'
+                )}
+              >
+                M gen yon kont
+              </button>
             </div>
           </header>
+
+          {mode === 'signup' && (
+            <p className="text-xs text-earth-600 leading-relaxed">
+              Kreye kont ou pou achte a — se menm imèl ak modpas sa a w ap
+              itilize pou konekte nan{' '}
+              <strong className="text-ink">Potay Etidyan</strong> an apre.
+            </p>
+          )}
 
           <input type="hidden" name="mode" value={mode} />
 
