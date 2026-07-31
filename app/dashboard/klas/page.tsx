@@ -1,5 +1,12 @@
 import Link from 'next/link';
-import { GraduationCap, PlayCircle, Video, Inbox, ChevronRight } from 'lucide-react';
+import {
+  GraduationCap,
+  PlayCircle,
+  Video,
+  Sparkles,
+  Inbox,
+  ChevronRight,
+} from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { getCurrentUser } from '@/lib/supabase/auth';
 import Topbar from '@/components/dashboard/topbar';
@@ -101,7 +108,11 @@ export default async function MyCoursesPage() {
             {courses.map((c) => (
               <Link
                 key={c.slug}
-                href={`/dashboard/klas/${c.slug}`}
+                href={
+                  c.format === 'interactive'
+                    ? `/klas/${c.slug}`
+                    : `/dashboard/klas/${c.slug}`
+                }
                 className="group bg-white border border-cream-200 rounded-2xl overflow-hidden shadow-card hover:shadow-cardHover transition"
               >
                 <div className="relative aspect-video bg-forest-100">
@@ -118,7 +129,11 @@ export default async function MyCoursesPage() {
                     </div>
                   )}
                   <span className="absolute top-2.5 left-2.5 inline-flex items-center gap-1 px-2 py-1 rounded-full bg-white/90 text-forest-800 text-[10px] font-bold uppercase tracking-wider">
-                    {c.format === 'video' ? (
+                    {c.format === 'interactive' ? (
+                      <>
+                        <Sparkles className="w-3 h-3" strokeWidth={2.4} /> Entèraktif
+                      </>
+                    ) : c.format === 'video' ? (
                       <>
                         <PlayCircle className="w-3 h-3" strokeWidth={2.4} /> Videyo
                       </>

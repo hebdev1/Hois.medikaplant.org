@@ -56,6 +56,10 @@ export default async function CoursePlayerPage({
   } | null;
   if (!course) notFound();
 
+  // Interactive courses render on the public interactive page, not this video
+  // player — send them there (it handles its own enrolment gate).
+  if (course.format === 'interactive') redirect(`/klas/${params.slug}`);
+
   // Access gate: must be enrolled. Non-enrolled → send to the sales page.
   const { data: enrolled } = await supabase
     .from('course_enrollments')

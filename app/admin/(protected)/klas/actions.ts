@@ -119,7 +119,7 @@ export async function deleteCategory(
 // ─── Courses ────────────────────────────────────────────────────────────────
 
 const LEVEL_VALUES = ['debutan', 'entermedye', 'avanse', 'tout_nivo'] as const;
-const FORMAT_VALUES = ['video', 'live_zoom', 'hybrid'] as const;
+const FORMAT_VALUES = ['video', 'live_zoom', 'hybrid', 'interactive'] as const;
 const PLAN_VALUES = ['basic', 'premium', 'vip'] as const;
 const LANG_VALUES = ['ht', 'fr', 'en'] as const;
 
@@ -158,7 +158,10 @@ function readCourseForm(formData: FormData) {
     description: get('description'),
     body_html: get('body_html') || null,
     page_html: get('page_html') || null,
-    kind: get('kind') === 'interactive' ? 'interactive' : 'video',
+    // "Kalite kou" folded into "Fòma livrezon": an interactive course is now
+    // chosen via format, and kind is derived so /klas + /aprann (kind-based)
+    // keep rendering it as an interactive course.
+    kind: get('format') === 'interactive' ? 'interactive' : 'video',
     overview: buildOverview(formData),
     cover_image_url: get('cover_image_url') || null,
     instructor_name: get('instructor_name') || 'Hoïs Inivèsite',
@@ -207,7 +210,11 @@ export async function saveCourse(
   if (!LANG_VALUES.includes(input.language as (typeof LANG_VALUES)[number])) {
     return { error: 'Lang pa valid.' };
   }
-  if (input.format !== 'video' && input.zoom_url && !/^https?:\/\//i.test(input.zoom_url)) {
+  if (
+    (input.format === 'live_zoom' || input.format === 'hybrid') &&
+    input.zoom_url &&
+    !/^https?:\/\//i.test(input.zoom_url)
+  ) {
     return { error: 'Lyen Zoom la dwe kòmanse pa https://' };
   }
   const slug = input.slug ? slugify(input.slug) : slugify(input.title);

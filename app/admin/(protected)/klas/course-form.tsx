@@ -124,7 +124,7 @@ export default function CourseForm({ mode, initial, categories }: Props) {
     setV((p) => ({ ...p, [k]: val }));
   }
 
-  const liveZoom = v.format !== 'video';
+  const liveZoom = v.format === 'live_zoom' || v.format === 'hybrid';
 
   return (
     <form action={formAction} className="grid lg:grid-cols-[1fr_340px] gap-6">
@@ -176,19 +176,6 @@ export default function CourseForm({ mode, initial, categories }: Props) {
               placeholder="Plan modil yo, sa moun nan ap aprann, prerequis…"
             />
             <input type="hidden" name="body_html" value={v.body_html} />
-          </Field>
-          <Field
-            label="Kalite kou"
-            help="Videyo = modil videyo klasik. Entèraktif = leson + quiz ak ba pwogrè (kou dinamik)."
-          >
-            <select
-              name="kind"
-              defaultValue={(initial as { kind?: string } | undefined)?.kind ?? 'video'}
-              className={inputClass}
-            >
-              <option value="video">Videyo</option>
-              <option value="interactive">Entèraktif (leson + quiz)</option>
-            </select>
           </Field>
           <Field
             label="Apèsi — Entwodiksyon"
@@ -245,7 +232,10 @@ export default function CourseForm({ mode, initial, categories }: Props) {
         </Section>
 
         <Section title="Fòma livrezon">
-          <Field label="Fòma">
+          <Field
+            label="Fòma"
+            help="Videyo/Zoom = kou klasik. Kou enteraktif = leson + quiz ak ba pwogrè (kou dinamik) — l ap parèt kòm kou enteraktif nan tablodebò elèv la."
+          >
             <Segment
               name="format"
               value={v.format}
@@ -254,6 +244,7 @@ export default function CourseForm({ mode, initial, categories }: Props) {
                 { value: 'video', label: 'Videyo (sou demand)' },
                 { value: 'live_zoom', label: 'Zoom direkt' },
                 { value: 'hybrid', label: 'Hybrid (videyo + Zoom)' },
+                { value: 'interactive', label: 'Kou enteraktif (leson + quiz)' },
               ]}
             />
           </Field>
