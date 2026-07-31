@@ -21,6 +21,8 @@ import {
   METRIC_TIP,
 } from '@/lib/badges/metric-helpers';
 import type { Database } from '@/types/database';
+import LockedPage from '@/components/dashboard/locked-page';
+import { LOCKED_PATHS } from '@/lib/feature-locks';
 
 export const dynamic = 'force-dynamic';
 
@@ -74,6 +76,9 @@ export default async function BadgeDetailPage({
 }: {
   params: { slug: string };
 }) {
+  if (LOCKED_PATHS['/dashboard/badges'])
+    return <LockedPage title="Badj mwen yo" />;
+
   const supabase = createClient();
   const user = await getCurrentUser();
   if (!user) return null;

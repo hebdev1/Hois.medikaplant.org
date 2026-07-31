@@ -4,6 +4,8 @@ import { createClient } from '@/lib/supabase/server';
 import { getCurrentUser } from '@/lib/supabase/auth';
 import Topbar from '@/components/dashboard/topbar';
 import JoinVipButton from './join-button';
+import LockedPage from '@/components/dashboard/locked-page';
+import { LOCKED_PATHS } from '@/lib/feature-locks';
 
 export const metadata = { title: 'VIP · MedikaPlant' };
 export const dynamic = 'force-dynamic';
@@ -16,6 +18,8 @@ const PLAN_LABEL: Record<string, string> = {
 const UNLOCKED = new Set(['premium', 'vip']); // Sitwonèl + Melis
 
 export default async function VipPage() {
+  if (LOCKED_PATHS['/dashboard/vip']) return <LockedPage title="Espas VIP" />;
+
   const supabase = createClient();
   const user = await getCurrentUser();
   if (!user) return null;

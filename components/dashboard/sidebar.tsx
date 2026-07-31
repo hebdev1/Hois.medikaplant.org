@@ -18,9 +18,11 @@ import {
   Award,
   Crown,
   FlaskConical,
+  Lock,
   type LucideIcon,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { LOCKED_PATHS } from '@/lib/feature-locks';
 import { createClient } from '@/lib/supabase/client';
 import Avatar from './avatar';
 
@@ -163,6 +165,31 @@ export default function Sidebar({
               // entries (e.g. data-tour="nav-dashboard-health").
               const tourKey =
                 'nav-' + href.replace(/^\//, '').replace(/\//g, '-');
+
+              // Locked (under construction): render a muted, non-clickable row
+              // with a lock icon instead of a link.
+              if (LOCKED_PATHS[href]) {
+                return (
+                  <div
+                    key={href}
+                    data-tour={tourKey}
+                    aria-disabled="true"
+                    title="Seksyon sa a fèmen pou kounye a"
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-earth-400 cursor-not-allowed select-none"
+                  >
+                    <Icon
+                      className="w-[18px] h-[18px] shrink-0 text-earth-300"
+                      strokeWidth={1.8}
+                    />
+                    <span className="flex-1 truncate">{label}</span>
+                    <Lock
+                      className="w-3.5 h-3.5 shrink-0 text-earth-400"
+                      strokeWidth={2}
+                    />
+                  </div>
+                );
+              }
+
               return (
                 <Link
                   key={href}

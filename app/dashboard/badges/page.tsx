@@ -11,6 +11,8 @@ import {
   METRIC_UNIT,
 } from '@/lib/badges/metric-helpers';
 import type { Database } from '@/types/database';
+import LockedPage from '@/components/dashboard/locked-page';
+import { LOCKED_PATHS } from '@/lib/feature-locks';
 
 export const metadata = { title: 'Badj mwen yo' };
 export const dynamic = 'force-dynamic';
@@ -37,6 +39,9 @@ function formatHaitianDate(iso: string | null): string {
 }
 
 export default async function BadgesGalleryPage() {
+  if (LOCKED_PATHS['/dashboard/badges'])
+    return <LockedPage title="Badj mwen yo" />;
+
   const supabase = createClient();
   const user = await getCurrentUser();
   if (!user) return null;
