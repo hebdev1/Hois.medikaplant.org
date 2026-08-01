@@ -16,6 +16,7 @@ import { getCurrentUser } from '@/lib/supabase/auth';
 import CourseVideoPlayer from '@/components/dashboard/course-video-player';
 import LessonCompleteButton from './lesson-complete-button';
 import LessonNotes from './lesson-notes';
+import CourseQuestions from './course-questions';
 
 export const dynamic = 'force-dynamic';
 
@@ -112,6 +113,21 @@ export default async function AprannCoursePage({
       (n) => [n.module_id, n.body]
     )
   );
+
+  // This member's questions for the course (with any answers).
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: questionsData } = await (supabase as any)
+    .from('course_questions')
+    .select('id, body, answer, created_at')
+    .eq('user_id', user.id)
+    .eq('course_id', course.id)
+    .order('created_at', { ascending: false });
+  const questions = (questionsData ?? []) as Array<{
+    id: string;
+    body: string;
+    answer: string | null;
+    created_at: string;
+  }>;
 
   const isLive = course.format !== 'video';
 
@@ -302,6 +318,8 @@ export default async function AprannCoursePage({
           })
         )}
       </section>
+
+      <CourseQuestions courseId={course.id} initial={questions} />
     </div>
   );
 }

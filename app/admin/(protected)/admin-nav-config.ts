@@ -188,6 +188,7 @@ export const ADMIN_NAV_LINKS: readonly AdminNavLink[] = [
   { href: '/admin/guides', label: 'Guides', icon: BookOpen, capability: 'manage_guides' },
   { href: '/admin/doz', label: 'Resèt ak Dòz', icon: FlaskConical, capability: 'manage_guides' },
   { href: '/admin/klas', label: 'Klas', icon: GraduationCap, capability: 'manage_courses' },
+  { href: '/admin/kesyon', label: 'Kesyon kou', icon: MessagesSquare, capability: 'manage_courses' },
   { href: '/admin/advice', label: 'Konsèy jou a', icon: Sparkles, capability: 'manage_advice' },
   { href: '/admin/badges', label: 'Badj', icon: Award, capability: 'manage_badges' },
   { href: '/admin/subscriptions', label: 'Subscriptions', icon: CreditCard, capability: 'manage_subscriptions' },
