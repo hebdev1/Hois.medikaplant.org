@@ -120,20 +120,11 @@ export default async function ReceiptPage({
           {/* Header */}
           <header className="flex items-start justify-between gap-6 pb-6 border-b border-cream-200 flex-wrap">
             <div>
-              <div className="flex items-center gap-2 mb-3">
-                <span className="grid place-items-center w-10 h-10 rounded-xl bg-gradient-to-br from-forest-500 to-forest-800 text-white">
-                  <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M20 4S14 4 9 9s-5 11-5 11 6 0 11-5 5-11 5-11z" />
-                    <path d="m5 19 9-9" />
-                  </svg>
-                </span>
-                <div>
-                  <div className="font-display font-bold text-lg text-forest-800 leading-none">
-                    Hois Medikaplant
-                  </div>
-                  <div className="font-serif italic text-[11px] text-earth-600 mt-0.5">
-                   HOÏS Inivèsite · Chak pa konte.
-                  </div>
+              <div className="mb-3">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/logo-hois.png" alt="Hoïs" className="h-10 w-auto" />
+                <div className="font-serif italic text-[11px] text-earth-600 mt-1.5">
+                  HOÏS Inivèsite · Chak pa konte.
                 </div>
               </div>
               <div className="text-[11px] text-earth-600 leading-relaxed">
