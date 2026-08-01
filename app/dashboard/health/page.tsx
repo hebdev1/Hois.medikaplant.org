@@ -502,6 +502,13 @@ export default async function HealthPage({
           </section>
         </div>
 
+        {/* Menstruation tracking — placed above the elder's proposals. */}
+        {showMenstruation && (
+          <div className="mt-6">
+            <MenstruationTracker initialDays={periodDays} />
+          </div>
+        )}
+
         {/* Treatments / prescriptions from admin / herbalist */}
         <div className="mt-6">
           <TreatmentsSection treatments={treatments} />
@@ -512,12 +519,6 @@ export default async function HealthPage({
         <div className="mt-6">
           <ConsultationsPanel />
         </div>
-
-        {showMenstruation && (
-          <div className="mt-6">
-            <MenstruationTracker initialDays={periodDays} />
-          </div>
-        )}
       </div>
     </>
   );
