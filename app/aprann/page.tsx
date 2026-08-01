@@ -7,6 +7,7 @@ import {
   Inbox,
   Sparkles,
   BookOpen,
+  Award,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { getCurrentUser } from '@/lib/supabase/auth';
@@ -318,6 +319,43 @@ export default async function AprannPage({
               </Link>
             ))}
           </div>
+
+          {/* Certificates — for fully-completed courses */}
+          {cards.some((c) => c.pct >= 100) && (
+            <section className="mt-10">
+              <h2 className="font-display text-xl font-bold text-ink flex items-center gap-2 mb-4">
+                <Award className="w-5 h-5 text-gold-500" strokeWidth={2.2} />
+                Sètifika ou yo
+              </h2>
+              <div className="grid sm:grid-cols-2 gap-3">
+                {cards
+                  .filter((c) => c.pct >= 100)
+                  .map((c) => (
+                    <Link
+                      key={c.id}
+                      href={`/setifika/${c.slug}`}
+                      className="flex items-center gap-3 bg-white border border-cream-200 rounded-2xl p-4 hover:border-gold-300 transition"
+                    >
+                      <span className="grid place-items-center w-11 h-11 rounded-xl bg-gold-100 text-gold-700 shrink-0">
+                        <Award className="w-5 h-5" strokeWidth={2} />
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <div className="text-[11px] font-semibold uppercase tracking-wider text-gold-700">
+                          Sètifika
+                        </div>
+                        <div className="text-sm font-bold text-ink truncate">
+                          {c.title}
+                        </div>
+                      </div>
+                      <ArrowRight
+                        className="w-4 h-4 text-earth-400 shrink-0"
+                        strokeWidth={2.2}
+                      />
+                    </Link>
+                  ))}
+              </div>
+            </section>
+          )}
 
           {/* Discover more */}
           {discover.length > 0 && (

@@ -329,6 +329,74 @@ export default async function DashboardHome({
 
   const treatments = (treatmentsResult.data ?? []) as Treatment[];
 
+  // ---- Treatment adherence (dose marks over the last 30 days) ----
+  // Only the "do it" kinds are trackable; monitoring/referral aren't.
+  const TRACKABLE_KINDS = new Set(['medication', 'herbal', 'lifestyle']);
+  const trackableTreatmentIds = treatments
+    .filter((t) => t.status === 'active' && TRACKABLE_KINDS.has(t.kind))
+    .map((t) => t.id);
+
+  const adherence: Record<
+    string,
+    { takenToday: boolean; week: boolean[]; pct: number }
+  > = {};
+
+  if (trackableTreatmentIds.length > 0) {
+    const since = new Date();
+    since.setUTCDate(since.getUTCDate() - 29);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: doseRows } = await (supabase as any)
+      .from('treatment_doses')
+      .select('treatment_id, taken_on')
+      .eq('user_id', user.id)
+      .gte('taken_on', since.toISOString().slice(0, 10));
+
+    const takenByTreatment = new Map<string, Set<string>>();
+    for (const d of (doseRows ?? []) as Array<{
+      treatment_id: string;
+      taken_on: string;
+    }>) {
+      const set = takenByTreatment.get(d.treatment_id) ?? new Set<string>();
+      set.add(d.taken_on);
+      takenByTreatment.set(d.treatment_id, set);
+    }
+
+    // Last 7 calendar days (oldest → newest), UTC to match how the toggle
+    // action stamps taken_on.
+    const week7: string[] = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date();
+      d.setUTCDate(d.getUTCDate() - i);
+      week7.push(d.toISOString().slice(0, 10));
+    }
+    const todayStr = week7[6];
+
+    for (const t of treatments) {
+      if (t.status !== 'active' || !TRACKABLE_KINDS.has(t.kind)) continue;
+      const taken = takenByTreatment.get(t.id) ?? new Set<string>();
+      // Adherence window: since start_date, capped at 30 days.
+      const now = new Date(todayStr + 'T00:00:00Z');
+      let elapsed = 30;
+      if (t.start_date) {
+        const start = new Date(t.start_date + 'T00:00:00Z');
+        const diff =
+          Math.floor((now.getTime() - start.getTime()) / 86400000) + 1;
+        elapsed = Math.min(30, Math.max(1, diff));
+      }
+      let takenInWindow = 0;
+      for (let i = 0; i < elapsed; i++) {
+        const d = new Date(now);
+        d.setUTCDate(d.getUTCDate() - i);
+        if (taken.has(d.toISOString().slice(0, 10))) takenInWindow++;
+      }
+      adherence[t.id] = {
+        takenToday: taken.has(todayStr),
+        week: week7.map((d) => taken.has(d)),
+        pct: Math.min(100, Math.round((takenInWindow / elapsed) * 100)),
+      };
+    }
+  }
+
   // ---- Daily totals ----
   const doneToday = tasks.filter((t) => t.done).length;
   const totalToday = tasks.length;
@@ -456,7 +524,9 @@ export default async function DashboardHome({
       />
     ) : null,
     checklist: <ChecklistPanel initialTasks={tasks} />,
-    treatments: <TreatmentsSection treatments={treatments} />,
+    treatments: (
+      <TreatmentsSection treatments={treatments} adherence={adherence} />
+    ),
     remed: (
       <RemedRecommendations conditions={conditions} healthGoal={healthGoal} />
     ),

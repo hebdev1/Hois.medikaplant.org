@@ -30,6 +30,53 @@ export async function markTreatmentRead(
   return { ok: true };
 }
 
+// Mark (or unmark) a treatment as done TODAY — powers the adherence toggle on
+// the dashboard. One row per treatment per day (unique constraint), so a double
+// tap is harmless.
+export async function toggleDoseToday(
+  treatmentId: string,
+  taken: boolean
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, error: 'Ou dwe konekte.' };
+
+  // Defence in depth on top of RLS: the treatment must be this member's.
+  const { data: owns } = await supabase
+    .from('treatment_recommendations')
+    .select('id')
+    .eq('id', treatmentId)
+    .eq('user_id', user.id)
+    .maybeSingle();
+  if (!owns) return { ok: false, error: 'Tretman an pa jwenn.' };
+
+  const today = new Date().toISOString().slice(0, 10);
+  // treatment_doses isn't in the generated types yet — cast the client.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const sb = supabase as any;
+
+  if (taken) {
+    const { error } = await sb.from('treatment_doses').upsert(
+      { treatment_id: treatmentId, user_id: user.id, taken_on: today },
+      { onConflict: 'treatment_id,taken_on' }
+    );
+    if (error) return { ok: false, error: error.message };
+  } else {
+    const { error } = await sb
+      .from('treatment_doses')
+      .delete()
+      .eq('treatment_id', treatmentId)
+      .eq('taken_on', today);
+    if (error) return { ok: false, error: error.message };
+  }
+
+  revalidatePath('/dashboard');
+  revalidatePath('/dashboard/health');
+  return { ok: true };
+}
+
 export type Metric = 'blood_sugar' | 'weight' | 'pressure';
 
 const METRIC_BOUNDS: Record<Metric, { min: number; max: number }> = {

@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useRouter } from 'next/navigation';
 import {
   Pill,
   Leaf,
@@ -11,13 +12,16 @@ import {
   CheckCircle2,
   Calendar,
   AlertCircle,
+  Loader2,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { markTreatmentRead } from '@/app/dashboard/health/actions';
+import { markTreatmentRead, toggleDoseToday } from '@/app/dashboard/health/actions';
 import type { Database } from '@/types/database';
 
 export type Treatment = Database['public']['Tables']['treatment_recommendations']['Row'];
 type Kind = Database['public']['Enums']['treatment_kind'];
+
+export type Adherence = { takenToday: boolean; week: boolean[]; pct: number };
 
 const KIND_META: Record<
   Kind,
@@ -74,8 +78,10 @@ const HT_DATE = (iso: string | null) => {
 
 export default function TreatmentsSection({
   treatments,
+  adherence = {},
 }: {
   treatments: Treatment[];
+  adherence?: Record<string, Adherence>;
 }) {
   const active = treatments.filter((t) => t.status === 'active');
   const archive = treatments.filter((t) => t.status !== 'active');
@@ -116,7 +122,12 @@ export default function TreatmentsSection({
 
       <ul className="space-y-3">
         {active.map((t) => (
-          <TreatmentItem key={t.id} treatment={t} initialUnread={!t.read_at} />
+          <TreatmentItem
+            key={t.id}
+            treatment={t}
+            initialUnread={!t.read_at}
+            adherence={adherence[t.id]}
+          />
         ))}
       </ul>
 
@@ -146,15 +157,44 @@ function TreatmentItem({
   treatment: t,
   initialUnread,
   compact = false,
+  adherence,
 }: {
   treatment: Treatment;
   initialUnread: boolean;
   compact?: boolean;
+  adherence?: Adherence;
 }) {
+  const router = useRouter();
   const [unread, setUnread] = React.useState(initialUnread);
   const [expanded, setExpanded] = React.useState(initialUnread && !compact);
   const meta = KIND_META[t.kind] ?? KIND_META.monitoring;
   const Icon = meta.icon;
+
+  // Adherence toggle state (optimistic). `pct` is read straight from the prop
+  // so it refreshes from the server after router.refresh().
+  const [takenToday, setTakenToday] = React.useState(
+    adherence?.takenToday ?? false
+  );
+  const [week, setWeek] = React.useState<boolean[]>(adherence?.week ?? []);
+  const [dosePending, setDosePending] = React.useState(false);
+
+  async function toggleDose() {
+    if (dosePending) return;
+    const next = !takenToday;
+    setDosePending(true);
+    setTakenToday(next);
+    setWeek((w) => (w.length ? [...w.slice(0, -1), next] : w));
+    const res = await toggleDoseToday(t.id, next).catch(() => ({
+      ok: false as const,
+    }));
+    if (!res.ok) {
+      setTakenToday(!next);
+      setWeek((w) => (w.length ? [...w.slice(0, -1), !next] : w));
+    } else {
+      router.refresh();
+    }
+    setDosePending(false);
+  }
 
   // Auto-mark as read once expanded
   React.useEffect(() => {
@@ -204,6 +244,12 @@ function TreatmentItem({
               <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-forest-100 text-forest-700 text-[9px] font-bold uppercase tracking-wide">
                 <CheckCircle2 className="w-2.5 h-2.5" strokeWidth={2.4} />
                 Konplete
+              </span>
+            )}
+            {adherence && takenToday && (
+              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-forest-600 text-cream-50 text-[9px] font-bold uppercase tracking-wide">
+                <CheckCircle2 className="w-2.5 h-2.5" strokeWidth={2.4} />
+                Fèt jodi a
               </span>
             )}
           </div>
@@ -278,6 +324,64 @@ function TreatmentItem({
                 Toujou suiv konsèy doktè ou. Pa janm chanje dòz san pale ak yon
                 pwofesyonèl sante.
               </span>
+            </div>
+          )}
+
+          {/* Adherence: 7-day streak + "did it today" toggle */}
+          {adherence && (
+            <div className="rounded-xl bg-forest-50/60 border border-forest-100 p-3">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-forest-700">
+                  Obsèvans
+                </span>
+                <span className="text-[11px] font-semibold text-forest-700">
+                  {adherence.pct}% sou 30 jou
+                </span>
+              </div>
+              {week.length > 0 && (
+                <div className="flex items-center gap-1.5 mb-3">
+                  {week.map((done, i) => (
+                    <span
+                      key={i}
+                      title={i === week.length - 1 ? 'Jodi a' : undefined}
+                      className={cn(
+                        'w-5 h-5 rounded-full grid place-items-center transition-colors',
+                        done ? 'bg-forest-600' : 'bg-cream-200',
+                        i === week.length - 1 &&
+                          'ring-2 ring-offset-1 ring-forest-300'
+                      )}
+                    >
+                      {done && (
+                        <CheckCircle2
+                          className="w-3 h-3 text-cream-50"
+                          strokeWidth={2.6}
+                        />
+                      )}
+                    </span>
+                  ))}
+                  <span className="ml-1 text-[10px] text-earth-500">
+                    7 dènye jou
+                  </span>
+                </div>
+              )}
+              <button
+                type="button"
+                onClick={toggleDose}
+                disabled={dosePending}
+                className={cn(
+                  'w-full inline-flex items-center justify-center gap-1.5 rounded-full py-2 text-sm font-semibold transition disabled:opacity-70',
+                  takenToday
+                    ? 'bg-forest-100 text-forest-800 hover:bg-forest-200'
+                    : 'bg-forest-700 hover:bg-forest-800 text-cream-50'
+                )}
+              >
+                {dosePending ? (
+                  <Loader2 className="w-4 h-4 animate-spin" strokeWidth={2.4} />
+                ) : (
+                  <CheckCircle2 className="w-4 h-4" strokeWidth={2.4} />
+                )}
+                {takenToday ? 'Fèt jodi a ✓ — bravo!' : 'Mwen pran l jodi a'}
+              </button>
             </div>
           )}
         </div>
