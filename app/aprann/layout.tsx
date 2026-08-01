@@ -1,6 +1,13 @@
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
-import { LibraryBig, LayoutDashboard, BookOpen, Home } from 'lucide-react';
+import {
+  LibraryBig,
+  LayoutDashboard,
+  BookOpen,
+  Home,
+  Award,
+  HelpCircle,
+} from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import StudentLogoutButton from './student-logout-button';
 
@@ -9,6 +16,8 @@ export const dynamic = 'force-dynamic';
 
 const NAV = [
   { href: '/aprann', label: 'Tablodebò', icon: LayoutDashboard },
+  { href: '/aprann/setifika', label: 'Sètifika mwen yo', icon: Award },
+  { href: '/aprann/kesyon', label: 'Kesyon & Repons', icon: HelpCircle },
   { href: '/klas', label: 'Katalòg klas', icon: BookOpen },
   { href: '/', label: 'Sit la', icon: Home },
 ];
@@ -104,26 +113,38 @@ export default async function AprannLayout({
         </div>
       </aside>
 
-      {/* Top bar (mobile) */}
-      <header className="md:hidden sticky top-0 z-30 flex items-center justify-between gap-2 bg-forest-900 text-cream-50 px-4 py-3">
-        <Link href="/aprann" className="inline-flex items-center gap-2 min-w-0">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo-hois.png" alt="Hoïs" className="h-6 w-auto shrink-0" />
-          <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-cream-100/90 truncate">
-            <LibraryBig
-              className="w-4 h-4 text-brand-400 shrink-0"
-              strokeWidth={2.2}
-            />
-            Espas Elèv
-          </span>
-        </Link>
-        <div className="flex items-center gap-3 shrink-0">
-          <Link href="/klas" className="text-xs font-medium text-cream-100/85">
-            Katalòg
+      {/* Top bar + nav (mobile) */}
+      <div className="md:hidden sticky top-0 z-30">
+        <header className="flex items-center justify-between gap-2 bg-forest-900 text-cream-50 px-4 py-3">
+          <Link href="/aprann" className="inline-flex items-center gap-2 min-w-0">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo-hois.png" alt="Hoïs" className="h-6 w-auto shrink-0" />
+            <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-cream-100/90 truncate">
+              <LibraryBig
+                className="w-4 h-4 text-brand-400 shrink-0"
+                strokeWidth={2.2}
+              />
+              Espas Elèv
+            </span>
           </Link>
-          <StudentLogoutButton className="inline-flex items-center gap-1 text-xs font-medium text-cream-100/85 hover:text-cream-50" />
-        </div>
-      </header>
+          <StudentLogoutButton className="inline-flex items-center gap-1 text-xs font-medium text-cream-100/85 hover:text-cream-50 shrink-0" />
+        </header>
+        <nav className="flex gap-1.5 overflow-x-auto bg-forest-800 px-3 py-2 border-t border-cream-50/10">
+          {NAV.map(({ href, label, icon: Icon }) => (
+            <Link
+              key={href}
+              href={href}
+              className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full bg-cream-50/10 hover:bg-cream-50/20 px-3 py-1.5 text-xs font-medium text-cream-100/90 transition"
+            >
+              <Icon
+                className="w-3.5 h-3.5 text-brand-300 shrink-0"
+                strokeWidth={2.2}
+              />
+              {label}
+            </Link>
+          ))}
+        </nav>
+      </div>
 
       <main className="flex-1 min-w-0">{children}</main>
     </div>
