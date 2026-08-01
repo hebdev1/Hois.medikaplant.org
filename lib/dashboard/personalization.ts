@@ -230,7 +230,11 @@ export function orderedBlocks(ctx: DashboardContext): BlockId[] {
     },
 
     { id: 'checklist', show: ctx.hasProgram, weight: 30 },
-    { id: 'treatments', show: ctx.hasTreatments, weight: 35 },
+
+    // The elder's prescription is time-sensitive + the reason many members
+    // log in, so it sits right under the hero — above metrics, checklist and
+    // everything else — whenever there's an active proposal.
+    { id: 'treatments', show: ctx.hasTreatments, weight: 12 },
 
     // Personalized shop recommendations. Show when EITHER the fixed
     // lookup maps something OR the member typed a free-text condition we
