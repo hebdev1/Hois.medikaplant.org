@@ -1,15 +1,15 @@
 import Image from 'next/image';
 import { getSiteImages } from "@/lib/site-images";
-import { Leaf, Heart, Globe } from 'lucide-react';
+import { Leaf, BookOpen, HandHeart, Globe } from 'lucide-react';
 
 const PILLARS = [
   {
-    icon: Leaf,
+    icon: BookOpen,
     title: 'Tradisyon & Syans',
     body: 'Nou mete ansanm rechèch syantifik ak medsin tradisyonèl pou ofri yon apwòch ki chita sou konesans ak eksperyans.',
   },
   {
-    icon: Heart,
+    icon: HandHeart,
     title: 'Bonjan Swen',
     body: 'Yon apwòch olistik ki pran an konsiderasyon kò w, lespri w, ak nanm ou pou ankouraje yon byennèt ki pi konplè.',
   },

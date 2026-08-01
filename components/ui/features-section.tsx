@@ -1,39 +1,39 @@
 import React from 'react';
-import { Leaf, Droplet, HeartPulse, Brain, Moon, Sun } from 'lucide-react';
+import { Sprout, Activity, Compass, Stethoscope, Brain, Users } from 'lucide-react';
 
 const FEATURES = [
   {
-    icon: Leaf,
+    icon: Sprout,
     title: 'Bon Remèd Natirèl',
     body: 'Plis pase 400 dòz ak fòmil ki sòti dirèkteman nan Medsin Tradisyonèl Ayisyen an, byen dokimante ak bon jan konsèy ekspè plis evidans syantifik',
     accent: 'bg-emerald-100 text-emerald-700',
   },
   {
-    icon: HeartPulse,
+    icon: Activity,
     title: 'Swivi Sante Pèsonalize',
     body: 'Anrejistre tansyon w, nivo sik ou, ak pwa w. Dachbòd a ap ede w suiv pwogrè w ak grafik klè chak semèn pou w ka pi byen kontwole sante w.',
     accent: 'bg-rose-100 text-rose-700',
   },
   {
-    icon: Brain,
+    icon: Compass,
     title: 'Gid Espirityèl',
     body: 'Prezantasyon odyovizyèl, salon, bat bouch VIP, ak konvèsasyon pwofon sou espirityalite, mounite, linivè, egzistans, ak lòt sijè transandantal atravè pakou Hoïs la. Konsiltasyon konfidansyèl pou ede w jwenn plis klète, ekilib, ak byennèt mantal ak espirityèl.',
     accent: 'bg-indigo-100 text-indigo-700',
   },
   {
-    icon: Droplet,
+    icon: Stethoscope,
     title: 'Konsiltasyon Natiropatik',
     body: 'Pwofesyonèl sètifye Hoïs yo evalye malèz ou yo epi gide w ak yon apwòch olistik ki pran an konsiderasyon kò w, lespri w, ak anviwònman w.',
     accent: 'bg-sky-100 text-sky-700',
   },
   {
-    icon: Moon,
+    icon: Brain,
     title: 'Sèvo & Sante Mantal',
     body: 'Yon espas espesyalize pou sipòte memwa, konsantrasyon, detant ak sante mantal, rezilyans emosyonèl, ak rekiperasyon apre peryòd estrès, fatig mantal, depresyon oswa lòt defi ki afekte byennèt sikolojik.',
     accent: 'bg-violet-100 text-violet-700',
   },
   {
-    icon: Sun,
+    icon: Users,
     title: 'Lakou Hoïs',
     body: 'Yon kominote dinamik kote w ap jwenn salon, prezantasyon, ak fòmasyon gratis nan gwoup VIP Hoïs la. Se yon espas kote w ka konekte ak lòt manm ki pataje menm vizyon an epi k ap chèche limyè pou dekouvri ak pi byen konprann sans ak misyon lavi yo.',
     accent: 'bg-amber-100 text-amber-700',

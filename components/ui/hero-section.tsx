@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Sparkles } from 'lucide-react';
+import { Leaf } from 'lucide-react';
 import { ArcGalleryHero } from './arc-gallery-hero-component';
 
 // ───────────────────────────────────────────────────────────────────────────
@@ -82,7 +82,7 @@ export default function HeroSection({
         className="!bg-transparent"
         eyebrow={
           <span className="inline-flex items-center gap-2 border border-brand-200 bg-white/70 backdrop-blur-sm rounded-full px-4 py-2 shadow-sm text-sm">
-            <Sparkles className="w-4 h-4 text-brand-600" strokeWidth={2.2} />
+            <Leaf className="w-4 h-4 text-brand-600" strokeWidth={2.2} />
             <span className="text-ink/80">
               Byenvini:{' '}
               <span className="font-semibold text-ink">nan Hoïs Inivèsite</span>{' '}
