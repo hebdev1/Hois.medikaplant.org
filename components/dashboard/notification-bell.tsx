@@ -362,6 +362,13 @@ export default function NotificationBell({
               </ul>
             )}
           </div>
+          <Link
+            href="/dashboard/notifications"
+            onClick={() => setOpen(false)}
+            className="block border-t border-cream-200 px-4 py-3 text-center text-xs font-semibold text-forest-700 hover:bg-cream-50 transition"
+          >
+            Wè tout notifikasyon
+          </Link>
         </div>
       )}
     </div>

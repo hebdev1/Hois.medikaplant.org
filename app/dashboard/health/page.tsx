@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Activity, Calendar, Target, Pencil } from 'lucide-react';
+import { Activity, Calendar, Target, Pencil, Flame, FileText } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { getCurrentUser } from '@/lib/supabase/auth';
 import Topbar from '@/components/dashboard/topbar';
@@ -174,6 +174,24 @@ export default async function HealthPage({
 
   const allLogs = (logsResult.data ?? []) as HealthLog[];
 
+  // ---- Logging streak: consecutive days with at least one log ----
+  const logDates = new Set(
+    allLogs.map((l) => new Date(l.logged_at).toISOString().slice(0, 10))
+  );
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const loggedToday = logDates.has(todayStr);
+  let streak = 0;
+  {
+    // The streak is "alive" if today or yesterday was logged; count back from
+    // whichever is the most recent logged day.
+    const cursor = new Date();
+    if (!loggedToday) cursor.setUTCDate(cursor.getUTCDate() - 1);
+    while (logDates.has(cursor.toISOString().slice(0, 10))) {
+      streak++;
+      cursor.setUTCDate(cursor.getUTCDate() - 1);
+    }
+  }
+
   // Compute the user's per-metric target zone (preferences override defaults)
   const targetFor = (m: MetricKey) => {
     if (m === 'blood_sugar' && prefs) {
@@ -344,6 +362,39 @@ export default async function HealthPage({
           )}
         </div>
 
+        {/* Logging streak — daily consistency, gamified */}
+        <div className="mb-5">
+          <div
+            className={`flex items-center gap-3 rounded-2xl border px-4 py-3.5 md:px-5 ${
+              streak > 0
+                ? 'border-gold-200 bg-gradient-to-r from-gold-50 to-white'
+                : 'border-cream-300 bg-cream-50/60'
+            }`}
+          >
+            <span
+              className={`grid place-items-center w-11 h-11 rounded-xl shrink-0 ${
+                streak > 0
+                  ? 'bg-gradient-to-br from-gold-400 to-gold-600 text-white shadow-md'
+                  : 'bg-cream-100 text-earth-500'
+              }`}
+            >
+              <Flame className="w-5 h-5" strokeWidth={2.2} />
+            </span>
+            <div className="flex-1 min-w-0">
+              <div className="font-display text-lg font-bold text-ink leading-tight">
+                {streak > 0 ? `${streak} jou an swit` : 'Kòmanse yon seri jodi a'}
+              </div>
+              <p className="text-xs text-earth-600 mt-0.5">
+                {streak > 0
+                  ? loggedToday
+                    ? 'Bèl konsistans — kontinye konsa!'
+                    : 'Log yon mezi jodi a pou kenbe seri a vivan.'
+                  : 'Anrejistre yon mezi chak jou pou bati seri w.'}
+              </p>
+            </div>
+          </div>
+        </div>
+
         <div className="mb-5">
           <ConditionsStrip conditions={conditions} activeMetric={metric} />
         </div>
@@ -422,8 +473,15 @@ export default async function HealthPage({
               commentary={commentary}
             />
 
-            <div className="mt-5 pt-5 border-t border-cream-200">
+            <div className="mt-5 pt-5 border-t border-cream-200 flex flex-col gap-2">
               <ExportCsvButton />
+              <Link
+                href="/rapo-sante"
+                className="inline-flex items-center justify-center gap-2 rounded-lg border border-forest-200 text-forest-700 hover:bg-forest-50 px-4 py-2 text-sm font-semibold transition"
+              >
+                <FileText className="w-4 h-4" strokeWidth={2.2} />
+                Rapò pou doktè
+              </Link>
             </div>
           </section>
         </div>
