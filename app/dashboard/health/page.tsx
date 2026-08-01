@@ -24,6 +24,7 @@ import TreatmentsSection, {
   type Treatment,
 } from '@/components/dashboard/treatments-section';
 import ConsultationsPanel from '@/components/dashboard/consultations-panel';
+import MenstruationTracker from '@/components/dashboard/menstruation-tracker';
 import type { Database } from '@/types/database';
 
 
@@ -111,7 +112,7 @@ export default async function HealthPage({
   ] = await Promise.all([
     supabase
       .from('profiles')
-      .select('full_name, first_name, last_name, email, plan, avatar_url')
+      .select('full_name, first_name, last_name, email, plan, avatar_url, gender')
       .eq('id', user.id)
       .maybeSingle(),
     supabase
@@ -164,7 +165,22 @@ export default async function HealthPage({
     email: string;
     plan: 'basic' | 'premium' | 'vip';
     avatar_url: string | null;
+    gender: string | null;
   } | null;
+
+  // Menstruation tracking shows for everyone except users who marked "male".
+  const showMenstruation = profile?.gender !== 'male';
+  let periodDays: Array<{ day: string; flow: number | null }> = [];
+  if (showMenstruation) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: pdData } = await (supabase as any)
+      .from('period_days')
+      .select('day, flow')
+      .eq('user_id', user.id)
+      .order('day', { ascending: false })
+      .limit(365);
+    periodDays = (pdData ?? []) as Array<{ day: string; flow: number | null }>;
+  }
 
   const prefs = prefsResult.data as {
     target_blood_sugar_min: number;
@@ -496,6 +512,12 @@ export default async function HealthPage({
         <div className="mt-6">
           <ConsultationsPanel />
         </div>
+
+        {showMenstruation && (
+          <div className="mt-6">
+            <MenstruationTracker initialDays={periodDays} />
+          </div>
+        )}
       </div>
     </>
   );

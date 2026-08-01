@@ -77,6 +77,60 @@ export async function toggleDoseToday(
   return { ok: true };
 }
 
+// ─── Menstruation tracking ─────────────────────────────────────────────────
+
+// Log (or update the flow of) one period day. flow: 1 light, 2 medium, 3 heavy.
+export async function logPeriodDay(
+  day: string,
+  flow: number | null
+): Promise<{ ok: boolean; error?: string }> {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, error: 'Ou dwe konekte.' };
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) {
+    return { ok: false, error: 'Dat pa valab.' };
+  }
+  const f = flow && flow >= 1 && flow <= 3 ? Math.round(flow) : null;
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const sb = supabase as any;
+  const { error } = await sb
+    .from('period_days')
+    .upsert(
+      { user_id: user.id, day, flow: f },
+      { onConflict: 'user_id,day' }
+    );
+  if (error) return { ok: false, error: error.message };
+
+  revalidatePath('/dashboard/health');
+  return { ok: true };
+}
+
+// Remove a period day.
+export async function removePeriodDay(
+  day: string
+): Promise<{ ok: boolean; error?: string }> {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, error: 'Ou dwe konekte.' };
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const sb = supabase as any;
+  const { error } = await sb
+    .from('period_days')
+    .delete()
+    .eq('user_id', user.id)
+    .eq('day', day);
+  if (error) return { ok: false, error: error.message };
+
+  revalidatePath('/dashboard/health');
+  return { ok: true };
+}
+
 export type Metric = 'blood_sugar' | 'weight' | 'pressure';
 
 const METRIC_BOUNDS: Record<Metric, { min: number; max: number }> = {

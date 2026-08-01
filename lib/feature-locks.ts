@@ -2,7 +2,7 @@
 // source of truth: flip a value to `false` (or delete the entry) to re-enable
 // BOTH the sidebar link and the route in one place.
 export const LOCKED_PATHS: Record<string, boolean> = {
-  '/dashboard/badges': true,
+  '/dashboard/badges': false,
   '/dashboard/vip': true,
 };
 
