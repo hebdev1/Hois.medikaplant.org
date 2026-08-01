@@ -1,20 +1,16 @@
 import type { Metadata, Viewport } from 'next';
-import { Poppins, Playfair_Display, Lora, DM_Sans } from 'next/font/google';
+import { Playfair_Display, Lora, DM_Sans } from 'next/font/google';
 import './globals.css';
 import TranslateSwitcher from '@/components/translate-switcher';
 import RemedFinder from '@/components/remed-finder/remed-finder';
 
-const poppins = Poppins({
-  subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700', '800'],
-  variable: '--font-poppins',
-  display: 'swap',
-});
-
+// Fonts are trimmed for speed: DM_Sans (body) + Playfair (display) are used
+// site-wide and preload; Lora (serif accents, a handful of spots) loads only
+// where it's used. Poppins was only a sans fallback — dropped. Italics use the
+// browser's synthesized slant, so we don't ship italic font files.
 const playfair = Playfair_Display({
   subsets: ['latin'],
   weight: ['400', '500', '600', '700', '800'],
-  style: ['normal', 'italic'],
   variable: '--font-playfair',
   display: 'swap',
 });
@@ -22,9 +18,9 @@ const playfair = Playfair_Display({
 const lora = Lora({
   subsets: ['latin'],
   weight: ['400', '500', '600'],
-  style: ['normal', 'italic'],
   variable: '--font-lora',
   display: 'swap',
+  preload: false,
 });
 
 const dmSans = DM_Sans({
@@ -78,7 +74,7 @@ export default function RootLayout({
   return (
     <html
       lang="ht"
-      className={`${poppins.variable} ${playfair.variable} ${lora.variable} ${dmSans.variable}`}
+      className={`${playfair.variable} ${lora.variable} ${dmSans.variable}`}
     >
       <body className="font-sans antialiased bg-white text-ink">
         {children}

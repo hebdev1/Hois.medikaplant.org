@@ -12,7 +12,7 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['var(--font-dm-sans)', 'var(--font-poppins)', 'system-ui', 'sans-serif'],
+        sans: ['var(--font-dm-sans)', 'system-ui', 'sans-serif'],
         display: ['var(--font-playfair)', 'serif'],
         serif: ['var(--font-lora)', 'serif'],
       },
