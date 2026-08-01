@@ -7,10 +7,14 @@ import {
   Calendar,
   Clock,
   PlayCircle,
+  CheckCircle2,
+  Award,
+  Download,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { getCurrentUser } from '@/lib/supabase/auth';
 import CourseVideoPlayer from '@/components/dashboard/course-video-player';
+import LessonCompleteButton from './lesson-complete-button';
 
 export const dynamic = 'force-dynamic';
 
@@ -21,6 +25,7 @@ type ModuleRow = {
   description: string | null;
   duration_text: string | null;
   preview: boolean;
+  resource_links: { label: string; url: string }[] | null;
 };
 
 export default async function AprannCoursePage({
@@ -67,10 +72,33 @@ export default async function AprannCoursePage({
 
   const { data: modulesData } = await supabase
     .from('course_modules')
-    .select('id, display_order, title, description, duration_text, preview')
+    .select(
+      'id, display_order, title, description, duration_text, preview, resource_links'
+    )
     .eq('course_id', course.id)
     .order('display_order', { ascending: true });
   const modules = (modulesData ?? []) as ModuleRow[];
+
+  // Which lessons has the member marked complete? (Drives the progress bar +
+  // certificate unlock — now works for video courses, not just interactive.)
+  // course_module_progress isn't in the generated types — cast the client.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: progressData } = await (supabase as any)
+    .from('course_module_progress')
+    .select('module_id')
+    .eq('user_id', user.id)
+    .eq('course_id', course.id);
+  const doneIds = new Set(
+    ((progressData ?? []) as Array<{ module_id: string }>).map(
+      (r) => r.module_id
+    )
+  );
+  const total = modules.length;
+  const doneCount = modules.filter((m) => doneIds.has(m.id)).length;
+  const pct = total > 0 ? Math.round((doneCount / total) * 100) : 0;
+  const allDone = total > 0 && doneCount >= total;
+  // First not-yet-done lesson — highlighted so the member knows where to resume.
+  const nextModuleId = modules.find((m) => !doneIds.has(m.id))?.id ?? null;
 
   const isLive = course.format !== 'video';
 
@@ -125,6 +153,32 @@ export default async function AprannCoursePage({
         </div>
       )}
 
+      {total > 0 && (
+        <div className="rounded-2xl bg-white border border-cream-200 p-4 md:p-5 shadow-card">
+          <div className="flex items-center justify-between text-sm mb-2">
+            <span className="font-semibold text-ink">Pwogrè w</span>
+            <span className="text-earth-600">
+              {doneCount} / {total} leson · {pct}%
+            </span>
+          </div>
+          <div className="h-2 rounded-full bg-cream-200 overflow-hidden">
+            <div
+              className="h-full bg-forest-600 transition-all duration-500"
+              style={{ width: `${pct}%` }}
+            />
+          </div>
+          {allDone && (
+            <Link
+              href={`/setifika/${course.slug}`}
+              className="mt-4 inline-flex items-center gap-2 bg-gold-400 hover:bg-gold-500 text-forest-900 px-5 py-2.5 rounded-full text-sm font-semibold transition"
+            >
+              <Award className="w-4 h-4" strokeWidth={2.4} />
+              Gade sètifika w
+            </Link>
+          )}
+        </div>
+      )}
+
       <section className="grid gap-3">
         <h2 className="font-display text-lg font-bold text-ink flex items-center gap-2">
           <GraduationCap className="w-4 h-4 text-forest-700" strokeWidth={2.2} />
@@ -139,41 +193,96 @@ export default async function AprannCoursePage({
             Kontni an ap vin disponib byento.
           </p>
         ) : (
-          modules.map((m, i) => (
-            <article
-              key={m.id}
-              className="bg-white border border-cream-200 rounded-2xl p-4 md:p-5 shadow-card"
-            >
-              <div className="flex items-start gap-3 mb-3">
-                <span className="grid place-items-center w-7 h-7 rounded-lg bg-forest-100 text-forest-700 text-xs font-bold shrink-0">
-                  {i + 1}
-                </span>
-                <div className="flex-1 min-w-0">
-                  <h3 className="font-semibold text-ink leading-snug">
-                    {m.title}
-                  </h3>
-                  {m.description && (
-                    <p className="text-sm text-earth-600 mt-0.5 leading-snug">
-                      {m.description}
-                    </p>
-                  )}
-                  {m.duration_text && (
-                    <span className="inline-flex items-center gap-1 text-[11px] text-earth-500 mt-1">
-                      <Clock className="w-3 h-3" strokeWidth={2.4} />
-                      {m.duration_text}
-                    </span>
-                  )}
-                </div>
-                {m.preview && (
-                  <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full bg-forest-100 text-forest-700 shrink-0">
-                    <PlayCircle className="w-2.5 h-2.5" strokeWidth={2.4} />
-                    Preview
+          modules.map((m, i) => {
+            const done = doneIds.has(m.id);
+            const isNext = m.id === nextModuleId;
+            return (
+              <article
+                key={m.id}
+                className={`bg-white border rounded-2xl p-4 md:p-5 shadow-card ${
+                  isNext
+                    ? 'border-forest-300 ring-1 ring-forest-200'
+                    : 'border-cream-200'
+                }`}
+              >
+                <div className="flex items-start gap-3 mb-3">
+                  <span
+                    className={`grid place-items-center w-7 h-7 rounded-lg text-xs font-bold shrink-0 ${
+                      done
+                        ? 'bg-forest-600 text-cream-50'
+                        : 'bg-forest-100 text-forest-700'
+                    }`}
+                  >
+                    {done ? (
+                      <CheckCircle2 className="w-4 h-4" strokeWidth={2.6} />
+                    ) : (
+                      i + 1
+                    )}
                   </span>
-                )}
-              </div>
-              <CourseVideoPlayer moduleId={m.id} />
-            </article>
-          ))
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-semibold text-ink leading-snug">
+                      {m.title}
+                    </h3>
+                    {m.description && (
+                      <p className="text-sm text-earth-600 mt-0.5 leading-snug">
+                        {m.description}
+                      </p>
+                    )}
+                    {m.duration_text && (
+                      <span className="inline-flex items-center gap-1 text-[11px] text-earth-500 mt-1">
+                        <Clock className="w-3 h-3" strokeWidth={2.4} />
+                        {m.duration_text}
+                      </span>
+                    )}
+                  </div>
+                  {isNext && !done ? (
+                    <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full bg-forest-600 text-cream-50 shrink-0">
+                      Kòmanse la
+                    </span>
+                  ) : m.preview ? (
+                    <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full bg-forest-100 text-forest-700 shrink-0">
+                      <PlayCircle className="w-2.5 h-2.5" strokeWidth={2.4} />
+                      Preview
+                    </span>
+                  ) : null}
+                </div>
+                <CourseVideoPlayer moduleId={m.id} />
+
+                {Array.isArray(m.resource_links) &&
+                  m.resource_links.length > 0 && (
+                    <div className="mt-3 rounded-xl bg-cream-50 border border-cream-200 p-3">
+                      <div className="text-[11px] font-bold uppercase tracking-wider text-earth-500 mb-2">
+                        Materyèl
+                      </div>
+                      <ul className="space-y-1.5">
+                        {m.resource_links.map((r, ri) => (
+                          <li key={ri}>
+                            <a
+                              href={r.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-2 text-sm font-medium text-forest-700 hover:underline"
+                            >
+                              <Download
+                                className="w-4 h-4 shrink-0"
+                                strokeWidth={2.2}
+                              />
+                              {r.label || 'Telechaje'}
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                <LessonCompleteButton
+                  courseId={course.id}
+                  moduleId={m.id}
+                  initialDone={done}
+                />
+              </article>
+            );
+          })
         )}
       </section>
     </div>
