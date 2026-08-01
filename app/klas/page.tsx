@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import CourseBrowser from '@/components/klas/course-browser';
 import Image from 'next/image';
 import {
   BookOpen,
@@ -464,6 +465,24 @@ export default async function KlasPage() {
                 );
               })}
             </div>
+          </div>
+        </section>
+      )}
+
+      {/* ── TOUT KLAS (searchable) ──────────────────────────────────────── */}
+      {courses.length > 0 && (
+        <section id="tout-klas" className="py-20 md:py-28 bg-white">
+          <div className="max-w-[1400px] mx-auto px-4 md:px-12 lg:px-20 xl:px-32">
+            <div className="max-w-2xl mb-10">
+              <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-100 text-brand-700 text-sm font-medium mb-4">
+                <GraduationCap className="w-3.5 h-3.5" strokeWidth={2.4} />
+                Tout klas yo
+              </span>
+              <h2 className="font-display text-3xl md:text-5xl font-bold tracking-tight text-ink leading-tight">
+                Jwenn klas ki bon pou ou
+              </h2>
+            </div>
+            <CourseBrowser courses={courses} />
           </div>
         </section>
       )}

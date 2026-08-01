@@ -15,6 +15,7 @@ import { createClient } from '@/lib/supabase/server';
 import { getCurrentUser } from '@/lib/supabase/auth';
 import CourseVideoPlayer from '@/components/dashboard/course-video-player';
 import LessonCompleteButton from './lesson-complete-button';
+import LessonNotes from './lesson-notes';
 
 export const dynamic = 'force-dynamic';
 
@@ -99,6 +100,18 @@ export default async function AprannCoursePage({
   const allDone = total > 0 && doneCount >= total;
   // First not-yet-done lesson — highlighted so the member knows where to resume.
   const nextModuleId = modules.find((m) => !doneIds.has(m.id))?.id ?? null;
+
+  // Personal notes per lesson (module_id → body).
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: notesData } = await (supabase as any)
+    .from('lesson_notes')
+    .select('module_id, body')
+    .eq('user_id', user.id);
+  const noteByModule = new Map<string, string>(
+    ((notesData ?? []) as Array<{ module_id: string; body: string }>).map(
+      (n) => [n.module_id, n.body]
+    )
+  );
 
   const isLive = course.format !== 'video';
 
@@ -279,6 +292,10 @@ export default async function AprannCoursePage({
                   courseId={course.id}
                   moduleId={m.id}
                   initialDone={done}
+                />
+                <LessonNotes
+                  moduleId={m.id}
+                  initialBody={noteByModule.get(m.id) ?? ''}
                 />
               </article>
             );

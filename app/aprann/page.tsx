@@ -8,6 +8,7 @@ import {
   Sparkles,
   BookOpen,
   Award,
+  Flame,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { getCurrentUser } from '@/lib/supabase/auth';
@@ -62,7 +63,7 @@ export default async function AprannPage({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (supabase as any)
       .from('course_module_progress')
-      .select('course_id, module_id')
+      .select('course_id, module_id, completed_at')
       .eq('user_id', user.id),
   ]);
 
@@ -108,6 +109,25 @@ export default async function AprannPage({
     const set = doneByCourse.get(p.course_id) ?? new Set<string>();
     set.add(p.module_id);
     doneByCourse.set(p.course_id, set);
+  }
+
+  // Learning streak: consecutive days with at least one completed lesson.
+  const learnDates = new Set(
+    ((progressRes.data ?? []) as Array<{ completed_at: string | null }>)
+      .map((p) => p.completed_at)
+      .filter((d): d is string => !!d)
+      .map((d) => new Date(d).toISOString().slice(0, 10))
+  );
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const learnedToday = learnDates.has(todayStr);
+  let learnStreak = 0;
+  {
+    const cursor = new Date();
+    if (!learnedToday) cursor.setUTCDate(cursor.getUTCDate() - 1);
+    while (learnDates.has(cursor.toISOString().slice(0, 10))) {
+      learnStreak++;
+      cursor.setUTCDate(cursor.getUTCDate() - 1);
+    }
   }
 
   const modulesByCourse = new Map<
@@ -193,6 +213,18 @@ export default async function AprannPage({
           )}
         </span>
       </header>
+
+      {learnStreak > 0 && (
+        <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-gold-50 border border-gold-200 px-4 py-2">
+          <Flame className="w-4 h-4 text-gold-600" strokeWidth={2.4} />
+          <span className="text-sm font-semibold text-ink">
+            {learnStreak} jou aprantisaj an swit
+          </span>
+          <span className="hidden sm:inline text-xs text-earth-500">
+            {learnedToday ? '· jodi a fèt ✓' : '· aprann yon bagay jodi a'}
+          </span>
+        </div>
+      )}
 
       {cards.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-cream-300 bg-white px-5 py-14 text-center">
