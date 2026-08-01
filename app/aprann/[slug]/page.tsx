@@ -17,6 +17,8 @@ import CourseVideoPlayer from '@/components/dashboard/course-video-player';
 import LessonCompleteButton from './lesson-complete-button';
 import LessonNotes from './lesson-notes';
 import CourseQuestions from './course-questions';
+import CourseReview from './course-review';
+import CourseDiscussion from './course-discussion';
 
 export const dynamic = 'force-dynamic';
 
@@ -126,6 +128,32 @@ export default async function AprannCoursePage({
     id: string;
     body: string;
     answer: string | null;
+    created_at: string;
+  }>;
+
+  // This member's own review (rating + body), if any.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: reviewData } = await (supabase as any)
+    .from('course_reviews')
+    .select('rating, body')
+    .eq('user_id', user.id)
+    .eq('course_id', course.id)
+    .maybeSingle();
+  const myReview = reviewData as { rating: number; body: string | null } | null;
+
+  // Course discussion (RLS lets enrolled students read every post for it).
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: postsData } = await (supabase as any)
+    .from('course_posts')
+    .select('id, user_id, author_name, body, created_at')
+    .eq('course_id', course.id)
+    .order('created_at', { ascending: false })
+    .limit(100);
+  const posts = (postsData ?? []) as Array<{
+    id: string;
+    user_id: string;
+    author_name: string | null;
+    body: string;
     created_at: string;
   }>;
 
@@ -319,7 +347,19 @@ export default async function AprannCoursePage({
         )}
       </section>
 
+      <CourseReview
+        courseId={course.id}
+        initialRating={myReview?.rating ?? null}
+        initialBody={myReview?.body ?? null}
+      />
+
       <CourseQuestions courseId={course.id} initial={questions} />
+
+      <CourseDiscussion
+        courseId={course.id}
+        currentUserId={user.id}
+        initial={posts}
+      />
     </div>
   );
 }

@@ -346,6 +346,24 @@ export default async function CourseDetailPage({
     : modules.filter((m) => m.preview);
   const lockedModuleCount = modules.length - visibleModules.length;
 
+  // Public reviews (social proof).
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: reviewsRaw } = await (supabase as any)
+    .from('course_reviews')
+    .select('rating, body, author_name, created_at')
+    .eq('course_id', course.id)
+    .order('created_at', { ascending: false })
+    .limit(30);
+  const reviews = (reviewsRaw ?? []) as Array<{
+    rating: number;
+    body: string | null;
+    author_name: string | null;
+    created_at: string;
+  }>;
+  const reviewAvg = reviews.length
+    ? reviews.reduce((s, r) => s + r.rating, 0) / reviews.length
+    : 0;
+
   return (
     <main className="min-h-screen bg-white">
       <PromoteHeader />
@@ -758,6 +776,61 @@ export default async function CourseDetailPage({
                     </div>
                   </div>
                 </Link>
+              ))}
+            </div>
+          </section>
+        )}
+        {reviews.length > 0 && (
+          <section className="mt-14 border-t border-cream-200 pt-10">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="flex items-center gap-0.5 text-gold-500">
+                {[1, 2, 3, 4, 5].map((n) => (
+                  <Star
+                    key={n}
+                    className={`w-5 h-5 ${
+                      reviewAvg >= n - 0.5
+                        ? 'fill-gold-400 text-gold-500'
+                        : 'text-cream-300'
+                    }`}
+                    strokeWidth={1.8}
+                  />
+                ))}
+              </div>
+              <span className="font-display text-xl font-bold text-ink">
+                {reviewAvg.toFixed(1)}
+              </span>
+              <span className="text-sm text-earth-600">
+                · {reviews.length} revizyon elèv
+              </span>
+            </div>
+            <div className="grid sm:grid-cols-2 gap-4">
+              {reviews.map((r, i) => (
+                <div
+                  key={i}
+                  className="rounded-2xl border border-cream-200 bg-white p-4"
+                >
+                  <div className="flex items-center gap-0.5 mb-1.5 text-gold-500">
+                    {[1, 2, 3, 4, 5].map((n) => (
+                      <Star
+                        key={n}
+                        className={`w-3.5 h-3.5 ${
+                          r.rating >= n
+                            ? 'fill-gold-400 text-gold-500'
+                            : 'text-cream-300'
+                        }`}
+                        strokeWidth={1.8}
+                      />
+                    ))}
+                  </div>
+                  {r.body && (
+                    <p className="text-sm text-ink/90 leading-relaxed">
+                      {r.body}
+                    </p>
+                  )}
+                  <div className="mt-2 text-xs font-semibold text-earth-600">
+                    — {r.author_name ?? 'Elèv'}
+                  </div>
+                </div>
               ))}
             </div>
           </section>

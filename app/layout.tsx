@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Poppins, Playfair_Display, Lora, DM_Sans } from 'next/font/google';
 import './globals.css';
 import TranslateSwitcher from '@/components/translate-switcher';
@@ -59,6 +59,15 @@ export const metadata: Metadata = {
     locale: 'ht_HT',
     type: 'website',
   },
+  appleWebApp: {
+    capable: true,
+    title: 'Hoïs',
+    statusBarStyle: 'default',
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: '#14361f',
 };
 
 export default function RootLayout({
