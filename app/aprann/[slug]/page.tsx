@@ -19,6 +19,7 @@ import LessonNotes from './lesson-notes';
 import CourseQuestions from './course-questions';
 import CourseReview from './course-review';
 import CourseDiscussion from './course-discussion';
+import LiveSessions, { type LiveSession } from '@/components/klas/live-sessions';
 
 export const dynamic = 'force-dynamic';
 
@@ -157,6 +158,19 @@ export default async function AprannCoursePage({
     created_at: string;
   }>;
 
+  // Live Zoom sessions (per-student links). The enrolled student may read the
+  // safe columns (RLS); zoom_start_url is column-withheld. Not in generated
+  // types yet — cast the client.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: sessData } = await (supabase as any)
+    .from('course_sessions')
+    .select(
+      'id, title, session_type, starts_at, duration_minutes, schedule_text, status'
+    )
+    .eq('course_id', course.id)
+    .order('starts_at', { ascending: true });
+  const liveSessions = (sessData ?? []) as LiveSession[];
+
   const isLive = course.format !== 'video';
 
   return (
@@ -180,7 +194,10 @@ export default async function AprannCoursePage({
         )}
       </header>
 
-      {isLive && (
+      {isLive &&
+        (liveSessions.length > 0 ? (
+          <LiveSessions sessions={liveSessions} />
+        ) : (
         <div className="rounded-2xl bg-forest-800 text-cream-50 p-5 md:p-6">
           <div className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-gold-300 mb-2">
             <Video className="w-3.5 h-3.5" strokeWidth={2.4} />
@@ -208,7 +225,7 @@ export default async function AprannCoursePage({
             </p>
           )}
         </div>
-      )}
+        ))}
 
       {total > 0 && (
         <div className="rounded-2xl bg-white border border-cream-200 p-4 md:p-5 shadow-card">
