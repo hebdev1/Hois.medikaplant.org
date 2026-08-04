@@ -315,6 +315,12 @@ export async function GET(req: NextRequest) {
   const provided = new URL(req.url).searchParams.get('debug') ?? '';
   const authorized = expectedToken.length > 0 && provided === expectedToken;
 
+  // Gate the whole diagnostic behind the debug token. Previously the env-var
+  // presence booleans were returned to any anonymous caller (info disclosure).
+  if (!authorized) {
+    return NextResponse.json({ error: 'not_found' }, { status: 404 });
+  }
+
   const status = {
     SUPABASE_AUTH_HOOK_SECRET: !!process.env.SUPABASE_AUTH_HOOK_SECRET,
     RESEND_API_KEY: !!process.env.RESEND_API_KEY,

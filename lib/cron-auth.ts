@@ -1,8 +1,22 @@
 import { createClient } from '@supabase/supabase-js';
+import { timingSafeEqual } from 'crypto';
 
 // Shared helpers for the email cron + webhook endpoints. Kept in /lib so
 // both /api/cron/* and /api/webhooks/* can reuse them without duplicating
 // the auth + service-role plumbing.
+
+// Constant-time string compare so the token check can't be probed byte-by-byte
+// via response-timing. Pads to equal length first (timingSafeEqual throws on
+// mismatched sizes, which would itself leak length).
+function safeEqual(a: string, b: string): boolean {
+  const aBuf = Buffer.from(a);
+  const bBuf = Buffer.from(b);
+  if (aBuf.length !== bBuf.length) {
+    timingSafeEqual(aBuf, Buffer.alloc(aBuf.length));
+    return false;
+  }
+  return timingSafeEqual(aBuf, bBuf);
+}
 
 /**
  * Verify that a request was sent by our cron scheduler (pg_cron job in
@@ -23,7 +37,7 @@ export function verifyCronAuth(req: Request): { ok: true } | { ok: false; error:
   const token = header.startsWith('Bearer ')
     ? header.slice('Bearer '.length).trim()
     : '';
-  if (!token || token !== expected) {
+  if (!token || !safeEqual(token, expected)) {
     return { ok: false, error: 'Otorizasyon envalid.' };
   }
   return { ok: true };

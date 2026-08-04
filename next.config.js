@@ -44,6 +44,41 @@ const nextConfig = {
   poweredByHeader: false,
   compress: true,
 
+  // Security headers applied to every response. Kept intentionally
+  // conservative so nothing breaks:
+  //   • X-Frame-Options SAMEORIGIN + CSP frame-ancestors 'self' — block
+  //     external clickjacking, while still allowing our own same-origin
+  //     course iframe (CoursePageFrame src=/kou/*.html).
+  //   • nosniff / Referrer-Policy / HSTS / Permissions-Policy — standard.
+  //   • The CSP is limited to frame-ancestors/base-uri/object-src on
+  //     purpose: a full script-src/style-src policy needs per-service
+  //     allow-listing (Stripe, Supabase) + nonces and must be tested
+  //     separately before it's turned on, or it breaks the app.
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
+          { key: 'X-Content-Type-Options', value: 'nosniff' },
+          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+          {
+            key: 'Strict-Transport-Security',
+            value: 'max-age=31536000; includeSubDomains',
+          },
+          {
+            key: 'Permissions-Policy',
+            value: 'camera=(), microphone=(), geolocation=(), browsing-topics=()',
+          },
+          {
+            key: 'Content-Security-Policy',
+            value: "frame-ancestors 'self'; base-uri 'self'; object-src 'none'",
+          },
+        ],
+      },
+    ];
+  },
+
   images: {
     remotePatterns: [
       { protocol: 'https', hostname: 'images.unsplash.com' },
