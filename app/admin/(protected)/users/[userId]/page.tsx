@@ -8,7 +8,6 @@ import {
   Calendar,
   Shield,
   Ban,
-  Sparkles,
   Activity,
   CreditCard,
   FileText,

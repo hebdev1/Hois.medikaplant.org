@@ -7,7 +7,6 @@ import {
   Circle,
   ArrowLeft,
   ArrowRight,
-  Sparkles,
   Lightbulb,
   ShieldAlert,
   Clock,

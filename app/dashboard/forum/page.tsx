@@ -8,7 +8,6 @@ import {
   Lock,
   Search,
   Inbox,
-  Sparkles,
   Users as UsersIcon,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';

@@ -6,7 +6,6 @@ import {
   Shield,
   Ban,
   Activity,
-  Sparkles,
   ChevronRight,
   UserPlus,
 } from 'lucide-react';

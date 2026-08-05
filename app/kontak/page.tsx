@@ -8,7 +8,6 @@ import {
   Facebook,
   Instagram,
   Youtube,
-  Sparkles,
   HelpCircle,
   Leaf,
 } from 'lucide-react';

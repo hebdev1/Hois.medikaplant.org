@@ -9,7 +9,6 @@ import {
   Brain,
   Moon,
   Activity,
-  Sparkles,
   Settings,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
@@ -61,7 +60,7 @@ const CONDITIONS: Record<string, ConditionMeta> = {
   anemia: { label: 'Anemi', icon: Droplets, tone: 'bg-rose-100 text-rose-700' },
   thyroid: { label: 'Tirowid', icon: Activity, tone: 'bg-violet-100 text-violet-700' },
   kidney: { label: 'Ren', icon: Droplets, tone: 'bg-sky-100 text-sky-700' },
-  liver: { label: 'Fwa', icon: Sparkles, tone: 'bg-forest-100 text-forest-700' },
+  liver: { label: 'Fwa', icon: Droplets, tone: 'bg-forest-100 text-forest-700' },
   gastric: { label: 'Dijesyon', icon: Pill, tone: 'bg-orange-100 text-orange-700' },
   migraine: { label: 'Migrèn', icon: Brain, tone: 'bg-violet-100 text-violet-700' },
   depression: { label: 'Depresyon', icon: Moon, tone: 'bg-indigo-100 text-indigo-700' },

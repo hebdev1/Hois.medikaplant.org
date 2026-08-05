@@ -13,7 +13,7 @@ import {
   AlertCircle,
   Calendar,
   ArrowRight,
-  Sparkles,
+  Settings2,
   type LucideIcon,
 } from 'lucide-react';
 import PromoteHeader from '@/components/ui/promote-header';
@@ -176,7 +176,7 @@ export default function KonfidansyalitePage() {
                 </p>
               </Block>
 
-              <Block id="itilizasyon" icon={Sparkles} title="2. Kòman nou itilize done yo">
+              <Block id="itilizasyon" icon={Settings2} title="2. Kòman nou itilize done yo">
                 <p>Nou itilize done w yo pou:</p>
                 <ul>
                   <li>Bay sèvis natiropatik la (konsiltasyon, tretman, gid)</li>

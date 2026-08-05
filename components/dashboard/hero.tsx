@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Flame, ChevronRight, Sparkles } from 'lucide-react';
+import { Flame, ChevronRight } from 'lucide-react';
 import ProgressPlant from './progress-plant';
 import ShareAdviceButton from './share-advice-button';
 import { sanitizeGuideHtml } from '@/lib/sanitize-html';

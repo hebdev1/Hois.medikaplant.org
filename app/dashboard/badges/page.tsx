@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Award, Sparkles, Flame, ChevronRight, Trophy } from 'lucide-react';
+import { Award, Gauge, Flame, ChevronRight, Trophy } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { getCurrentUser } from '@/lib/supabase/auth';
 import Topbar from '@/components/dashboard/topbar';
@@ -145,7 +145,7 @@ export default async function BadgesGalleryPage() {
             tone="gold"
           />
           <StatCard
-            icon={<Sparkles className="w-4 h-4" strokeWidth={2.2} />}
+            icon={<Gauge className="w-4 h-4" strokeWidth={2.2} />}
             label="Nivo aktyèl"
             value={`Niv. ${level}`}
             sub={levelName}

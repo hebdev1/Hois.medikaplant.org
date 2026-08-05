@@ -9,7 +9,7 @@ import {
   MessagesSquare,
   BookOpen,
   FileText,
-  Sparkles,
+  Lightbulb,
   Award,
   Bell,
   CalendarRange,
@@ -454,7 +454,7 @@ export default async function AdminOverview() {
           href="/admin/resources"
         />
         <MiniStat
-          icon={<Sparkles className="w-4 h-4" strokeWidth={2.4} />}
+          icon={<Lightbulb className="w-4 h-4" strokeWidth={2.4} />}
           label="Konsèy jou a"
           value={adviceToday.data ? '✓' : '—'}
           sub={

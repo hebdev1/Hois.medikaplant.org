@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
-  Sparkles,
+  ArrowUpCircle,
   ArrowUpRight,
   XCircle,
   ShieldAlert,
@@ -338,7 +338,7 @@ export default function PlanCard({
 
           {!hasActive && currentPlan === 'basic' && (
             <div className="rounded-xl border border-forest-200 bg-forest-50/50 p-4 flex items-start gap-3 text-sm text-forest-900">
-              <Sparkles
+              <ArrowUpCircle
                 className="w-4 h-4 mt-0.5 text-forest-700 shrink-0"
                 strokeWidth={2.2}
               />

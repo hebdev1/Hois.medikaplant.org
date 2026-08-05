@@ -1,4 +1,4 @@
-import { Sparkles, ChevronRight } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 
 type UpsellCardProps = {
   productName: string;

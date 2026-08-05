@@ -7,7 +7,7 @@ import {
   Loader2,
   AlertCircle,
   CheckCircle2,
-  Sparkles,
+  Send,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
@@ -191,7 +191,7 @@ function SubmitButton({ isEdit }: { isEdit: boolean }) {
       ) : isEdit ? (
         <Save className="w-4 h-4" strokeWidth={2.4} />
       ) : (
-        <Sparkles className="w-4 h-4" strokeWidth={2.4} />
+        <Send className="w-4 h-4" strokeWidth={2.4} />
       )}
       {isEdit ? 'Anrejistre chanjman' : 'Pibliye konsèy la'}
     </button>

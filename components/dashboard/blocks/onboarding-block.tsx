@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import {
-  Sparkles,
   CheckCircle2,
   Circle,
   Activity,

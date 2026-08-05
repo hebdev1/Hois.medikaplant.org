@@ -10,7 +10,6 @@ import {
   CheckCircle2,
   AlertCircle,
   Palette,
-  Sparkles,
   Bug,
   FileText,
   Zap,
@@ -44,7 +43,7 @@ const CATEGORY_META: Record<
   },
   feature: {
     label: 'Nouvo fonksyonalite',
-    icon: Sparkles,
+    icon: Lightbulb,
     hint: 'Yon bagay ou ta renmen w te ka fè.',
   },
   bug: {

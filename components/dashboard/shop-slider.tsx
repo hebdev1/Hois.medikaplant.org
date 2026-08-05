@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { ShoppingBag, ChevronLeft, ChevronRight, ExternalLink, Sparkles } from 'lucide-react';
+import { ShoppingBag, ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react';
 
 /**
  * Curated list of products pulled from medikaplantshop.com. Updating this

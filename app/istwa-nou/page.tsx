@@ -3,7 +3,6 @@ import Link from 'next/link';
 import {
   Leaf,
   Globe,
-  Sparkles,
   Users,
   Sprout,
   Mountain,

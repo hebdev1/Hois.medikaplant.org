@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { CheckIcon, SparklesIcon } from 'lucide-react';
+import { CheckIcon, StarIcon } from 'lucide-react';
 
 type PricingCardProps = {
   titleBadge: string;
@@ -130,7 +130,7 @@ export function BentoPricing({ plans }: { plans: BentoPlan[] }) {
             <Badge variant="secondary">{featured.titleBadge}</Badge>
             {featured.featuredTagline && (
               <Badge variant="outline" className="hidden lg:flex">
-                <SparklesIcon className="me-1 size-3" />
+                <StarIcon className="me-1 size-3" />
                 {featured.featuredTagline}
               </Badge>
             )}

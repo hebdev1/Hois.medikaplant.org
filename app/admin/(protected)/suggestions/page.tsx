@@ -3,7 +3,6 @@ import Link from 'next/link';
 import {
   Lightbulb,
   Palette,
-  Sparkles,
   Bug,
   FileText,
   Zap,
@@ -39,7 +38,7 @@ const CATEGORY_META: Record<
 > = {
   general: { label: 'Jeneral', icon: Lightbulb, tone: 'bg-slate-100 text-slate-700' },
   ui: { label: 'UI', icon: Palette, tone: 'bg-indigo-100 text-indigo-700' },
-  feature: { label: 'Feature', icon: Sparkles, tone: 'bg-amber-100 text-amber-800' },
+  feature: { label: 'Feature', icon: Lightbulb, tone: 'bg-amber-100 text-amber-800' },
   bug: { label: 'Bug', icon: Bug, tone: 'bg-rose-100 text-rose-700' },
   content: { label: 'Kontni', icon: FileText, tone: 'bg-cyan-100 text-cyan-800' },
   performance: { label: 'Vitès', icon: Zap, tone: 'bg-lime-100 text-lime-800' },

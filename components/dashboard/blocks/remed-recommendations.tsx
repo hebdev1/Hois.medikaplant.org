@@ -10,7 +10,7 @@
 // traditional herbal support, never treatment; the FDA disclaimer is
 // always visible at the bottom of the block.
 
-import { Leaf, ExternalLink, Sparkles } from 'lucide-react';
+import { Leaf, ExternalLink } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import {
   remedSlugsFor,

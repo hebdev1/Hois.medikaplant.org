@@ -9,7 +9,7 @@
 // Mobile: bottom sheet. Desktop (sm+): 400px panel anchored bottom-right.
 
 import React from 'react';
-import { Search, X, Loader2, Sparkles, Stethoscope } from 'lucide-react';
+import { Search, X, Loader2, Stethoscope } from 'lucide-react';
 import { useRemedSearch, normalizeQuery } from './use-remed-search';
 import ConditionChips from './condition-chips';
 import ProductCard from './product-card';

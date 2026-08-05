@@ -3,7 +3,7 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import {
-  Sparkles,
+  CircleCheck,
   Plus,
   Trash2,
   Loader2,
@@ -476,7 +476,7 @@ export default function PersonalPlanComposer({
             {pending ? (
               <Loader2 className="w-4 h-4 animate-spin" strokeWidth={2.4} />
             ) : (
-              <Sparkles className="w-4 h-4" strokeWidth={2.4} />
+              <CircleCheck className="w-4 h-4" strokeWidth={2.4} />
             )}
             Aktive plan pou manm nan
           </button>

@@ -3,7 +3,6 @@ import {
   GraduationCap,
   PlayCircle,
   Video,
-  Sparkles,
   Inbox,
   ChevronRight,
 } from 'lucide-react';

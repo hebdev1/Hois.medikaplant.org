@@ -12,7 +12,6 @@ import {
   CheckCircle2,
   Loader2,
   Link as LinkIcon,
-  Sparkles,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Crown, Lock, Sparkles, ChevronRight } from 'lucide-react';
+import { Crown, Lock, ChevronRight } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { getCurrentUser } from '@/lib/supabase/auth';
 import Topbar from '@/components/dashboard/topbar';

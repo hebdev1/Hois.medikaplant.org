@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
-import { Sparkles, Calendar, Crown, Headphones, Clock } from 'lucide-react';
+import { Calendar, Crown, Headphones, Clock } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import AdviceComposer from './advice-composer';
 import AdviceRowActions from './advice-row-actions';

@@ -4,7 +4,6 @@ import Image from 'next/image';
 import {
   BookOpen,
   Leaf,
-  Sparkles,
   Activity,
   Sprout,
   Heart,

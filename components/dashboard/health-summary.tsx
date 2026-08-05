@@ -1,4 +1,4 @@
-import { Sparkles, Activity, Target, type LucideIcon } from 'lucide-react';
+import { Activity, Target, type LucideIcon } from 'lucide-react';
 
 type Props = {
   unit: string;

@@ -9,7 +9,7 @@ import {
   Loader2,
   AlertCircle,
   CheckCircle2,
-  Sparkles,
+  UserCheck,
   UserCog,
   IdCard,
   Lock,
@@ -385,7 +385,7 @@ export default function DangerZone({
           {pending === 'suspend' ? (
             <Loader2 className="w-3.5 h-3.5 animate-spin" strokeWidth={2.2} />
           ) : suspended ? (
-            <Sparkles className="w-3.5 h-3.5" strokeWidth={2.2} />
+            <UserCheck className="w-3.5 h-3.5" strokeWidth={2.2} />
           ) : (
             <Ban className="w-3.5 h-3.5" strokeWidth={2.2} />
           )}

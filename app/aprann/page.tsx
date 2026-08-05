@@ -5,7 +5,6 @@ import {
   PlayCircle,
   ArrowRight,
   Inbox,
-  Sparkles,
   BookOpen,
   Award,
   Flame,

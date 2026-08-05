@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ChevronRight, Flame, Sparkles, CheckCircle2, Pause as PauseIcon } from 'lucide-react';
+import { ChevronRight, Flame, CheckCircle2, Pause as PauseIcon } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { getCurrentUser } from '@/lib/supabase/auth';
 import Topbar from '@/components/dashboard/topbar';

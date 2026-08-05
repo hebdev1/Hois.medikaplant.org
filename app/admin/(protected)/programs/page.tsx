@@ -9,7 +9,6 @@ import {
   Users as UsersIcon,
   CalendarRange,
   Copy,
-  Sparkles,
   ExternalLink,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';

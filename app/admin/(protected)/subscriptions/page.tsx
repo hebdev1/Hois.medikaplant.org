@@ -4,7 +4,6 @@ import {
   CreditCard,
   Search,
   TrendingUp,
-  Sparkles,
   Ban,
   CalendarDays,
   Users as UsersIcon,
@@ -198,7 +197,7 @@ export default async function AdminSubscriptionsPage({
           tone="bg-emerald-100 text-emerald-700"
         />
         <StatCard
-          icon={Sparkles}
+          icon={CreditCard}
           label="Manm k ap peye"
           value={`${stats.payingMembers}`}
           tone="bg-forest-100 text-forest-700"
