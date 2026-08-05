@@ -64,10 +64,15 @@ export default function SupportChat({
         },
         (payload) => {
           const row = payload.new as Message;
+          // The member's own messages are already rendered optimistically and
+          // swapped to the canonical row on send. Ignoring the realtime echo of
+          // our own 'user' rows prevents the duplicate that happened when the
+          // echo raced the swap. Realtime is only needed for agent/system replies.
+          if (row.sender_role === 'user') return;
           if (messageIds.current.has(row.id)) return;
           messageIds.current.add(row.id);
           setMessages((prev) => [...prev, row]);
-          if (row.sender_role !== 'user') setTyping(false);
+          setTyping(false);
         }
       )
       .subscribe();

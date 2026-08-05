@@ -121,7 +121,10 @@ export async function sendMessage(
     return { ok: false, error: error?.message ?? 'Erè inkoni.' };
   }
 
-  revalidatePath('/dashboard/support');
+  // NOTE: deliberately NO revalidatePath here. The chat updates itself via the
+  // optimistic insert + realtime echo, so revalidating would force a full
+  // server re-render of /dashboard/support on every send — the round-trip that
+  // made sending feel slow (and widened the realtime-echo duplicate race).
   return { ok: true, message: inserted as MessageRow };
 }
 
