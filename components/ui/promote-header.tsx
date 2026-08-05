@@ -96,18 +96,29 @@ export default function PromoteHeader() {
   // may be buyers who just need to log in). Resolved client-side so the public
   // pages that render this header stay server-cached.
   const [showPortal, setShowPortal] = React.useState(false);
+  // Auth-aware CTAs: a logged-in visitor must NOT see "Konekte" (clicking it
+  // just bounces off /auth/login — for a no-plan member that chains through to
+  // the pricing anchor, which looks broken). Show their dashboard/panel instead.
+  const [loggedIn, setLoggedIn] = React.useState(false);
+  const [isAdmin, setIsAdmin] = React.useState(false);
 
   React.useEffect(() => {
     let alive = true;
     studentPortalNav()
       .then((r) => {
-        if (alive) setShowPortal(r.show);
+        if (!alive) return;
+        setShowPortal(r.show);
+        setLoggedIn(r.loggedIn);
+        setIsAdmin(r.isAdmin);
       })
       .catch(() => {});
     return () => {
       alive = false;
     };
   }, []);
+
+  const accountHref = isAdmin ? '/admin' : '/dashboard';
+  const accountLabel = isAdmin ? 'Panèl admin' : 'Tablodebò';
 
   // Track scroll position so we can ramp the header's frosted-glass
   // effect after the user moves past the announcement bar. A single
@@ -375,20 +386,35 @@ export default function PromoteHeader() {
                   Potay etidyan
                 </Link>
               )}
-              <Link href="/auth/login" className={secondaryBtn}>
-                Konekte
-              </Link>
-              <Link href="#pri" className={primaryBtn}>
-                Vin manm
-                <ArrowRight className="ml-1.5 h-3.5 w-3.5" strokeWidth={2.4} />
-              </Link>
+              {loggedIn ? (
+                <Link href={accountHref} className={primaryBtn}>
+                  {accountLabel}
+                  <ArrowRight className="ml-1.5 h-3.5 w-3.5" strokeWidth={2.4} />
+                </Link>
+              ) : (
+                <>
+                  <Link href="/auth/login" className={secondaryBtn}>
+                    Konekte
+                  </Link>
+                  <Link href="#pri" className={primaryBtn}>
+                    Vin manm
+                    <ArrowRight className="ml-1.5 h-3.5 w-3.5" strokeWidth={2.4} />
+                  </Link>
+                </>
+              )}
             </div>
 
             {/* Right (mobile): quick CTA */}
             <div className="md:hidden">
-              <Link href="#pri" className={primaryBtn}>
-                Vin manm
-              </Link>
+              {loggedIn ? (
+                <Link href={accountHref} className={primaryBtn}>
+                  {isAdmin ? 'Panèl' : 'Tablodebò'}
+                </Link>
+              ) : (
+                <Link href="#pri" className={primaryBtn}>
+                  Vin manm
+                </Link>
+              )}
             </div>
           </div>
         </div>
@@ -509,20 +535,32 @@ export default function PromoteHeader() {
           {/* Actions — right-aligned so "Vin manm" sits at the drawer's right
               edge instead of being stretched across half the width. */}
           <div className="mt-4 flex items-center justify-end gap-2">
-            <Link
-              href="/auth/login"
-              onClick={() => setOpen(false)}
-              className={secondaryBtn}
-            >
-              Konekte
-            </Link>
-            <Link
-              href="#pri"
-              onClick={() => setOpen(false)}
-              className={primaryBtn}
-            >
-              Vin manm
-            </Link>
+            {loggedIn ? (
+              <Link
+                href={accountHref}
+                onClick={() => setOpen(false)}
+                className={primaryBtn}
+              >
+                {accountLabel}
+              </Link>
+            ) : (
+              <>
+                <Link
+                  href="/auth/login"
+                  onClick={() => setOpen(false)}
+                  className={secondaryBtn}
+                >
+                  Konekte
+                </Link>
+                <Link
+                  href="#pri"
+                  onClick={() => setOpen(false)}
+                  className={primaryBtn}
+                >
+                  Vin manm
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Contact footer row */}
