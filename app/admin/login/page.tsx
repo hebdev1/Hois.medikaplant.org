@@ -90,7 +90,7 @@ export default async function AdminLoginPage({
           </div>
           <h1 className="font-display text-4xl xl:text-5xl font-bold leading-tight">
             Panèl{' '}
-            <em className="not-italic bg-gradient-to-r from-gold-300 to-forest-300 bg-clip-text text-transparent">
+            <em className="not-italic text-gold-300">
               administratif
             </em>{' '}
             Hoïs Inivèsite

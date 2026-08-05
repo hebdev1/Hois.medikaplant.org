@@ -71,7 +71,6 @@ export default function HealthSummary({
       {commentary && (
         <div className="rounded-2xl bg-gradient-to-br from-forest-50 to-cream-50 border border-forest-100 p-4">
           <div className="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-[0.18em] font-bold text-forest-700 mb-2">
-            <Sparkles className="w-3 h-3" strokeWidth={2.2} />
             Konstatasyon
           </div>
           <p className="font-serif italic text-sm text-ink leading-relaxed">

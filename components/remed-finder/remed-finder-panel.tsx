@@ -31,9 +31,7 @@ function DrAvatar({ size = 'md' }: { size?: 'sm' | 'md' }) {
       aria-hidden
     >
       <Stethoscope className={icon} strokeWidth={2.2} />
-      <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-gold-400 border-2 border-white grid place-items-center">
-        <Sparkles className="w-1.5 h-1.5 text-forest-900" strokeWidth={3} />
-      </span>
+      <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-gold-400 border-2 border-white" />
     </span>
   );
 }
@@ -125,11 +123,8 @@ export default function RemedFinderPanel({
           <div className="flex items-center gap-2.5 min-w-0">
             <DrAvatar />
             <div className="min-w-0">
-              <h2 className="font-display text-base font-bold text-ink leading-tight flex items-center gap-1.5">
+              <h2 className="font-display text-base font-bold text-ink leading-tight">
                 Doktè Maton
-                <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-gold-100 text-[8px] font-bold uppercase tracking-wider text-gold-700">
-                  <Sparkles className="w-2 h-2" strokeWidth={2.6} /> AI
-                </span>
               </h2>
               <p className="text-[11px] text-earth-600 flex items-center gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-forest-500 inline-block" />

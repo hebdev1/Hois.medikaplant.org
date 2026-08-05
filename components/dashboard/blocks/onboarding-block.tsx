@@ -72,7 +72,6 @@ export default function OnboardingBlock({
       />
       <div className="relative p-6 md:p-7">
         <div className="flex items-center gap-2 mb-1">
-          <Sparkles className="w-4 h-4 text-gold-200" strokeWidth={2.4} />
           <span className="text-[11px] uppercase tracking-[0.18em] text-cream-100/80 font-bold">
             Byenveni
           </span>

@@ -93,8 +93,7 @@ export default function IstwaNouPage() {
         <div className="relative max-w-[1400px] mx-auto px-4 md:px-12 lg:px-20 xl:px-32 py-20 md:py-28 lg:py-32">
           <div className="max-w-3xl">
             <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-100 text-brand-700 text-sm font-medium mb-5">
-              <Sparkles className="w-3.5 h-3.5" strokeWidth={2.4} />
-              Misyon Ak Vizyon Nou 
+                            Misyon Ak Vizyon Nou 
             </span>
             <h1 className="font-display text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight text-ink leading-[1.05]">
               Misyon Ak <span className="text-brand-600">Vizyon nou</span>
@@ -267,7 +266,6 @@ export default function IstwaNouPage() {
                       }`}
                     >
                       <span className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.18em] text-accent">
-                        <Sparkles className="w-3 h-3" strokeWidth={2.4} />
                         {item.year}
                       </span>
                       <h3 className="font-display text-xl md:text-2xl font-bold text-ink mt-2">
@@ -331,8 +329,7 @@ export default function IstwaNouPage() {
         <div className="max-w-[1400px] mx-auto px-4 md:px-12 lg:px-20 xl:px-32">
           <div className="relative rounded-[2rem] overflow-hidden bg-gradient-to-br from-brand-50 via-white to-accent/10 border border-brand-100 px-6 py-14 md:px-14 md:py-20 text-center">
             <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white text-brand-700 text-sm font-medium mb-5 shadow-sm">
-              <Sparkles className="w-3.5 h-3.5" strokeWidth={2.4} />
-              Vin pati de istwa a
+                            Vin pati de istwa a
             </span>
             <h2 className="font-display text-3xl md:text-5xl font-bold tracking-tight text-ink leading-tight max-w-3xl mx-auto">
               Pa rete sou bò wout la — kòmanse vwayaj byennèt ou jodi a

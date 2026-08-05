@@ -94,8 +94,7 @@ export default async function VipPage() {
           // Unlocked — Sitwonèl (or Melis) member
           <div className="rounded-2xl bg-gradient-to-br from-forest-800 to-forest-900 text-cream-50 p-6 md:p-8 shadow-hero">
             <div className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-gold-300 mb-3">
-              <Sparkles className="w-3.5 h-3.5" strokeWidth={2.4} />
-              Debloke
+                            Debloke
             </div>
             <h2 className="font-display text-2xl font-bold">
               Byenveni nan espas VIP la, {shortName}.

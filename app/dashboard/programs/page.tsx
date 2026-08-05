@@ -228,8 +228,7 @@ export default async function ProgramsPage() {
             <span className="text-ink font-medium">Pwotokòl mwen yo</span>
           </nav>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-forest-100 text-forest-700 text-xs font-semibold mb-3">
-            <Sparkles className="w-3.5 h-3.5" strokeWidth={2.2} />
-            Pwotokòl mwen yo
+                        Pwotokòl mwen yo
           </div>
           <div className="flex items-start justify-between gap-4 flex-wrap">
             <div>

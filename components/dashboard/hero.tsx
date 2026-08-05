@@ -132,7 +132,6 @@ export default function Hero({
       <article className="bg-cream-50 border border-cream-200 rounded-2xl p-5 md:p-6 grid md:grid-cols-[1fr_auto] gap-4 md:items-center">
         <div>
           <div className="text-[10px] uppercase tracking-[0.2em] text-forest-600 font-semibold flex items-center gap-2 mb-2">
-            <Sparkles className="w-3 h-3" strokeWidth={2.2} />
             Konsèy jou a
             <span aria-hidden className="text-earth-500">·</span>
             <span className="font-normal text-earth-500 tracking-normal normal-case">

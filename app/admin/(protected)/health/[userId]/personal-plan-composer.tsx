@@ -211,8 +211,7 @@ export default function PersonalPlanComposer({
         <header className="flex items-start justify-between gap-3 flex-wrap mb-3">
           <div>
             <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.18em] text-forest-700 font-bold mb-1">
-              <Sparkles className="w-3 h-3" strokeWidth={2.4} />
-              Hoïs Plan pèsonèl
+                            Hoïs Plan pèsonèl
             </div>
             <h2 className="font-display text-lg md:text-xl font-bold text-ink">
               {existingProgramName}
@@ -241,8 +240,7 @@ export default function PersonalPlanComposer({
     <section className="bg-white border border-cream-200 rounded-2xl p-5 md:p-6 shadow-card">
       <header className="mb-5">
         <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.18em] text-forest-700 font-bold mb-2">
-          <Sparkles className="w-3 h-3" strokeWidth={2.4} />
-          Hoïs Plan pèsonèl
+                    Hoïs Plan pèsonèl
         </div>
         <h2 className="font-display text-lg md:text-xl font-bold text-ink">
           Konstwi yon plan pou manm sa

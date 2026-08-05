@@ -135,7 +135,6 @@ export default async function RemedRecommendations({
 
       <header className="relative z-10 mb-4">
         <div className="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-[0.2em] text-forest-700 font-semibold mb-2">
-          <Sparkles className="w-3 h-3" strokeWidth={2.2} />
           Chwazi pou ou
         </div>
         <h3 className="font-display text-xl md:text-2xl font-bold text-ink leading-snug">

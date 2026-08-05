@@ -73,7 +73,6 @@ export default async function AdminAdvicePage() {
     <div className="p-5 md:p-8 lg:p-10 max-w-[1280px] mx-auto">
       <header className="mb-6">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 text-accent text-xs font-semibold mb-3">
-          <Sparkles className="w-3.5 h-3.5" strokeWidth={2.2} />
           Admin · Konsèy jou a
         </div>
         <h1 className="font-display text-3xl md:text-4xl font-bold tracking-tight text-ink">

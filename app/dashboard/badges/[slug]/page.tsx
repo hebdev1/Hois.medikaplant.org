@@ -223,8 +223,7 @@ export default async function BadgeDetailPage({
           {/* Progress card */}
           <div className="bg-white border border-cream-200 rounded-2xl p-5 md:p-6 shadow-card">
             <div className="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.18em] text-forest-700 font-bold mb-3">
-              <Sparkles className="w-3.5 h-3.5" strokeWidth={2.4} />
-              Pwogresyon ou
+                            Pwogresyon ou
             </div>
             <div className="flex items-baseline gap-2 mb-1">
               <span className="font-display text-4xl font-bold text-ink">

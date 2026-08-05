@@ -131,7 +131,7 @@ export default async function MyCoursesPage() {
                   <span className="absolute top-2.5 left-2.5 inline-flex items-center gap-1 px-2 py-1 rounded-full bg-white/90 text-forest-800 text-[10px] font-bold uppercase tracking-wider">
                     {c.format === 'interactive' ? (
                       <>
-                        <Sparkles className="w-3 h-3" strokeWidth={2.4} /> Entèraktif
+                        Entèraktif
                       </>
                     ) : c.format === 'video' ? (
                       <>

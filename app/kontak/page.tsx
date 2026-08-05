@@ -190,8 +190,7 @@ export default function KontakPage() {
             {/* LEFT — Form */}
             <div>
               <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent/10 text-accent text-sm font-medium mb-4">
-                <Sparkles className="w-3.5 h-3.5" strokeWidth={2.4} />
-                Voye mesaj ou
+                                Voye mesaj ou
               </span>
               <h2 className="font-display text-3xl md:text-4xl font-bold tracking-tight text-ink leading-tight">
                 Yon fòm, yon repons,{' '}

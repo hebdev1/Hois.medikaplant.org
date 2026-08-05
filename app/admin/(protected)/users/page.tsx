@@ -326,8 +326,7 @@ export default async function AdminUsersListPage({
                           </span>
                         ) : (
                           <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full bg-forest-100 text-forest-700">
-                            <Sparkles className="w-3 h-3" strokeWidth={2.4} />
-                            Aktif
+                                                        Aktif
                           </span>
                         )}
                       </td>

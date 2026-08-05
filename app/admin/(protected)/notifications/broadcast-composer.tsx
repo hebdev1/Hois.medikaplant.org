@@ -267,7 +267,6 @@ export default function BroadcastComposer() {
             <span>
               Notifikasyon voye! Manm yo ap wè li nan kloch yo imedyatman.
             </span>
-            <Sparkles className="w-3 h-3 text-gold-500 ml-auto" strokeWidth={2.4} />
           </div>
         )}
 

@@ -393,8 +393,7 @@ export default async function AprannPage({
           {discover.length > 0 && (
             <section className="mt-10">
               <h2 className="font-display text-xl font-bold text-ink flex items-center gap-2 mb-4">
-                <Sparkles className="w-5 h-5 text-gold-500" strokeWidth={2.2} />
-                Dekouvri plis kou
+                                Dekouvri plis kou
               </h2>
               <div className="grid sm:grid-cols-3 gap-3">
                 {discover.map((d) => (

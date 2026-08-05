@@ -268,7 +268,6 @@ export default async function KlasPage() {
                 </div>
               </div>
               <div className="absolute -top-6 -right-2 bg-ink text-cream-50 rounded-2xl shadow-card px-4 py-3">
-                <Sparkles className="w-4 h-4 text-brand-300 mb-1" strokeWidth={2.4} />
                 <div className="text-xs text-white/70">Nouvo klas chak mwa</div>
               </div>
             </div>
@@ -338,8 +337,7 @@ export default async function KlasPage() {
             <div className="flex items-end justify-between gap-4 flex-wrap mb-10">
               <div>
                 <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-100 text-brand-700 text-sm font-medium mb-4">
-                  <Sparkles className="w-3.5 h-3.5" strokeWidth={2.4} />
-                  Klas vedèt
+                                    Klas vedèt
                 </span>
                 <h2 className="font-display text-3xl md:text-5xl font-bold tracking-tight text-ink leading-tight">
                   Sa ki popilè kounye a
@@ -550,8 +548,7 @@ export default async function KlasPage() {
             <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
               <div>
                 <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 text-brand-200 text-sm font-medium mb-4">
-                  <Sparkles className="w-3.5 h-3.5" strokeWidth={2.4} />
-                  Sa ou jwenn
+                                    Sa ou jwenn
                 </span>
                 <h2 className="font-display text-3xl md:text-5xl font-bold tracking-tight leading-tight">
                   Pa yon klas — yon kominote vivan

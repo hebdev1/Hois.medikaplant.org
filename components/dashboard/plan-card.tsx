@@ -149,7 +149,6 @@ export default function PlanCard({
         <div className="relative flex flex-col md:flex-row md:items-start md:justify-between gap-4">
           <div>
             <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-cream-50/15 text-[11px] font-semibold uppercase tracking-wide mb-3">
-              <Sparkles className="w-3 h-3" strokeWidth={2.2} />
               Plan aktif
             </div>
             <h3 className="font-display text-2xl md:text-3xl font-bold leading-tight">

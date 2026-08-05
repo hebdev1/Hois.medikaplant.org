@@ -355,8 +355,7 @@ function OverviewPanel({
       {overview?.objectives && overview.objectives.length > 0 && (
         <div className="rounded-2xl bg-white border border-cream-200 p-5">
           <h3 className="font-display font-bold text-ink mb-3 flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-gold-600" strokeWidth={2.2} />
-            Nan fen kou sa a, ou va kapab
+                        Nan fen kou sa a, ou va kapab
           </h3>
           <ul className="space-y-2">
             {overview.objectives.map((o, i) => (

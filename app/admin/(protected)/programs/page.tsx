@@ -262,7 +262,6 @@ export default async function AdminProgramsPage({
                     </div>
                   ) : (
                     <div className="text-[10px] text-amber-700 italic inline-flex items-center gap-1">
-                      <Sparkles className="w-3 h-3" strokeWidth={2.4} />
                       Pa gen tag — pwotokòl jeneral pou tout moun
                     </div>
                   )}

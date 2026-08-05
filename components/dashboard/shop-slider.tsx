@@ -146,7 +146,6 @@ export default function ShopSlider() {
       <header className="relative z-10 flex items-end justify-between gap-3 flex-wrap mb-4 md:mb-5">
         <div>
           <div className="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-[0.2em] text-gold-300 font-semibold mb-2">
-            <Sparkles className="w-3 h-3" strokeWidth={2.2} />
             Boutik MedikaPlant
           </div>
           <h3 className="font-display text-xl md:text-2xl font-bold leading-snug">
