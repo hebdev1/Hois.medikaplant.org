@@ -120,9 +120,14 @@ export default function SupportInbox({ initialThreads, adminPersona }: Props) {
             return next;
           });
 
-          // Update visible messages if this thread is selected
-          if (row.thread_id === activeThreadId) {
-            if (messageIds.current.has(row.id)) return;
+          // Append to the open conversation — but skip our own 'agent' echoes.
+          // They're already shown optimistically and swapped to the canonical
+          // row on send, so appending the realtime echo too would duplicate them.
+          if (
+            row.thread_id === activeThreadId &&
+            row.sender_role !== 'agent' &&
+            !messageIds.current.has(row.id)
+          ) {
             messageIds.current.add(row.id);
             setMessages((prev) => [...prev, row]);
           }

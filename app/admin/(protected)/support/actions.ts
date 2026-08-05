@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
+import { createServiceClient } from '@/lib/supabase/service';
 import { emailNotifyMember } from '@/lib/email/notify';
 import type { Database } from '@/types/database';
 import { hasCapability, type AdminRole } from '../admin-nav-config';
@@ -54,28 +55,39 @@ export async function adminSendSupportReply(
     return { ok: false, error: error?.message ?? 'Erè inkoni.' };
   }
 
-  // Email the thread owner that they got a reply (best-effort).
-  const { data: threadRaw } = await auth.supabase
+  // Notify the member by email — best-effort, and OFF the reply's critical
+  // path. Awaiting the email (a Resend round-trip) plus its thread lookup made
+  // every reply slow; the persistent Node server finishes this after we return.
+  // No revalidatePath either: the inbox updates itself via realtime + optimistic.
+  void notifyMemberOfReply(threadId).catch((e) =>
+    console.error('[support] member notify failed', e)
+  );
+
+  return { ok: true, message: data as MessageRow };
+}
+
+// Best-effort "you got a reply" email, run detached from the reply request.
+// Uses the service-role client so it doesn't depend on the request's auth
+// context still being alive when it runs.
+async function notifyMemberOfReply(threadId: string): Promise<void> {
+  const sb = createServiceClient();
+  const { data: threadRaw } = await sb
     .from('support_threads')
     .select('user_id')
     .eq('id', threadId)
     .maybeSingle();
   const threadUserId = (threadRaw as { user_id: string } | null)?.user_id;
-  if (threadUserId) {
-    await emailNotifyMember(auth.supabase, threadUserId, {
-      subject: 'Nouvo repons nan sipò chat ou',
-      heading: 'Sipò Hoïs reponn ou',
-      body: [
-        'Yon manm ekip sipò Hoïs reponn mesaj ou.',
-        'Konekte sou kont ou pou li repons lan epi kontinye konvèsasyon an.',
-      ],
-      linkPath: '/dashboard/support',
-      linkLabel: 'Wè konvèsasyon an',
-    });
-  }
-
-  revalidatePath('/admin/support');
-  return { ok: true, message: data as MessageRow };
+  if (!threadUserId) return;
+  await emailNotifyMember(sb, threadUserId, {
+    subject: 'Nouvo repons nan sipò chat ou',
+    heading: 'Sipò Hoïs reponn ou',
+    body: [
+      'Yon manm ekip sipò Hoïs reponn mesaj ou.',
+      'Konekte sou kont ou pou li repons lan epi kontinye konvèsasyon an.',
+    ],
+    linkPath: '/dashboard/support',
+    linkLabel: 'Wè konvèsasyon an',
+  });
 }
 
 /**
