@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
-  Sparkles,
+  Sun,
   HandHeart,
   Wind,
   Heart,
@@ -37,7 +37,7 @@ const ITEMS: {
   {
     id: 'limye',
     label: 'Limyè',
-    icon: Sparkles,
+    icon: Sun,
     image:
       'https://images.unsplash.com/photo-1473773508845-188df298d2d1?q=80&w=1200',
     description:

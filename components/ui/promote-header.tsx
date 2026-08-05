@@ -11,7 +11,6 @@ import {
   ShieldCheck,
   Search,
   X,
-  Sparkles,
   ArrowRight,
 } from 'lucide-react';
 import { studentPortalNav } from '@/app/aprann/portal-access';
@@ -182,7 +181,6 @@ export default function PromoteHeader() {
       <div className="w-full border-b border-cream-200 bg-gradient-to-r from-brand-50/60 to-white">
         <div className="mx-auto flex max-w-7xl items-center justify-center gap-3 px-4 py-1.5 text-xs sm:text-sm">
           <span className="inline-flex items-center gap-1 rounded-full border border-brand-200 bg-white px-2 py-0.5 font-bold text-brand-700">
-            <Sparkles className="w-3 h-3" strokeWidth={2.4} />
             Nouvo
           </span>
           <span className="text-ink-muted hidden sm:inline">

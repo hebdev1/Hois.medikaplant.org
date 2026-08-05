@@ -40,9 +40,6 @@ export default async function TestimonialsSection() {
     <section className="relative w-full py-24 md:py-32 bg-white">
       <div className="max-w-[1400px] mx-auto px-4 md:px-12 lg:px-20 xl:px-32">
         <div className="flex flex-col items-center text-center max-w-[680px] mx-auto mb-16">
-          <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-100 text-brand-700 text-sm font-medium mb-4">
-            Temwayaj
-          </span>
           <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-ink">
             Sa manm yo <span className="text-brand-600"> di </span> sou Hoïs
           </h2>

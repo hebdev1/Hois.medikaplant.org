@@ -12,7 +12,7 @@
 
 import React from 'react';
 import dynamic from 'next/dynamic';
-import { Sparkles, Stethoscope } from 'lucide-react';
+import { Stethoscope } from 'lucide-react';
 
 const RemedFinderPanel = dynamic(() => import('./remed-finder-panel'), {
   ssr: false,
@@ -63,10 +63,8 @@ export default function RemedFinder() {
         {/* Assistant avatar — dark-green doctor icon on a pale-green bubble */}
         <span className="relative grid place-items-center w-8 h-8 rounded-full bg-forest-100 text-forest-700 border border-forest-200 shadow-inner">
           <Stethoscope className="w-4 h-4" strokeWidth={2.2} aria-hidden />
-          {/* live "AI online" dot */}
-          <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-gold-400 border-2 border-forest-800 grid place-items-center">
-            <Sparkles className="w-1.5 h-1.5 text-forest-900" strokeWidth={3} />
-          </span>
+          {/* live presence dot */}
+          <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-gold-400 border-2 border-forest-800" />
         </span>
         <span className="flex flex-col items-start leading-none">
           <span className="text-[13px] font-bold tracking-tight">

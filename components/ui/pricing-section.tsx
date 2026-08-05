@@ -4,7 +4,7 @@ import React, { useRef, useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'motion/react';
 import NumberFlow from '@number-flow/react';
-import { CheckCheck, Sparkles, Crown, Leaf } from 'lucide-react';
+import { CheckCheck, Crown, Leaf, Citrus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { TimelineContent } from '@/components/ui/timeline-animation';
@@ -65,7 +65,7 @@ const PLANS: Plan[] = [
     yearlyOriginal: 175,
     monthly: 14.58,
     popular: true,
-    icon: Sparkles,
+    icon: Citrus,
     accent: '#e78e17',
     features: [
       'Tout sa ki nan Bazilik',
@@ -197,18 +197,9 @@ export default function PricingSection() {
         aria-hidden
         className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand-300/60 to-transparent"
       />
-      <div
-        aria-hidden
-        className="absolute -top-32 right-1/4 w-[500px] h-[500px] bg-gold-100/30 rounded-full blur-3xl pointer-events-none"
-      />
-
       <div className="relative max-w-7xl mx-auto px-4 md:px-12">
         {/* Heading */}
         <article className="text-center mb-12 space-y-5 max-w-3xl mx-auto">
-          <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-100 text-brand-700 text-sm font-medium">
-            <Sparkles className="w-4 h-4" strokeWidth={2.2} />
-            Plan Hoïs VIP
-          </span>
           <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold tracking-tight text-ink">
             <VerticalCutReveal
               splitBy="words"
@@ -313,7 +304,7 @@ export default function PricingSection() {
                               'linear-gradient(135deg, #e78e17, #985c0c)',
                           }}
                         >
-                          ★ Best Value
+                          Best Value
                         </span>
                       )}
                     </div>

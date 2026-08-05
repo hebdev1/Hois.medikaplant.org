@@ -45,9 +45,6 @@ export default function FeaturesSection() {
     <section id="pwodui" className="relative w-full py-24 md:py-32 bg-white">
       <div className="max-w-[1400px] mx-auto px-4 md:px-12 lg:px-20 xl:px-32">
         <div className="flex flex-col items-center text-center max-w-[720px] mx-auto mb-16">
-          <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-100 text-brand-700 text-sm font-medium mb-4">
-            Sa nou ofri w
-          </span>
           <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-ink">
             Tout sa ou bezwen pou w  <span className="text-brand-600">viv lavi w an sante</span>
           </h2>

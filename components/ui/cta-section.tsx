@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ArrowRight, Leaf } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 
 export default function CtaSection() {
   return (
@@ -16,15 +16,8 @@ export default function CtaSection() {
             }}
             aria-hidden
           />
-          <div className="absolute -top-20 -right-10 w-72 h-72 bg-white/10 rounded-full blur-3xl" aria-hidden />
-          <div className="absolute -bottom-16 -left-10 w-72 h-72 bg-emerald-300/20 rounded-full blur-3xl" aria-hidden />
-
           <div className="relative grid lg:grid-cols-[1.4fr_0.6fr] gap-8 items-center">
             <div>
-              <div className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm border border-white/20 rounded-full px-4 py-1.5 text-sm font-medium mb-4">
-                <Leaf className="w-4 h-4" strokeWidth={2.2} />
-                Pare pou kòmanse?
-              </div>
               <h2 className="text-3xl md:text-5xl font-bold tracking-tight leading-tight max-w-[680px]">
                 Rantre nan kominote Hoïs la jodi a pou w pran swen kò w ak nanm ou.
               </h2>

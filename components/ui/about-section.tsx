@@ -60,9 +60,6 @@ export default async function AboutSection() {
 
           {/* RIGHT — copy */}
           <div>
-            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-100 text-brand-700 text-sm font-medium mb-4">
-              Sou Hoïs Inivèsite
-            </span>
             <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-ink leading-tight">
               Yon pon ant <span className="text-brand-600">tradisyon</span> ak modènite
             </h2>
