@@ -65,6 +65,12 @@ export default function NotificationBell({
           .select(
             'id, title, message, link_url, created_at, target, target_plan, target_user_id, created_by'
           )
+          // Scope to THIS member. RLS also lets admins read every row (for the
+          // /admin panel), so relying on RLS alone would show an admin every
+          // user's personal notifications in their own bell.
+          .or(
+            `target.eq.all,and(target.eq.plan,target_plan.eq.${userPlan}),and(target.eq.user,target_user_id.eq.${userId})`
+          )
           .order('created_at', { ascending: false })
           .limit(20),
         supabase

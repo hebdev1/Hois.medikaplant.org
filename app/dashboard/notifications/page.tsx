@@ -37,16 +37,29 @@ export default async function NotificationsPage() {
   const user = await getCurrentUser();
   if (!user) return null;
 
-  const [profileRes, notifsRes, readsRes, unreadRes] = await Promise.all([
-    supabase
-      .from('profiles')
-      .select('full_name, email, plan, avatar_url')
-      .eq('id', user.id)
-      .maybeSingle(),
-    // RLS restricts SELECT on notifications to rows visible to this member.
+  const { data: profileData } = await supabase
+    .from('profiles')
+    .select('full_name, email, plan, avatar_url')
+    .eq('id', user.id)
+    .maybeSingle();
+  const profile = profileData as {
+    full_name: string | null;
+    email: string;
+    plan: 'basic' | 'premium' | 'vip';
+    avatar_url: string | null;
+  } | null;
+  const plan = profile?.plan ?? 'basic';
+
+  const [notifsRes, readsRes, unreadRes] = await Promise.all([
+    // Scope to THIS member explicitly. RLS also lets admins read every row
+    // (for the /admin panel), so relying on RLS alone would show an admin
+    // every user's personal notifications in their own list.
     supabase
       .from('notifications')
       .select('id, title, message, link_url, created_at')
+      .or(
+        `target.eq.all,and(target.eq.plan,target_plan.eq.${plan}),and(target.eq.user,target_user_id.eq.${user.id})`
+      )
       .order('created_at', { ascending: false })
       .limit(50),
     supabase
@@ -55,13 +68,6 @@ export default async function NotificationsPage() {
       .eq('user_id', user.id),
     supabase.rpc('user_unread_notifications_count', { uid: user.id }),
   ]);
-
-  const profile = profileRes.data as {
-    full_name: string | null;
-    email: string;
-    plan: 'basic' | 'premium' | 'vip';
-    avatar_url: string | null;
-  } | null;
   const shortName = (profile?.full_name || profile?.email?.split('@')[0] || 'Manm').split(' ')[0];
 
   const notifs = (notifsRes.data ?? []) as Array<{
