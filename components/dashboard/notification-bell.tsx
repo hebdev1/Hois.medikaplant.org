@@ -53,6 +53,8 @@ export default function NotificationBell({
   const [readIds, setReadIds] = React.useState<Set<string>>(new Set());
   const [loading, setLoading] = React.useState(true);
   const [marking, setMarking] = React.useState(false);
+  const [toast, setToast] = React.useState<Notification | null>(null);
+  const toastTimer = React.useRef<ReturnType<typeof setTimeout> | null>(null);
   const dropdownRef = React.useRef<HTMLDivElement | null>(null);
 
   // ── Initial load ─────────────────────────────────────────────────────────
@@ -117,6 +119,10 @@ export default function NotificationBell({
             if (prev.some((n) => n.id === row.id)) return prev;
             return [row, ...prev].slice(0, 30);
           });
+          // In-app toast for the fresh arrival (auto-dismiss after 6s).
+          setToast(row);
+          if (toastTimer.current) clearTimeout(toastTimer.current);
+          toastTimer.current = setTimeout(() => setToast(null), 6000);
         }
       )
       .on(
@@ -376,6 +382,35 @@ export default function NotificationBell({
             Wè tout notifikasyon
           </Link>
         </div>
+      )}
+
+      {toast && (
+        <button
+          type="button"
+          onClick={() => {
+            const t = toast;
+            setToast(null);
+            if (!t) return;
+            if (!readIds.has(t.id)) {
+              setReadIds((p) => new Set(p).add(t.id));
+              markNotificationRead(t.id);
+            }
+            if (t.link_url) window.location.href = t.link_url;
+          }}
+          className="fixed bottom-4 right-4 z-[80] w-[320px] max-w-[calc(100vw-2rem)] text-left rounded-2xl border border-cream-200 bg-white shadow-2xl p-3.5 flex items-start gap-2.5 animate-fadeIn"
+        >
+          <span className="grid place-items-center w-8 h-8 rounded-xl bg-accent/10 text-accent shrink-0">
+            <Bell className="w-4 h-4" strokeWidth={2.2} />
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="block text-sm font-bold text-ink truncate">
+              {toast.title}
+            </span>
+            <span className="block text-xs text-earth-600 mt-0.5 line-clamp-2 leading-relaxed">
+              {toast.message}
+            </span>
+          </span>
+        </button>
       )}
     </div>
   );

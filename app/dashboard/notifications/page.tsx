@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server';
 import { getCurrentUser } from '@/lib/supabase/auth';
 import Topbar from '@/components/dashboard/topbar';
 import MarkAllButton from './mark-all-button';
+import EnablePush from '@/components/push/enable-push';
 
 export const metadata = { title: 'Notifikasyon · MedikaPlant' };
 export const dynamic = 'force-dynamic';
@@ -107,6 +108,10 @@ export default async function NotificationsPage() {
           </div>
           {notifs.length > 0 && <MarkAllButton disabled={unreadCount === 0} />}
         </header>
+
+        <div className="mb-6">
+          <EnablePush />
+        </div>
 
         {notifs.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-cream-300 bg-white px-5 py-14 text-center">
