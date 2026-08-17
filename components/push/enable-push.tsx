@@ -27,7 +27,12 @@ type State =
 export default function EnablePush() {
   const [state, setState] = React.useState<State>('checking');
   const [error, setError] = React.useState<string | null>(null);
-  const vapid = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
+  // The VAPID public key is public by design (it's sent to the browser + push
+  // service), so it's hardcoded as a default — no build-time env needed. Only
+  // the PRIVATE key (server-side, in lib/push/send) must be set on the host.
+  const vapid =
+    process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ||
+    'BOfuL_vHtbAzBQh1cUFcnuawZVgpX6h-EUWg2SAv_gLA1hFz8gEv1MvUAUmgH1vz2qa0a-IM6E0dLoYyMCT1N6g';
 
   React.useEffect(() => {
     (async () => {

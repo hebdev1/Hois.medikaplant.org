@@ -7,10 +7,15 @@ import { createServiceClient } from '@/lib/supabase/service';
 let configured = false;
 function ensureConfigured(): boolean {
   if (configured) return true;
-  const pub = process.env.VAPID_PUBLIC_KEY;
+  // Public key + subject have safe defaults; only the PRIVATE key is a real
+  // secret and must be set on the host (VAPID_PRIVATE_KEY). Without it, push
+  // simply no-ops.
+  const pub =
+    process.env.VAPID_PUBLIC_KEY ||
+    'BOfuL_vHtbAzBQh1cUFcnuawZVgpX6h-EUWg2SAv_gLA1hFz8gEv1MvUAUmgH1vz2qa0a-IM6E0dLoYyMCT1N6g';
   const priv = process.env.VAPID_PRIVATE_KEY;
   const subject = process.env.VAPID_SUBJECT || 'mailto:contact@hoismedikaplant.com';
-  if (!pub || !priv) return false;
+  if (!priv) return false;
   webpush.setVapidDetails(subject, pub, priv);
   configured = true;
   return true;
