@@ -3,6 +3,7 @@ import { Playfair_Display, Lora, DM_Sans } from 'next/font/google';
 import './globals.css';
 import TranslateSwitcher from '@/components/translate-switcher';
 import RemedFinder from '@/components/remed-finder/remed-finder';
+import GoogleAnalytics from '@/components/analytics/google-analytics';
 
 // Fonts are trimmed for speed: DM_Sans (body) + Playfair (display) are used
 // site-wide and preload; Lora (serif accents, a handful of spots) loads only
@@ -80,6 +81,7 @@ export default function RootLayout({
         {children}
         <TranslateSwitcher />
         <RemedFinder />
+        <GoogleAnalytics />
       </body>
     </html>
   );
