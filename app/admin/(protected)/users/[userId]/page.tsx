@@ -294,8 +294,17 @@ export default async function AdminUserDetailPage({
       {/* Header */}
       <section className="bg-white border border-cream-200 rounded-2xl p-5 md:p-6 shadow-card mb-6">
         <div className="flex items-start gap-4 flex-wrap">
-          <span className="grid place-items-center w-16 h-16 rounded-2xl bg-gradient-to-br from-forest-500 to-forest-800 text-cream-50 font-display font-bold text-2xl shrink-0 shadow-plant">
-            {initials}
+          <span className="grid place-items-center w-16 h-16 rounded-2xl bg-gradient-to-br from-forest-500 to-forest-800 text-cream-50 font-display font-bold text-2xl shrink-0 shadow-plant overflow-hidden">
+            {profile.avatar_url ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={profile.avatar_url}
+                alt={fullName}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              initials
+            )}
           </span>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">

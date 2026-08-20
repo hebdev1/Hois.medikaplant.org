@@ -1,24 +1,23 @@
 import { Clock, BellRing } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 // Shared pre-order UI. A course sold "peye davans" is active (buyable) but not
 // yet `released`; buyers keep their enrollment and are emailed + notified the
 // instant an admin releases it.
 
-// Public sales page: tells a visitor the course is being sold in advance.
-export function PreorderBanner() {
+// Small pill that marks a course as pre-order. Shown on course cards and the
+// course detail page while the course is active but not yet released.
+export function PreorderBadge({ className }: { className?: string }) {
   return (
-    <div className="rounded-2xl border border-gold-300 bg-gold-50 px-4 py-3.5 flex items-start gap-3">
-      <span className="grid place-items-center w-9 h-9 rounded-xl bg-gold-100 text-gold-700 shrink-0">
-        <Clock className="w-5 h-5" strokeWidth={2} />
-      </span>
-      <div className="min-w-0">
-        <div className="font-bold text-ink text-sm">Pre-order · peye davans</div>
-        <p className="text-sm text-earth-700 mt-0.5 leading-relaxed">
-          Kou sa a ap lanse byento. Achte l kounye a: ou rezève plas ou epi w ap
-          jwenn aksè otomatikman — ak yon avi imedyat — lè li pare.
-        </p>
-      </div>
-    </div>
+    <span
+      className={cn(
+        'inline-flex items-center gap-1 rounded-full bg-gold-400 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-forest-900 shadow-sm',
+        className
+      )}
+    >
+      <Clock className="h-2.5 w-2.5" strokeWidth={2.6} />
+      Pre-order
+    </span>
   );
 }
 

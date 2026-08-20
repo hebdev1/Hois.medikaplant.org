@@ -28,7 +28,7 @@ import {
   type InteractiveModule,
 } from '@/lib/klas/course-content';
 import EnrollButton from './enroll-button';
-import { PreorderBanner, PreorderPending } from '@/components/klas/preorder-notice';
+import { PreorderBadge, PreorderPending } from '@/components/klas/preorder-notice';
 
 export const dynamic = 'force-dynamic';
 
@@ -301,11 +301,6 @@ export default async function CourseDetailPage({
         };
     return (
       <main className="min-h-screen">
-        {course.released === false && (
-          <div className="max-w-3xl mx-auto px-4 pt-6">
-            <PreorderBanner />
-          </div>
-        )}
         <InteractiveCourse
           courseId={course.id}
           title={course.title}
@@ -335,8 +330,7 @@ export default async function CourseDetailPage({
       <main className="min-h-screen bg-white">
         <CoursePageFrame html={course.page_html} />
         <div className="sticky bottom-0 z-40 border-t border-cream-200 bg-white/95 backdrop-blur px-4 py-3 shadow-[0_-6px_24px_-10px_rgba(0,0,0,0.25)]">
-          <div className="mx-auto max-w-md space-y-2">
-            {course.released === false && <PreorderBanner />}
+          <div className="mx-auto max-w-md">
             <EnrollButton
               slug={course.slug}
               seatCapacity={course.seat_capacity}
@@ -396,12 +390,6 @@ export default async function CourseDetailPage({
           Tounen nan tout klas yo
         </Link>
 
-        {course.released === false && (
-          <div className="mb-8">
-            <PreorderBanner />
-          </div>
-        )}
-
         {/* ── HERO ──────────────────────────────────────────────────────── */}
         <header className="grid lg:grid-cols-[1.4fr_1fr] gap-8 lg:gap-12 items-start mb-12">
           <div>
@@ -413,6 +401,11 @@ export default async function CourseDetailPage({
                 <GraduationCap className="w-3 h-3" strokeWidth={2.4} />
                 {category.title}
               </Link>
+            )}
+            {course.released === false && (
+              <div className="mb-3">
+                <PreorderBadge className="px-2.5 py-1 text-xs" />
+              </div>
             )}
             <h1 className="font-display text-3xl md:text-5xl font-bold tracking-tight text-ink leading-tight">
               {course.title}

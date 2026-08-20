@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import PromoteHeader from '@/components/ui/promote-header';
 import Footer from '@/components/ui/footer';
+import { PreorderBadge } from '@/components/klas/preorder-notice';
 import { createClient } from '@/lib/supabase/server';
 
 export const metadata = {
@@ -88,6 +89,7 @@ type CourseRow = {
   plan_required: string;
   category_id: string | null;
   featured: boolean;
+  released: boolean;
   tags: string[];
   price_cents: number | null;
 };
@@ -126,7 +128,7 @@ export default async function KlasPage() {
     sb
       .from('courses')
       .select(
-        'id, slug, title, description, cover_image_url, instructor_name, instructor_role, duration_text, level, format, student_count_text, rating, plan_required, category_id, featured, tags, price_cents'
+        'id, slug, title, description, cover_image_url, instructor_name, instructor_role, duration_text, level, format, student_count_text, rating, plan_required, category_id, featured, released, tags, price_cents'
       )
       .eq('active', true)
       .order('display_order', { ascending: true }),
@@ -377,6 +379,7 @@ export default async function KlasPage() {
                         </div>
                       )}
                       <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
+                        {c.released === false && <PreorderBadge />}
                         {(c.tags ?? []).slice(0, 2).map((tag) => (
                           <span
                             key={tag}

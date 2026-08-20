@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { Search, GraduationCap, ArrowRight, X } from 'lucide-react';
+import { PreorderBadge } from './preorder-notice';
 
 export type BrowserCourse = {
   id: string;
@@ -16,6 +17,7 @@ export type BrowserCourse = {
   price_cents: number | null;
   duration_text: string | null;
   tags: string[] | null;
+  released: boolean;
 };
 
 const LEVEL_LABEL: Record<string, string> = {
@@ -183,6 +185,7 @@ export default function CourseBrowser({
                     </div>
                   )}
                   <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
+                    {c.released === false && <PreorderBadge />}
                     <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-white/90 backdrop-blur text-ink">
                       {labelFor(FORMAT_LABEL, c.format)}
                     </span>

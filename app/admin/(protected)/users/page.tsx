@@ -276,8 +276,17 @@ export default async function AdminUsersListPage({
                           href={`/admin/users/${p.id}`}
                           className="flex items-center gap-3 group"
                         >
-                          <span className="grid place-items-center w-9 h-9 rounded-full bg-forest-100 text-forest-700 font-display font-bold text-sm shrink-0">
-                            {initials}
+                          <span className="grid place-items-center w-9 h-9 rounded-full bg-forest-100 text-forest-700 font-display font-bold text-sm shrink-0 overflow-hidden">
+                            {p.avatar_url ? (
+                              // eslint-disable-next-line @next/next/no-img-element
+                              <img
+                                src={p.avatar_url}
+                                alt={name}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              initials
+                            )}
                           </span>
                           <div className="min-w-0">
                             <div className="font-semibold text-ink truncate group-hover:text-forest-700 transition">
