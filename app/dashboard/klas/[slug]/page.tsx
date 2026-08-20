@@ -13,6 +13,7 @@ import { getCurrentUser } from '@/lib/supabase/auth';
 import Topbar from '@/components/dashboard/topbar';
 import CourseVideoPlayer from '@/components/dashboard/course-video-player';
 import LiveSessions, { type LiveSession } from '@/components/klas/live-sessions';
+import { PreorderPending } from '@/components/klas/preorder-notice';
 
 export const dynamic = 'force-dynamic';
 
@@ -42,7 +43,9 @@ export default async function CoursePlayerPage({
 
   const { data: courseRaw } = await supabase
     .from('courses')
-    .select('id, slug, title, format, zoom_url, zoom_schedule, instructor_name')
+    .select(
+      'id, slug, title, format, zoom_url, zoom_schedule, instructor_name, released'
+    )
     .eq('slug', params.slug)
     .maybeSingle();
 
@@ -54,6 +57,7 @@ export default async function CoursePlayerPage({
     zoom_url: string | null;
     zoom_schedule: { text?: string } | null;
     instructor_name: string | null;
+    released: boolean;
   } | null;
   if (!course) notFound();
 
@@ -69,6 +73,10 @@ export default async function CoursePlayerPage({
     .eq('user_id', user.id)
     .maybeSingle();
   if (!enrolled) redirect(`/klas/${params.slug}`);
+
+  // Pre-order: enrolled, but not yet released — hold content behind the waiting
+  // state (buyer is on the list and gets an email + notification on launch).
+  if (course.released === false) return <PreorderPending title={course.title} />;
 
   // Metadata only — the player fetches the actual source through the gated
   // getModulePlayback action (column hygiene: no video source here).

@@ -5,6 +5,8 @@ import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { createServiceClient } from '@/lib/supabase/service';
 import { hasCapability, type AdminRole } from '../admin-nav-config';
+import { emailNotifyMember } from '@/lib/email/notify';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 // The courses + course_categories + klas_page_config tables are too new
 // to be in types/database.ts yet — every read/write here goes through a
@@ -181,9 +183,71 @@ function readCourseForm(formData: FormData) {
     language: get('language') || 'ht',
     featured: formData.get('featured') === 'on',
     active: formData.get('active') === 'on',
+    // Default ON: only a course the admin explicitly marks as pre-order
+    // (toggle off) ships un-released.
+    released: formData.get('released') === 'on',
     display_order: Math.max(0, Number(get('display_order')) || 0),
     tags,
   };
+}
+
+// Notify everyone enrolled in a course that it just went live. Fired once, on
+// the pre-order → released edge. Best-effort: a failure for one member never
+// blocks the admin's save (emailNotifyMember already swallows its own errors).
+async function notifyCourseReleased(
+  admin: {
+    userId: string;
+    // Loose handle — courses/enrollments/notifications go through the same
+    // untyped client the rest of this module uses.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    sb: any;
+    supabase: SupabaseClient;
+  },
+  courseId: string,
+  title: string,
+  slug: string
+): Promise<void> {
+  const { data: rows } = await admin.sb
+    .from('course_enrollments')
+    .select('user_id')
+    .eq('course_id', courseId);
+  const userIds = Array.from(
+    new Set(((rows ?? []) as Array<{ user_id: string }>).map((r) => r.user_id))
+  );
+  if (userIds.length === 0) return;
+
+  const linkUrl = `/aprann/${slug}`;
+  const subject = `Kou « ${title} » pare kounye a!`;
+
+  // In-app notification per recipient — the fan-out trigger turns each row into
+  // a bell badge, an in-app toast, and (where enabled) a device push.
+  const notifRows = userIds.map((uid) => ({
+    title: subject,
+    message:
+      'Kou ou te achte an pre-order an fin pare. Klike pou kòmanse aprann kounye a.',
+    target: 'user',
+    target_user_id: uid,
+    target_plan: null,
+    link_url: linkUrl,
+    created_by: admin.userId,
+  }));
+  await admin.sb.from('notifications').insert(notifRows);
+
+  // Email each buyer in parallel (each obeys their own master email switch).
+  await Promise.all(
+    userIds.map((uid) =>
+      emailNotifyMember(admin.supabase, uid, {
+        subject,
+        heading: 'Kou ou a disponib!',
+        body: [
+          `Bon nouvèl — kou « ${title} » ou te achte an pre-order an fin pare.`,
+          'Ou gen aksè konplè kounye a. Klike bouton an anba a pou kòmanse.',
+        ],
+        linkPath: linkUrl,
+        linkLabel: 'Kòmanse kou a',
+      })
+    )
+  );
 }
 
 export async function saveCourse(
@@ -253,18 +317,40 @@ export async function saveCourse(
     language: input.language,
     featured: input.featured,
     active: input.active,
+    released: input.released,
     display_order: input.display_order,
     tags: input.tags,
   };
 
   if (id) {
+    // Read the current released flag first so we can fire the "kou a pare"
+    // fan-out exactly on the pre-order → released edge (never on every save).
+    const { data: before } = await auth.sb
+      .from('courses')
+      .select('released')
+      .eq('id', id)
+      .maybeSingle();
+    const wasReleased = (before as { released: boolean } | null)?.released ?? true;
+
     const { error } = await auth.sb.from('courses').update(payload).eq('id', id);
     if (error) {
       if (String(error.code) === '23505') return { error: 'Slug deja egziste.' };
       return { error: error.message };
     }
+
+    if (!wasReleased && input.released) {
+      await notifyCourseReleased(
+        { userId: auth.user.id, sb: auth.sb, supabase: auth.supabase },
+        id,
+        input.title,
+        slug
+      );
+    }
+
     revalidatePath('/admin/klas');
     revalidatePath('/klas');
+    revalidatePath(`/klas/${slug}`);
+    revalidatePath(`/aprann/${slug}`);
     return { ok: true, id };
   }
 

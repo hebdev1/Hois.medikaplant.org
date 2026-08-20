@@ -14,6 +14,8 @@ import {
   EyeOff,
   Star,
   Video,
+  Rocket,
+  Clock,
   type LucideIcon,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -61,6 +63,7 @@ type Initial = {
   language: string;
   featured: boolean;
   active: boolean;
+  released: boolean;
   display_order: number;
   tags: string[];
 };
@@ -110,6 +113,7 @@ export default function CourseForm({ mode, initial, categories }: Props) {
     language: initial?.language ?? 'ht',
     featured: initial?.featured ?? false,
     active: initial?.active ?? true,
+    released: initial?.released ?? true,
     display_order: initial?.display_order ?? 0,
     tags: (initial?.tags ?? []).join(', '),
   });
@@ -320,6 +324,15 @@ export default function CourseForm({ mode, initial, categories }: Props) {
             checked={v.active}
             onChange={(b) => set('active', b)}
             Icon={v.active ? Eye : EyeOff}
+            tone="forest"
+          />
+          <Toggle
+            name="released"
+            label="Kou a pare"
+            description="Dezaktive = pre-order: moun ka peye davans. Lè w reyaktive l, tout moun ki te achte jwenn aksè epi yo resevwa yon imel + notifikasyon otomatikman."
+            checked={v.released}
+            onChange={(b) => set('released', b)}
+            Icon={v.released ? Rocket : Clock}
             tone="forest"
           />
           <Toggle

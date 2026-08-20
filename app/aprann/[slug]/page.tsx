@@ -20,6 +20,7 @@ import CourseQuestions from './course-questions';
 import CourseReview from './course-review';
 import CourseDiscussion from './course-discussion';
 import LiveSessions, { type LiveSession } from '@/components/klas/live-sessions';
+import { PreorderPending } from '@/components/klas/preorder-notice';
 
 export const dynamic = 'force-dynamic';
 
@@ -45,7 +46,7 @@ export default async function AprannCoursePage({
   const { data: courseRaw } = await supabase
     .from('courses')
     .select(
-      'id, slug, title, kind, format, zoom_url, zoom_schedule, instructor_name'
+      'id, slug, title, kind, format, zoom_url, zoom_schedule, instructor_name, released'
     )
     .eq('slug', params.slug)
     .maybeSingle();
@@ -59,6 +60,7 @@ export default async function AprannCoursePage({
     zoom_url: string | null;
     zoom_schedule: { text?: string } | null;
     instructor_name: string | null;
+    released: boolean;
   } | null;
   if (!course) notFound();
 
@@ -70,6 +72,11 @@ export default async function AprannCoursePage({
     .eq('user_id', user.id)
     .maybeSingle();
   if (!enrolled) redirect(`/klas/${params.slug}`);
+
+  // Pre-order: the buyer is enrolled but the course hasn't been released yet.
+  // Hold the content behind a waiting state — they're on the list and get an
+  // email + notification the instant an admin ships it.
+  if (course.released === false) return <PreorderPending title={course.title} />;
 
   // Interactive courses render their whole experience (progress, quizzes) on
   // the public course page, which is open to enrolled buyers — send them there.

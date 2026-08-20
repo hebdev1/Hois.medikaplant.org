@@ -28,6 +28,7 @@ import {
   type InteractiveModule,
 } from '@/lib/klas/course-content';
 import EnrollButton from './enroll-button';
+import { PreorderBanner, PreorderPending } from '@/components/klas/preorder-notice';
 
 export const dynamic = 'force-dynamic';
 
@@ -56,6 +57,7 @@ type CourseRow = {
   plan_required: 'basic' | 'premium' | 'vip';
   category_id: string | null;
   language: string;
+  released: boolean;
   tags: string[];
 };
 
@@ -247,6 +249,16 @@ export default async function CourseDetailPage({
   // Interactive courses render natively: modules + saved progress + quizzes.
   // Public so anyone can view/buy; progress only saves for a logged-in member.
   if (course.kind === 'interactive') {
+    // Enrolled buyer of a pre-order interactive course: hold the content behind
+    // the same waiting state as video/live courses until it ships.
+    if (alreadyEnrolled && course.released === false) {
+      return (
+        <main className="min-h-screen bg-white">
+          <PromoteHeader />
+          <PreorderPending title={course.title} />
+        </main>
+      );
+    }
     const [modulesRes, progressRes] = await Promise.all([
       sb
         .from('course_modules')
@@ -289,6 +301,11 @@ export default async function CourseDetailPage({
         };
     return (
       <main className="min-h-screen">
+        {course.released === false && (
+          <div className="max-w-3xl mx-auto px-4 pt-6">
+            <PreorderBanner />
+          </div>
+        )}
         <InteractiveCourse
           courseId={course.id}
           title={course.title}
@@ -318,7 +335,8 @@ export default async function CourseDetailPage({
       <main className="min-h-screen bg-white">
         <CoursePageFrame html={course.page_html} />
         <div className="sticky bottom-0 z-40 border-t border-cream-200 bg-white/95 backdrop-blur px-4 py-3 shadow-[0_-6px_24px_-10px_rgba(0,0,0,0.25)]">
-          <div className="mx-auto max-w-md">
+          <div className="mx-auto max-w-md space-y-2">
+            {course.released === false && <PreorderBanner />}
             <EnrollButton
               slug={course.slug}
               seatCapacity={course.seat_capacity}
@@ -377,6 +395,12 @@ export default async function CourseDetailPage({
           <ArrowLeft className="w-4 h-4" strokeWidth={2.2} />
           Tounen nan tout klas yo
         </Link>
+
+        {course.released === false && (
+          <div className="mb-8">
+            <PreorderBanner />
+          </div>
+        )}
 
         {/* ── HERO ──────────────────────────────────────────────────────── */}
         <header className="grid lg:grid-cols-[1.4fr_1fr] gap-8 lg:gap-12 items-start mb-12">
@@ -485,9 +509,11 @@ export default async function CourseDetailPage({
                   {priceLabel(course.price_cents)}
                 </div>
                 <div className="text-xs text-ink-muted mt-0.5">
-                  {course.price_cents && course.price_cents > 0
-                    ? 'Yon sèl acha · aksè pou tout lavi'
-                    : 'Aksè gratis · pa bezwen abònman'}
+                  {course.released === false
+                    ? 'Pre-order · aksè otomatik lè kou a pare'
+                    : course.price_cents && course.price_cents > 0
+                      ? 'Yon sèl acha · aksè pou tout lavi'
+                      : 'Aksè gratis · pa bezwen abònman'}
                 </div>
               </div>
 
