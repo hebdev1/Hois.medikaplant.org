@@ -164,15 +164,24 @@ export default async function AdminUsersListPage({
             notifikasyon dirèk.
           </p>
         </div>
-        {viewerIsSuperAdmin && (
+        <div className="flex items-center gap-2 shrink-0">
           <Link
-            href="/admin/users/new"
+            href="/admin/users/new-member"
             className="inline-flex items-center gap-1.5 px-4 py-2.5 text-sm font-semibold bg-forest-700 hover:bg-forest-800 text-cream-50 rounded-lg transition shrink-0"
           >
             <UserPlus className="w-4 h-4" strokeWidth={2.2} />
-            Ajoute yon admin
+            Ajoute yon manm
           </Link>
-        )}
+          {viewerIsSuperAdmin && (
+            <Link
+              href="/admin/users/new"
+              className="inline-flex items-center gap-1.5 px-4 py-2.5 text-sm font-semibold bg-white hover:bg-cream-50 text-earth-700 border border-cream-200 rounded-lg transition shrink-0"
+            >
+              <Shield className="w-4 h-4" strokeWidth={2.2} />
+              Ajoute yon admin
+            </Link>
+          )}
+        </div>
       </header>
 
       {/* Stats */}

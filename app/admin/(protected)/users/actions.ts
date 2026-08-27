@@ -4,6 +4,9 @@ import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
 import { createServiceClient } from '@/lib/supabase/service';
 import { emailNotifyMember } from '@/lib/email/notify';
+import { sendEmail } from '@/lib/email/resend';
+import { renderBrandedEmail } from '@/lib/email/template';
+import { siteUrl } from '@/lib/site-url';
 import { syncMemberToHubspot } from '@/lib/hubspot/sync';
 import type { Database } from '@/types/database';
 import { hasCapability } from '../admin-nav-config';
@@ -179,6 +182,12 @@ const PLAN_MONTHS: Record<'basic' | 'premium' | 'vip', number> = {
   basic: 12,
   premium: 12,
   vip: 12,
+};
+
+const PLAN_LABEL_HT: Record<'basic' | 'premium' | 'vip', string> = {
+  basic: 'Bazilik',
+  premium: 'Sitwonèl',
+  vip: 'Melis',
 };
 
 export async function setUserPlan(
@@ -658,6 +667,140 @@ export async function inviteAdmin(
 
   revalidatePath('/admin/users');
   return { ok: true, invite: row, invite_url };
+}
+
+// ─── Create a member account manually (admin onboarding, no payment) ─────────
+// The admin adds a member and grants a plan for N years, free. The new member
+// then gets a branded email with a link to set their password and sign in —
+// the same recovery link the forgot-password flow uses, so the existing
+// /auth/reset-password page consumes it unchanged.
+
+const MAX_GRANT_YEARS = 10;
+
+export type CreateMemberResult =
+  | { ok: true; email: string; emailSent: boolean; setupUrl: string }
+  | { ok: false; error: string };
+
+export async function createMemberAccount(input: {
+  email: string;
+  firstName: string;
+  lastName: string;
+  plan: 'basic' | 'premium' | 'vip';
+  years: number;
+}): Promise<CreateMemberResult> {
+  const auth = await assertAdmin();
+  if (!auth.ok) return { ok: false, error: auth.error };
+
+  const email = input.email.trim().toLowerCase();
+  const firstName = input.firstName.trim();
+  const lastName = input.lastName.trim();
+  const plan = input.plan;
+  const years = Math.floor(Number(input.years));
+
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return { ok: false, error: 'Imèl la pa valid.' };
+  }
+  if (firstName.length < 1) return { ok: false, error: 'Prenon an obligatwa.' };
+  if (!PLAN_VALUES.includes(plan)) return { ok: false, error: 'Plan pa valid.' };
+  if (!Number.isFinite(years) || years < 1 || years > MAX_GRANT_YEARS) {
+    return { ok: false, error: `Kantite ane a dwe ant 1 ak ${MAX_GRANT_YEARS}.` };
+  }
+
+  const fullName = [firstName, lastName].filter(Boolean).join(' ').trim();
+  const admin = createServiceClient();
+
+  // 1) Create the confirmed auth user. No password yet — they set it through
+  //    the email link. email_confirm skips the verify-your-email step (an
+  //    admin is vouching for the address).
+  const { data: created, error: createErr } = await admin.auth.admin.createUser({
+    email,
+    email_confirm: true,
+    user_metadata: {
+      first_name: firstName,
+      last_name: lastName,
+      full_name: fullName,
+    },
+  });
+  if (createErr || !created?.user) {
+    const raw = createErr?.message ?? '';
+    const msg = /registered|already|exists|duplicate/i.test(raw)
+      ? 'Yon kont ak imèl sa a deja egziste.'
+      : raw || 'Pa ka kreye kont lan.';
+    return { ok: false, error: msg };
+  }
+  const newUserId = created.user.id;
+
+  // 2) Fill the profile name (the handle_new_user trigger already made the row).
+  await admin
+    .from('profiles')
+    .update({
+      first_name: firstName || null,
+      last_name: lastName || null,
+      full_name: fullName || null,
+    })
+    .eq('id', newUserId);
+
+  // 3) Grant the plan for N years, free (amount 0). The trg_sync_profile_plan
+  //    trigger reconciles profiles.plan from this active subscription.
+  const startDate = new Date();
+  const endDate = new Date(startDate);
+  endDate.setFullYear(endDate.getFullYear() + years);
+  const { error: subErr } = await admin.from('subscriptions').insert({
+    user_id: newUserId,
+    plan,
+    status: 'active',
+    start_date: startDate.toISOString(),
+    end_date: endDate.toISOString(),
+    amount: 0,
+    payment_reference: `admin_created_${Date.now()}`,
+  });
+  if (subErr) {
+    return {
+      ok: false,
+      error: `Kont lan kreye men plan an pa anrejistre: ${subErr.message}`,
+    };
+  }
+
+  // 4) Generate the set-password link (same recovery flow as forgot-password)
+  //    and email it, branded, through Resend.
+  const { data: linkData } = await admin.auth.admin.generateLink({
+    type: 'recovery',
+    email,
+    options: { redirectTo: siteUrl('/auth/reset-password') },
+  });
+  const actionLink = linkData?.properties?.action_link ?? '';
+
+  let emailSent = false;
+  if (actionLink) {
+    try {
+      const html = renderBrandedEmail({
+        lang: 'ht',
+        accent: 'green',
+        footer: 'notification',
+        firstName: firstName || 'Manm',
+        heading: 'Byenveni nan Hoïs MedikaPlant!',
+        paragraphs: [
+          'Yon administratè kreye yon kont pou ou sou Hoïs MedikaPlant.',
+          `Ou gen aksè ak plan ${PLAN_LABEL_HT[plan]} pou ${years} ane.`,
+          'Klike bouton anba a pou chwazi modpas ou epi konekte sou kont ou.',
+        ],
+        cta: { label: 'Chwazi modpas mwen', url: actionLink },
+        note: 'Si se pa ou ki t ap tann sa, ou ka inyore imèl sa a.',
+      });
+      await sendEmail({
+        to: email,
+        subject: 'Byenveni — chwazi modpas ou pou konekte',
+        html,
+      });
+      emailSent = true;
+    } catch {
+      emailSent = false;
+    }
+  }
+
+  revalidatePath('/admin/users');
+  revalidatePath('/admin/subscriptions');
+  return { ok: true, email, emailSent, setupUrl: actionLink };
 }
 
 // ─── Private message: admin STARTS a conversation with a member ─────────────
