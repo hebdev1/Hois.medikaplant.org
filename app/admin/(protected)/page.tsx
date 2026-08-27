@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { describeCondition } from '@/lib/conditions/catalog';
+import EnablePush from '@/components/push/enable-push';
 
 export const metadata = { title: 'Admin · Overview' };
 export const dynamic = 'force-dynamic';
@@ -183,6 +184,13 @@ export default async function AdminOverview() {
           pou ale dirèkteman sou paj seksyon an.
         </p>
       </header>
+
+      {/* Device push: each admin enables it once, then receives an alert on
+          their phone/computer for new support messages, purchases, and signups
+          — even when the panel is closed. */}
+      <div className="mb-7 max-w-2xl">
+        <EnablePush />
+      </div>
 
       {/* ── KPI strip — 4 critical numbers ───────────────────────────── */}
       <section className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-7">
