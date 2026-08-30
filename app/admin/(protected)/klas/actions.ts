@@ -403,6 +403,132 @@ export async function deleteCourse(
   return { ok: true };
 }
 
+// ─── Course access control (view / grant / revoke enrolments) ───────────────
+// Access to a course == a row in course_enrollments. These run through the
+// service client (AFTER the manage_courses gate) so an admin can read every
+// member and add or remove access regardless of per-table RLS.
+
+export type AccessMember = {
+  user_id: string;
+  name: string;
+  email: string;
+  avatar_url: string | null;
+  source: string;
+  enrolled_at: string;
+};
+
+export async function listCourseAccess(
+  courseId: string
+): Promise<{ ok: true; members: AccessMember[] } | { ok: false; error: string }> {
+  const auth = await assertAdmin();
+  if (!auth.ok) return { ok: false, error: auth.error };
+
+  const db = createServiceClient();
+  const { data: enrollsRaw, error } = await db
+    .from('course_enrollments')
+    .select('user_id, source, enrolled_at')
+    .eq('course_id', courseId)
+    .order('enrolled_at', { ascending: false });
+  if (error) return { ok: false, error: error.message };
+
+  const enrolls = (enrollsRaw ?? []) as Array<{
+    user_id: string;
+    source: string;
+    enrolled_at: string;
+  }>;
+  if (enrolls.length === 0) return { ok: true, members: [] };
+
+  const ids = Array.from(new Set(enrolls.map((e) => e.user_id)));
+  const { data: profsRaw } = await db
+    .from('profiles')
+    .select('id, full_name, first_name, last_name, email, avatar_url')
+    .in('id', ids);
+  const byId = new Map(
+    ((profsRaw ?? []) as Array<{
+      id: string;
+      full_name: string | null;
+      first_name: string | null;
+      last_name: string | null;
+      email: string | null;
+      avatar_url: string | null;
+    }>).map((p) => [p.id, p])
+  );
+
+  const members: AccessMember[] = enrolls.map((e) => {
+    const p = byId.get(e.user_id);
+    const name =
+      p?.full_name ||
+      [p?.first_name, p?.last_name].filter(Boolean).join(' ') ||
+      p?.email?.split('@')[0] ||
+      'Manm';
+    return {
+      user_id: e.user_id,
+      name,
+      email: p?.email ?? '',
+      avatar_url: p?.avatar_url ?? null,
+      source: e.source,
+      enrolled_at: e.enrolled_at,
+    };
+  });
+  return { ok: true, members };
+}
+
+export async function grantCourseAccess(
+  courseId: string,
+  email: string
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  const auth = await assertAdmin();
+  if (!auth.ok) return { ok: false, error: auth.error };
+
+  const cleaned = email.trim().toLowerCase();
+  if (!cleaned) return { ok: false, error: 'Antre yon imèl.' };
+
+  const db = createServiceClient();
+  const { data: prof } = await db
+    .from('profiles')
+    .select('id')
+    .ilike('email', cleaned)
+    .maybeSingle();
+  if (!prof) {
+    return {
+      ok: false,
+      error: 'Pa gen manm ak imèl sa a. Kreye kont lan avan (Ajoute yon manm).',
+    };
+  }
+  const userId = (prof as { id: string }).id;
+
+  // Idempotent: UNIQUE(course_id, user_id) means a second grant is a no-op.
+  const { error } = await db
+    .from('course_enrollments')
+    .upsert(
+      { course_id: courseId, user_id: userId, source: 'admin_grant' },
+      { onConflict: 'course_id,user_id', ignoreDuplicates: true }
+    );
+  if (error) return { ok: false, error: error.message };
+
+  revalidatePath('/admin/klas');
+  return { ok: true };
+}
+
+export async function revokeCourseAccess(
+  courseId: string,
+  userId: string
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  const auth = await assertAdmin();
+  if (!auth.ok) return { ok: false, error: auth.error };
+
+  const db = createServiceClient();
+  const { error } = await db
+    .from('course_enrollments')
+    .delete()
+    .eq('course_id', courseId)
+    .eq('user_id', userId);
+  if (error) return { ok: false, error: error.message };
+
+  revalidatePath('/admin/klas');
+  return { ok: true };
+}
+
 // ─── Course modules ────────────────────────────────────────────────────────
 
 export type ModuleState = { error?: string; ok?: boolean; id?: string };

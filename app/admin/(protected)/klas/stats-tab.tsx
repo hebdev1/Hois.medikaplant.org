@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import AnalyticsCharts from './analytics-charts';
+import CourseAccessManager from './course-access-manager';
 
 // ─── Types (raw rows from the page) ──────────────────────────────────────────
 
@@ -242,6 +243,15 @@ export default function StatsTab({
           </table>
         </div>
       </section>
+
+      {/* Access control — see / grant / revoke who can open each course */}
+      <CourseAccessManager
+        courses={courses.map((c) => ({
+          id: c.id,
+          title: c.title,
+          active: c.active,
+        }))}
+      />
     </div>
   );
 }
