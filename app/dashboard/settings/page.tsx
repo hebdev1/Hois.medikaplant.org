@@ -194,7 +194,7 @@ export default async function SettingsPage() {
     profile = (inserted as ProfileRow | null) ?? defaultProfile(user.id, user.email ?? '');
     if (!inserted) {
       healingNotice =
-        'Pwofil ou poko anrejistre konplètman. Nou ap eseye repare li — refresh paj la nan kèk segond.';
+        'Pwofil ou poko anrejistre konplètman. Nou ap eseye repare li, refresh paj la nan kèk segond.';
     }
   }
 
@@ -306,7 +306,7 @@ export default async function SettingsPage() {
           </h1>
           <p className="mt-2 text-sm md:text-base text-earth-600 max-w-xl">
             Chak chanjman anrejistre otomatikman nan baz done a. Ou ka kite paj
-            la nenpòt lè — pwogrè ou rete.
+            la nenpòt lè, pwogrè ou rete.
           </p>
         </header>
 
@@ -317,7 +317,7 @@ export default async function SettingsPage() {
           </div>
         )}
 
-        {/* Referral / Envite zanmi panel — placed above the long settings
+        {/* Referral / Envite zanmi panel, placed above the long settings
             form so it stays discoverable without scrolling. */}
         <div className="mb-6">
           <ReferralSection stats={referralStats} />

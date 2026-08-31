@@ -52,7 +52,7 @@ export default function LogEntries({ entries }: Props) {
   if (entries.length === 0) {
     return (
       <div className="rounded-xl bg-cream-50 border border-dashed border-cream-200 p-6 text-center text-sm text-earth-600">
-        Poko gen mezi pou peryòd la — ajoute youn pi wo.
+        Poko gen mezi pou peryòd la, ajoute youn pi wo.
       </div>
     );
   }

@@ -46,7 +46,7 @@ export default function OnboardingBlock({
     {
       done: hasLoggedMetric,
       title: 'Anrejistre premye mezi ou',
-      body: 'Sik nan san, tansyon, oswa pwa — premye chif la kòmanse istwa a.',
+      body: 'Sik nan san, tansyon, oswa pwa, premye chif la kòmanse istwa a.',
       href: '/dashboard/health',
       cta: 'Ajoute yon mezi',
       Icon: Activity,

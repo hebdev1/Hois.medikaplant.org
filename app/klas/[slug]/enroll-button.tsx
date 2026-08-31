@@ -38,7 +38,7 @@ export default function EnrollButton({
           className="block w-full text-center bg-forest-700 hover:bg-forest-800 text-cream-50 px-5 py-3 rounded-full font-medium transition shadow-md inline-flex items-center justify-center gap-2"
         >
           <CheckCircle2 className="w-4 h-4" strokeWidth={2.4} />
-          Ou deja enskri — ale nan Espas Elèv
+          Ou deja enskri, ale nan Espas Elèv
         </Link>
         {seatsLeft !== null && (
           <p className="text-[11px] text-ink-muted text-center">

@@ -99,7 +99,7 @@ const AUTH: Record<AuthKey, Record<Lang, AuthStrings>> = {
       subject: 'Konfime kont MedikaPlant ou',
       heading: 'Byenveni nan Hoïs',
       paragraphs: [
-        'Mèsi pou enskripsyon ou nan MedikaPlant — Hoïs Inivèsite.',
+        'Mèsi pou enskripsyon ou nan MedikaPlant, Hoïs Inivèsite.',
         'Klike sou bouton anba a pou konfime imèl ou ak aktive kont ou.',
       ],
       ctaLabel: 'Konfime imèl mwen',
@@ -109,7 +109,7 @@ const AUTH: Record<AuthKey, Record<Lang, AuthStrings>> = {
       subject: 'Confirmez votre compte MedikaPlant',
       heading: 'Bienvenue chez Hoïs',
       paragraphs: [
-        'Merci de votre inscription à MedikaPlant — Hoïs Inivèsite.',
+        'Merci de votre inscription à MedikaPlant, Hoïs Inivèsite.',
         'Cliquez sur le bouton ci-dessous pour confirmer votre e-mail et activer votre compte.',
       ],
       ctaLabel: 'Confirmer mon e-mail',
@@ -119,7 +119,7 @@ const AUTH: Record<AuthKey, Record<Lang, AuthStrings>> = {
       subject: 'Confirm your MedikaPlant account',
       heading: 'Welcome to Hoïs',
       paragraphs: [
-        'Thanks for signing up to MedikaPlant — Hoïs Inivèsite.',
+        'Thanks for signing up to MedikaPlant, Hoïs Inivèsite.',
         'Click the button below to confirm your email and activate your account.',
       ],
       ctaLabel: 'Confirm my email',
@@ -128,21 +128,21 @@ const AUTH: Record<AuthKey, Record<Lang, AuthStrings>> = {
   },
   magiclink: {
     ht: {
-      subject: 'Lyen koneksyon ou — Hoïs MedikaPlant',
+      subject: 'Lyen koneksyon ou, Hoïs MedikaPlant',
       heading: 'Konekte san modpas',
       paragraphs: ['Klike sou bouton anba a pou konekte sou kont MedikaPlant ou.'],
       ctaLabel: 'Konekte kounye a',
       note: 'Lyen sa ap ekspire nan yon èdtan. Si se pa ou, inyore mesaj sa.',
     },
     fr: {
-      subject: 'Votre lien de connexion — Hoïs MedikaPlant',
+      subject: 'Votre lien de connexion, Hoïs MedikaPlant',
       heading: 'Connexion sans mot de passe',
       paragraphs: ['Cliquez sur le bouton ci-dessous pour vous connecter à votre compte MedikaPlant.'],
       ctaLabel: 'Se connecter',
       note: "Ce lien expire dans une heure. Si ce n'est pas vous, ignorez ce message.",
     },
     en: {
-      subject: 'Your login link — Hoïs MedikaPlant',
+      subject: 'Your login link, Hoïs MedikaPlant',
       heading: 'Log in without a password',
       paragraphs: ['Click the button below to log in to your MedikaPlant account.'],
       ctaLabel: 'Log in now',
@@ -151,7 +151,7 @@ const AUTH: Record<AuthKey, Record<Lang, AuthStrings>> = {
   },
   invite: {
     ht: {
-      subject: 'Ou envite nan MedikaPlant — Hoïs Inivèsite',
+      subject: 'Ou envite nan MedikaPlant, Hoïs Inivèsite',
       heading: 'Yon envitasyon pou ou',
       paragraphs: [
         'Yon admin MedikaPlant envite ou rantre nan kominote Hoïs la.',
@@ -160,7 +160,7 @@ const AUTH: Record<AuthKey, Record<Lang, AuthStrings>> = {
       ctaLabel: 'Aksepte envitasyon an',
     },
     fr: {
-      subject: 'Vous êtes invité à MedikaPlant — Hoïs Inivèsite',
+      subject: 'Vous êtes invité à MedikaPlant, Hoïs Inivèsite',
       heading: 'Une invitation pour vous',
       paragraphs: [
         'Un administrateur MedikaPlant vous invite à rejoindre la communauté Hoïs.',
@@ -169,7 +169,7 @@ const AUTH: Record<AuthKey, Record<Lang, AuthStrings>> = {
       ctaLabel: "Accepter l'invitation",
     },
     en: {
-      subject: "You're invited to MedikaPlant — Hoïs Inivèsite",
+      subject: "You're invited to MedikaPlant, Hoïs Inivèsite",
       heading: 'An invitation for you',
       paragraphs: [
         'A MedikaPlant admin invited you to join the Hoïs community.',
@@ -180,7 +180,7 @@ const AUTH: Record<AuthKey, Record<Lang, AuthStrings>> = {
   },
   recovery: {
     ht: {
-      subject: 'Reyajiste modpas ou — Hoïs MedikaPlant',
+      subject: 'Reyajiste modpas ou, Hoïs MedikaPlant',
       heading: 'Reyajiste modpas ou',
       paragraphs: [
         'Nou resevwa yon demand pou reyajiste modpas kont MedikaPlant ou.',
@@ -190,7 +190,7 @@ const AUTH: Record<AuthKey, Record<Lang, AuthStrings>> = {
       note: 'Lyen sa ap ekspire nan yon èdtan. Si se pa ou ki te mande sa, kont ou rete an sekirite.',
     },
     fr: {
-      subject: 'Réinitialisez votre mot de passe — Hoïs MedikaPlant',
+      subject: 'Réinitialisez votre mot de passe, Hoïs MedikaPlant',
       heading: 'Réinitialisez votre mot de passe',
       paragraphs: [
         'Nous avons reçu une demande de réinitialisation du mot de passe de votre compte MedikaPlant.',
@@ -200,7 +200,7 @@ const AUTH: Record<AuthKey, Record<Lang, AuthStrings>> = {
       note: "Ce lien expire dans une heure. Si vous n'êtes pas à l'origine de la demande, votre compte reste sécurisé.",
     },
     en: {
-      subject: 'Reset your password — Hoïs MedikaPlant',
+      subject: 'Reset your password, Hoïs MedikaPlant',
       heading: 'Reset your password',
       paragraphs: [
         'We received a request to reset the password for your MedikaPlant account.',
@@ -320,20 +320,20 @@ const NOTIFY: {
   daily_advice: (lang, { plantName, adviceExcerpt }) => {
     const t = {
       ht: {
-        subject: `🌿 Konsèy plant jodi a${plantName ? ` — ${plantName}` : ''}`,
-        heading: plantName ? `Konsèy jodi a — ${plantName}` : 'Konsèy plant jodi a',
+        subject: `🌿 Konsèy plant jodi a${plantName ? `, ${plantName}` : ''}`,
+        heading: plantName ? `Konsèy jodi a, ${plantName}` : 'Konsèy plant jodi a',
         tail: 'Ouvri tablodebò ou pou tande tout pwofondè konsèy la + bwè-l an son si li disponib.',
         cta: 'Wè konsèy konplè a',
       },
       fr: {
-        subject: `🌿 Le conseil plante du jour${plantName ? ` — ${plantName}` : ''}`,
-        heading: plantName ? `Conseil du jour — ${plantName}` : 'Le conseil plante du jour',
+        subject: `🌿 Le conseil plante du jour${plantName ? `, ${plantName}` : ''}`,
+        heading: plantName ? `Conseil du jour, ${plantName}` : 'Le conseil plante du jour',
         tail: "Ouvrez votre tableau de bord pour lire le conseil en entier + l'écouter en audio si disponible.",
         cta: 'Voir le conseil complet',
       },
       en: {
-        subject: `🌿 Today's plant tip${plantName ? ` — ${plantName}` : ''}`,
-        heading: plantName ? `Today's tip — ${plantName}` : "Today's plant tip",
+        subject: `🌿 Today's plant tip${plantName ? `, ${plantName}` : ''}`,
+        heading: plantName ? `Today's tip, ${plantName}` : "Today's plant tip",
         tail: 'Open your dashboard to read the full tip + listen to the audio if available.',
         cta: 'See the full tip',
       },
@@ -350,33 +350,33 @@ const NOTIFY: {
   weekly_summary: (lang, { nLogs, nTasks, nBadges }) => {
     const t = {
       ht: {
-        subject: '🌿 Rezime semèn ou — Hoïs MedikaPlant',
+        subject: '🌿 Rezime semèn ou, Hoïs MedikaPlant',
         heading: 'Pwogrè w semèn sa a',
         intro: 'Men yon koudèy sou aktivite ou semèn ki sot pase a:',
         logs: (n: number) => `📊 ${n} antre sou swivi sante w (sik, tansyon, pwa, kè…)`,
         tasks: (n: number) => `✅ ${n} tach pwotokòl ou konplete`,
         badges: (n: number) => `🏆 ${n} nouvo badj ou debloke`,
-        tail: 'Kontinye konsa — chak ti pa konte. Ou pral wè evolisyon w nan pwochèn semèn lan.',
+        tail: 'Kontinye konsa, chak ti pa konte. Ou pral wè evolisyon w nan pwochèn semèn lan.',
         cta: 'Wè detay sou tablodebò',
       },
       fr: {
-        subject: '🌿 Votre résumé de la semaine — Hoïs MedikaPlant',
+        subject: '🌿 Votre résumé de la semaine, Hoïs MedikaPlant',
         heading: 'Vos progrès cette semaine',
         intro: 'Voici un aperçu de votre activité de la semaine passée :',
         logs: (n: number) => `📊 ${n} entrées de suivi santé (glycémie, tension, poids, cœur…)`,
         tasks: (n: number) => `✅ ${n} tâches de protocole terminées`,
         badges: (n: number) => `🏆 ${n} nouveaux badges débloqués`,
-        tail: 'Continuez ainsi — chaque petit pas compte. Vous verrez votre évolution la semaine prochaine.',
+        tail: 'Continuez ainsi, chaque petit pas compte. Vous verrez votre évolution la semaine prochaine.',
         cta: 'Voir les détails sur le tableau de bord',
       },
       en: {
-        subject: '🌿 Your weekly summary — Hoïs MedikaPlant',
+        subject: '🌿 Your weekly summary, Hoïs MedikaPlant',
         heading: 'Your progress this week',
         intro: "Here's a look at your activity over the past week:",
         logs: (n: number) => `📊 ${n} health-tracking entries (glucose, blood pressure, weight, heart…)`,
         tasks: (n: number) => `✅ ${n} protocol tasks completed`,
         badges: (n: number) => `🏆 ${n} new badges unlocked`,
-        tail: 'Keep it up — every small step counts. You’ll see your progress next week.',
+        tail: 'Keep it up, every small step counts. You’ll see your progress next week.',
         cta: 'See details on the dashboard',
       },
     }[lang];
@@ -391,24 +391,24 @@ const NOTIFY: {
   badge_unlock: (lang, { badgeName, badgeSlug, badgeSub, badgeDescription }) => {
     const t = {
       ht: {
-        subject: `🏆 Felisitasyon — ou debloke "${badgeName}"`,
+        subject: `🏆 Felisitasyon, ou debloke "${badgeName}"`,
         heading: `Yon nouvo badj pou ou : ${badgeName}`,
         sub: 'Yon mak rekonesans pou pwogrè w sou Hoïs.',
-        desc: 'Kontinye konsa — chak ti pa nan pwotokòl la ap pòte yon nouvo rekonesans.',
+        desc: 'Kontinye konsa, chak ti pa nan pwotokòl la ap pòte yon nouvo rekonesans.',
         cta: 'Wè badj la',
       },
       fr: {
-        subject: `🏆 Félicitations — vous avez débloqué « ${badgeName} »`,
+        subject: `🏆 Félicitations, vous avez débloqué « ${badgeName} »`,
         heading: `Un nouveau badge pour vous : ${badgeName}`,
         sub: 'Une marque de reconnaissance pour vos progrès sur Hoïs.',
-        desc: 'Continuez ainsi — chaque petit pas dans le protocole apporte une nouvelle reconnaissance.',
+        desc: 'Continuez ainsi, chaque petit pas dans le protocole apporte une nouvelle reconnaissance.',
         cta: 'Voir le badge',
       },
       en: {
-        subject: `🏆 Congratulations — you unlocked "${badgeName}"`,
+        subject: `🏆 Congratulations, you unlocked "${badgeName}"`,
         heading: `A new badge for you: ${badgeName}`,
         sub: 'A mark of recognition for your progress on Hoïs.',
-        desc: 'Keep it up — every step in the protocol brings a new recognition.',
+        desc: 'Keep it up, every step in the protocol brings a new recognition.',
         cta: 'See the badge',
       },
     }[lang];

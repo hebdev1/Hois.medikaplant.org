@@ -85,7 +85,7 @@ export default async function AdminAdvicePage() {
         </p>
       </header>
 
-      {/* Today's advice — composer if missing, edit form if present */}
+      {/* Today's advice, composer if missing, edit form if present */}
       <section className="bg-white border border-cream-200 rounded-2xl shadow-card p-5 md:p-6 mb-6">
         <header className="flex items-center justify-between gap-3 mb-4 flex-wrap">
           <div className="flex items-center gap-2">

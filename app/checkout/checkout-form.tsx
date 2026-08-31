@@ -320,7 +320,7 @@ export default function CheckoutForm({
               </div>
             </div>
 
-            {/* Country — collected at signup so the profile is complete.
+            {/* Country, collected at signup so the profile is complete.
                 All countries are eligible; the list mirrors the settings
                 page COUNTRIES options with a diaspora-first ordering. */}
             {mode === 'signup' && (
@@ -353,7 +353,7 @@ export default function CheckoutForm({
                   </select>
                 </div>
                 <p className="mt-1.5 text-[11px] text-ink-muted">
-                  Manm nan <strong>tout peyi</strong> byenveni — plan yo disponib
+                  Manm nan <strong>tout peyi</strong> byenveni, plan yo disponib
                   toupatou.
                 </p>
               </div>
@@ -415,7 +415,7 @@ export default function CheckoutForm({
         </div>
       )}
 
-      {/* Once the card fields are up, CardPayment owns the pay button — a
+      {/* Once the card fields are up, CardPayment owns the pay button, a
           second submit here would just re-run the auth step. */}
       {!readyToPay && (
         <SubmitButton amount={amount} signedIn={signedIn} mode={mode} />

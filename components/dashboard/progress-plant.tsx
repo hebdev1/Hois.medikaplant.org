@@ -38,7 +38,7 @@ export default function ProgressPlant({ day, total, todayCompletion }: ProgressP
   return (
     <div
       className="relative w-full h-full min-h-[360px] rounded-3xl bg-forest-900/40 overflow-hidden"
-      aria-label={`Pyebwa pwogrè — jou ${day} sou ${total}`}
+      aria-label={`Pyebwa pwogrè, jou ${day} sou ${total}`}
     >
       <div
         className="absolute inset-0 opacity-30 pointer-events-none"

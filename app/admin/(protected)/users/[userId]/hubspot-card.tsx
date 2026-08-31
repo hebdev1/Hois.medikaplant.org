@@ -130,7 +130,7 @@ export default async function HubspotCard({
                   contact.properties.lastname,
                 ]
                   .filter(Boolean)
-                  .join(' ') || contact.properties.email || '—'}
+                  .join(' ') || contact.properties.email || '-'}
               </div>
               <div className="text-[11px] text-earth-500 font-mono mt-0.5">
                 ID {contact.id}
@@ -186,10 +186,10 @@ export default async function HubspotCard({
                     className="flex items-center justify-between gap-2 text-xs"
                   >
                     <span className="font-semibold text-ink truncate">
-                      {d.properties.dealname ?? '—'}
+                      {d.properties.dealname ?? '-'}
                     </span>
                     <span className="text-earth-600 shrink-0">
-                      {d.properties.dealstage ?? '—'}
+                      {d.properties.dealstage ?? '-'}
                       {d.properties.amount && ` · $${d.properties.amount}`}
                     </span>
                   </li>

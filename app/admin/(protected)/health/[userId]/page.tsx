@@ -83,9 +83,9 @@ const MOIS = [
 ];
 
 function formatDate(iso: string | null): string {
-  if (!iso) return '—';
+  if (!iso) return '-';
   const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return '—';
+  if (Number.isNaN(d.getTime())) return '-';
   return `${d.getDate()} ${MOIS[d.getMonth()]} ${d.getFullYear()}`;
 }
 
@@ -327,17 +327,17 @@ export default async function AdminPatientPage({
           <InfoBox
             icon={Heart}
             label="Tip san"
-            value={medical?.blood_type ?? '—'}
+            value={medical?.blood_type ?? '-'}
           />
           <InfoBox
             icon={Ruler}
             label="Wotè"
-            value={medical?.height_cm ? `${medical.height_cm} cm` : '—'}
+            value={medical?.height_cm ? `${medical.height_cm} cm` : '-'}
           />
           <InfoBox
             icon={User}
             label="Sèks"
-            value={profile.gender ? formatGender(profile.gender) : '—'}
+            value={profile.gender ? formatGender(profile.gender) : '-'}
           />
           <InfoBox
             icon={Activity}
@@ -351,7 +351,7 @@ export default async function AdminPatientPage({
             <AlertCircle className="w-3.5 h-3.5 mt-0.5 shrink-0" strokeWidth={2.2} />
             <span>
               Pasyan an pa eksplisit pèmèt &ldquo;Pataje pwogrè ak antrenè m&rdquo; nan
-              Konfidansyalite paramèt yo. Itilize done sa yo ak prekosyon —
+              Konfidansyalite paramèt yo. Itilize done sa yo ak prekosyon -
               admin gen aksè teknik atravè RLS, men respè pasyan an enpòtan.
             </span>
           </div>
@@ -421,7 +421,7 @@ export default async function AdminPatientPage({
         </ClinicalCard>
       </section>
 
-      {/* Personal Hoïs Plan composer — generated from conditions/goal */}
+      {/* Personal Hoïs Plan composer, generated from conditions/goal */}
       <div className="mb-6">
         <PersonalPlanComposer
           userId={params.userId}
@@ -557,7 +557,7 @@ function ClinicalCard({
 function DetailLine({
   label,
   value,
-  emptyText = '—',
+  emptyText = '-',
 }: {
   label: string;
   value: string | null | undefined;
@@ -614,7 +614,7 @@ function ChartCard({
         </div>
         <div className="text-right">
           <div className="font-display text-2xl font-bold text-ink leading-none">
-            {latest !== null ? latest : '—'}
+            {latest !== null ? latest : '-'}
           </div>
           <div className="text-[10px] text-earth-500 mt-0.5">{unit}</div>
         </div>

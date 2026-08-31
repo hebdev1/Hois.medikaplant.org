@@ -103,7 +103,7 @@ export default function AdviceComposer({
             type="text"
             name="plant_name"
             defaultValue={initial?.plant_name ?? ''}
-            placeholder="Mounn-bwa — Cnidoscolus chayamansa"
+            placeholder="Mounn-bwa, Cnidoscolus chayamansa"
             className={inputClass}
           />
         </Field>
@@ -140,7 +140,7 @@ export default function AdviceComposer({
         <div className="rounded-xl bg-forest-50 border border-forest-200 px-3 py-2 text-sm text-forest-800 flex items-center gap-2">
           <CheckCircle2 className="w-4 h-4 shrink-0" strokeWidth={2.2} />
           <span>
-            {initial ? 'Chanjman anrejistre.' : 'Konsèy pibliye — manm yo ap wè li sou tablodebò a.'}
+            {initial ? 'Chanjman anrejistre.' : 'Konsèy pibliye, manm yo ap wè li sou tablodebò a.'}
           </span>
         </div>
       )}

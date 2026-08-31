@@ -66,16 +66,16 @@ const MOIS = [
 ];
 
 function formatDate(iso: string | null | undefined): string {
-  if (!iso) return '—';
+  if (!iso) return '-';
   const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return '—';
+  if (Number.isNaN(d.getTime())) return '-';
   return `${d.getDate()} ${MOIS[d.getMonth()]} ${d.getFullYear()}`;
 }
 
 function formatDateTime(iso: string | null | undefined): string {
-  if (!iso) return '—';
+  if (!iso) return '-';
   const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return '—';
+  if (Number.isNaN(d.getTime())) return '-';
   const hh = String(d.getHours()).padStart(2, '0');
   const mm = String(d.getMinutes()).padStart(2, '0');
   return `${d.getDate()} ${MOIS[d.getMonth()]} · ${hh}:${mm}`;
@@ -392,7 +392,7 @@ export default async function AdminUserDetailPage({
           <QuickStat
             icon={CreditCard}
             label="Plan aktyèl"
-            value={PLAN_LABEL[profile.plan] ?? '—'}
+            value={PLAN_LABEL[profile.plan] ?? '-'}
             tone="bg-amber-100 text-amber-700"
           />
         </div>
@@ -533,11 +533,11 @@ export default async function AdminUserDetailPage({
                           l.blood_sugar != null && `Sik ${l.blood_sugar}`,
                           l.weight != null && `${l.weight} kg`,
                           l.blood_pressure_systolic != null &&
-                            `${l.blood_pressure_systolic}/${l.blood_pressure_diastolic ?? '—'}`,
+                            `${l.blood_pressure_systolic}/${l.blood_pressure_diastolic ?? '-'}`,
                           l.heart_rate != null && `${l.heart_rate} bpm`,
                         ]
                           .filter(Boolean)
-                          .join(' · ') || (l.notes ? l.notes.slice(0, 40) : '—')}
+                          .join(' · ') || (l.notes ? l.notes.slice(0, 40) : '-')}
                       </div>
                     </div>
                     <span className="text-[10px] text-earth-500 shrink-0">

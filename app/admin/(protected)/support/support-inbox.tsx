@@ -295,7 +295,7 @@ export default function SupportInbox({ initialThreads, adminPersona }: Props) {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-[340px_1fr] bg-white border border-cream-200 rounded-2xl shadow-card overflow-hidden h-[calc(100vh-180px)] min-h-[560px]">
-      {/* ── Left pane — thread list ──────────────────────────────────────── */}
+      {/* ── Left pane, thread list ──────────────────────────────────────── */}
       <aside className="border-r border-cream-200 flex flex-col min-h-0">
         <div className="p-3 border-b border-cream-200 space-y-2">
           <div className="flex items-center justify-between">
@@ -409,7 +409,7 @@ export default function SupportInbox({ initialThreads, adminPersona }: Props) {
         </ul>
       </aside>
 
-      {/* ── Right pane — selected conversation ───────────────────────────── */}
+      {/* ── Right pane, selected conversation ───────────────────────────── */}
       <section className="flex flex-col min-h-0 bg-cream-50/30">
         {activeThread ? (
           <>

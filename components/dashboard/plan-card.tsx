@@ -54,7 +54,7 @@ export type PastSubscription = {
 };
 
 function formatDate(iso: string | null) {
-  if (!iso) return '—';
+  if (!iso) return '-';
   const d = new Date(iso);
   return new Intl.DateTimeFormat('fr-HT', {
     day: 'numeric',
@@ -384,7 +384,7 @@ export default function PlanCard({
                     : 'Ekspire'}
                 </span>
                 <span className="hidden sm:inline text-right font-mono text-xs text-earth-700">
-                  {s.amount !== null ? `$${s.amount}` : '—'}
+                  {s.amount !== null ? `$${s.amount}` : '-'}
                 </span>
               </div>
             ))}

@@ -85,7 +85,7 @@ export default function UpsellCard({
           Rekòmande pou ou
         </div>
         <h3 className="font-display text-xl md:text-2xl font-bold leading-snug">
-          {productName} <em className="text-gold-300 not-italic">—</em>
+          {productName} <em className="text-gold-300 not-italic">-</em>
           <br />
           <span className="text-cream-50/95">Booste plan ou.</span>
         </h3>

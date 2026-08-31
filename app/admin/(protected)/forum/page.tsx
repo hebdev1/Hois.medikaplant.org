@@ -37,7 +37,7 @@ const MOIS = [
 ];
 
 function relativeLabel(iso: string | null | undefined): string {
-  if (!iso) return '—';
+  if (!iso) return '-';
   const diffMs = Date.now() - new Date(iso).getTime();
   const mins = Math.floor(diffMs / 60000);
   if (mins < 1) return 'kounye a';

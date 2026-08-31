@@ -272,7 +272,7 @@ function EmptyChart({
         fontSize="11"
         fill="#8A8A8A"
       >
-        Ajoute premye mezi w pi ba la — chif yo ap fòme istwa w
+        Ajoute premye mezi w pi ba la, chif yo ap fòme istwa w
       </text>
     </svg>
   );

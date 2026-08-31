@@ -553,7 +553,7 @@ export default async function KlasPage() {
                                     Sa ou jwenn
                 </span>
                 <h2 className="font-display text-3xl md:text-5xl font-bold tracking-tight leading-tight">
-                  Pa yon klas — yon kominote vivan
+                  Pa yon klas, yon kominote vivan
                 </h2>
                 <p className="mt-4 text-white/70 leading-relaxed">
                  Lè w vin manm HOÏS Inivèsite, ou pa sèlman jwenn aksè ak klas yo. 
@@ -627,7 +627,7 @@ export default async function KlasPage() {
             </h2>
             <p className="mt-5 max-w-2xl mx-auto text-ink-muted text-base md:text-lg leading-relaxed">
               {config?.cta_subtitle ??
-                'Chwazi klas ki enterese w la epi kòmanse aprann jodi a. Konekte ak yon doktè fèy pou gide w nan vwayaj aprantisaj ou. Pa gen kontra alontèm — ou lib pou sispann oswa anile nenpòt lè, selon kondisyon sèvis la.'}
+                'Chwazi klas ki enterese w la epi kòmanse aprann jodi a. Konekte ak yon doktè fèy pou gide w nan vwayaj aprantisaj ou. Pa gen kontra alontèm, ou lib pou sispann oswa anile nenpòt lè, selon kondisyon sèvis la.'}
             </p>
             <div className="mt-8 flex flex-wrap justify-center items-center gap-3">
               <Link

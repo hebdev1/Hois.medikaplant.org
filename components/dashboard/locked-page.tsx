@@ -16,7 +16,7 @@ export default function LockedPage({
         </span>
         <h1 className="font-display text-2xl font-bold text-ink">{title}</h1>
         <p className="mt-2 text-earth-600 leading-relaxed">
-          Seksyon sa a fèmen pou kounye a — n ap travay sou li. L ap tounen
+          Seksyon sa a fèmen pou kounye a, n ap travay sou li. L ap tounen
           disponib byento.
         </p>
         <Link

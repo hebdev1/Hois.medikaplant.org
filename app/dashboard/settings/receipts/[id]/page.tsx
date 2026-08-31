@@ -21,7 +21,7 @@ const PLAN_TAGLINES: Record<string, string> = {
 };
 
 function formatDate(iso: string | null) {
-  if (!iso) return '—';
+  if (!iso) return '-';
   return new Intl.DateTimeFormat('fr-HT', {
     day: 'numeric',
     month: 'long',
@@ -30,7 +30,7 @@ function formatDate(iso: string | null) {
 }
 
 function formatDateTime(iso: string | null) {
-  if (!iso) return '—';
+  if (!iso) return '-';
   return new Intl.DateTimeFormat('fr-HT', {
     day: '2-digit',
     month: '2-digit',

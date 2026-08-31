@@ -86,7 +86,7 @@ const LEVEL_LABEL: Record<string, string> = {
 const FORMAT_LABEL: Record<string, string> = {
   video: 'Videyo sou demand',
   live_zoom: 'Sesyon Zoom an direkt',
-  hybrid: 'Hybrid — videyo + Zoom',
+  hybrid: 'Hybrid, videyo + Zoom',
 };
 
 const LANGUAGE_LABEL: Record<string, string> = {
@@ -589,7 +589,7 @@ export default async function CourseDetailPage({
                 ? `${modules.length} modil.`
                 : `${visibleModules.length} modil gratis pou wè kounye a${
                     lockedModuleCount > 0
-                      ? ` — ${lockedModuleCount} lòt apre ou achte kou a`
+                      ? `, ${lockedModuleCount} lòt apre ou achte kou a`
                       : ''
                   }.`}
           </p>
@@ -847,7 +847,7 @@ export default async function CourseDetailPage({
                     </p>
                   )}
                   <div className="mt-2 text-xs font-semibold text-earth-600">
-                    — {r.author_name ?? 'Elèv'}
+                   , {r.author_name ?? 'Elèv'}
                   </div>
                 </div>
               ))}

@@ -242,8 +242,8 @@ function FileCard({
   const duration = formatDuration(resource.duration_seconds, resource.type);
   const lengthLabel =
     resource.type === 'pdf'
-      ? duration ?? size ?? '—'
-      : duration ?? size ?? '—';
+      ? duration ?? size ?? '-'
+      : duration ?? size ?? '-';
 
   return (
     <article className="bg-white border border-cream-200 rounded-2xl p-4 md:p-5 shadow-card flex flex-col h-full">

@@ -176,7 +176,7 @@ export default async function MyCertificatesPage() {
         </div>
       )}
 
-      {/* Courses still in progress — a gentle nudge toward the next certificate. */}
+      {/* Courses still in progress, a gentle nudge toward the next certificate. */}
       {completed.length > 0 &&
         enrolled.length > completed.length && (
           <p className="mt-6 text-xs text-earth-500 inline-flex items-center gap-1.5">

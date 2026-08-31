@@ -33,7 +33,7 @@ const MOIS = [
 ];
 
 function relativeLabel(iso: string | null | undefined): string {
-  if (!iso) return '—';
+  if (!iso) return '-';
   const diffMs = Date.now() - new Date(iso).getTime();
   const mins = Math.floor(diffMs / 60000);
   if (mins < 1) return 'kounye a';
@@ -244,7 +244,7 @@ export default async function ForumIndexPage({
               <p className="text-sm text-earth-600 mt-1.5 max-w-md mx-auto">
                 {qFilter || catFilter
                   ? 'Eseye yon lòt filtè oswa reset rechèch la.'
-                  : 'Kòmanse premye konvèsasyon an — kominote a ap reponn!'}
+                  : 'Kòmanse premye konvèsasyon an, kominote a ap reponn!'}
               </p>
               {(qFilter || catFilter) && (
                 <Link

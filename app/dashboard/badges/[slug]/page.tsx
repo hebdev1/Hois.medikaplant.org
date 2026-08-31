@@ -482,7 +482,7 @@ async function fetchRecentActivity(
         },
         {
           label: 'Total pwotokòl',
-          meta: `${row.programs?.total_days ?? '—'} jou`,
+          meta: `${row.programs?.total_days ?? '-'} jou`,
         },
       ],
     };
@@ -512,7 +512,7 @@ async function fetchRecentActivity(
         const b = Array.isArray(r.badges) ? r.badges[0] ?? null : r.badges;
         return {
           label: b?.name ?? 'Badj',
-          meta: r.unlocked_at ? formatHaitianDate(r.unlocked_at) : '—',
+          meta: r.unlocked_at ? formatHaitianDate(r.unlocked_at) : '-',
         };
       }),
     };

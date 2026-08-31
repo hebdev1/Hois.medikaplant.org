@@ -129,7 +129,7 @@ export default async function AdminProtectedLayout({
           ))}
         </nav>
 
-        {/* Sign-out — now visually distinct with a tinted red background */}
+        {/* Sign-out, now visually distinct with a tinted red background */}
         <div className="p-3 border-t border-white/10">
           <form action={adminSignOut}>
             <button

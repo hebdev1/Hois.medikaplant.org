@@ -47,7 +47,7 @@ export default function MessageComposer({
             </h2>
             <p className="text-xs text-earth-600 mt-0.5">
               Yon konvèsasyon <span className="font-medium text-earth-700">{email}</span> ka
-              reponn — l ap parèt nan bwat mesaj li.
+              reponn, l ap parèt nan bwat mesaj li.
             </p>
           </div>
         </div>

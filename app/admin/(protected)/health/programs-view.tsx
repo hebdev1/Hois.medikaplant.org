@@ -146,7 +146,7 @@ export default async function ProgramsView() {
               </div>
             ) : (
               <div className="text-[10px] text-earth-500 italic">
-                Pa gen tag kondisyon — plan jeneral
+                Pa gen tag kondisyon, plan jeneral
               </div>
             )}
 

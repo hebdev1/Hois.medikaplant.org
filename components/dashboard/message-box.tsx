@@ -145,7 +145,7 @@ export default function MessageBox() {
 
   return (
     <>
-      {/* Floating trigger — sits where the suggestion button used to. */}
+      {/* Floating trigger, sits where the suggestion button used to. */}
       {!open && (
         <button
           type="button"
@@ -256,7 +256,7 @@ function MesajTab({
           </div>
         ) : messages.length === 0 ? (
           <p className="text-center text-earth-500 text-sm mt-8 px-4">
-            Ekri yon mesaj — ekip Hoïs ap reponn ou.
+            Ekri yon mesaj, ekip Hoïs ap reponn ou.
           </p>
         ) : (
           messages.map((m) => {

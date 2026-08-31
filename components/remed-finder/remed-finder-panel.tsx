@@ -104,11 +104,11 @@ export default function RemedFinderPanel({
     <div
       role="dialog"
       aria-modal="true"
-      aria-label="Doktè Maton — asistan remèd natirèl"
+      aria-label="Doktè Maton, asistan remèd natirèl"
       translate="no"
       className="notranslate fixed inset-0 z-[120] flex items-end sm:items-end sm:justify-end sm:p-6"
     >
-      {/* Backdrop — dimmed on mobile; subtle on desktop so the assistant
+      {/* Backdrop, dimmed on mobile; subtle on desktop so the assistant
           feels like a helper, not a modal takeover. */}
       <button
         type="button"
@@ -118,7 +118,7 @@ export default function RemedFinderPanel({
       />
 
       <div className="relative w-full sm:w-[400px] bg-white border border-cream-200 rounded-t-2xl sm:rounded-2xl shadow-2xl flex flex-col max-h-[85vh] sm:max-h-[72vh] animate-fadeUp">
-        {/* Header — assistant identity */}
+        {/* Header, assistant identity */}
         <header className="px-4 pt-4 pb-3 border-b border-cream-100 flex items-center justify-between gap-3 bg-gradient-to-b from-forest-50/60 to-transparent rounded-t-2xl">
           <div className="flex items-center gap-2.5 min-w-0">
             <DrAvatar />
@@ -162,8 +162,8 @@ export default function RemedFinderPanel({
           {showIntro && (
             <>
               <Bubble>
-                Bonjou 👋 Mwen se <b>Doktè Maton</b>. Di m ki jan w santi w —
-                yon sentòm oswa yon kondisyon — epi m ap sijere w kèk{' '}
+                Bonjou 👋 Mwen se <b>Doktè Maton</b>. Di m ki jan w santi w -
+                yon sentòm oswa yon kondisyon, epi m ap sijere w kèk{' '}
                 <b>remèd fèy natirèl</b> ki ka ede w.
               </Bubble>
               <div className="pl-9">
@@ -225,7 +225,7 @@ export default function RemedFinderPanel({
           )}
         </div>
 
-        {/* Composer — the visitor "talks" to Doktè Maton */}
+        {/* Composer, the visitor "talks" to Doktè Maton */}
         <div className="px-4 pt-2 pb-2 border-t border-cream-100">
           <div className="relative">
             <Search
@@ -245,7 +245,7 @@ export default function RemedFinderPanel({
           </div>
         </div>
 
-        {/* FDA disclaimer — pinned, always visible, non-dismissable. */}
+        {/* FDA disclaimer, pinned, always visible, non-dismissable. */}
         <footer className="px-4 py-2.5 border-t border-cream-200 bg-cream-50 rounded-b-none sm:rounded-b-2xl">
           <p className="text-[9.5px] leading-snug text-earth-600">
             {DISCLAIMER}

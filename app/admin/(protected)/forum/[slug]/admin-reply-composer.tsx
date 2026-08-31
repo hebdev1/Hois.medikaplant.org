@@ -81,7 +81,7 @@ export default function AdminReplyComposer({
           <p className="text-[11px] text-earth-600 mt-0.5">
             {topicLocked
               ? 'Sijè a fèmen pou manm yo, men admin ka toujou reponn.'
-              : `Ou ap reponn kòm ${adminName} — manm yo ap wè li an direk ak yon badj Admin.`}
+              : `Ou ap reponn kòm ${adminName}, manm yo ap wè li an direk ak yon badj Admin.`}
           </p>
         </div>
         {topicLocked && (

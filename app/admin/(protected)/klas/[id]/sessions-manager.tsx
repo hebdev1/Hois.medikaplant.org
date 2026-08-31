@@ -252,7 +252,7 @@ export default function SessionsManager({
         <input type="hidden" name="session_type" value={type} />
         <div>
           <label className="text-xs font-semibold text-earth-700">Tit sesyon an</label>
-          <input name="title" required className={`${inputClass} mt-1`} placeholder="Egz. Klas an dirèk — Semèn 1" />
+          <input name="title" required className={`${inputClass} mt-1`} placeholder="Egz. Klas an dirèk, Semèn 1" />
         </div>
 
         <div className="inline-flex p-1 bg-cream-100 rounded-xl border border-cream-200">

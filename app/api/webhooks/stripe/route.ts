@@ -138,7 +138,7 @@ async function applySubscription(
       .from('subscriptions')
       .insert({ ...row, start_date: new Date().toISOString() });
   } else {
-    return; // nothing paid, nothing to cancel — leave no trace
+    return; // nothing paid, nothing to cancel, leave no trace
   }
 
   // A member who now pays through Stripe should not also carry an older

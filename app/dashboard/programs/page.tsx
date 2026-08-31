@@ -33,9 +33,9 @@ const MOIS = [
 ];
 
 function formatDate(iso: string | null | undefined): string {
-  if (!iso) return '—';
+  if (!iso) return '-';
   const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return '—';
+  if (Number.isNaN(d.getTime())) return '-';
   return `${d.getDate()} ${MOIS[d.getMonth()]} ${d.getFullYear()}`;
 }
 
@@ -238,7 +238,7 @@ export default async function ProgramsPage() {
                     {activeProgram.name}{' '}
                     {activeProgram.variant && (
                       <em className="text-forest-600 not-italic font-bold">
-                        — {activeProgram.variant}
+                       , {activeProgram.variant}
                       </em>
                     )}
                   </>
@@ -248,7 +248,7 @@ export default async function ProgramsPage() {
               </h1>
               <p className="mt-2 text-sm md:text-base text-earth-600 max-w-2xl leading-relaxed">
                 {activeProgram
-                  ? `Yon plan ${totalDays} jou — ${totalDays - dayOfPlan + 1} jou rete. ${
+                  ? `Yon plan ${totalDays} jou, ${totalDays - dayOfPlan + 1} jou rete. ${
                       activeProgram.short_tagline ??
                       activeProgram.description ??
                       'Konplete chak etap youn apre lòt pou jwenn pi bon rezilta.'
@@ -265,7 +265,7 @@ export default async function ProgramsPage() {
           </div>
         </header>
 
-        {/* Active program — timeline */}
+        {/* Active program, timeline */}
         {activeProgram ? (
           <>
             <section className="bg-white border border-cream-200 rounded-2xl p-5 md:p-6 shadow-card">
@@ -398,7 +398,7 @@ export default async function ProgramsPage() {
                           sub={phase.sub ?? ''}
                           status={status}
                         >
-                          {/* Auto-matched shop suggestions for this phase —
+                          {/* Auto-matched shop suggestions for this phase -
                               same dictionary Doktè Maton uses, so future
                               protocols work with no mapping step. */}
                           <PhaseProducts
@@ -579,7 +579,7 @@ function ProgramCard({
         <h3 className="font-display text-base font-bold text-ink leading-tight">
           {program.name}
           {program.variant && (
-            <span className="text-earth-600 font-medium"> — {program.variant}</span>
+            <span className="text-earth-600 font-medium">, {program.variant}</span>
           )}
         </h3>
         <p className="text-xs text-earth-600 mt-1.5 leading-relaxed line-clamp-3 flex-1">
@@ -627,7 +627,7 @@ function CompletedCard({
         <h3 className="font-display text-base font-bold text-ink leading-tight">
           {program.name}
           {program.variant && (
-            <span className="text-earth-600 font-medium"> — {program.variant}</span>
+            <span className="text-earth-600 font-medium">, {program.variant}</span>
           )}
         </h3>
         <p className="text-xs text-earth-600 mt-1">

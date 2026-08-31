@@ -51,7 +51,7 @@ export default async function HoisSection() {
             espirityalite n pran fòm verite. »
           </p>
           <footer className="mt-5 text-sm text-ink-muted">
-            — Pakou HOÏS
+           , Pakou HOÏS
           </footer>
         </blockquote>
 

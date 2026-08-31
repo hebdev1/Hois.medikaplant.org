@@ -104,7 +104,7 @@ export default function CourseVideoPlayer({ moduleId }: { moduleId: string }) {
         onError={() => {
           if (!retried.current) {
             retried.current = true;
-            load(); // signed URL likely expired — re-mint once
+            load(); // signed URL likely expired, re-mint once
           } else {
             setView({ s: 'error', reason: 'no_source' });
           }

@@ -112,11 +112,11 @@ export default async function EditBadgePage({
         </div>
         <ul className="space-y-1 list-disc pl-5">
           <li>
-            <code>slug</code> — itilize nan URL paj detay la
+            <code>slug</code>, itilize nan URL paj detay la
             (<code>/dashboard/badges/{badge.slug}</code>).
           </li>
           <li>
-            <code>criteria_metric</code> — kòde nan SQL{' '}
+            <code>criteria_metric</code>, kòde nan SQL{' '}
             <code>recompute_user_badges()</code>. Pou ajoute yon metric
             nouvo, ekri yon migrasyon.
           </li>

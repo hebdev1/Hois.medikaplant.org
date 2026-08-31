@@ -84,7 +84,7 @@ export default function PhasesManager({
           </h2>
           <p className="text-xs text-earth-600 mt-1">
             Etap pwogresif manm nan wè sou tablodebò a
-            {totalDays ? ` — pwotokòl la gen ${totalDays} jou.` : '.'}
+            {totalDays ? `, pwotokòl la gen ${totalDays} jou.` : '.'}
           </p>
         </div>
         {!adding && (
@@ -129,7 +129,7 @@ export default function PhasesManager({
 
       {sorted.length === 0 && !adding ? (
         <p className="rounded-xl bg-cream-50 border border-dashed border-cream-200 p-6 text-center text-sm text-earth-600">
-          Pwotokòl sa a poko gen faz. Ajoute premye a — manm yo ap wè yo sou
+          Pwotokòl sa a poko gen faz. Ajoute premye a, manm yo ap wè yo sou
           tablodebò yo.
         </p>
       ) : (

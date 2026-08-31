@@ -85,7 +85,7 @@ export default async function CheckoutPage({
         </div>
 
         <div className="grid lg:grid-cols-[1.05fr_1fr] gap-6 lg:gap-10">
-          {/* LEFT — Order summary */}
+          {/* LEFT, Order summary */}
           <aside className="bg-white rounded-2xl border border-slate-200 shadow-card p-6 md:p-8 lg:order-2">
             <h2 className="text-sm uppercase tracking-wide text-ink-muted font-semibold mb-4">
               Rezime kòmand ou
@@ -171,7 +171,7 @@ export default async function CheckoutPage({
             </div>
           </aside>
 
-          {/* RIGHT — Auth + Payment form */}
+          {/* RIGHT, Auth + Payment form */}
           <section className="bg-white rounded-2xl border border-slate-200 shadow-card p-6 md:p-8 lg:order-1">
             <CheckoutForm
               plan={plan.key}

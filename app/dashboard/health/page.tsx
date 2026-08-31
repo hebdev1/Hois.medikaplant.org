@@ -326,7 +326,7 @@ export default async function HealthPage({
           </p>
         </header>
 
-        {/* Objektif sante — moved here from settings so the member sees
+        {/* Objektif sante, moved here from settings so the member sees
             what they're working toward right above their numbers. */}
         <div className="mb-5">
           {healthGoal ? (
@@ -378,7 +378,7 @@ export default async function HealthPage({
           )}
         </div>
 
-        {/* Logging streak — daily consistency, gamified */}
+        {/* Logging streak, daily consistency, gamified */}
         <div className="mb-5">
           <div
             className={`flex items-center gap-3 rounded-2xl border px-4 py-3.5 md:px-5 ${
@@ -403,7 +403,7 @@ export default async function HealthPage({
               <p className="text-xs text-earth-600 mt-0.5">
                 {streak > 0
                   ? loggedToday
-                    ? 'Bèl konsistans — kontinye konsa!'
+                    ? 'Bèl konsistans, kontinye konsa!'
                     : 'Log yon mezi jodi a pou kenbe seri a vivan.'
                   : 'Anrejistre yon mezi chak jou pou bati seri w.'}
               </p>
@@ -442,7 +442,7 @@ export default async function HealthPage({
 
         {/* Two-column bottom row */}
         <div className="mt-6 grid lg:grid-cols-2 gap-5 md:gap-6">
-          {/* Left — log form + recent entries */}
+          {/* Left, log form + recent entries */}
           <section className="bg-white border border-cream-200 rounded-2xl p-5 md:p-6 shadow-card">
             <header className="mb-4">
               <h2 className="font-display text-lg font-bold text-ink">
@@ -467,7 +467,7 @@ export default async function HealthPage({
             </div>
           </section>
 
-          {/* Right — summary + commentary + export */}
+          {/* Right, summary + commentary + export */}
           <section className="bg-white border border-cream-200 rounded-2xl p-5 md:p-6 shadow-card">
             <header className="mb-4">
               <h2 className="font-display text-lg font-bold text-ink">
@@ -502,7 +502,7 @@ export default async function HealthPage({
           </section>
         </div>
 
-        {/* Menstruation tracking — placed above the elder's proposals. */}
+        {/* Menstruation tracking, placed above the elder's proposals. */}
         {showMenstruation && (
           <div className="mt-6">
             <MenstruationTracker initialDays={periodDays} />
@@ -514,7 +514,7 @@ export default async function HealthPage({
           <TreatmentsSection treatments={treatments} />
         </div>
 
-        {/* Consultations — bookings now happen on
+        {/* Consultations, bookings now happen on
             medikaplantshop.com/consultation. Panel is a pure outbound CTA. */}
         <div className="mt-6">
           <ConsultationsPanel />
@@ -558,18 +558,18 @@ function buildCommentary({
 
   if (goodTrend && (inZonePct ?? 0) >= 60) {
     return {
-      body: `${noun.charAt(0).toUpperCase() + noun.slice(1)} ou ${direction} ${abs}% depi ou kòmanse, e ${inZonePct}% mezi yo nan zòn sib la. Kontinye ak tizan maten an — sa fonksyone.`,
+      body: `${noun.charAt(0).toUpperCase() + noun.slice(1)} ou ${direction} ${abs}% depi ou kòmanse, e ${inZonePct}% mezi yo nan zòn sib la. Kontinye ak tizan maten an, sa fonksyone.`,
       author,
     };
   }
   if (goodTrend) {
     return {
-      body: `${noun.charAt(0).toUpperCase() + noun.slice(1)} ou ${direction} ${abs}%. Bon dirèksyon — kontinye note chak jou, e ekri m si w gen yon kesyon.`,
+      body: `${noun.charAt(0).toUpperCase() + noun.slice(1)} ou ${direction} ${abs}%. Bon dirèksyon, kontinye note chak jou, e ekri m si w gen yon kesyon.`,
       author,
     };
   }
   return {
-    body: `${noun.charAt(0).toUpperCase() + noun.slice(1)} ou ${direction} ${abs}% dènyèman. Pa enkyete w — ann gade ansanm si gen yon ajisteman pou nou fè nan plan an.`,
+    body: `${noun.charAt(0).toUpperCase() + noun.slice(1)} ou ${direction} ${abs}% dènyèman. Pa enkyete w, ann gade ansanm si gen yon ajisteman pou nou fè nan plan an.`,
     author,
   };
 }

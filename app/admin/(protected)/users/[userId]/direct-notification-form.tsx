@@ -35,7 +35,7 @@ export default function DirectNotificationForm({
               Voye yon notifikasyon dirèk
             </h2>
             <p className="text-xs text-earth-600 mt-0.5">
-              Pou <span className="font-medium text-earth-700">{email}</span> sèlman — l ap parèt nan kloch li yo.
+              Pou <span className="font-medium text-earth-700">{email}</span> sèlman, l ap parèt nan kloch li yo.
             </p>
           </div>
         </div>

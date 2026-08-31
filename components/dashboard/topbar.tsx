@@ -117,7 +117,7 @@ export default async function Topbar({
           </div>
           <ChevronDown className="hidden md:block w-3.5 h-3.5 text-earth-500" strokeWidth={2} />
         </Link>
-        {/* Compact avatar (mobile only) — links to settings too */}
+        {/* Compact avatar (mobile only), links to settings too */}
         <Link
           href="/dashboard/settings"
           className="sm:hidden grid place-items-center"

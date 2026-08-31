@@ -240,7 +240,7 @@ export async function deleteProgram(
   if ((count ?? 0) > 0) {
     return {
       ok: false,
-      error: `Pa ka efase — ${count} manm gen pwotokòl sa a aktif. Dezaktive li dabò.`,
+      error: `Pa ka efase, ${count} manm gen pwotokòl sa a aktif. Dezaktive li dabò.`,
     };
   }
 

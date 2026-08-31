@@ -143,7 +143,7 @@ export const ADMIN_ROLE_LABEL: Record<AdminRole, string> = {
 
 export const ADMIN_ROLE_DESCRIPTION: Record<AdminRole, string> = {
   super_admin:
-    'Aksè total — ka jere wòl tout admin, plan, abònman, ak tout done.',
+    'Aksè total, ka jere wòl tout admin, plan, abònman, ak tout done.',
   admin:
     'Aksè operasyonèl konplè, men pa ka chanje wòl yon admin oswa pwomote yon manm an admin.',
   support: 'Ka reponn sipò chat yo epi konsilte manm yo (lekti sèlman).',

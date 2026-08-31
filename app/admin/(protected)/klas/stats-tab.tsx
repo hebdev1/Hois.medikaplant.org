@@ -135,7 +135,7 @@ export default function StatsTab({
           tone="forest"
           label="Revni total (kou)"
           value={money(totalRevenue)}
-          hint="Sèlman acha peye — Stripe"
+          hint="Sèlman acha peye, Stripe"
         />
         <KpiCard
           icon={ShoppingCart}
@@ -205,7 +205,7 @@ export default function StatsTab({
                     {r.buyers}
                   </td>
                   <td className="px-3 py-3 text-right font-semibold text-ink">
-                    {r.revenue > 0 ? money(r.revenue) : '—'}
+                    {r.revenue > 0 ? money(r.revenue) : '-'}
                   </td>
                   <td className="px-3 py-3 text-right text-earth-700">
                     {r.enroll.total}
@@ -228,7 +228,7 @@ export default function StatsTab({
                         </SourceChip>
                       )}
                       {r.enroll.total === 0 && (
-                        <span className="text-earth-400 text-xs">—</span>
+                        <span className="text-earth-400 text-xs">-</span>
                       )}
                     </div>
                   </td>
@@ -244,7 +244,7 @@ export default function StatsTab({
         </div>
       </section>
 
-      {/* Access control — see / grant / revoke who can open each course */}
+      {/* Access control, see / grant / revoke who can open each course */}
       <CourseAccessManager
         courses={courses.map((c) => ({
           id: c.id,

@@ -141,7 +141,7 @@ function ModuleCard({
 
   return (
     <div className="border border-cream-200 rounded-xl bg-cream-50/50 overflow-hidden">
-      {/* Collapsed header — clickable to expand */}
+      {/* Collapsed header, clickable to expand */}
       <div className="flex items-center gap-2 p-3">
         <div className="flex flex-col items-center gap-0.5">
           <button
@@ -324,7 +324,7 @@ function ModuleForm({
             defaultValue={initial?.title ?? ''}
             required
             className={inputClass}
-            placeholder="Modil 1 — Idantifye 3 plant kle"
+            placeholder="Modil 1, Idantifye 3 plant kle"
           />
         </Field>
         <Field label="Lòd">
@@ -356,7 +356,7 @@ function ModuleForm({
         />
       </Field>
 
-      {/* Video source — an external link, or a file uploaded straight to the
+      {/* Video source, an external link, or a file uploaded straight to the
           private course-videos bucket (browser → Storage via a signed URL). */}
       <Field
         label="Sous videyo a"
@@ -447,7 +447,7 @@ function ModuleForm({
 
       <details className="rounded-xl border border-cream-200 p-3">
         <summary className="text-xs font-bold uppercase tracking-wider text-earth-600 cursor-pointer">
-          Kontni entèraktif (leson · quiz) — pou kou dinamik
+          Kontni entèraktif (leson · quiz), pou kou dinamik
         </summary>
         <div className="mt-3">
           <ModuleContentEditor

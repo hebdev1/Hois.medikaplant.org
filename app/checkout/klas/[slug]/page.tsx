@@ -167,7 +167,7 @@ export default async function CourseCheckoutPage({
                     className="w-3.5 h-3.5 text-forest-700 mt-0.5 shrink-0"
                     strokeWidth={2.4}
                   />
-                  Pa bezwen abònman — yon achte sèlman
+                  Pa bezwen abònman, yon achte sèlman
                 </li>
               </ul>
 
@@ -182,7 +182,7 @@ export default async function CourseCheckoutPage({
                   }
                 >
                   {isFull
-                    ? `Tout ${course.seat_capacity} plas yo deja okipe — pa ka achte ankò.`
+                    ? `Tout ${course.seat_capacity} plas yo deja okipe, pa ka achte ankò.`
                     : `${seatsLeft} sou ${course.seat_capacity} plas ki rete`}
                 </div>
               )}
@@ -200,7 +200,7 @@ export default async function CourseCheckoutPage({
                 Peman pou klas <em className="text-brand-700 not-italic">{course.title}</em>
               </h1>
               <p className="mt-3 text-ink-muted leading-relaxed">
-                Pa bezwen achte yon plan abònman — yon sèl achte ba w aksè total
+                Pa bezwen achte yon plan abònman, yon sèl achte ba w aksè total
                 a klas sa a pou tout tan.
               </p>
             </header>

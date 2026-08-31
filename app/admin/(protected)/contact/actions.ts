@@ -214,7 +214,7 @@ function renderReplyEmail({
                 <p style="margin:0 0 16px;color:#3f3a52;font-size:15px;line-height:1.6;">Mèsi paske w te kontakte nou. Men repons nou pou kesyon w an:</p>
                 ${renderParagraphs(replyBody)}
                 <p style="margin:24px 0 8px;color:#3f3a52;font-size:15px;line-height:1.6;">Pou nenpòt lòt kesyon, ou ka tou senpleman reponn imèl sa.</p>
-                <p style="margin:0;color:#3f3a52;font-size:15px;line-height:1.6;">— ${escape(
+                <p style="margin:0;color:#3f3a52;font-size:15px;line-height:1.6;">- ${escape(
                   adminName
                 )}<br/><span style="color:#8a8699;font-size:13px;">Ekip MedikaPlant · Hoïs Inivèsite</span></p>
               </td>

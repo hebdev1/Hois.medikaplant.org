@@ -34,7 +34,7 @@ export default function GuideCard({ guide }: GuideCardProps) {
       href={`/dashboard/guides/${guide.slug}`}
       className="group flex flex-col bg-white border border-cream-200 rounded-2xl overflow-hidden shadow-card hover:shadow-cardHover transition-all"
     >
-      {/* Header — real cover thumbnail when the admin set one, else the
+      {/* Header, real cover thumbnail when the admin set one, else the
           decorative plant art on the accent gradient. */}
       <div
         className="relative aspect-[16/9] grid place-items-center overflow-hidden"

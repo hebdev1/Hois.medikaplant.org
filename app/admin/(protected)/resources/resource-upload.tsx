@@ -322,7 +322,7 @@ export default function ResourceUpload({
           {uploading ? 'Ap monte fichye…' : 'Glise yon fichye oswa klike pou chwazi'}
         </div>
         <div className="text-[11px] text-earth-600 max-w-xs leading-relaxed">
-          PDF, videyo (MP4/MOV/WebM), odyo (MP3/WAV/M4A) — oswa nenpòt lòt
+          PDF, videyo (MP4/MOV/WebM), odyo (MP3/WAV/M4A), oswa nenpòt lòt
           fòma. Maks 1 Go.
         </div>
         <input

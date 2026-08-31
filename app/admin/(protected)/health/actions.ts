@@ -96,7 +96,7 @@ export async function createTreatment(
     heading: 'Ton vye pwopoze yon tretman',
     body: [
       `Ou gen yon nouvo pwopozisyon: "${title}".`,
-      'Konekte sou kont ou pou wè detay konplè yo — dòz, frekans, ak enstriksyon.',
+      'Konekte sou kont ou pou wè detay konplè yo, dòz, frekans, ak enstriksyon.',
     ],
     linkPath: '/dashboard/health',
     linkLabel: 'Wè tretman an',

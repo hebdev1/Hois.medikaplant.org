@@ -17,9 +17,9 @@ const MONTHS_HT = [
   'Jiy', 'Out', 'Sep', 'Okt', 'Nov', 'Des',
 ];
 function formatDate(iso: string | null) {
-  if (!iso) return '—';
+  if (!iso) return '-';
   const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return '—';
+  if (Number.isNaN(d.getTime())) return '-';
   return `${d.getDate()} ${MONTHS_HT[d.getMonth()]} ${d.getFullYear()}`;
 }
 
@@ -82,7 +82,7 @@ export default function ReferralSection({ stats }: { stats: ReferralStats }) {
         </h2>
         <p className="text-sm text-earth-600 mt-1 leading-relaxed">
           Chak fwa yon moun enskri via lyen pèsonèl ou, ou resevwa 10%
-          otomatik sou pwochen renouvèlman plan ou. Pa gen limit — plis ou
+          otomatik sou pwochen renouvèlman plan ou. Pa gen limit, plis ou
           envite, plis kredi ou jenere.
         </p>
       </header>

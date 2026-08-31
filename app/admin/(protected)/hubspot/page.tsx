@@ -152,7 +152,7 @@ export default async function AdminHubspotPage() {
         </h1>
         <p className="mt-2 text-sm text-earth-600 max-w-2xl">
           Apèsi sou koneksyon manm yo ak HubSpot CRM la. Rekèt yo egzekite
-          sou done lokal yo (Supabase) — pa bezwen FDW pou wè estatistik sa
+          sou done lokal yo (Supabase), pa bezwen FDW pou wè estatistik sa
           yo.
         </p>
       </header>
@@ -302,7 +302,7 @@ export default async function AdminHubspotPage() {
               Aktivite sinkronizasyon
             </h2>
             <p className="text-xs text-earth-600 mt-0.5">
-              50 dènye tantativ — push (Supabase → HubSpot) ak pull (lekti).
+              50 dènye tantativ, push (Supabase → HubSpot) ak pull (lekti).
             </p>
           </header>
 
@@ -319,7 +319,7 @@ export default async function AdminHubspotPage() {
                   ? member.full_name ||
                     [member.first_name, member.last_name].filter(Boolean).join(' ') ||
                     member.email.split('@')[0]
-                  : '—';
+                  : '-';
                 return (
                   <li
                     key={l.id}

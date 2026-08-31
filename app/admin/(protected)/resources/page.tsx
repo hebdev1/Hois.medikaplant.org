@@ -72,12 +72,12 @@ const MOIS = [
 
 function formatDate(iso: string): string {
   const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return '—';
+  if (Number.isNaN(d.getTime())) return '-';
   return `${d.getDate()} ${MOIS[d.getMonth()]} ${d.getFullYear()}`;
 }
 
 function formatSize(bytes: number | null): string {
-  if (bytes == null || bytes <= 0) return '—';
+  if (bytes == null || bytes <= 0) return '-';
   if (bytes < 1024) return `${bytes} o`;
   if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} Ko`;
   if (bytes < 1024 * 1024 * 1024) {
@@ -88,7 +88,7 @@ function formatSize(bytes: number | null): string {
 }
 
 function formatDuration(seconds: number | null): string {
-  if (seconds == null || seconds <= 0) return '—';
+  if (seconds == null || seconds <= 0) return '-';
   return `${Math.round(seconds / 60)} min`;
 }
 

@@ -70,7 +70,7 @@ export default async function DozDetailPage({ params }: { params: { slug: string
         )}
 
         <p className="mt-4 text-[10px] leading-snug text-earth-500 border-t border-cream-200 pt-4">
-          Sijesyon edikatif sèlman — pa yon dyagnostik. Deklarasyon sa yo pa
+          Sijesyon edikatif sèlman, pa yon dyagnostik. Deklarasyon sa yo pa
           evalye pa FDA. Konsilte yon pwofesyonèl sante anvan ou itilize remèd
           fèy.
         </p>

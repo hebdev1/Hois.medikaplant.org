@@ -24,7 +24,7 @@ export type CreateMeetingInput = {
 
 export type CreatedMeeting = {
   meetingId: string;
-  startUrl: string; // host link — store server-side, never send to students
+  startUrl: string; // host link, store server-side, never send to students
   joinUrl: string; // generic join link (per-student links come from addRegistrant)
 };
 

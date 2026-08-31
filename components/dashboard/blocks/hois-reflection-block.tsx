@@ -26,7 +26,7 @@ const REFLECTIONS: { text: string; source: string }[] = [
     source: 'Pilye Kominote',
   },
   {
-    text: 'Plant la pa fè mirak — li ouvri pòt la. Se konsistans ou ki travèse li.',
+    text: 'Plant la pa fè mirak, li ouvri pòt la. Se konsistans ou ki travèse li.',
     source: 'Pilye Mistik',
   },
   {
@@ -80,7 +80,7 @@ export default function HoisReflectionBlock() {
           {reflection.text}
         </blockquote>
         <div className="mt-3 text-sm text-gold-200 font-semibold">
-          — {reflection.source}
+         , {reflection.source}
         </div>
 
         <Link

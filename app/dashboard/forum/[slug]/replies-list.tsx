@@ -42,7 +42,7 @@ const MOIS = [
 ];
 function formatReplyDate(iso: string) {
   const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return '—';
+  if (Number.isNaN(d.getTime())) return '-';
   return `${d.getDate()} ${MOIS[d.getMonth()]} · ${TIME_FORMAT.format(d)}`;
 }
 

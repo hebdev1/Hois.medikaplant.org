@@ -26,7 +26,7 @@ const PRODUCTS: ShopProduct[] = [
     image:
       'https://medikaplantshop.com/wp-content/uploads/2026/05/IMAGE-2026-05-17-004211.jpg',
     price: '$35 – $63',
-    tagline: 'Tizan dijesyon — ekilibre vant ou natirèlman.',
+    tagline: 'Tizan dijesyon, ekilibre vant ou natirèlman.',
   },
   {
     name: 'Astragalus Root',
@@ -66,7 +66,7 @@ const PRODUCTS: ShopProduct[] = [
     image:
       'https://medikaplantshop.com/wp-content/uploads/2025/09/Untitled-5.png',
     price: 'Wè pwodwi a',
-    tagline: 'Detox konplè kò — elimine toksin, soutni dijesyon.',
+    tagline: 'Detox konplè kò, elimine toksin, soutni dijesyon.',
   },
   {
     name: 'Pikliz Kaliko',
@@ -82,7 +82,7 @@ const PRODUCTS: ShopProduct[] = [
     image:
       'https://medikaplantshop.com/wp-content/uploads/2026/03/Fanmalite-Kit-shot.png',
     price: '$399',
-    tagline: 'Bondi konplè pou fanmi — fètilite + ekilibre fanmsi.',
+    tagline: 'Bondi konplè pou fanmi, fètilite + ekilibre fanmsi.',
   },
 ];
 
@@ -172,7 +172,7 @@ export default function ShopSlider() {
         </a>
       </header>
 
-      {/* Scroller — relative parent has its own overflow-hidden so the
+      {/* Scroller, relative parent has its own overflow-hidden so the
           absolutely-positioned arrow buttons (which sit just inside the
           edges) and the protruding right-most card can never widen the
           outer section. */}

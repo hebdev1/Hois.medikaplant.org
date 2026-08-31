@@ -191,7 +191,7 @@ export default function ResourceForm(props: Props) {
       {/* Type */}
       <fieldset>
         <legend className="block text-xs font-bold uppercase tracking-wide text-earth-700 mb-2">
-          Tip (otomatikman detekte — w ka chanje l)
+          Tip (otomatikman detekte, w ka chanje l)
         </legend>
         <input type="hidden" name="type" value={type} />
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">

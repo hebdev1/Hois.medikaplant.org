@@ -84,7 +84,7 @@ export default async function AprannLayout({
               Espas Elèv
             </div>
             <p className="text-xs text-cream-200/80 leading-relaxed">
-              Tout kou ou achte yo, nan pwòp rit ou — san bezwen abònman.
+              Tout kou ou achte yo, nan pwòp rit ou, san bezwen abònman.
             </p>
           </div>
 

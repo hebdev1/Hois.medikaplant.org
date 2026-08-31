@@ -48,7 +48,7 @@ const METRIC_META: Record<
   weight: {
     label: 'Pwa kò',
     unit: 'kg',
-    target: '—',
+    target: '-',
     Icon: Scale,
     iconBg: 'bg-earth-400/20 text-earth-600',
     sparkTone: 'earth',
@@ -106,7 +106,7 @@ export default function AdaptiveMetrics({
               {meta.label}
             </div>
             <div className="text-[11px] text-earth-500 mt-0.5">
-              {meta.target !== '—' ? `Sib: ${meta.target} ${meta.unit}` : 'Swivi w'}
+              {meta.target !== '-' ? `Sib: ${meta.target} ${meta.unit}` : 'Swivi w'}
             </div>
           </div>
           <span className={`grid place-items-center w-8 h-8 rounded-lg ${meta.iconBg}`}>
@@ -186,7 +186,7 @@ export default function AdaptiveMetrics({
               {remaining > 0
                 ? `${remaining} aktivite ankò`
                 : dailyGoal.totalToday > 0
-                  ? 'Tout fini — bèl travay! 🌿'
+                  ? 'Tout fini, bèl travay! 🌿'
                   : 'Pa gen aktivite jodi a'}
             </div>
           </div>

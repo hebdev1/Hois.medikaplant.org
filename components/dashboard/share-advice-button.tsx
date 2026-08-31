@@ -28,12 +28,12 @@ export default function ShareAdviceButton({
     const plainBody = stripHtml(bodyHtml).trim();
     const url =
       typeof window !== 'undefined' ? window.location.origin : 'https://hoismedikaplant.com';
-    return `🌿 Konsèy plant jou a — ${date}\n\n${plainBody}\n\n${plant}\n\n${url}`;
+    return `🌿 Konsèy plant jou a, ${date}\n\n${plainBody}\n\n${plant}\n\n${url}`;
   }
 
   async function onShare() {
     const text = buildShareText();
-    const title = `Konsèy plant jou a — ${date}`;
+    const title = `Konsèy plant jou a, ${date}`;
 
     // 1) Native share sheet (mobile)
     if (typeof navigator !== 'undefined' && 'share' in navigator) {

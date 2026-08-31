@@ -44,7 +44,7 @@ export default function CardPayment(props: Props) {
         <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" strokeWidth={2.4} />
         <span>
           Peman an pa disponib pou kounye a (konfigirasyon Stripe la manke).
-          Tanpri kontakte sipò a — nou ap ranje l touswit.
+          Tanpri kontakte sipò a, nou ap ranje l touswit.
         </span>
       </div>
     );

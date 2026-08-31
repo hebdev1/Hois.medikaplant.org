@@ -64,7 +64,7 @@ export default function ScheduleEditor({
 
   return (
     <>
-      {/* Day index strip — sticky scroll-jumper for the 30-day grid */}
+      {/* Day index strip, sticky scroll-jumper for the 30-day grid */}
       <nav className="sticky top-0 z-20 -mx-5 md:-mx-8 lg:-mx-10 px-5 md:px-8 lg:px-10 py-3 bg-white/85 backdrop-blur border-y border-cream-200 mb-5 overflow-x-auto">
         <div className="flex items-center gap-1">
           <span className="text-[10px] uppercase tracking-wider text-earth-500 font-bold mr-2 shrink-0">
@@ -184,7 +184,7 @@ export default function ScheduleEditor({
                                 </div>
                               ) : (
                                 <span className="inline-block text-[10px] italic text-earth-500 mt-1">
-                                  Pa gen tag — vizib pou tout manm
+                                  Pa gen tag, vizib pou tout manm
                                 </span>
                               )}
                             </div>
@@ -398,7 +398,7 @@ function TaskModal({
             />
           </Field>
 
-          <Field label="Meta (sub-tèks)" hint="Optionnel — yon ti detay anplis">
+          <Field label="Meta (sub-tèks)" hint="Optionnel, yon ti detay anplis">
             <input
               type="text"
               maxLength={300}
@@ -475,7 +475,7 @@ function TaskModal({
             </div>
             {conditionTags.length > 0 && (
               <div className="mt-2 text-[11px] text-earth-600">
-                <strong>{conditionTags.length}</strong> kondisyon chwazi —
+                <strong>{conditionTags.length}</strong> kondisyon chwazi -
                 sèl manm ki gen youn ladan yo ap wè tach sa.
               </div>
             )}

@@ -16,7 +16,7 @@ export default function ProductCard({ product }: { product: RemedProduct }) {
   const price = priceLabel(product);
   return (
     <div className="flex gap-3 rounded-xl border border-cream-200 bg-white p-3 hover:border-forest-300 transition">
-      {/* Thumb — many shop pages render images via JS so image_url can be
+      {/* Thumb, many shop pages render images via JS so image_url can be
           null; the leaf placeholder keeps the card balanced. */}
       <div className="relative w-14 h-14 rounded-lg overflow-hidden bg-forest-50 shrink-0 grid place-items-center">
         {product.image_url ? (

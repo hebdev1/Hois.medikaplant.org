@@ -312,7 +312,7 @@ function EmailSection({ currentEmail }: { currentEmail: string }) {
     <Card
       icon={Mail}
       title="Imèl"
-      description={`Imèl aktyèl: ${currentEmail}. Yon imèl konfimasyon ap voye nan nouvo adrès la — chanjman an pa aplike anvan w klike sou lyen an.`}
+      description={`Imèl aktyèl: ${currentEmail}. Yon imèl konfimasyon ap voye nan nouvo adrès la, chanjman an pa aplike anvan w klike sou lyen an.`}
     >
       <div className="flex flex-col sm:flex-row gap-2">
         <input
@@ -379,7 +379,7 @@ function PasswordSection() {
   return (
     <Card
       icon={Lock}
-      title="Sekirite — chanje modpas"
+      title="Sekirite, chanje modpas"
       description="Tape modpas aktyèl ou pou konfime, epi yon nouvo modpas (omwen 8 karaktè, ak yon melanj lèt + chif)."
     >
       <div className="mb-3">

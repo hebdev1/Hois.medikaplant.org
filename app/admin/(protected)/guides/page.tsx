@@ -163,7 +163,7 @@ export default async function AdminGuidesPage({
         ))}
       </div>
 
-      {/* Table (client — handles selection + bulk delete + thumbnails) */}
+      {/* Table (client, handles selection + bulk delete + thumbnails) */}
       <GuidesTable
         guides={guides.map((g) => ({
           id: g.id,

@@ -239,21 +239,21 @@ export default async function HealthReportPage({
                       const bp =
                         l.blood_pressure_systolic != null
                           ? `${l.blood_pressure_systolic}${l.blood_pressure_diastolic != null ? '/' + l.blood_pressure_diastolic : ''}`
-                          : '—';
+                          : '-';
                       return (
                         <tr key={i} className="border-b border-cream-100">
                           <td className="py-2 pr-3 text-earth-700">
                             {dateHT(new Date(l.logged_at))}
                           </td>
                           <td className="py-2 px-3 text-right">
-                            {l.blood_sugar ?? '—'}
+                            {l.blood_sugar ?? '-'}
                           </td>
                           <td className="py-2 px-3 text-right">
-                            {l.weight ?? '—'}
+                            {l.weight ?? '-'}
                           </td>
                           <td className="py-2 px-3 text-right">{bp}</td>
                           <td className="py-2 pl-3 text-right">
-                            {l.heart_rate ?? '—'}
+                            {l.heart_rate ?? '-'}
                           </td>
                         </tr>
                       );
@@ -276,7 +276,7 @@ export default async function HealthReportPage({
                   <span className="font-semibold">{t.title}</span>
                   {(t.dose || t.frequency) && (
                     <span className="text-earth-600">
-                      — {[t.dose, t.frequency].filter(Boolean).join(', ')}
+                     , {[t.dose, t.frequency].filter(Boolean).join(', ')}
                     </span>
                   )}
                 </li>
@@ -287,7 +287,7 @@ export default async function HealthReportPage({
 
         <p className="mt-8 pt-5 border-t border-cream-200 text-[11px] text-earth-500 leading-relaxed">
           Rapò sa a jenere otomatikman apati mezi manm nan antre sou Hoïs
-          Inivèsite. Li se yon zouti swivi — li pa ranplase konsèy yon
+          Inivèsite. Li se yon zouti swivi, li pa ranplase konsèy yon
           pwofesyonèl sante. Hoïs Inivèsite · HOÏSMedikaplant.com
         </p>
       </article>

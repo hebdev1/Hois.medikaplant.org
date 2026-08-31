@@ -21,7 +21,7 @@ export type PaymentRecord = {
 };
 
 function formatDate(iso: string | null) {
-  if (!iso) return '—';
+  if (!iso) return '-';
   return new Intl.DateTimeFormat('fr-HT', {
     day: 'numeric',
     month: 'short',
@@ -87,7 +87,7 @@ export default function PaymentHistoryPanel({ payments }: { payments: PaymentRec
                 {p.status === 'active' ? 'Aktif' : p.status === 'cancelled' ? 'Anile' : 'Ekspire'}
               </span>
               <span className="text-right font-mono text-sm font-semibold text-ink tabular-nums">
-                {p.amount !== null ? `$${p.amount}` : '—'}
+                {p.amount !== null ? `$${p.amount}` : '-'}
               </span>
               <ExternalLink
                 className="hidden sm:block w-4 h-4 text-earth-500 group-hover:text-forest-700 transition shrink-0"

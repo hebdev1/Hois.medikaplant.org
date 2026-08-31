@@ -96,7 +96,7 @@ export default async function MyQuestionsPage() {
           Kesyon & Repons
         </h1>
         <p className="mt-1.5 text-sm text-earth-600">
-          Tout kesyon ou poze ton vye a atravè kou ou yo, ak repons yo — yon sèl
+          Tout kesyon ou poze ton vye a atravè kou ou yo, ak repons yo, yon sèl
           kote.
         </p>
       </header>
@@ -106,7 +106,7 @@ export default async function MyQuestionsPage() {
           <Inbox className="w-10 h-10 mx-auto text-earth-400 mb-3" strokeWidth={1.6} />
           <p className="text-sm text-earth-600 max-w-sm mx-auto">
             Ou poko poze okenn kesyon. Antre nan yon kou epi poze ton vye a nenpòt
-            kesyon ou genyen — n ap ranmase yo tout isit la.
+            kesyon ou genyen, n ap ranmase yo tout isit la.
           </p>
           <Link
             href="/aprann"

@@ -261,7 +261,7 @@ export default async function AdminProgramsPage({
                     </div>
                   ) : (
                     <div className="text-[10px] text-amber-700 italic inline-flex items-center gap-1">
-                      Pa gen tag — pwotokòl jeneral pou tout moun
+                      Pa gen tag, pwotokòl jeneral pou tout moun
                     </div>
                   )}
                 </div>

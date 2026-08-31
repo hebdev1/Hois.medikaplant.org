@@ -138,22 +138,22 @@ export default function MenstruationTracker({
           Swivi règ
         </h2>
         <p className="text-xs text-earth-600 mt-0.5">
-          Make jou ou gen règ ou — n ap kalkile sik ou ak pwochen dat la.
+          Make jou ou gen règ ou, n ap kalkile sik ou ak pwochen dat la.
         </p>
       </header>
 
       <div className="grid grid-cols-3 gap-2 mb-4">
         <Stat
           label="Dènye règ"
-          value={stats.lastStart ? fmt(stats.lastStart) : '—'}
+          value={stats.lastStart ? fmt(stats.lastStart) : '-'}
         />
         <Stat
           label="Sik mwayen"
-          value={stats.avgCycle ? `${stats.avgCycle} jou` : '—'}
+          value={stats.avgCycle ? `${stats.avgCycle} jou` : '-'}
         />
         <Stat
           label="Pwochen ~"
-          value={stats.next ? fmt(stats.next) : '—'}
+          value={stats.next ? fmt(stats.next) : '-'}
         />
       </div>
 

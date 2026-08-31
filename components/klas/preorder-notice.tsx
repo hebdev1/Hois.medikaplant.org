@@ -34,7 +34,7 @@ export function PreorderPending({ title }: { title: string }) {
           Kou a poko pare
         </h1>
         <p className="mt-3 text-earth-700 leading-relaxed">
-          Ou byen enskri nan « {title} » — plas ou rezève. Kou a nan preparasyon
+          Ou byen enskri nan « {title} », plas ou rezève. Kou a nan preparasyon
           toujou. Depi li pare, w ap jwenn aksè a tout kontni an otomatikman.
         </p>
         <div className="mt-6 inline-flex items-center gap-2 rounded-full bg-white border border-gold-200 px-4 py-2 text-sm font-semibold text-forest-800">

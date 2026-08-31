@@ -47,7 +47,7 @@ type Suggestion = {
 
 const SUGGESTIONS: Suggestion[] = [
   {
-    label: 'Dyabèt — kontwòl sik nan san',
+    label: 'Dyabèt, kontwòl sik nan san',
     match: (ctx) =>
       ctx.conditions.includes('diabetes_type_1') ||
       ctx.conditions.includes('diabetes_type_2') ||
@@ -61,7 +61,7 @@ const SUGGESTIONS: Suggestion[] = [
     ],
   },
   {
-    label: 'Tansyon wo — ekilib kè',
+    label: 'Tansyon wo, ekilib kè',
     match: (ctx) =>
       ctx.conditions.includes('hypertension') ||
       ctx.healthGoal === 'manage_hypertension',
@@ -75,7 +75,7 @@ const SUGGESTIONS: Suggestion[] = [
     ],
   },
   {
-    label: 'Pèdi pwa — abitid jou pa jou',
+    label: 'Pèdi pwa, abitid jou pa jou',
     match: (ctx) =>
       ctx.healthGoal === 'lose_weight',
     tasks: [
@@ -87,7 +87,7 @@ const SUGGESTIONS: Suggestion[] = [
     ],
   },
   {
-    label: 'Ekilib espirityèl — pratik HOÏS',
+    label: 'Ekilib espirityèl, pratik HOÏS',
     match: (ctx) => ctx.healthGoal === 'spiritual_balance',
     tasks: [
       { title: 'Refleksyon HOÏS jou a (li li sou tablodebò)', chip_label: 'HOÏS', chip_kind: 'gold' },
@@ -97,12 +97,12 @@ const SUGGESTIONS: Suggestion[] = [
     ],
   },
   {
-    label: 'Detox — netwayaj jeneral',
+    label: 'Detox, netwayaj jeneral',
     match: (ctx) => ctx.healthGoal === 'detox',
     tasks: [
       { title: 'Bwè dlo cho ak sitwon a jeun', chip_label: 'Maten', chip_kind: 'gold' },
       { title: 'Tizan mountain-bwa apre dejene', chip_label: 'Tizan', chip_kind: 'gold' },
-      { title: 'Manje fwi ak legim — pa gen vyann jodi a', chip_label: 'Manje', chip_kind: 'forest' },
+      { title: 'Manje fwi ak legim, pa gen vyann jodi a', chip_label: 'Manje', chip_kind: 'forest' },
       { title: 'Mache 30 minit', chip_label: 'Aktivite', chip_kind: 'cream' },
       { title: 'Dòmi anvan 10è aswè', chip_label: 'Repo', chip_kind: 'cream' },
     ],

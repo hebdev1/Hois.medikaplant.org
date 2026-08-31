@@ -76,7 +76,7 @@ export default function HealthSummary({
           <p className="font-serif italic text-sm text-ink leading-relaxed">
             &ldquo;{commentary.body}&rdquo;
           </p>
-          <p className="text-[11px] text-earth-600 mt-2">— {commentary.author}</p>
+          <p className="text-[11px] text-earth-600 mt-2">- {commentary.author}</p>
         </div>
       )}
     </div>
@@ -113,7 +113,7 @@ function StatBox({
       </div>
       <div className="font-display text-xl font-bold leading-none flex items-baseline gap-1">
         <span className={toneClass}>
-          {value === null ? '—' : Number.isInteger(value) ? value : value.toFixed(1)}
+          {value === null ? '-' : Number.isInteger(value) ? value : value.toFixed(1)}
         </span>
         <span className="text-[10px] font-medium text-earth-500">{unit}</span>
       </div>

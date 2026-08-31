@@ -124,7 +124,7 @@ export default function EnablePush() {
           <div className="font-bold text-ink">Notifikasyon sou aparèy ou</div>
           <p className="text-earth-600 mt-0.5 leading-relaxed">
             {state === 'ios-hint'
-              ? 'Sou iPhone, pou resevwa notifikasyon: louvri meni pataje a epi chwazi « Ajoute sou ekran akèy » — apre sa, louvri sit la soti la epi aktive notifikasyon yo.'
+              ? 'Sou iPhone, pou resevwa notifikasyon: louvri meni pataje a epi chwazi « Ajoute sou ekran akèy », apre sa, louvri sit la soti la epi aktive notifikasyon yo.'
               : 'Navigatè sa a pa sipòte notifikasyon push. Eseye Chrome oswa Safari ki ajou.'}
           </p>
         </div>
@@ -152,7 +152,7 @@ export default function EnablePush() {
         <div className="font-bold text-ink text-sm">Notifikasyon sou aparèy ou</div>
         <p className="text-xs text-earth-600 mt-0.5 leading-relaxed">
           {on
-            ? 'Aktive — w ap resevwa notifikasyon menm lè sit la fèmen.'
+            ? 'Aktive, w ap resevwa notifikasyon menm lè sit la fèmen.'
             : state === 'denied'
               ? 'Ou te bloke notifikasyon yo. Chanje sa nan paramèt navigatè a pou sit sa a.'
               : 'Resevwa yon avi sou telefòn/òdinatè w menm lè sit la fèmen.'}

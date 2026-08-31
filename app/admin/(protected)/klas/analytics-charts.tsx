@@ -70,7 +70,7 @@ export default function AnalyticsCharts({
 
   return (
     <div className="grid gap-4">
-      {/* Revenue over the last 6 months — the hero trend line. */}
+      {/* Revenue over the last 6 months, the hero trend line. */}
       <ChartCard
         title="Revni pa mwa (6 dènye mwa)"
         subtitle="Sèlman acha peye reyèl (Stripe)."

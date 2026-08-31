@@ -43,7 +43,7 @@ const PLANS: Plan[] = [
   {
     id: 'basic',
     name: 'Hoïs Bazilik',
-    description: 'Pòt antre nan inivè VIP la — pou kòmanse vwayaj sante w.',
+    description: 'Pòt antre nan inivè VIP la, pou kòmanse vwayaj sante w.',
     yearlyDiscounted: 121.5,
     yearlyOriginal: 135,
     monthly: 11.25,
@@ -60,7 +60,7 @@ const PLANS: Plan[] = [
   {
     id: 'premium',
     name: 'Hoïs Sitwonèl',
-    description: 'Plan ki pi popilè — plis aksè, plis gidans, pi bon valè.',
+    description: 'Plan ki pi popilè, plis aksè, plis gidans, pi bon valè.',
     yearlyDiscounted: 157.5,
     yearlyOriginal: 175,
     monthly: 14.58,
@@ -78,7 +78,7 @@ const PLANS: Plan[] = [
   {
     id: 'vip',
     name: 'Hoïs Melis',
-    description: 'Eksperyans VIP ki pi konplè — ak Vye Ewòl li menm.',
+    description: 'Eksperyans VIP ki pi konplè, ak Vye Ewòl li menm.',
     yearlyDiscounted: 224.1,
     yearlyOriginal: 249,
     monthly: 20.75,

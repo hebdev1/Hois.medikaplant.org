@@ -7,7 +7,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: 'Hoïs Inivèsite',
     short_name: 'Hoïs',
-    description: 'Klas, swivi sante, ak kominote Hoïs — nan pwòp rit ou.',
+    description: 'Klas, swivi sante, ak kominote Hoïs, nan pwòp rit ou.',
     start_url: '/dashboard',
     scope: '/',
     display: 'standalone',

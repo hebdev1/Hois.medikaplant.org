@@ -125,7 +125,7 @@ export default async function PhaseProducts({
         ))}
       </div>
       <p className="mt-2 text-[9px] leading-snug text-earth-500">
-        Sijesyon sèlman — pa yon dyagnostik. Pwodui sa yo pa evalye pa FDA epi
+        Sijesyon sèlman, pa yon dyagnostik. Pwodui sa yo pa evalye pa FDA epi
         yo pa fèt pou dyagnostike, trete, geri, oswa anpeche okenn maladi.
       </p>
     </div>

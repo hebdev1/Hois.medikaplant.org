@@ -39,7 +39,7 @@ function lineSlot(fontSize: number) {
 // ─── Helpers ───────────────────────────────────────────────────────────────
 
 function formatDate(value: unknown): string {
-  if (!value || typeof value !== 'string') return '—';
+  if (!value || typeof value !== 'string') return '-';
   const d = new Date(value);
   if (Number.isNaN(d.getTime())) return String(value);
   return d.toLocaleString('fr-FR', {
@@ -52,7 +52,7 @@ function formatDate(value: unknown): string {
 }
 
 function formatDateOnly(value: unknown): string {
-  if (!value || typeof value !== 'string') return '—';
+  if (!value || typeof value !== 'string') return '-';
   const d = new Date(value);
   if (Number.isNaN(d.getTime())) return String(value);
   return d.toLocaleDateString('fr-FR', {
@@ -76,9 +76,9 @@ function asArray(value: unknown): Record<string, unknown>[] {
 }
 
 function safe(value: unknown): string {
-  if (value === null || value === undefined || value === '') return '—';
+  if (value === null || value === undefined || value === '') return '-';
   if (typeof value === 'boolean') return value ? 'Wi' : 'Non';
-  if (Array.isArray(value)) return value.length === 0 ? '—' : value.join(', ');
+  if (Array.isArray(value)) return value.length === 0 ? '-' : value.join(', ');
   return String(value);
 }
 
@@ -180,7 +180,7 @@ class PdfBuilder {
 
   keyValueTable(rows: Array<[string, string]>) {
     if (rows.length === 0) {
-      this.paragraph('— Pa gen okenn done —');
+      this.paragraph('- Pa gen okenn done -');
       return;
     }
     const keyFontSize = 9;
@@ -192,7 +192,7 @@ class PdfBuilder {
 
     for (const [k, v] of rows) {
       const valueLines = this.doc.splitTextToSize(
-        v || '—',
+        v || '-',
         maxValWidth
       ) as string[];
       const rowHeight = Math.max(valSlot, valueLines.length * valSlot);
@@ -240,7 +240,7 @@ class PdfBuilder {
     columns: Array<{ key: string; label: string; width: number }>
   ) {
     if (rows.length === 0) {
-      this.paragraph('— Pa gen okenn done —');
+      this.paragraph('- Pa gen okenn done -');
       return;
     }
 
@@ -288,10 +288,10 @@ class PdfBuilder {
       this.ensureRoom(bodySlot + 4);
       let x = PAGE_MARGIN + 6;
       for (const col of columns) {
-        const txt = String(row[col.key] ?? '—');
+        const txt = String(row[col.key] ?? '-');
         const lines = this.doc.splitTextToSize(txt, col.width - 8) as string[];
         this.doc.text(
-          lines[0] ?? '—',
+          lines[0] ?? '-',
           x,
           this.y + baseline(bodyFontSize)
         );
@@ -410,7 +410,7 @@ function renderMedical(b: PdfBuilder, data: ExportData) {
   if (!med) return;
   b.sectionTitle('3 · Enfòmasyon Sante');
   b.keyValueTable([
-    ['Wotè', med.height_cm ? `${med.height_cm} cm` : '—'],
+    ['Wotè', med.height_cm ? `${med.height_cm} cm` : '-'],
     ['Tip san', safe(med.blood_type)],
     ['Kondisyon medikal', safe(med.conditions)],
     ['Objektif prensipal', safe(med.health_goal)],
@@ -435,19 +435,19 @@ function renderPreferences(b: PdfBuilder, data: ExportData) {
     ['Densite', safe(prefs.density)],
     ['Mòd fonse', safe(prefs.dark_mode)],
     ['Lang', safe(prefs.language)],
-    ['Gwosè tèks', prefs.font_size ? `${prefs.font_size}px` : '—'],
+    ['Gwosè tèks', prefs.font_size ? `${prefs.font_size}px` : '-'],
     ['Notifikasyon imèl', safe(prefs.email_notifications)],
     ['Push navigatè', safe(prefs.push_notifications)],
     ['Konsèy chak jou', safe(prefs.daily_advice_email)],
     ['Rezime semèn', safe(prefs.weekly_summary_email)],
     ['Rapèl badj', safe(prefs.badge_unlock_email)],
     ['Èdtan rapèl', safe(prefs.reminder_time)],
-    ['Sib pwa', prefs.target_weight_kg ? `${prefs.target_weight_kg} kg` : '—'],
+    ['Sib pwa', prefs.target_weight_kg ? `${prefs.target_weight_kg} kg` : '-'],
     [
       'Sib sik (mg/dL)',
       `${safe(prefs.target_blood_sugar_min)} – ${safe(prefs.target_blood_sugar_max)}`,
     ],
-    ['Dlo pa jou', prefs.daily_water_liters ? `${prefs.daily_water_liters} L` : '—'],
+    ['Dlo pa jou', prefs.daily_water_liters ? `${prefs.daily_water_liters} L` : '-'],
     ['Inite pwa', safe(prefs.weight_unit)],
   ]);
 }
@@ -461,7 +461,7 @@ function renderSubscriptions(b: PdfBuilder, data: ExportData) {
       status: safe(r.status),
       start: formatDateOnly(r.start_date),
       end: formatDateOnly(r.end_date),
-      amount: r.amount != null ? `$${r.amount}` : '—',
+      amount: r.amount != null ? `$${r.amount}` : '-',
     })),
     [
       { key: 'plan', label: 'Plan', width: 90 },
@@ -499,7 +499,7 @@ function renderPrograms(b: PdfBuilder, data: ExportData) {
     rows.map((r) => ({
       program: safe(r.program_id),
       status: safe(r.status),
-      progress: r.progress_percent != null ? `${r.progress_percent}%` : '—',
+      progress: r.progress_percent != null ? `${r.progress_percent}%` : '-',
       started: formatDateOnly(r.started_at),
     })),
     [

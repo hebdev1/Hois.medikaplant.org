@@ -159,7 +159,7 @@ export default async function AdminUsersListPage({
             Manm Hoïs Inivèsite
           </h1>
           <p className="mt-2 text-sm text-earth-600 max-w-2xl">
-            Klike sou yon liy pou ouvri pwofil konplè a — modifye enfòmasyon
+            Klike sou yon liy pou ouvri pwofil konplè a, modifye enfòmasyon
             pèsonèl, plan, kondisyon medikal, preferans, oswa voye yon
             notifikasyon dirèk.
           </p>
@@ -363,7 +363,7 @@ export default async function AdminUsersListPage({
                             </span>
                           )}
                           {r.conditions.length === 0 && (
-                            <span className="text-[11px] text-earth-400 italic">—</span>
+                            <span className="text-[11px] text-earth-400 italic">-</span>
                           )}
                         </div>
                       </td>

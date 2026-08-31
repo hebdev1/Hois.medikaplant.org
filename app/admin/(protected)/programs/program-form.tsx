@@ -242,7 +242,7 @@ export default function ProgramForm({ mode, initial }: Props) {
           </div>
           {v.condition_tags.size === 0 && (
             <p className="text-[11px] text-amber-700 mt-2">
-              ⚠ Pa gen tag chwazi — pwotokòl sa a ap parèt kòm "jeneral" (tout
+              ⚠ Pa gen tag chwazi, pwotokòl sa a ap parèt kòm "jeneral" (tout
               moun).
             </p>
           )}
@@ -443,7 +443,7 @@ function ProgramSideActions({
         ) : (
           <Trash2 className="w-3.5 h-3.5" strokeWidth={2.2} />
         )}
-        {confirmDelete ? 'Konfime — efase pwotokòl la' : 'Efase pwotokòl la'}
+        {confirmDelete ? 'Konfime, efase pwotokòl la' : 'Efase pwotokòl la'}
       </button>
     </section>
   );

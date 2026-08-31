@@ -126,7 +126,7 @@ export default async function DashboardLayout({
 
   return (
     <UserAppearance prefs={effectivePrefs}>
-      {/* Dashboard IS translatable — Google Translate now walks the tree.
+      {/* Dashboard IS translatable, Google Translate now walks the tree.
           Individual components that carry realtime state (notification
           bell, drawer state, form inputs) mark themselves translate="no"
           internally so their subtree is safe from the <font>-wrapper

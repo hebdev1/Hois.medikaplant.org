@@ -380,7 +380,7 @@ function TreatmentItem({
                 ) : (
                   <CheckCircle2 className="w-4 h-4" strokeWidth={2.4} />
                 )}
-                {takenToday ? 'Fèt jodi a ✓ — bravo!' : 'Mwen pran l jodi a'}
+                {takenToday ? 'Fèt jodi a ✓, bravo!' : 'Mwen pran l jodi a'}
               </button>
             </div>
           )}

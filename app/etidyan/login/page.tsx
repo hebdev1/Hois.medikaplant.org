@@ -42,7 +42,7 @@ export default function StudentLoginPage() {
             Kou ou yo, nan pwòp rit ou.
           </h2>
           <p className="mt-3 text-cream-200/85 leading-relaxed">
-            Konekte pou w kontinye aprann — tout kou ou achte yo nan yon sèl
+            Konekte pou w kontinye aprann, tout kou ou achte yo nan yon sèl
             kote, san bezwen abònman.
           </p>
           <ul className="mt-7 space-y-3 text-sm text-cream-100/90">

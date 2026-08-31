@@ -148,7 +148,7 @@ export default async function CoursePlayerPage({
           )}
         </header>
 
-        {/* Live Zoom sessions — per-student links when sessions exist, else
+        {/* Live Zoom sessions, per-student links when sessions exist, else
             the legacy single course-level link. */}
         {isLive &&
           (liveSessions.length > 0 ? (

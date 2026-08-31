@@ -240,7 +240,7 @@ async function notifyCourseReleased(
         subject,
         heading: 'Kou ou a disponib!',
         body: [
-          `Bon nouvèl — kou « ${title} » ou te achte an pre-order an fin pare.`,
+          `Bon nouvèl, kou « ${title} » ou te achte an pre-order an fin pare.`,
           'Ou gen aksè konplè kounye a. Klike bouton an anba a pou kòmanse.',
         ],
         linkPath: linkUrl,
@@ -714,7 +714,7 @@ export async function reorderModule(
 
   const swapWith = direction === 'up' ? idx - 1 : idx + 1;
   if (swapWith < 0 || swapWith >= rows.length) {
-    return { ok: true }; // already at the edge — no-op
+    return { ok: true }; // already at the edge, no-op
   }
 
   const a = rows[idx];

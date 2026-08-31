@@ -63,7 +63,7 @@ const FAQS = [
   },
   {
     q: 'Ki kanal ki pi rapid pou jwenn èd?',
-    a: 'Si w deja gen yon kont, chat sipò a nan panel manm ou (Kont mwen → Sipò) se pi rapid — mesaj ou rive dirèkteman nan ekip la. Fòm ki sou paj sa a se pou vizitè ki poko manm, oswa pou kesyon jeneral.',
+    a: 'Si w deja gen yon kont, chat sipò a nan panel manm ou (Kont mwen → Sipò) se pi rapid, mesaj ou rive dirèkteman nan ekip la. Fòm ki sou paj sa a se pou vizitè ki poko manm, oswa pou kesyon jeneral.',
   },
   {
     q: 'Èske mwen bezwen yon kont pou voye yon mesaj?',
@@ -75,7 +75,7 @@ const FAQS = [
   },
   {
     q: 'Kesyon m nan se sou kont oswa sante m. Kote pou m ale?',
-    a: 'Konekte sou kont ou, epi ale nan "Kont mwen → Sipò" pou kesyon administratif (fakti, chanjman plan, modpas). Pou kesyon medikal, ale nan "Sante" epi mande yon konsiltasyon — yon Gid ap kontakte w pou pwograme yon randevou Zoom.',
+    a: 'Konekte sou kont ou, epi ale nan "Kont mwen → Sipò" pou kesyon administratif (fakti, chanjman plan, modpas). Pou kesyon medikal, ale nan "Sante" epi mande yon konsiltasyon, yon Gid ap kontakte w pou pwograme yon randevou Zoom.',
   },
   {
     q: 'Èske mesaj m nan rete konfidansyèl?',
@@ -83,11 +83,11 @@ const FAQS = [
   },
   {
     q: 'Èske m ka jwenn èd an Kreyòl, Franse, oswa Angle?',
-    a: 'Wi. Ekip nou an sèvi manm nan Kreyòl, Franse, ak Angle. Ekri nou nan lang ki pi konfòtab pou ou — n ap reponn nan menm lang lan.',
+    a: 'Wi. Ekip nou an sèvi manm nan Kreyòl, Franse, ak Angle. Ekri nou nan lang ki pi konfòtab pou ou, n ap reponn nan menm lang lan.',
   },
   {
     q: 'Sa pou m fè si mesaj mwen an ijan?',
-    a: 'Pou yon ijans medikal, kontakte sèvis lokal ijans nan zòn ou (911, HUEH nan Pòtoprens, elatriye) — HOÏS pa yon sèvis ijans medikal. Pou lòt bagay ijan (aksè kont bloke, pwoblèm peman), make mesaj ou ak "URGENT" nan sijè a epi nou pran l pi vit.',
+    a: 'Pou yon ijans medikal, kontakte sèvis lokal ijans nan zòn ou (911, HUEH nan Pòtoprens, elatriye), HOÏS pa yon sèvis ijans medikal. Pou lòt bagay ijan (aksè kont bloke, pwoblèm peman), make mesaj ou ak "URGENT" nan sijè a epi nou pran l pi vit.',
   },
 ];
 
@@ -186,7 +186,7 @@ export default function KontakPage() {
       <section className="py-12 md:py-20 bg-white">
         <div className="max-w-[1400px] mx-auto px-4 md:px-12 lg:px-20 xl:px-32">
           <div className="grid lg:grid-cols-[1.3fr_1fr] gap-10 lg:gap-16 items-start">
-            {/* LEFT — Form */}
+            {/* LEFT, Form */}
             <div>
               <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent/10 text-accent text-sm font-medium mb-4">
                                 Voye mesaj ou
@@ -204,7 +204,7 @@ export default function KontakPage() {
               <ContactForm />
             </div>
 
-            {/* RIGHT — Side rail */}
+            {/* RIGHT, Side rail */}
             <aside className="space-y-6 lg:sticky lg:top-24">
               {/* Live-help card */}
               <div className="relative rounded-2xl bg-gradient-to-br from-ink to-[#1a1052] text-cream-50 p-6 md:p-7 overflow-hidden">

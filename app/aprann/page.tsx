@@ -351,7 +351,7 @@ export default async function AprannPage({
             ))}
           </div>
 
-          {/* Certificates — for fully-completed courses */}
+          {/* Certificates, for fully-completed courses */}
           {cards.some((c) => c.pct >= 100) && (
             <section className="mt-10">
               <h2 className="font-display text-xl font-bold text-ink flex items-center gap-2 mb-4">

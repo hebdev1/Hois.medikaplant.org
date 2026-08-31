@@ -114,13 +114,13 @@ export default async function SupportPage() {
           </div>
         ) : (
           <div className="grid lg:grid-cols-[1.4fr_1fr] gap-5 md:gap-6">
-            {/* Left — live chat */}
+            {/* Left, live chat */}
             <SupportChat
               thread={threadResult.data.thread}
               initialMessages={threadResult.data.messages}
             />
 
-            {/* Right — contacts + FAQs */}
+            {/* Right, contacts + FAQs */}
             <aside className="space-y-5 md:space-y-6">
               <SupportContacts contacts={contacts} />
               <SupportFaqs faqs={faqs} />

@@ -117,7 +117,7 @@ export const ArcGalleryHero: React.FC<ArcGalleryHeroProps> = ({
           height: dimensions.radius * 1.2,
         }}
       >
-        {/* Center pivot for transforms — anchored at bottom center. */}
+        {/* Center pivot for transforms, anchored at bottom center. */}
         <div className="absolute left-1/2 bottom-0 -translate-x-1/2">
           {images.map((src, i) => {
             const angle = startAngle + step * i; // degrees

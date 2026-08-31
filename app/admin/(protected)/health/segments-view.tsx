@@ -91,7 +91,7 @@ export default async function SegmentsView() {
           value={
             buckets.length > 0
               ? `${describeCondition(buckets[0].slug).label} (${buckets[0].members.length})`
-              : '—'
+              : '-'
           }
           tone="rose"
         />

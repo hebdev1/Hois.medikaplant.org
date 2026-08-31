@@ -127,7 +127,7 @@ export async function POST(req: Request) {
     rows.push({
       title: TREATMENT_TITLE,
       message:
-        'Ou gen tretman aktif pou w swiv jodi a. Make yo « fèt » lè w fini — sa ede w rete sou wout la.',
+        'Ou gen tretman aktif pou w swiv jodi a. Make yo « fèt » lè w fini, sa ede w rete sou wout la.',
       target: 'user',
       target_user_id: uid,
       link_url: '/dashboard',

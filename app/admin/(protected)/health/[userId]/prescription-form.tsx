@@ -31,7 +31,7 @@ const KIND_OPTIONS: { value: Kind; label: string; icon: typeof Pill }[] = [
 ];
 
 const METRIC_OPTIONS: { value: string; label: string }[] = [
-  { value: '', label: '— Pa konekte ak mezi —' },
+  { value: '', label: '- Pa konekte ak mezi -' },
   { value: 'blood_sugar', label: 'Sik nan san' },
   { value: 'weight', label: 'Pwa kò' },
   { value: 'pressure', label: 'Tansyon' },
@@ -143,7 +143,7 @@ export default function PrescriptionForm({
       <Field
         label="Deskripsyon / enstriksyon"
         required
-        help="Eksplikasyon konplè pou pasyan an — sa pou fè, kilè, eks."
+        help="Eksplikasyon konplè pou pasyan an, sa pou fè, kilè, eks."
       >
         <textarea
           name="description"
@@ -181,7 +181,7 @@ export default function PrescriptionForm({
         </Field>
         <Field label="Konekte ak kondisyon">
           <select name="related_condition" defaultValue="" className={inputClass}>
-            <option value="">— Okenn —</option>
+            <option value="">- Okenn -</option>
             {conditions.map((c) => (
               <option key={c} value={c}>
                 {c.replace(/_/g, ' ')}
@@ -205,7 +205,7 @@ export default function PrescriptionForm({
         </Field>
       </div>
 
-      <Field label="Nòt entèn (opsyonèl)" help="Sa pasyan an pa wè — pou rejis ou.">
+      <Field label="Nòt entèn (opsyonèl)" help="Sa pasyan an pa wè, pou rejis ou.">
         <textarea name="notes" rows={2} className={cn(inputClass, 'resize-y')} />
       </Field>
 

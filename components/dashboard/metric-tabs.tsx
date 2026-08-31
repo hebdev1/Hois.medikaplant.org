@@ -111,7 +111,7 @@ export default function MetricTabs({ active, summaries }: Props) {
             </div>
             <div className="flex items-baseline gap-1.5">
               <span className="font-display text-3xl font-bold leading-none">
-                {c.latest !== null ? c.latest : '—'}
+                {c.latest !== null ? c.latest : '-'}
               </span>
               <span
                 className={cn(

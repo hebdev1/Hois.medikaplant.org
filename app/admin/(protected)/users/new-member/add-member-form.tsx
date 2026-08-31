@@ -113,7 +113,7 @@ export default function AddMemberForm() {
         {result.setupUrl && (
           <div>
             <div className="text-[11px] font-semibold text-earth-600 mb-1">
-              Lyen pou chwazi modpas (bak-ap — ekspire nan 1 èdtan)
+              Lyen pou chwazi modpas (bak-ap, ekspire nan 1 èdtan)
             </div>
             <div className="flex flex-col sm:flex-row gap-2">
               <input

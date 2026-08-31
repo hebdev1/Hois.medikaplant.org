@@ -27,7 +27,7 @@ export default async function AboutSection() {
     <section id="istwa" className="relative w-full py-24 md:py-32 bg-gradient-to-b from-brand-50/40 to-white">
       <div className="max-w-[1400px] mx-auto px-4 md:px-12 lg:px-20 xl:px-32">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-          {/* LEFT — image collage */}
+          {/* LEFT, image collage */}
           <div className="relative">
             <div className="relative aspect-square rounded-[2rem] overflow-hidden shadow-card">
               <Image
@@ -58,7 +58,7 @@ export default async function AboutSection() {
             </div>
           </div>
 
-          {/* RIGHT — copy */}
+          {/* RIGHT, copy */}
           <div>
             <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-ink leading-tight">
               Yon pon ant <span className="text-brand-600">tradisyon</span> ak modènite

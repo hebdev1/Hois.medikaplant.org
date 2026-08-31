@@ -50,7 +50,7 @@ const KIND_OPTIONS: { value: Kind; label: string; icon: typeof Pill }[] = [
 ];
 
 const METRIC_OPTIONS: { value: string; label: string }[] = [
-  { value: '', label: '— Pa konekte ak mezi —' },
+  { value: '', label: '- Pa konekte ak mezi -' },
   { value: 'blood_sugar', label: 'Sik nan san' },
   { value: 'weight', label: 'Pwa kò' },
   { value: 'pressure', label: 'Tansyon' },
@@ -62,9 +62,9 @@ const MOIS = [
 ];
 
 function formatDate(iso: string | null): string {
-  if (!iso) return '—';
+  if (!iso) return '-';
   const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return '—';
+  if (Number.isNaN(d.getTime())) return '-';
   return `${d.getDate()} ${MOIS[d.getMonth()]} ${d.getFullYear()}`;
 }
 
@@ -374,7 +374,7 @@ function EditCard({
           <div>
             <div className="text-sm font-bold text-ink">Modifye tretman</div>
             <div className="text-[11px] text-earth-600">
-              Pasyan an pap resevwa yon notifikasyon nouvo pou yon koreksyon —
+              Pasyan an pap resevwa yon notifikasyon nouvo pou yon koreksyon -
               sèlman chanjman an aplike.
             </div>
           </div>
@@ -501,7 +501,7 @@ function EditCard({
               defaultValue={treatment.related_condition ?? ''}
               className={inputClass}
             >
-              <option value="">— Okenn —</option>
+              <option value="">- Okenn -</option>
               {conditions.map((c) => (
                 <option key={c} value={c}>
                   {c.replace(/_/g, ' ')}

@@ -99,7 +99,7 @@ export default function DozForm({
         <label className="block">
           <span className="block text-xs font-semibold text-earth-700 mb-1">Kategori</span>
           <select name="category_id" value={values.category_id} onChange={(e) => set('category_id', e.target.value)} className={input}>
-            <option value="">— Pa gen —</option>
+            <option value="">- Pa gen -</option>
             {categories.map((c) => (
               <option key={c.id} value={c.id}>{c.label}</option>
             ))}

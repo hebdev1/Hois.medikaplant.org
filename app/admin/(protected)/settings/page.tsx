@@ -82,7 +82,7 @@ export default async function AdminSettingsPage() {
         </p>
       </header>
 
-      {/* Identity card — shows who you are + your assigned role */}
+      {/* Identity card, shows who you are + your assigned role */}
       <section className="bg-white border border-cream-200 rounded-2xl p-5 md:p-6 shadow-card mb-6">
         <div className="flex items-start gap-4 flex-wrap">
           <span className="grid place-items-center w-16 h-16 rounded-2xl bg-gradient-to-br from-forest-500 to-forest-800 text-cream-50 font-display font-bold text-2xl shrink-0 shadow-plant">
@@ -113,7 +113,7 @@ export default async function AdminSettingsPage() {
         </div>
       </section>
 
-      {/* Envite admin — surfaces the existing /admin/users/new flow inline
+      {/* Envite admin, surfaces the existing /admin/users/new flow inline
           so a super_admin can spin up new staff invites without hunting
           for it in the Users area. Restricted to super_admin since the
           invite flow already gates on that role server-side. */}

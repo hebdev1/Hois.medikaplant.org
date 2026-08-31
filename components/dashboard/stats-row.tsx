@@ -41,7 +41,7 @@ export default function StatsRow({
       >
         <div className="flex items-end gap-1">
           <span className="font-display text-4xl font-bold text-ink leading-none">
-            {bloodSugar.value !== null ? Math.round(bloodSugar.value) : '—'}
+            {bloodSugar.value !== null ? Math.round(bloodSugar.value) : '-'}
           </span>
           <span className="text-xs text-earth-600 mb-1">mg/dL</span>
         </div>
@@ -68,7 +68,7 @@ export default function StatsRow({
       >
         <div className="flex items-end gap-1">
           <span className="font-display text-4xl font-bold text-ink leading-none">
-            {weight.value !== null ? weight.value.toFixed(1) : '—'}
+            {weight.value !== null ? weight.value.toFixed(1) : '-'}
           </span>
           <span className="text-xs text-earth-600 mb-1">kg</span>
         </div>

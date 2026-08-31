@@ -643,7 +643,7 @@ function QuizQuestionView({
           {result.correct
             ? '✓ Kòrèk!'
             : `✗ Bon repons: ${result.answerText ?? ''}`}
-          {result.feedback ? ` — ${result.feedback}` : ''}
+          {result.feedback ? `, ${result.feedback}` : ''}
         </p>
       )}
     </div>

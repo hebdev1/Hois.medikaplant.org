@@ -170,7 +170,7 @@ export default function CourseForm({ mode, initial, categories }: Props) {
           </Field>
           <Field
             label="Kontni konplè"
-            help="Itilize zouti yo pou fòmate kontni a — tankou nan Word."
+            help="Itilize zouti yo pou fòmate kontni a, tankou nan Word."
           >
             <RichTextEditor
               value={v.body_html}
@@ -182,7 +182,7 @@ export default function CourseForm({ mode, initial, categories }: Props) {
             <input type="hidden" name="body_html" value={v.body_html} />
           </Field>
           <Field
-            label="Apèsi — Entwodiksyon"
+            label="Apèsi, Entwodiksyon"
             help="Sèlman pou kou entèraktif. Parèt sou tab «Apèsi» a."
           >
             <textarea
@@ -196,7 +196,7 @@ export default function CourseForm({ mode, initial, categories }: Props) {
               placeholder="Yon fraz oswa de ki entwodui kou a."
             />
           </Field>
-          <Field label="Apèsi — Objektif yo (yon pa liy)">
+          <Field label="Apèsi, Objektif yo (yon pa liy)">
             <textarea
               name="overview_objectives"
               defaultValue={(
@@ -208,7 +208,7 @@ export default function CourseForm({ mode, initial, categories }: Props) {
               placeholder={'Sa elèv la ap kapab fè #1\nSa elèv la ap kapab fè #2'}
             />
           </Field>
-          <Field label="Apèsi — Avètisman (opsyonèl)">
+          <Field label="Apèsi, Avètisman (opsyonèl)">
             <input
               name="overview_disclaimer"
               defaultValue={
@@ -238,7 +238,7 @@ export default function CourseForm({ mode, initial, categories }: Props) {
         <Section title="Fòma livrezon">
           <Field
             label="Fòma"
-            help="Videyo/Zoom = kou klasik. Kou enteraktif = leson + quiz ak ba pwogrè (kou dinamik) — l ap parèt kòm kou enteraktif nan tablodebò elèv la."
+            help="Videyo/Zoom = kou klasik. Kou enteraktif = leson + quiz ak ba pwogrè (kou dinamik), l ap parèt kòm kou enteraktif nan tablodebò elèv la."
           >
             <Segment
               name="format"
@@ -354,7 +354,7 @@ export default function CourseForm({ mode, initial, categories }: Props) {
               onChange={(e) => set('category_id', e.target.value)}
               className={inputClass}
             >
-              <option value="">— Pa gen kategori —</option>
+              <option value="">- Pa gen kategori -</option>
               {categories.map((c) => (
                 <option key={c.id} value={c.id}>
                   {c.title}

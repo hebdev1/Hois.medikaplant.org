@@ -46,7 +46,7 @@ const MONTHS_HT = [
   'Jiyè', 'Out', 'Septanm', 'Oktòb', 'Novanm', 'Desanm',
 ];
 function formatDateTime(iso: string | null): string {
-  if (!iso) return '—';
+  if (!iso) return '-';
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return iso;
   const hh = d.getHours().toString().padStart(2, '0');
@@ -191,7 +191,7 @@ export default async function ContactDetailPage({
             </section>
           )}
 
-          {/* Reply form (always available — admin may want to re-respond) */}
+          {/* Reply form (always available, admin may want to re-respond) */}
           <ContactReplyForm
             id={row.id}
             toName={row.full_name}

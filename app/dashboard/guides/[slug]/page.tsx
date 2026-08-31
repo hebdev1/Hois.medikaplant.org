@@ -237,7 +237,7 @@ export default async function GuideDetailPage({
           />
         </div>
 
-        {/* Body — prefer rich HTML from the Tiptap editor; fall back to
+        {/* Body, prefer rich HTML from the Tiptap editor; fall back to
             the legacy markdown parser for guides that were written
             before the editor upgrade. */}
         <div className="prose-medikaplant">

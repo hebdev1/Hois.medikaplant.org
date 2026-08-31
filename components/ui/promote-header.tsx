@@ -188,7 +188,7 @@ export default function PromoteHeader() {
         Ale dirèkteman nan kontni
       </a>
 
-      {/* Announcement bar — drives traffic to pricing */}
+      {/* Announcement bar, drives traffic to pricing */}
       <div className="w-full border-b border-cream-200 bg-gradient-to-r from-brand-50/60 to-white">
         <div className="mx-auto flex max-w-7xl items-center justify-center gap-3 px-4 py-1.5 text-xs sm:text-sm">
           <span className="inline-flex items-center gap-1 rounded-full border border-brand-200 bg-white px-2 py-0.5 font-bold text-brand-700">
@@ -279,7 +279,7 @@ export default function PromoteHeader() {
               <Link
                 href="/"
                 className="inline-flex items-center gap-2"
-                aria-label="MedikaPlant — Akèy"
+                aria-label="MedikaPlant, Akèy"
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
@@ -520,7 +520,7 @@ export default function PromoteHeader() {
             </div>
           </div>
 
-          {/* Student portal — full-width so course buyers spot their door first */}
+          {/* Student portal, full-width so course buyers spot their door first */}
           {showPortal && (
             <Link
               href="/aprann"
@@ -532,7 +532,7 @@ export default function PromoteHeader() {
             </Link>
           )}
 
-          {/* Actions — right-aligned so "Vin manm" sits at the drawer's right
+          {/* Actions, right-aligned so "Vin manm" sits at the drawer's right
               edge instead of being stretched across half the width. */}
           <div className="mt-4 flex items-center justify-end gap-2">
             {loggedIn ? (

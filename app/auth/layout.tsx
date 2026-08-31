@@ -22,7 +22,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           <blockquote className="text-2xl font-medium leading-snug max-w-md">
             &ldquo;Lasante kò ak nanm soti nan lanati. MedikaPlant la pou akonpaye chak pa nan vwayaj ou.&rdquo;
           </blockquote>
-          <p className="mt-4 text-white/80 text-sm">— Vye Ewòl, Hoïs Inivèsite</p>
+          <p className="mt-4 text-white/80 text-sm">- Vye Ewòl, Hoïs Inivèsite</p>
         </div>
       </section>
       <section className="flex flex-col justify-center px-6 sm:px-12 py-12">

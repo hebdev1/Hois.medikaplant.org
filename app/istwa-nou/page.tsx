@@ -62,7 +62,7 @@ const TIMELINE = [
     year: '2026',
     title: 'Platfòm dijital konplè',
     body:
-      'Lansman aplikasyon Hoïs SaaS — swivi sante, gid, fowòm, ak yon Ton vye an pèsòn.',
+      'Lansman aplikasyon Hoïs SaaS, swivi sante, gid, fowòm, ak yon Ton vye an pèsòn.',
   },
 ];
 
@@ -195,7 +195,7 @@ export default function IstwaNouPage() {
                 geri, ak yon Ton vye ki konnen sa li ap fè.
               </p>
               <p className="mt-4 text-ink-muted text-base leading-relaxed">
-                Nou kwè medsin tradisyonèl la pa kont lasyans modèn — yo de
+                Nou kwè medsin tradisyonèl la pa kont lasyans modèn, yo de
                 vwa ki menm chemen. Hoïs Inivèsite ap fè yo travay ansanm.
               </p>
             </div>
@@ -284,7 +284,7 @@ export default function IstwaNouPage() {
         </div>
       </section>
 
-      {/* ── VALÈ YO — features-4 shadcn block adapte pou Hoïs ──────────── */}
+      {/* ── VALÈ YO, features-4 shadcn block adapte pou Hoïs ──────────── */}
       <Features />
 
       {/* ── IMPAK ─────────────────────────────────────────────────────────── */}
@@ -331,7 +331,7 @@ export default function IstwaNouPage() {
                             Vin pati de istwa a
             </span>
             <h2 className="font-display text-3xl md:text-5xl font-bold tracking-tight text-ink leading-tight max-w-3xl mx-auto">
-              Pa rete sou bò wout la — kòmanse vwayaj byennèt ou jodi a
+              Pa rete sou bò wout la, kòmanse vwayaj byennèt ou jodi a
             </h2>
             <p className="mt-5 max-w-2xl mx-auto text-ink-muted text-base md:text-lg leading-relaxed">
               Yon pakèt manm ap deja sèvi ak plan Hoïs Inivèsite a. Chwazi pou

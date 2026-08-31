@@ -57,14 +57,14 @@ const MOIS = [
 ];
 
 function formatDate(iso: string | null | undefined): string {
-  if (!iso) return '—';
+  if (!iso) return '-';
   const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return '—';
+  if (Number.isNaN(d.getTime())) return '-';
   return `${d.getDate()} ${MOIS[d.getMonth()]} ${d.getFullYear()}`;
 }
 
 function formatCurrency(amount: number | null | undefined): string {
-  if (amount == null) return '—';
+  if (amount == null) return '-';
   // Show cents so the amount matches Stripe exactly (e.g. $121.50, not $122).
   return `$${amount.toFixed(2)}`;
 }
@@ -182,7 +182,7 @@ export default async function AdminSubscriptionsPage({
           Abònman <em className="text-forest-600 not-italic font-bold">manm yo</em>
         </h1>
         <p className="mt-2 text-sm text-earth-600 max-w-2xl">
-          Tout abònman yo nan baz done a — kreye nan paj checkout la oswa
+          Tout abònman yo nan baz done a, kreye nan paj checkout la oswa
           chanje manyèlman pa admin. Klike sou yon liy pou wè detay manm yo,
           oswa sèvi ak meni aksyon yo pou anile / ekstanjyone / make refonde.
         </p>
@@ -377,7 +377,7 @@ export default async function AdminSubscriptionsPage({
                               {name}
                             </div>
                             <div className="text-[11px] text-earth-500 truncate">
-                              {profile?.email ?? '—'}
+                              {profile?.email ?? '-'}
                             </div>
                           </div>
                         </Link>
@@ -413,7 +413,7 @@ export default async function AdminSubscriptionsPage({
                       </td>
                       <td className="px-3 py-3">
                         <code className="text-[10px] text-earth-500 font-mono truncate inline-block max-w-[120px]">
-                          {sub.payment_reference ?? '—'}
+                          {sub.payment_reference ?? '-'}
                         </code>
                       </td>
                       <td className="px-5 py-3 text-right">

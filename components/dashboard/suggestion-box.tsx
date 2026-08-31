@@ -54,7 +54,7 @@ const CATEGORY_META: Record<
   content: {
     label: 'Kontni',
     icon: FileText,
-    hint: 'Konsèy, gid, klas — sa w ta renmen wè.',
+    hint: 'Konsèy, gid, klas, sa w ta renmen wè.',
   },
   performance: {
     label: 'Vitès',
@@ -140,7 +140,7 @@ export default function SuggestionBox() {
 
   return (
     <>
-      {/* Floating trigger — third slot in the bottom-right stack:
+      {/* Floating trigger, third slot in the bottom-right stack:
           TranslateSwitcher (bottom-4/6) → RemedFinder (bottom-16/20) →
           Sijesyon (bottom-28/32). Gold to match the brand accent.
           translate="no" so Google can't touch the label. */}

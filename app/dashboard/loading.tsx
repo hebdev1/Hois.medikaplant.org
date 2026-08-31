@@ -12,7 +12,7 @@
 export default function DashboardLoading() {
   return (
     <>
-      {/* Topbar skeleton — matches the real one's height/padding */}
+      {/* Topbar skeleton, matches the real one's height/padding */}
       <header className="sticky top-0 z-30 flex items-center gap-3 sm:gap-4 px-4 sm:px-6 md:px-8 lg:px-10 py-3 sm:py-4 bg-cream-50/85 backdrop-blur-md border-b border-cream-200">
         <div className="lg:hidden w-10 h-10 rounded-full bg-cream-100 animate-pulse" />
         <div className="hidden md:block flex-1 max-w-2xl">

@@ -65,7 +65,7 @@ export default function CourseCheckoutForm({
 
   return (
     <form action={formAction} translate="no" className="notranslate space-y-5">
-      {/* Account section — hidden when already signed in */}
+      {/* Account section, hidden when already signed in */}
       {!isAuthenticated && (
         <section className="bg-white border border-cream-200 rounded-2xl p-5 md:p-6 shadow-card space-y-4">
           <header className="flex items-center justify-between gap-3 flex-wrap">
@@ -105,7 +105,7 @@ export default function CourseCheckoutForm({
 
           {mode === 'signup' && (
             <p className="text-xs text-earth-600 leading-relaxed">
-              Kreye kont ou pou achte a — se menm imèl ak modpas sa a w ap
+              Kreye kont ou pou achte a, se menm imèl ak modpas sa a w ap
               itilize pou konekte nan{' '}
               <strong className="text-ink">Potay Etidyan</strong> an apre.
             </p>
@@ -175,7 +175,7 @@ export default function CourseCheckoutForm({
         </section>
       )}
 
-      {/* Payment section — only for paid courses. A free course skips it
+      {/* Payment section, only for paid courses. A free course skips it
           entirely: the account step above is all that's needed. */}
       {isFree ? (
         <section className="bg-forest-50 border border-forest-200 rounded-2xl p-5 md:p-6 space-y-2">
@@ -189,7 +189,7 @@ export default function CourseCheckoutForm({
             </h2>
           </header>
           <p className="text-sm text-forest-800/90 leading-relaxed">
-            Klas sa a gratis. Pa gen anyen pou peye — lè w klike bouton an, w ap
+            Klas sa a gratis. Pa gen anyen pou peye, lè w klike bouton an, w ap
             enskri epi n ap mennen w nan Espas Elèv la pou w kòmanse.
           </p>
         </section>
@@ -202,7 +202,7 @@ export default function CourseCheckoutForm({
             </h2>
           </header>
 
-          {/* No card fields on purpose — the member enters their card on
+          {/* No card fields on purpose, the member enters their card on
               Stripe's own page, so it never reaches our servers. */}
           <p className="text-sm text-earth-600 leading-relaxed">
             Lè w klike bouton an, n ap voye w sou paj sekirize{' '}

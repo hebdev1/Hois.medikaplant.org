@@ -56,7 +56,7 @@ export default function Hero({
           aria-hidden
         />
 
-        {/* LEFT — greeting */}
+        {/* LEFT, greeting */}
         <div className="relative flex flex-col">
           <div className="text-xs uppercase tracking-[0.2em] text-cream-200/80 mb-3 flex items-center gap-2 flex-wrap">
             <span>{todayLabel}</span>
@@ -77,7 +77,7 @@ export default function Hero({
             Ou nan jou{' '}
             <strong className="text-gold-300">{dayOfPlan}</strong> sou {totalDays} nan plan{' '}
             <em className="font-serif text-cream-50">
-              {planName} — {planVariant}
+              {planName}, {planVariant}
             </em>
             . Jodi a {doneToday} sou {totalToday} aktivite fini.
           </p>
@@ -118,7 +118,7 @@ export default function Hero({
           </Link>
         </div>
 
-        {/* RIGHT — progress plant */}
+        {/* RIGHT, progress plant */}
         <div className="relative min-h-[340px]">
           <ProgressPlant
             day={dayOfPlan}

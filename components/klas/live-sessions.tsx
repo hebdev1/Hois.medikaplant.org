@@ -118,7 +118,7 @@ export default function LiveSessions({
               </div>
 
               <p className="mt-2 text-[11px] text-cream-200/60">
-                Lyen pèsonèl ou — pa pataje l ak lòt moun.
+                Lyen pèsonèl ou, pa pataje l ak lòt moun.
               </p>
             </li>
           );

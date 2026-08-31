@@ -222,7 +222,7 @@ export default async function PatientsView({
         />
       </section>
 
-      {/* Filter form — posts back with tab=patients so we stay on this tab */}
+      {/* Filter form, posts back with tab=patients so we stay on this tab */}
       <form className="mb-5 flex flex-wrap items-center gap-2" action="/admin/health">
         <input type="hidden" name="tab" value="patients" />
         <label className="relative flex-1 max-w-md">
@@ -330,7 +330,7 @@ export default async function PatientsView({
                         )}
                         {r.conditions.length === 0 && (
                           <span className="text-[11px] text-earth-400 italic">
-                            —
+                            -
                           </span>
                         )}
                       </div>
@@ -381,7 +381,7 @@ export default async function PatientsView({
                         </span>
                       ) : (
                         <span className="text-[11px] text-earth-400 italic">
-                          —
+                          -
                         </span>
                       )}
                     </td>

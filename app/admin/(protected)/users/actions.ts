@@ -789,7 +789,7 @@ export async function createMemberAccount(input: {
       });
       await sendEmail({
         to: email,
-        subject: 'Byenveni — chwazi modpas ou pou konekte',
+        subject: 'Byenveni, chwazi modpas ou pou konekte',
         html,
       });
       emailSent = true;

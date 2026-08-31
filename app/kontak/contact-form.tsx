@@ -221,7 +221,7 @@ export default function ContactForm() {
         />
       </Field>
 
-      {/* Honeypot — visually hidden, real bots auto-fill */}
+      {/* Honeypot, visually hidden, real bots auto-fill */}
       <div aria-hidden className="hidden">
         <label>
           Konpayi

@@ -182,7 +182,7 @@ export default function DangerZone({
         </h2>
         <p className="text-sm text-earth-600 mt-1">
           Yon klike sou yon segman pou aplike chanjman an. Tout fas yo pwoteje
-          ak validasyon — w pap ka anile pwòp wòl admin ou.
+          ak validasyon, w pap ka anile pwòp wòl admin ou.
         </p>
       </header>
 
@@ -206,7 +206,7 @@ export default function DangerZone({
         />
       </Row>
 
-      {/* Role — gated behind super_admin */}
+      {/* Role, gated behind super_admin */}
       <Row
         label={
           <span className="inline-flex items-center gap-1.5">
@@ -241,7 +241,7 @@ export default function DangerZone({
         />
       </Row>
 
-      {/* Admin sub-role picker — only when target is admin AND viewer is super_admin */}
+      {/* Admin sub-role picker, only when target is admin AND viewer is super_admin */}
       {showAdminRolePicker && (
         <div className="rounded-xl bg-cream-50/70 border border-cream-200 p-4 space-y-3">
           <div className="flex items-start gap-2.5">
@@ -305,7 +305,7 @@ export default function DangerZone({
         </div>
       )}
 
-      {/* Support persona — visible to all admins; editable for self or super_admin */}
+      {/* Support persona, visible to all admins; editable for self or super_admin */}
       {role === 'admin' && (
         <div className="rounded-xl bg-cream-50/70 border border-cream-200 p-4 space-y-3">
           <div className="flex items-start gap-2.5">

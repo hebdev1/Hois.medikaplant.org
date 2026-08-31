@@ -66,7 +66,7 @@ export default async function ResetDozPage() {
             Dòz ak fòmil natirèl
           </h1>
           <p className="mt-2 text-sm text-earth-600 max-w-2xl">
-            Resèt fèy tradisyonèl yo — klike sou youn pou li tout dòz la.
+            Resèt fèy tradisyonèl yo, klike sou youn pou li tout dòz la.
           </p>
         </header>
 
@@ -103,7 +103,7 @@ export default async function ResetDozPage() {
         )}
 
         <p className="text-[10px] leading-snug text-earth-500">
-          Sijesyon edikatif sèlman — pa yon dyagnostik. Konsilte yon
+          Sijesyon edikatif sèlman, pa yon dyagnostik. Konsilte yon
           pwofesyonèl sante anvan ou itilize remèd fèy.
         </p>
       </div>

@@ -84,7 +84,7 @@ export default function GlobalError({
             Yon erè rive
           </h1>
           <p style={{ margin: '0 0 20px', fontSize: 14, color: '#5c3d2e' }}>
-            Paj la pa ka chaje. Eseye reload — souvan sa rezoud pwoblèm nan
+            Paj la pa ka chaje. Eseye reload, souvan sa rezoud pwoblèm nan
             imedyatman (yon nouvo deplwa ka fè navigatè w bezwen refèchi).
           </p>
           <details

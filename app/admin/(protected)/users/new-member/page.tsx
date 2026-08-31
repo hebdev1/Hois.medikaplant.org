@@ -48,7 +48,7 @@ export default async function NewMemberPage() {
         <p className="mt-2 text-sm text-earth-600 max-w-2xl">
           Kreye yon kont pou yon manm san peman, bay li yon plan pou kantite ane
           ou vle, epi voye yon imèl otomatik pou li chwazi modpas li epi konekte
-          — menm jan ak yon manm ki peye nòmalman.
+         , menm jan ak yon manm ki peye nòmalman.
         </p>
       </header>
 

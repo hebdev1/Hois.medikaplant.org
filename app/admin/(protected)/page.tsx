@@ -187,12 +187,12 @@ export default async function AdminOverview() {
 
       {/* Device push: each admin enables it once, then receives an alert on
           their phone/computer for new support messages, purchases, and signups
-          — even when the panel is closed. */}
+         , even when the panel is closed. */}
       <div className="mb-7 max-w-2xl">
         <EnablePush />
       </div>
 
-      {/* ── KPI strip — 4 critical numbers ───────────────────────────── */}
+      {/* ── KPI strip, 4 critical numbers ───────────────────────────── */}
       <section className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-7">
         <KpiCard
           icon={<Users className="w-4 h-4" strokeWidth={2.4} />}
@@ -464,7 +464,7 @@ export default async function AdminOverview() {
         <MiniStat
           icon={<Lightbulb className="w-4 h-4" strokeWidth={2.4} />}
           label="Konsèy jou a"
-          value={adviceToday.data ? '✓' : '—'}
+          value={adviceToday.data ? '✓' : '-'}
           sub={
             adviceUpcoming.count
               ? `+${adviceUpcoming.count} pwograme`

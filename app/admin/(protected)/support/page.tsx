@@ -107,7 +107,7 @@ export default async function AdminSupportPage() {
     const last = lastMessageByThread.get(t.id);
     return {
       ...t,
-      user_email: profile?.email ?? '—',
+      user_email: profile?.email ?? '-',
       user_full_name: profile?.full_name ?? null,
       last_message_body: last?.body ?? null,
       last_message_role: last?.sender_role ?? null,

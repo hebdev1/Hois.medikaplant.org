@@ -60,7 +60,7 @@ export default function RemedFinder() {
             aria-hidden
           />
         )}
-        {/* Assistant avatar — dark-green doctor icon on a pale-green bubble */}
+        {/* Assistant avatar, dark-green doctor icon on a pale-green bubble */}
         <span className="relative grid place-items-center w-8 h-8 rounded-full bg-forest-100 text-forest-700 border border-forest-200 shadow-inner">
           <Stethoscope className="w-4 h-4" strokeWidth={2.2} aria-hidden />
           {/* live presence dot */}

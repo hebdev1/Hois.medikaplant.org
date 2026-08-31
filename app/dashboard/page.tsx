@@ -435,7 +435,7 @@ export default async function DashboardHome({
   const adviceBody =
     advice?.body_html ??
     'Jodi a, evite <em>sik rafine a</em>. Bwè plis dlo, e prepare yon tas tizan <em>mounn-bwa</em> apre manje midi pou ekilibre glikemi an.';
-  const advicePlant = advice?.plant_name ?? 'Mounn-bwa — Cnidoscolus chayamansa';
+  const advicePlant = advice?.plant_name ?? 'Mounn-bwa, Cnidoscolus chayamansa';
 
   // ---- Identity ----
   // Note: the legacy `products` table fetch above (productResult) is kept
@@ -547,7 +547,7 @@ export default async function DashboardHome({
         userPlan={profile?.plan ?? 'basic'}
         avatarUrl={profile?.avatar_url ?? null}
       />
-      {/* Single-column grid with minmax(0,1fr) — without the 0 lower
+      {/* Single-column grid with minmax(0,1fr), without the 0 lower
           bound, a grid item's intrinsic min-size defaults to auto, which
           lets a child like the shop slider's horizontal flex strip
           balloon the column wider than the viewport. */}
@@ -576,7 +576,7 @@ export default async function DashboardHome({
           ) : null
         )}
       </div>
-      {/* Welcome tour — auto-launches on first ever dashboard visit OR
+      {/* Welcome tour, auto-launches on first ever dashboard visit OR
           when the member clicked "Refè tour la" in settings (?tour=1).
           Otherwise it's a no-op zero-DOM client component. */}
       <UserTour

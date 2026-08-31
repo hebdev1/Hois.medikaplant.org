@@ -310,7 +310,7 @@ export default function KonfidansyalitePage() {
 
               <Block id="cookies" icon={Cookie} title="7. Cookies ak swivi">
                 <p>
-                  Nou itilize kèk cookies esansyèl pou platfòm la fonksyone —
+                  Nou itilize kèk cookies esansyèl pou platfòm la fonksyone -
                   pou kenbe sesyon ou konekte, sonje preferans afichaj, ak
                   pwoteje kont ou.
                 </p>
@@ -320,11 +320,11 @@ export default function KonfidansyalitePage() {
                 </p>
                 <ul>
                   <li>
-                    <strong>sb-…-auth-token</strong> — sesyon Supabase
+                    <strong>sb-…-auth-token</strong>, sesyon Supabase
                     (esansyèl)
                   </li>
                   <li>
-                    <strong>theme</strong> — preferans afichaj (klè/fonse)
+                    <strong>theme</strong>, preferans afichaj (klè/fonse)
                   </li>
                 </ul>
               </Block>
@@ -381,7 +381,7 @@ export default function KonfidansyalitePage() {
                     <Link href="/kontak" className="text-brand-700 hover:underline">
                       hoismedikaplant.com/kontak
                     </Link>{' '}
-                    — chwazi sijè "Sipò manm"
+                   , chwazi sijè "Sipò manm"
                   </li>
                   <li>
                     <strong>Adrès postal:</strong>1823 S. DIXIE HIGHWAY POMPANO BEACH, FL 33060

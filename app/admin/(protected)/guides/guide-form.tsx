@@ -173,7 +173,7 @@ export default function GuideForm({
 
   return (
     <form action={formAction} className="grid lg:grid-cols-[1fr_320px] gap-6">
-      {/* LEFT — content */}
+      {/* LEFT, content */}
       <div className="space-y-5">
         <Section title="Kontni">
           <Field label="Tit" required>
@@ -226,7 +226,7 @@ export default function GuideForm({
               minHeight={420}
               uploadImage={uploadGuideImage}
             />
-            {/* The form posts body_html via this hidden mirror — Tiptap
+            {/* The form posts body_html via this hidden mirror, Tiptap
                 lives outside the form's native field surface. */}
             <input type="hidden" name="body_html" value={values.body_html} />
           </Field>
@@ -267,7 +267,7 @@ export default function GuideForm({
         </Section>
       </div>
 
-      {/* RIGHT — settings sidebar */}
+      {/* RIGHT, settings sidebar */}
       <aside className="space-y-5">
         <Section title="Piblikasyon">
           <Toggle
@@ -282,7 +282,7 @@ export default function GuideForm({
           <Toggle
             name="featured"
             label="Vedèt"
-            description="Yon sèl atik vedèt nan menm tan — parèt nan ewo a."
+            description="Yon sèl atik vedèt nan menm tan, parèt nan ewo a."
             checked={values.featured}
             onChange={(v) => set('featured', v)}
             tone="gold"
@@ -297,7 +297,7 @@ export default function GuideForm({
               onChange={(e) => set('category_id', e.target.value)}
               className={inputClass}
             >
-              <option value="">— Pa gen kategori —</option>
+              <option value="">- Pa gen kategori -</option>
               {categories.map((c) => (
                 <option key={c.id} value={c.id}>
                   {c.label}

@@ -107,7 +107,7 @@ const STEPS: DriveStep[] = [
     popover: {
       title: '🔔 Notifikasyon',
       description:
-        'Tout alèt yo — tretman, fowòm, repons sipò, badj. Klike pou wè detay yo.',
+        'Tout alèt yo, tretman, fowòm, repons sipò, badj. Klike pou wè detay yo.',
       side: 'bottom',
       align: 'end',
     },

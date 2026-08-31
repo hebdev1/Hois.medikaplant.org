@@ -161,7 +161,7 @@ export default function GuidesTable({ guides }: { guides: GuideLite[] }) {
               <Trash2 className="w-4 h-4" strokeWidth={2.4} />
             )}
             {confirm
-              ? `Konfime — efase ${selected.size} atik`
+              ? `Konfime, efase ${selected.size} atik`
               : 'Efase seleksyon an'}
           </button>
         </div>
@@ -252,7 +252,7 @@ export default function GuidesTable({ guides }: { guides: GuideLite[] }) {
                     </td>
                     <td className="px-3 py-3 text-xs text-earth-700">
                       {g.category_label ?? (
-                        <span className="text-earth-400">—</span>
+                        <span className="text-earth-400">-</span>
                       )}
                     </td>
                     <td className="px-3 py-3">

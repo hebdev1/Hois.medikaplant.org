@@ -71,14 +71,14 @@ export default function BrandLogo({
         strokeWidth="1"
       />
 
-      {/* Leaf blade — oriented diagonally like a willow/olive leaf,
+      {/* Leaf blade, oriented diagonally like a willow/olive leaf,
           two smooth curves meeting at top-right and bottom-left. */}
       <path
         d="M12 27 Q 11 12 27 12 Q 30 14 30 19 Q 30 30 15 30 Q 12 30 12 27 Z"
         fill="url(#mp-leaf)"
       />
 
-      {/* Central vein (midrib) — a soft dark line through the leaf */}
+      {/* Central vein (midrib), a soft dark line through the leaf */}
       <path
         d="M13 28 Q 20 20 28 13"
         stroke="#33450e"
@@ -106,7 +106,7 @@ export default function BrandLogo({
         opacity="0.35"
       />
 
-      {/* Gold accent dot — the "Hoïs" mark. Sits off the leaf tip
+      {/* Gold accent dot, the "Hoïs" mark. Sits off the leaf tip
           like a small berry / drop of gold sun. */}
       <circle cx="30.5" cy="9.5" r="2.4" fill="#e78e17" />
       <circle cx="30.5" cy="9.5" r="2.4" fill="none" stroke="rgba(255,255,255,0.35)" strokeWidth="0.6" />
