@@ -1,6 +1,8 @@
 import { Poppins } from 'next/font/google';
 import { createClient } from '@/lib/supabase/server';
 import GlossaryReader, { type GlossTerm } from '@/components/glose/glossary-reader';
+import PromoteHeader from '@/components/ui/promote-header';
+import Footer from '@/components/ui/footer';
 import './glose.css';
 
 // Poppins, per the brief — scoped to this page via the --font-poppins variable
@@ -49,8 +51,12 @@ export default async function GlosePage() {
   );
 
   return (
-    <main className={poppins.variable}>
-      <GlossaryReader terms={terms} />
-    </main>
+    <>
+      <PromoteHeader />
+      <main className={poppins.variable}>
+        <GlossaryReader terms={terms} />
+      </main>
+      <Footer />
+    </>
   );
 }

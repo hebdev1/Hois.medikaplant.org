@@ -71,8 +71,8 @@ export default function Footer() {
           </div>
 
           {/* Columns */}
-          {COLUMNS.map((col) => (
-            <div key={col.title}>
+          {COLUMNS.map((col, i) => (
+            <div key={`${col.title}-${i}`}>
               <h4 className="text-white font-semibold mb-4 text-sm tracking-wide uppercase">
                 {col.title}
               </h4>
