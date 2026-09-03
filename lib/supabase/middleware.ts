@@ -3,6 +3,23 @@ import { NextResponse, type NextRequest } from 'next/server';
 import type { Database } from '@/types/database';
 
 export async function updateSession(request: NextRequest) {
+  // Next.js runs middleware on PREFETCH requests too — every time a visitor
+  // hovers a <Link> (the admin sidebar and dashboard nav are full of them),
+  // the router quietly prefetches the target, which otherwise re-runs the
+  // getUser() auth round-trip + the suspended/role/subscription DB batch
+  // below. On a single Hostinger Node process those redundant Supabase
+  // round-trips pile up and slow the real navigations. A prefetch never needs
+  // the gate: the actual navigation re-runs this middleware, and every gated
+  // page also guards itself server-side (redirect on no session). So we let
+  // prefetches pass straight through untouched.
+  const isPrefetch =
+    request.headers.get('next-router-prefetch') === '1' ||
+    request.headers.get('purpose') === 'prefetch' ||
+    request.headers.get('x-purpose') === 'prefetch';
+  if (isPrefetch) {
+    return NextResponse.next({ request: { headers: request.headers } });
+  }
+
   let response = NextResponse.next({ request: { headers: request.headers } });
 
   const supabase = createServerClient<Database>(
