@@ -12,9 +12,14 @@ import { getSiteImages, imageKeys } from '@/lib/site-images';
 // Homepage content (site images, marketing copy) changes rarely and is the
 // same for everyone, so serve it from a static ISR cache instead of rendering
 // it on every visit. This is what takes TTFB from ~1.4s down to tens of ms.
-// The cache refreshes at most every 10 minutes, or instantly when an admin
-// saves a new image (revalidatePath('/') in the image action).
-export const revalidate = 600;
+//
+// The image action calls revalidatePath('/') to refresh instantly on save, but
+// on-demand revalidation is unreliable on Hostinger's `next start` (the cache
+// isn't reliably purged), so an admin's new /admin/imaj image could sit unseen
+// behind the cache for the full window. Keeping the window short (60s, was
+// 600s) bounds that to ~1 minute while the page stays cache-served for ~59s of
+// every 60 — so image swaps show up promptly without giving up the speed.
+export const revalidate = 60;
 
 export default async function HomePage() {
   // Admin-managed graphics (/admin/imaj). Unset slots fall back to the
