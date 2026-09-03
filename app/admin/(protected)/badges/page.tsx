@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { Award, Edit3, CheckCircle2, XCircle } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
+import { getCurrentUser } from '@/lib/supabase/auth';
 import BadgeArt from '@/components/dashboard/badge-art';
 import BadgeActiveToggle from './badge-active-toggle';
 import { asBadgeIcon, METRIC_LABEL, METRIC_UNIT } from '@/lib/badges/metric-helpers';
@@ -16,9 +17,7 @@ type BadgeRow = Database['public']['Tables']['badges']['Row'];
 export default async function AdminBadgesPage() {
   const supabase = createClient();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) redirect('/admin/login');
 
   const { data: profileRaw } = await supabase

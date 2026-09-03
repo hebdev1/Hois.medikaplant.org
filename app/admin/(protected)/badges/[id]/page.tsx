@@ -2,6 +2,7 @@ import { notFound, redirect } from 'next/navigation';
 import Link from 'next/link';
 import { ChevronLeft, Award } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
+import { getCurrentUser } from '@/lib/supabase/auth';
 import BadgeArt from '@/components/dashboard/badge-art';
 import BadgeEditForm from './badge-edit-form';
 import { asBadgeIcon, METRIC_LABEL, METRIC_UNIT } from '@/lib/badges/metric-helpers';
@@ -20,9 +21,7 @@ export default async function EditBadgePage({
 }) {
   const supabase = createClient();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) redirect('/admin/login');
 
   const { data: profileRaw } = await supabase

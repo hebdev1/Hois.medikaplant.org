@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
+import { getCurrentUser } from '@/lib/supabase/auth';
 import { createServiceClient } from '@/lib/supabase/service';
 import { hasCapability, type AdminRole } from '../admin-nav-config';
 import GloseAdmin, { type AdminTerm } from './glose-admin';
@@ -9,9 +10,7 @@ export const dynamic = 'force-dynamic';
 
 export default async function AdminGlosePage() {
   const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) redirect('/admin/login');
 
   const { data: prof } = await supabase

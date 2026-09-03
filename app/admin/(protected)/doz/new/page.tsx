@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
+import { getCurrentUser } from '@/lib/supabase/auth';
 import DozForm from '../doz-form';
 
 export const metadata = { title: 'Admin · Nouvo resèt' };
@@ -9,9 +10,7 @@ export const dynamic = 'force-dynamic';
 
 export default async function NewDozPage() {
   const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) redirect('/admin/login');
   const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).maybeSingle();
   if ((profile as { role?: string } | null)?.role !== 'admin') redirect('/admin');

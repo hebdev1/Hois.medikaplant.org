@@ -1,5 +1,6 @@
 import { Leaf, Shield, AlertCircle, Clock, Check } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
+import { getCurrentUser } from '@/lib/supabase/auth';
 import { ADMIN_ROLE_LABEL } from '../../(protected)/admin-nav-config';
 import AcceptInviteForm from './accept-invite-form';
 
@@ -35,9 +36,7 @@ export default async function AcceptInvitePage({
 
   // Is the visitor already authenticated? If yes, show the "accept"
   // action directly; if not, show the inline signup form.
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
 
   const inviteValid = invite?.is_valid ?? false;
 

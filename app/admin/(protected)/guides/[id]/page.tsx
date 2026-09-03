@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
 import { ArrowLeft, Edit3, ExternalLink, Eye, CheckCircle2 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
+import { getCurrentUser } from '@/lib/supabase/auth';
 import GuideForm from '../guide-form';
 import { updateGuide } from '../actions';
 import type { Database } from '@/types/database';
@@ -21,9 +22,7 @@ export default async function EditGuidePage({
   searchParams: { created?: string };
 }) {
   const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) redirect('/admin/login');
 
   const { data: profileRaw } = await supabase

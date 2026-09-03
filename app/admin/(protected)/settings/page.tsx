@@ -8,6 +8,7 @@ import {
   Mail,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
+import { getCurrentUser } from '@/lib/supabase/auth';
 import {
   ADMIN_ROLE_LABEL,
   ADMIN_ROLE_DESCRIPTION,
@@ -25,9 +26,7 @@ type PrefsRow = Database['public']['Tables']['user_preferences']['Row'];
 
 export default async function AdminSettingsPage() {
   const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) redirect('/admin/login');
 
   const [profileResult, prefsResult] = await Promise.all([

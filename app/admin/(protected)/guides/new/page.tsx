@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { ArrowLeft, PlusCircle } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
+import { getCurrentUser } from '@/lib/supabase/auth';
 import GuideForm from '../guide-form';
 import { createGuide } from '../actions';
 import type { Database } from '@/types/database';
@@ -14,9 +15,7 @@ type Category = Database['public']['Tables']['guide_categories']['Row'];
 
 export default async function NewGuidePage() {
   const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) redirect('/admin/login');
 
   const { data: profileRaw } = await supabase

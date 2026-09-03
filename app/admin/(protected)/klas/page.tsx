@@ -14,6 +14,7 @@ import {
   Users as UsersIcon,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
+import { getCurrentUser } from '@/lib/supabase/auth';
 import { hasCapability, type AdminRole } from '../admin-nav-config';
 import KlasTabBar from './tab-bar';
 import CategoryEditor from './category-editor';
@@ -105,9 +106,7 @@ export default async function AdminKlasPage({
   searchParams: SearchParams;
 }) {
   const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) redirect('/admin/login');
 
   const { data: profileRaw } = await supabase

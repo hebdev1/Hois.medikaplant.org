@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation';
 import { Calendar, Crown, Headphones, Clock } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
+import { getCurrentUser } from '@/lib/supabase/auth';
 import AdviceComposer from './advice-composer';
 import AdviceRowActions from './advice-row-actions';
 import { sanitizeGuideHtml } from '@/lib/sanitize-html';
@@ -41,9 +42,7 @@ function formatDuration(seconds: number | null) {
 
 export default async function AdminAdvicePage() {
   const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) redirect('/admin/login');
 
   const { data: profileRaw } = await supabase

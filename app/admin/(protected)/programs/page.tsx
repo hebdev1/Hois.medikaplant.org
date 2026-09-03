@@ -12,6 +12,7 @@ import {
   ExternalLink,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
+import { getCurrentUser } from '@/lib/supabase/auth';
 import { hasCapability, type AdminRole } from '../admin-nav-config';
 import { describeCondition } from '@/lib/conditions/catalog';
 import ProgramRowActions from './program-row-actions';
@@ -47,9 +48,7 @@ export default async function AdminProgramsPage({
   searchParams: { filter?: 'active' | 'inactive' | 'all' };
 }) {
   const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) redirect('/admin/login');
 
   const { data: profileRaw } = await supabase

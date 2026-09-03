@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation';
 import { ImageIcon } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
+import { getCurrentUser } from '@/lib/supabase/auth';
 import { SITE_IMAGE_SLOTS, type SiteImageSlot } from '@/lib/site-image-slots';
 import { getSiteImages } from '@/lib/site-images';
 import ImageSlotCard from './image-slot-card';
@@ -10,9 +11,7 @@ export const dynamic = 'force-dynamic';
 
 export default async function AdminImagesPage() {
   const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) redirect('/auth/login');
 
   const { data: profile } = await supabase

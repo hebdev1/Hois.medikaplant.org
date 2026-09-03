@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, UserPlus } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
+import { getCurrentUser } from '@/lib/supabase/auth';
 import { hasCapability, type AdminRole } from '../../admin-nav-config';
 import AddMemberForm from './add-member-form';
 
@@ -10,9 +11,7 @@ export const dynamic = 'force-dynamic';
 
 export default async function NewMemberPage() {
   const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) redirect('/admin/login');
 
   // Same gate as the members list: any admin who can manage users can add one.

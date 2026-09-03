@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, UserPlus } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
+import { getCurrentUser } from '@/lib/supabase/auth';
 import InviteAdminForm from './invite-admin-form';
 
 export const metadata = { title: 'Admin · Ajoute nouvo admin' };
@@ -9,9 +10,7 @@ export const dynamic = 'force-dynamic';
 
 export default async function NewAdminPage() {
   const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) redirect('/admin/login');
 
   // Super-admin gate: page-level so /admin/users/new is a hard 404 for

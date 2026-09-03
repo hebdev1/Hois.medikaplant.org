@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
 import { ChevronLeft, Layers, ExternalLink, Activity } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
+import { getCurrentUser } from '@/lib/supabase/auth';
 import { describeCondition } from '@/lib/conditions/catalog';
 import SegmentBroadcastForm from './broadcast-form';
 import SegmentTreatmentForm from './segment-treatment-form';
@@ -39,9 +40,7 @@ export default async function SegmentDetailPage({
   const info = describeCondition(slug);
   const supabase = createClient();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) redirect('/admin/login');
 
   const { data: profileRaw } = await supabase

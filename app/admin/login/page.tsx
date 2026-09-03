@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { Leaf, ShieldCheck, ArrowLeft } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
+import { getCurrentUser } from '@/lib/supabase/auth';
 import AdminLoginForm from './login-form';
 
 export const metadata = {
@@ -17,9 +18,7 @@ export default async function AdminLoginPage({
 }) {
   // If already authed AND already admin, jump straight in.
   const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (user) {
     const { data: profile } = await supabase
       .from('profiles')

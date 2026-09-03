@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
 import { ArrowLeft, ExternalLink, CheckCircle2 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
+import { getCurrentUser } from '@/lib/supabase/auth';
 import ResourceForm from '../resource-form';
 import type { Database } from '@/types/database';
 import { hasCapability, type AdminRole } from '../../admin-nav-config';
@@ -19,9 +20,7 @@ export default async function EditResourcePage({
   searchParams: { created?: string };
 }) {
   const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) redirect('/admin/login');
 
   const { data: profileRaw } = await supabase

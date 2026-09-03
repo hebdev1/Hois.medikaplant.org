@@ -1,5 +1,6 @@
 import { notFound, redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
+import { getCurrentUser } from '@/lib/supabase/auth';
 import { hasCapability, type AdminRole } from '../../admin-nav-config';
 import ProgramForm from '../program-form';
 import PhasesManager, { type PhaseRow } from '../phases-manager';
@@ -18,9 +19,7 @@ export default async function AdminEditProgramPage({
   searchParams: { created?: string };
 }) {
   const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) redirect('/admin/login');
 
   const { data: profileRaw } = await supabase

@@ -12,6 +12,7 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
+import { getCurrentUser } from '@/lib/supabase/auth';
 import { cn } from '@/lib/utils';
 import BroadcastComposer from './broadcast-composer';
 import DeleteNotificationButton from './delete-notification-button';
@@ -68,9 +69,7 @@ export default async function AdminNotificationsPage({
 }) {
   const supabase = createClient();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) redirect('/admin/login');
 
   const { data: profileRaw } = await supabase

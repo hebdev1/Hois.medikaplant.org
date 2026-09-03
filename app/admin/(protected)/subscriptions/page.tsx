@@ -10,6 +10,7 @@ import {
   Inbox,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
+import { getCurrentUser } from '@/lib/supabase/auth';
 import { cn } from '@/lib/utils';
 import SubscriptionActions from './subscription-actions';
 import type { Database } from '@/types/database';
@@ -76,9 +77,7 @@ export default async function AdminSubscriptionsPage({
 }) {
   const supabase = createClient();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) redirect('/admin/login');
 
   const { data: profileRaw } = await supabase

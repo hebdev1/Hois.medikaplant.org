@@ -20,6 +20,7 @@ import {
   Ruler,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
+import { getCurrentUser } from '@/lib/supabase/auth';
 import HealthLineChart from '@/components/dashboard/health-line-chart';
 import { cn } from '@/lib/utils';
 import PrescriptionForm from './prescription-form';
@@ -104,9 +105,7 @@ export default async function AdminPatientPage({
 }) {
   const supabase = createClient();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) redirect('/admin/login');
 
   const { data: profileRaw } = await supabase
