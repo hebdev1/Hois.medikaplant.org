@@ -48,7 +48,7 @@ fieldset.gc-fs{border:1px solid var(--liy);border-radius:12px;background:var(--p
 .gc-kalite span{font-size:13.5px;color:var(--gri)}
 
 /* Consent + checkbox rows */
-.gc-konsantman{background:#FAF3E7;border-left:3px solid var(--lo);border-radius:0 10px 10px 0;
+.gc-konsantman{background:#FAF3E7;border:1px solid #E6D3B0;border-radius:10px;
   padding:13px 15px;font-size:13.5px;color:var(--lo-deep);margin:14px 0}
 .gc-konsantman b{display:block;margin-bottom:4px}
 .gc-chk{display:flex;gap:10px;align-items:flex-start;font-weight:400;font-size:14px;margin:11px 0 0;cursor:pointer}
