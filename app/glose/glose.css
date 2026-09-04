@@ -30,6 +30,12 @@
 .gl-letter{font-weight:700;font-size:clamp(70px,12vw,140px);line-height:.82;
   color:var(--vet);letter-spacing:-.04em;position:relative;margin:0 2px -.06em -2px}
 .gl-title-b{flex:1 1 340px;min-width:260px}
+.gl-contribute{display:inline-flex;align-items:center;gap:8px;margin-top:14px;
+  font:600 14px/1 var(--font-poppins),'Poppins',system-ui,sans-serif;text-decoration:none;
+  color:#fff;background:var(--vet);padding:11px 18px;border-radius:99px;transition:background .15s,box-shadow .15s;
+  box-shadow:var(--shadow-sm)}
+.gl-contribute:hover{background:var(--vet-deep)}
+.gl-contribute svg{width:16px;height:16px;flex:none}
 .gl-h1{font-weight:700;color:var(--vet-deep);font-size:clamp(28px,4.2vw,44px);
   line-height:1.03;letter-spacing:-.03em;margin:0 0 10px;text-wrap:balance}
 .gl-edition{margin:0;color:var(--gri);font-size:15px;max-width:54ch}

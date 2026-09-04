@@ -15,6 +15,7 @@ import {
   X,
   ExternalLink,
   EyeOff,
+  Sprout,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { createGlossTerm, updateGlossTerm, deleteGlossTerm, type TermInput } from './actions';
@@ -60,7 +61,13 @@ function fromTerm(t: AdminTerm): FormState {
   };
 }
 
-export default function GloseAdmin({ initial }: { initial: AdminTerm[] }) {
+export default function GloseAdmin({
+  initial,
+  pendingContributions = 0,
+}: {
+  initial: AdminTerm[];
+  pendingContributions?: number;
+}) {
   const router = useRouter();
   const [query, setQuery] = React.useState('');
   const [editing, setEditing] = React.useState<null | 'new' | AdminTerm>(null);
@@ -149,6 +156,18 @@ export default function GloseAdmin({ initial }: { initial: AdminTerm[] }) {
           </p>
         </div>
         <div className="flex items-center gap-2">
+          <Link
+            href="/admin/glose/kontribisyon"
+            className="relative inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-earth-700 hover:text-forest-700 border border-cream-200 rounded-lg transition"
+          >
+            <Sprout className="w-3.5 h-3.5" strokeWidth={2.2} />
+            Kontribisyon
+            {pendingContributions > 0 && (
+              <span className="inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-rose-600 text-white text-[10px] font-bold">
+                {pendingContributions > 99 ? '99+' : pendingContributions}
+              </span>
+            )}
+          </Link>
           <Link
             href="/glose"
             target="_blank"

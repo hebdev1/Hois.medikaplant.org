@@ -14,6 +14,7 @@ import {
   MessagesSquare,
   HelpCircle,
   Inbox,
+  Sprout,
   Sparkles,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
@@ -72,6 +73,7 @@ function kindOf(title: string): {
   bg: string;
 } {
   const t = title.toLowerCase();
+  if (t.includes('kontribisyon')) return { Icon: Sprout, bg: 'bg-forest-500/10 text-forest-700' };
   if (t.includes('kontak')) return { Icon: Inbox, bg: 'bg-rose-500/10 text-rose-600' };
   if (t.includes('kesyon')) return { Icon: HelpCircle, bg: 'bg-indigo-500/10 text-indigo-600' };
   if (t.includes('sipò')) return { Icon: MessageCircle, bg: 'bg-violet-500/10 text-violet-600' };

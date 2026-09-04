@@ -202,6 +202,13 @@ export default function GlossaryReader({ terms }: { terms: GlossTerm[] }) {
                 Edisyon travay pou revizyon nan <em>Medikaplant</em>. Non kreyòl, non
                 syantifik, ak fanmi botanik, kontwole ak TRAMIL.
               </p>
+              <a className="gl-contribute" href="/glose/kontribye">
+                <svg viewBox="0 0 24 24" aria-hidden="true" fill="none"
+                  stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 5v14M5 12h14" />
+                </svg>
+                Ou konnen yon lòt non? Kontribye
+              </a>
             </div>
           </div>
           <hr className="gl-rule" />

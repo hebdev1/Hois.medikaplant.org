@@ -33,5 +33,12 @@ export default async function AdminGlosePage() {
     .order('name', { ascending: true });
 
   const terms = (data ?? []) as AdminTerm[];
-  return <GloseAdmin initial={terms} />;
+
+  // Pending community contributions — drives the header badge.
+  const { count: pending } = await db
+    .from('glossary_contributions')
+    .select('id', { count: 'exact', head: true })
+    .eq('status', 'nouvo');
+
+  return <GloseAdmin initial={terms} pendingContributions={pending ?? 0} />;
 }
