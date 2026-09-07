@@ -52,7 +52,7 @@ export function LabHeader({
           <Link href="/laboratwa/eksplorate">Eksplorate</Link>
           <Link href="/laboratwa/konparezon">Konparezon</Link>
           <Link href="/laboratwa/kalendriye">Kalendriye</Link>
-          <Link href="/laboratwa/glose">Glosè</Link>
+          <Link href="/laboratwa/maladi">Maladi</Link>
         </nav>
       ) : (
         <span />

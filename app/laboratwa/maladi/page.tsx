@@ -1,6 +1,8 @@
+import Link from 'next/link';
 import { AlertTriangle } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { LabHeader, Disclaimer, readLang } from '../lab-ui';
+import { remedSlug } from './remed-slug';
 
 export const metadata = {
   title: 'Maladi & Plant · Laboratwa',
@@ -59,8 +61,12 @@ export default async function MaladiPage({ searchParams }: { searchParams: { lan
                   {c.plants.map((p, i) => (
                     <tr key={i}>
                       <td>
-                        <div style={{ fontFamily: 'var(--ff-disp)', fontWeight: 600, fontSize: 15 }}>{p.name_kr}</div>
-                        {p.sci && <div className="lab-sci" style={{ fontSize: 12 }}>{p.sci}</div>}
+                        <Link href={`/laboratwa/maladi/${c.slug}/${remedSlug(p.name_kr)}`} className="lab-tr-link">
+                          <div style={{ fontFamily: 'var(--ff-disp)', fontWeight: 600, fontSize: 15, color: 'var(--fey)' }}>
+                            {p.name_kr} <span aria-hidden style={{ fontFamily: 'var(--ff-body)', fontWeight: 400 }}>›</span>
+                          </div>
+                          {p.sci && <div className="lab-sci" style={{ fontSize: 12 }}>{p.sci}</div>}
+                        </Link>
                       </td>
                       <td style={{ fontSize: 12.5, lineHeight: 1.5 }}>{p.prep || '—'}</td>
                       <td><span className="lab-tramil">{p.tramil || 'REK'}</span></td>

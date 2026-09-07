@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Search, Sprout, GitCompare, BookOpen, CalendarDays, ArrowRight } from 'lucide-react';
+import { Search, Sprout, GitCompare, Stethoscope, CalendarDays, ArrowRight } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { LabHeader, Disclaimer, Qty, readLang } from './lab-ui';
 
@@ -56,10 +56,10 @@ export default async function LaboratwaHome({
           <span className="lab-tool-t">Eksploratè Plant</span>
           <span className="lab-tool-d">Filtre pa pati, preparasyon, sezon ak rejyon.</span>
         </Link>
-        <Link href="/laboratwa/glose" className="lab-tool">
-          <BookOpen strokeWidth={1.8} aria-hidden />
-          <span className="lab-tool-t">Glosè trileng</span>
-          <span className="lab-tool-d">Non Kreyòl, Franse, Anglè ak syantifik.</span>
+        <Link href="/laboratwa/maladi" className="lab-tool">
+          <Stethoscope strokeWidth={1.8} aria-hidden />
+          <span className="lab-tool-t">Maladi &amp; Plant</span>
+          <span className="lab-tool-d">Kondisyon yo ak plant TRAMIL rekòmande pou yo.</span>
         </Link>
         <Link href="/laboratwa/konparezon" className="lab-tool">
           <GitCompare strokeWidth={1.8} aria-hidden />
@@ -75,7 +75,6 @@ export default async function LaboratwaHome({
 
       <div className="lab-slist">
         {[
-          ['Maladi & plant', '/laboratwa/maladi'],
           ['Preparasyon tradisyonèl', '/laboratwa/preparasyon/te'],
           ['Plant pa rejyon', '/laboratwa/kat'],
           ['Konnen fèy ou — jwèt', '/laboratwa/jwet'],
