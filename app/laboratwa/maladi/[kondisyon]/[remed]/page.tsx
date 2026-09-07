@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { AlertTriangle } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { LabHeader, Disclaimer, readLang } from '../../../lab-ui';
-import Chodye, { type Heat } from '../../../pot-illustration';
+import PrepArt, { kindForPrep } from '../../../prep-art';
 import { remedSlug } from '../../remed-slug';
 
 export const dynamic = 'force-dynamic';
@@ -12,15 +12,6 @@ type Rec = { name_kr: string; sci?: string; prep?: string; tramil?: string };
 type Cond = {
   slug: string; name_kr: string; red_flag_kr: string | null; doctor_limit_kr: string | null; plants: Rec[];
 };
-
-// Which animation to show, inferred from the documented preparation text.
-function heatFor(prep: string): Heat {
-  const t = (prep || '').toLowerCase();
-  if (/bouyi|dekoksyon/.test(t)) return 'boil';
-  if (/tizann|enfizyon|dlo cho/.test(t)) return 'low';
-  if (/aplike|masaje|kraze|lwil|\bji\b|beny|konprese/.test(t)) return 'none';
-  return 'low';
-}
 
 async function load(kondisyon: string, remed: string) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -54,7 +45,7 @@ export default async function RemedPage({
   const r = await load(params.kondisyon, params.remed);
   if (!r) notFound();
   const { cond, plant } = r;
-  const heat = heatFor(plant.prep ?? '');
+  const kind = kindForPrep(plant.prep ?? '');
 
   return (
     <div className="lab-wrap" style={{ paddingBottom: 60, maxWidth: 640 }}>
@@ -69,9 +60,9 @@ export default async function RemedPage({
         </div>
       </div>
 
-      {/* Animated preparation */}
+      {/* Preparation illustration: juice glass / water glass / pot on fire / jar */}
       <div style={{ margin: '22px 0 8px' }}>
-        <Chodye heat={heat} />
+        <PrepArt kind={kind} />
       </div>
 
       <div className="lab-sec">
