@@ -306,3 +306,21 @@
   font-size:12.5px;color:var(--sek);margin-top:6px}
 .lab-status{background:var(--tint);border:1px solid var(--liy);border-radius:8px;padding:12px 14px;
   font-size:12.5px;color:var(--sek);margin:16px 0}
+
+/* ── Chodyè animation (pot on fire). Decorative — off for reduced motion. ── */
+@media (prefers-reduced-motion: no-preference){
+  .lab-flame{transform-box:fill-box;transform-origin:center bottom;
+    animation:lab-flame 850ms ease-in-out infinite}
+  @keyframes lab-flame{0%,100%{transform:scaleY(1) scaleX(1)}
+    50%{transform:scaleY(1.2) scaleX(.9)}}
+  .lab-steam{transform-box:fill-box;transform-origin:center bottom;
+    animation:lab-steam 3s ease-in-out infinite}
+  @keyframes lab-steam{0%{opacity:0;transform:translateY(6px) scaleY(.8)}
+    30%{opacity:1}100%{opacity:0;transform:translateY(-12px) scaleY(1.15)}}
+  .lab-bubble{transform-box:fill-box;transform-origin:center;
+    animation:lab-bubble 1.5s ease-in infinite}
+  @keyframes lab-bubble{0%{opacity:0;transform:translateY(4px) scale(.3)}
+    35%{opacity:.85}100%{opacity:0;transform:translateY(-8px) scale(1)}}
+  .lab-ember{animation:lab-ember 2.4s ease-in-out infinite}
+  @keyframes lab-ember{0%,100%{opacity:.65}50%{opacity:1}}
+}
