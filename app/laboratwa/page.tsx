@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { Search, Sprout, GitCompare, Stethoscope, CalendarDays, ArrowRight } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { LabHeader, Disclaimer, Qty, readLang } from './lab-ui';
+import OpenRemedButton from './open-remed-button';
 
 export const metadata = {
   title: 'Laboratwa a · Hois Medikaplant',
@@ -85,10 +86,7 @@ export default async function LaboratwaHome({
             <ArrowRight className="w-4 h-4" strokeWidth={2} aria-hidden />
           </Link>
         ))}
-        <div className="lab-srow">
-          <span>Remèd Finder</span>
-          <span className="lab-badge">DEJA BATI</span>
-        </div>
+        <OpenRemedButton />
       </div>
 
       <Link

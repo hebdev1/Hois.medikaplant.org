@@ -43,6 +43,22 @@ export default function RemedFinder() {
     }
   }
 
+  // Let other parts of the app open the assistant (e.g. the "Remèd Finder"
+  // entry in the Laboratwa) by dispatching a window event.
+  React.useEffect(() => {
+    function handler() {
+      setOpen(true);
+      setPulse(false);
+      try {
+        sessionStorage.setItem(SEEN_KEY, '1');
+      } catch {
+        /* best-effort */
+      }
+    }
+    window.addEventListener('open-remed-finder', handler);
+    return () => window.removeEventListener('open-remed-finder', handler);
+  }, []);
+
   return (
     <>
       {/* Stacked ABOVE the TranslateSwitcher. Reads as a personal AI
