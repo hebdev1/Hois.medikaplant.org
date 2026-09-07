@@ -75,7 +75,7 @@ export default async function LaboratwaHome({
 
       <div className="lab-slist">
         {[
-          ['Konbinezon', '/laboratwa/konbinezon'],
+          ['Maladi & plant', '/laboratwa/maladi'],
           ['Preparasyon tradisyonèl', '/laboratwa/preparasyon/te'],
           ['Plant pa rejyon', '/laboratwa/kat'],
           ['Konnen fèy ou — jwèt', '/laboratwa/jwet'],

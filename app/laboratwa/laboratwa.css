@@ -324,3 +324,18 @@
   .lab-ember{animation:lab-ember 2.4s ease-in-out infinite}
   @keyframes lab-ember{0%,100%{opacity:.65}50%{opacity:1}}
 }
+
+/* ── Maladi & Plant (conditions) ───────────────────────────────── */
+.lab-cond{margin:20px 0;border:1px solid var(--liy);border-radius:10px;overflow:hidden;background:var(--sifas)}
+.lab-cond-h{padding:14px 16px;border-bottom:1px solid var(--liy);background:var(--tint)}
+.lab-cond-h h2{font-size:22px;margin:0}
+.lab-cond-h p{margin:6px 0 0;font-size:12.5px;color:var(--sek)}
+.lab-cond-body{padding:2px 16px 16px}
+.lab-tramil{display:inline-block;font-family:var(--ff-mono);font-size:10px;font-weight:600;letter-spacing:.06em;
+  padding:2px 7px;border-radius:4px;background:#e4ede6;color:#2e6b4f;border:1px solid #bcd3c2;white-space:nowrap}
+.lab-redflag{display:flex;gap:10px;align-items:flex-start;background:var(--lank);color:var(--papye);
+  border-radius:8px;padding:12px 14px;margin:14px 0 0;font-size:12.5px;line-height:1.5}
+.lab-redflag svg{color:var(--e-jon);flex:none;margin-top:1px}
+.lab-redflag .lim{font-family:var(--ff-mono);color:var(--e-jon)}
+.lab-cond .lab-table td:first-child{width:34%}
+.lab-cond .lab-table td:last-child{width:74px;text-align:center}
