@@ -32,6 +32,24 @@
   var DATA_KEY = 'dm-remed-data-v1';
   var SEEN_KEY = 'dm-remed-seen';
 
+  // Where the launcher sits. Defaults keep it clear of a bottom-right chat
+  // launcher (raised on the right). Override from the <script> tag, e.g.:
+  //   <script src=".../dokte-maton.js" defer
+  //           data-side="left" data-bottom="24" data-margin="20"></script>
+  // (defer scripts have a null document.currentScript, so find the tag by src.)
+  function readCfg() {
+    var s = document.querySelector('script[src*="dokte-maton"]');
+    var d = (s && s.dataset) || {};
+    var bottom = parseInt(d.bottom, 10);
+    var margin = parseInt(d.margin, 10);
+    return {
+      side: d.side === 'left' ? 'left' : 'right',
+      bottom: isNaN(bottom) ? 96 : bottom,
+      margin: isNaN(margin) ? 20 : margin,
+    };
+  }
+  var CFG = readCfg();
+
   var DISCLAIMER =
     'Pwodui sa yo pa fèt pou dyagnostike, trete, geri, oswa anpeche okenn ' +
     'maladi. Deklarasyon sa yo pa evalye pa FDA. Toujou konsilte yon ' +
@@ -262,7 +280,7 @@
     '.dm-bd{position:absolute;inset:0;background:rgba(5,0,64,.30);border:0;cursor:default}' +
     '.dm-panel{position:relative;width:100%;max-height:86vh;background:#fff;border:1px solid #f1ead7;border-radius:18px 18px 0 0;box-shadow:0 -10px 50px -12px rgba(5,0,64,.35);display:flex;flex-direction:column;overflow:hidden;animation:dm-up .28s cubic-bezier(.2,.8,.2,1)}' +
     '@keyframes dm-up{from{transform:translateY(24px);opacity:0}to{transform:translateY(0);opacity:1}}' +
-    '@media(min-width:640px){.dm-ov{align-items:flex-end;justify-content:flex-end;padding:24px}.dm-bd{background:transparent}.dm-panel{width:400px;max-height:72vh;border-radius:18px}}' +
+    '@media(min-width:640px){.dm-ov{align-items:flex-end;justify-content:flex-end;padding:24px}.dm-ov.dm-left{justify-content:flex-start}.dm-bd{background:transparent}.dm-panel{width:400px;max-height:72vh;border-radius:18px}}' +
     /* header */
     '.dm-hd{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 14px 12px;border-bottom:1px solid #faf6ed;background:linear-gradient(to bottom,rgba(246,248,236,.6),transparent)}' +
     '.dm-hdl{display:flex;align-items:center;gap:10px;min-width:0}' +
@@ -381,6 +399,10 @@
   btn.innerHTML =
     '<span class="dm-btn-av">' + I.steth + '<span class="dm-dot"></span></span>' +
     '<span class="dm-btn-tx"><b>Doktè Maton</b><span>Asistan remèd</span></span>';
+  // Position from config (overrides the CSS corner defaults).
+  btn.style.bottom = CFG.bottom + 'px';
+  btn.style[CFG.side] = CFG.margin + 'px';
+  btn.style[CFG.side === 'left' ? 'right' : 'left'] = 'auto';
   shadow.appendChild(btn);
 
   var overlay = null;
@@ -396,7 +418,7 @@
     btn.classList.remove('dm-pulse');
     markSeen();
     overlay = document.createElement('div');
-    overlay.className = 'dm-ov';
+    overlay.className = 'dm-ov' + (CFG.side === 'left' ? ' dm-left' : '');
     overlay.setAttribute('role', 'dialog');
     overlay.setAttribute('aria-modal', 'true');
     overlay.setAttribute('aria-label', 'Doktè Maton, asistan remèd natirèl');
