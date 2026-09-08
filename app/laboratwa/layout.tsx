@@ -1,4 +1,6 @@
 import { Petrona, Archivo, IBM_Plex_Mono } from 'next/font/google';
+import PromoteHeader from '@/components/ui/promote-header';
+import Footer from '@/components/ui/footer';
 import './laboratwa.css';
 
 // Handoff §2 typography: Petrona (display), Archivo (body/UI), IBM Plex Mono
@@ -29,9 +31,13 @@ export default function LaboratwaLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className={`lab ${petrona.variable} ${archivo.variable} ${mono.variable}`}>
-      <div className="lab-fil" />
-      {children}
-    </div>
+    <>
+      <PromoteHeader />
+      <div className={`lab ${petrona.variable} ${archivo.variable} ${mono.variable}`}>
+        <div className="lab-fil" />
+        {children}
+      </div>
+      <Footer />
+    </>
   );
 }

@@ -89,7 +89,7 @@
 @media(min-width:900px){.lab-explore{display:grid;grid-template-columns:216px 1fr;gap:26px;align-items:start}}
 .lab-side{display:none}
 .lab-side.open{display:block}
-@media(min-width:900px){.lab-side{display:block;position:sticky;top:16px}}
+@media(min-width:900px){.lab-side{display:block;position:sticky;top:80px}}
 .lab-fgroup{border-bottom:1px solid var(--liy);padding:14px 0}
 .lab-fgroup:first-child{padding-top:0}
 .lab-fgroup h3{font-family:var(--ff-mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;

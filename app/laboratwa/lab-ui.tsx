@@ -44,7 +44,7 @@ export function LabHeader({
         </Link>
       ) : (
         <Link href="/laboratwa" className="lab-brand" style={{ textDecoration: 'none' }}>
-          HOIS MEDIKAPLANT
+          Laboratwa
         </Link>
       )}
       {nav ? (
