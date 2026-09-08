@@ -1,6 +1,5 @@
 import * as React from 'react';
 import Link from 'next/link';
-import LangSwitch from './lang-switch';
 
 // Shared presentational pieces for the Laboratwa. No 'use client' — plain, so
 // server components render them and the (few) client components can import them
@@ -26,13 +25,14 @@ export function Disclaimer({ short = false }: { short?: boolean }) {
 }
 
 /** Header for every Laboratwa screen. Entry page gets the brand + nav; tool
- *  pages pass a `back` link instead. The language switch sits at the right. */
+ *  pages pass a `back` link instead. `lang` is still accepted (some pages use it
+ *  for content — alt names, calendar links — via the ?lang= param), but the
+ *  KR/FR/EN switch has been removed; the site's global translator handles that. */
 export function LabHeader({
-  lang,
   back,
   nav = false,
 }: {
-  lang: string;
+  lang?: string;
   back?: { href: string; label: string };
   nav?: boolean;
 }) {
@@ -57,7 +57,6 @@ export function LabHeader({
       ) : (
         <span />
       )}
-      <LangSwitch current={lang} />
     </div>
   );
 }

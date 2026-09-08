@@ -34,12 +34,6 @@
   text-decoration:none;font-weight:500}
 .lab-back:hover{color:var(--fey)}
 
-/* Language switch */
-.lab-lang{display:inline-flex;gap:2px;font-family:var(--ff-mono);font-size:11px}
-.lab-lang a{padding:3px 6px;border-radius:5px;text-decoration:none;color:rgba(22,38,28,.25);letter-spacing:.06em}
-.lab-lang a.on{color:var(--sek);font-weight:600}
-.lab-lang a:hover{color:var(--fey)}
-
 /* Type */
 .lab-eyebrow{font-family:var(--ff-mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--rasin)}
 .lab h1{font-family:var(--ff-disp);font-weight:600;font-size:34px;line-height:1.05;letter-spacing:-.01em;margin:8px 0}
