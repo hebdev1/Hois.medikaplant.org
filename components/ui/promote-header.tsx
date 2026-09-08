@@ -57,6 +57,7 @@ const NAV: NavItem[] = [
   { href: 'https://www.hoismedikaplant.com', label: 'Akèy' },
   { href: 'https://www.medikaplantshop.com', label: 'Boutik',  target: '_blank'},
   { href: '/glose', label: 'Glosè' },
+  { href: '/laboratwa', label: 'Laboratwa' },
   { href: '#istwa', label: 'Istwa' },
   { href: '#hois', label: 'HOÏS' },
   { href: '#pri', label: 'Pri' },

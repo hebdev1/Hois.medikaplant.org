@@ -27,6 +27,7 @@ const COLUMNS: { title: string; links: { label: string; href: string }[] }[] = [
       { label: 'Kontak', href: '/kontak' },
       { label: 'Klas', href: '/klas' },
       { label: 'Glosè plant', href: '/glose' },
+      { label: 'Laboratwa', href: '/laboratwa' },
       { label: 'Konfidansyalite', href: '/konfidansyalite' },
     ],
   },
