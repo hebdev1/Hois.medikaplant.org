@@ -30,13 +30,19 @@ jobs:
           username: ${{ secrets.HOSTINGER_SSH_USER }}
           key: ${{ secrets.HOSTINGER_SSH_KEY }}
           port: ${{ secrets.HOSTINGER_SSH_PORT }}
-          command_timeout: 20m
+          command_timeout: 30m
           script: |
             set -euo pipefail
 
             echo "→ Ale nan dosye app la"
             cd "${{ secrets.HOSTINGER_APP_PATH }}"
             echo "   dosye: $(pwd)"
+
+            # Netwaye nenpòt git lock ki ka rete si yon deplwaman anvan te
+            # koupe nan mitan (cancel-in-progress). Yon .git/index.lock ki rete
+            # fè `git reset` echwe an silans — se sa ki fè kèk deplwaman "sote".
+            echo "→ Netwaye git lock ki rete (si genyen)"
+            rm -f .git/index.lock .git/shallow.lock .git/HEAD.lock 2>/dev/null || true
 
             echo "→ Rale dènye kòd la depi origin/main"
             git fetch --all --prune
