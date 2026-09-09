@@ -32,12 +32,11 @@
   var DATA_KEY = 'dm-remed-data-v1';
   var SEEN_KEY = 'dm-remed-seen';
 
-  // Where the launcher sits. The shop's bottom-RIGHT corner is taken by the
-  // HubSpot chat (bottom 0–96px) and a side-cart basket (bottom 113–173px),
-  // so the default is bottom-LEFT, raised above the product-nav bar. Override
-  // from the <script> tag, e.g.:
+  // Where the launcher sits. Default: bottom-RIGHT, stacked just ABOVE the
+  // shop's side-cart basket (which sits at ~bottom 113–183px, above the
+  // HubSpot chat at 0–96px). Override from the <script> tag, e.g.:
   //   <script src=".../dokte-maton.js" defer
-  //           data-side="right" data-bottom="190" data-margin="20"></script>
+  //           data-side="left" data-bottom="96" data-margin="20"></script>
   // (defer scripts have a null document.currentScript, so find the tag by src.)
   function readCfg() {
     var s = document.querySelector('script[src*="dokte-maton"]');
@@ -45,9 +44,9 @@
     var bottom = parseInt(d.bottom, 10);
     var margin = parseInt(d.margin, 10);
     return {
-      side: d.side === 'right' ? 'right' : 'left',
-      bottom: isNaN(bottom) ? 96 : bottom,
-      margin: isNaN(margin) ? 20 : margin,
+      side: d.side === 'left' ? 'left' : 'right',
+      bottom: isNaN(bottom) ? 196 : bottom,
+      margin: isNaN(margin) ? 14 : margin,
     };
   }
   var CFG = readCfg();
