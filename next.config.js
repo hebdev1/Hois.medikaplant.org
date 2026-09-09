@@ -57,6 +57,21 @@ const nextConfig = {
   async headers() {
     return [
       {
+        // The embeddable Doktè Maton widget is loaded cross-origin from the
+        // WooCommerce shop (medikaplantshop.com). Keep its edge/browser cache
+        // SHORT so position/behaviour updates reach the shop within ~1 min
+        // instead of being pinned to the old 4-hour TTL. CORS '*' lets other
+        // origins fetch it too (script tags don't need it, but it's harmless).
+        source: '/dokte-maton.js',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=60, s-maxage=60, stale-while-revalidate=600',
+          },
+          { key: 'Access-Control-Allow-Origin', value: '*' },
+        ],
+      },
+      {
         source: '/:path*',
         headers: [
           { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
