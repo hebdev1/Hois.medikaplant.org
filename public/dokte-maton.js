@@ -277,6 +277,9 @@
     '.dm-btn-tx span{font-size:9px;text-transform:uppercase;letter-spacing:.14em;color:rgba(250,246,237,.85)}' +
     '.dm-pulse::before{content:"";position:absolute;inset:0;border-radius:999px;background:rgba(231,142,23,.35);animation:dm-pulse 2s ease-out infinite;pointer-events:none}' +
     '@keyframes dm-pulse{0%{transform:scale(1);opacity:.7}100%{transform:scale(1.6);opacity:0}}' +
+    // Mobile: collapse the labelled pill to a compact icon-only circle (~52px)
+    // so it stays out of the way on a small, crowded screen.
+    '@media(max-width:639px){.dm-btn{gap:0;padding:6px}.dm-btn-tx{display:none}.dm-btn-av{width:40px;height:40px}.dm-btn-av svg{width:20px;height:20px}}' +
     /* overlay + panel */
     '.dm-ov{position:fixed;inset:0;z-index:2147483600;display:flex;align-items:flex-end;justify-content:center}' +
     '.dm-bd{position:absolute;inset:0;background:rgba(5,0,64,.30);border:0;cursor:default}' +
