@@ -5,7 +5,7 @@ import { getCurrentUser } from '@/lib/supabase/auth';
 import { Leaf, LogOut } from 'lucide-react';
 import { adminSignOut } from '../login/actions';
 import {
-  navLinksForRole,
+  groupedNavForRole,
   ADMIN_ROLE_LABEL,
   type AdminRole,
 } from './admin-nav-config';
@@ -46,7 +46,7 @@ export default async function AdminProtectedLayout({
     [profile.first_name, profile.last_name].filter(Boolean).join(' ') ||
     profile.email.split('@')[0];
   const initials = (profile.first_name?.[0] ?? profile.email[0] ?? 'A').toUpperCase();
-  const links = navLinksForRole(profile.admin_role);
+  const nav = groupedNavForRole(profile.admin_role);
   const roleLabel = profile.admin_role
     ? ADMIN_ROLE_LABEL[profile.admin_role]
     : 'Administratè';
@@ -64,7 +64,7 @@ export default async function AdminProtectedLayout({
       <AdminMobileNav
         adminName={adminName}
         initials={initials}
-        visibleHrefs={links.map((l) => l.href)}
+        adminRole={profile.admin_role}
         roleLabel={roleLabel}
         adminId={user.id}
       />
@@ -100,16 +100,53 @@ export default async function AdminProtectedLayout({
           </div>
         </div>
 
-        <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-          {links.map(({ href, label, icon: Icon }) => (
+        <nav className="flex-1 px-3 py-4 overflow-y-auto">
+          {/* Standalone Dashboard link */}
+          {nav.top.map(({ href, label, icon: Icon }) => (
             <Link
               key={href}
               href={href}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/70 hover:text-white hover:bg-white/5 transition"
+              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold text-white hover:bg-white/10 transition mb-1"
             >
               <Icon className="w-4 h-4" strokeWidth={2} />
               {label}
             </Link>
+          ))}
+
+          {/* Grouped sections */}
+          {nav.sections.map((section) => (
+            <div key={section.id} className="mt-4">
+              <div className="px-3 pb-1.5 text-[10px] font-bold uppercase tracking-[0.14em] text-white/35">
+                {section.label}
+              </div>
+              <div className="space-y-0.5">
+                {section.links.map(({ href, label, icon: Icon, soon }) =>
+                  soon ? (
+                    <span
+                      key={`${section.id}-${label}`}
+                      aria-disabled="true"
+                      title="Byento"
+                      className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-white/30 cursor-default select-none"
+                    >
+                      <Icon className="w-4 h-4" strokeWidth={2} />
+                      <span className="flex-1 truncate">{label}</span>
+                      <span className="text-[8.5px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-white/10 text-white/45">
+                        Byento
+                      </span>
+                    </span>
+                  ) : (
+                    <Link
+                      key={href}
+                      href={href}
+                      className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-white/70 hover:text-white hover:bg-white/5 transition"
+                    >
+                      <Icon className="w-4 h-4" strokeWidth={2} />
+                      {label}
+                    </Link>
+                  )
+                )}
+              </div>
+            </div>
           ))}
         </nav>
 

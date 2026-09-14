@@ -16,6 +16,12 @@ import {
   Link2,
   ArrowRight,
   TrendingUp,
+  Plus,
+  Sprout,
+  FlaskConical,
+  GraduationCap,
+  Stethoscope,
+  Image as ImageIcon,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { describeCondition } from '@/lib/conditions/catalog';
@@ -94,6 +100,11 @@ export default async function AdminOverview() {
     hubspotLogRecent,
     // Subscriptions trend
     subsLast30d,
+    // Content-type counts (Kontni Medikaplant)
+    plantsCount,
+    dozCount,
+    coursesCount,
+    conditionsCount,
   ] = await Promise.all([
     supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('role', 'user'),
     supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('role', 'user').gte('created_at', last7d),
@@ -133,6 +144,17 @@ export default async function AdminOverview() {
     supabase.from('hubspot_sync_log').select('status, created_at, detail').order('created_at', { ascending: false }).limit(1),
 
     supabase.from('subscriptions').select('id', { count: 'exact', head: true }).gte('start_date', last30d),
+
+    // These tables aren't in the (stale) generated types yet — same `as any`
+    // cast the laboratwa/doz admin pages use.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (supabase as any).from('plants').select('id', { count: 'exact', head: true }),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (supabase as any).from('doz_recipes').select('id', { count: 'exact', head: true }),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (supabase as any).from('courses').select('id', { count: 'exact', head: true }),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (supabase as any).from('lab_conditions').select('id', { count: 'exact', head: true }),
   ]);
 
   // ── Segments aggregation in JS ────────────────────────────────────────
@@ -185,6 +207,17 @@ export default async function AdminOverview() {
         </p>
       </header>
 
+      {/* ── Aksyon rapid ──────────────────────────────────────────────── */}
+      <section className="mb-6 flex flex-wrap gap-2">
+        <QuickAction href="/admin/laboratwa/plant" icon={<Sprout className="w-4 h-4" strokeWidth={2.2} />} label="Ajoute plant" />
+        <QuickAction href="/admin/doz/new" icon={<FlaskConical className="w-4 h-4" strokeWidth={2.2} />} label="Ajoute resèt" />
+        <QuickAction href="/admin/klas/new" icon={<GraduationCap className="w-4 h-4" strokeWidth={2.2} />} label="Kreye kou" />
+        <QuickAction href="/admin/imaj" icon={<ImageIcon className="w-4 h-4" strokeWidth={2.2} />} label="Upload imaj" />
+        <QuickAction href="/admin/notifications" icon={<Bell className="w-4 h-4" strokeWidth={2.2} />} label="Nouvo anons" />
+        <QuickAction soon icon={<FileText className="w-4 h-4" strokeWidth={2.2} />} label="Nouvo paj" />
+        <QuickAction soon icon={<FileText className="w-4 h-4" strokeWidth={2.2} />} label="Nouvo atik" />
+      </section>
+
       {/* Device push: each admin enables it once, then receives an alert on
           their phone/computer for new support messages, purchases, and signups
          , even when the panel is closed. */}
@@ -225,6 +258,34 @@ export default async function AdminOverview() {
           sub={`${programTasksCount.count ?? 0} tach pwograme`}
           tone="violet"
           href="/admin/programs"
+        />
+      </section>
+
+      {/* ── Kontni Medikaplant (content-type counts) ─────────────────── */}
+      <section className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-7">
+        <MiniStat
+          icon={<Sprout className="w-4 h-4" strokeWidth={2.4} />}
+          label="Plant"
+          value={(plantsCount.count ?? 0).toString()}
+          href="/admin/laboratwa/plant"
+        />
+        <MiniStat
+          icon={<FlaskConical className="w-4 h-4" strokeWidth={2.4} />}
+          label="Resèt & Dòz"
+          value={(dozCount.count ?? 0).toString()}
+          href="/admin/doz"
+        />
+        <MiniStat
+          icon={<GraduationCap className="w-4 h-4" strokeWidth={2.4} />}
+          label="Kou"
+          value={(coursesCount.count ?? 0).toString()}
+          href="/admin/klas"
+        />
+        <MiniStat
+          icon={<Stethoscope className="w-4 h-4" strokeWidth={2.4} />}
+          label="Maladi (Lab)"
+          value={(conditionsCount.count ?? 0).toString()}
+          href="/admin/laboratwa/kondisyon"
         />
       </section>
 
@@ -768,5 +829,40 @@ function Empty({ text }: { text: string }) {
     <div className="text-[11px] text-earth-500 italic py-2 text-center">
       {text}
     </div>
+  );
+}
+
+function QuickAction({
+  href,
+  icon,
+  label,
+  soon,
+}: {
+  href?: string;
+  icon: React.ReactNode;
+  label: string;
+  soon?: boolean;
+}) {
+  if (soon || !href) {
+    return (
+      <span className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl border border-dashed border-cream-300 bg-cream-50/60 text-earth-400 text-sm font-semibold cursor-default select-none">
+        <Plus className="w-3.5 h-3.5" strokeWidth={2.6} />
+        {label}
+        <span className="text-[8.5px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-cream-200 text-earth-500">
+          Byento
+        </span>
+      </span>
+    );
+  }
+  return (
+    <Link
+      href={href}
+      className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl border border-cream-200 bg-white text-ink text-sm font-semibold shadow-card hover:border-forest-300 hover:text-forest-800 hover:-translate-y-0.5 transition"
+    >
+      <span className="grid place-items-center w-6 h-6 rounded-lg bg-forest-50 text-forest-700">
+        {icon}
+      </span>
+      {label}
+    </Link>
   );
 }

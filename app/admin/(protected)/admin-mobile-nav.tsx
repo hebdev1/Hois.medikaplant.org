@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Leaf, Menu, X, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { ADMIN_NAV_LINKS } from './admin-nav-config';
+import { groupedNavForRole, type AdminRole } from './admin-nav-config';
 import AdminNotificationBell from './admin-notification-bell';
 import { adminSignOut } from '../login/actions';
 
@@ -13,13 +13,12 @@ type Props = {
   adminName: string;
   initials: string;
   /**
-   * Hrefs the current admin is allowed to see, computed server-side from
-   * their admin_role. We pass strings (not full link objects) because
-   * Next.js cannot serialize Lucide's React-component icons across the
-   * server→client boundary — keeping the icons looked up locally via
-   * ADMIN_NAV_LINKS sidesteps that.
+   * The admin's sub-role (profiles.admin_role). We pass the role string —
+   * not link objects — because Next.js cannot serialize Lucide's
+   * React-component icons across the server→client boundary; the grouped
+   * nav (with icons) is recomputed locally from the config.
    */
-  visibleHrefs: string[];
+  adminRole: AdminRole | null;
   roleLabel: string;
   /** The signed-in admin's id — scopes the notification bell's event feed. */
   adminId: string;
@@ -39,17 +38,13 @@ type Props = {
 export default function AdminMobileNav({
   adminName,
   initials,
-  visibleHrefs,
+  adminRole,
   roleLabel,
   adminId,
 }: Props) {
   const pathname = usePathname();
   const [open, setOpen] = React.useState(false);
-  const visible = React.useMemo(() => new Set(visibleHrefs), [visibleHrefs]);
-  const links = React.useMemo(
-    () => ADMIN_NAV_LINKS.filter((l) => visible.has(l.href)),
-    [visible]
-  );
+  const nav = React.useMemo(() => groupedNavForRole(adminRole), [adminRole]);
 
   // Auto-close on route change
   React.useEffect(() => {
@@ -181,22 +176,18 @@ export default function AdminMobileNav({
               </div>
             </div>
 
-            {/* Nav links */}
-            <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-              {links.map(({ href, label, icon: Icon }) => {
-                const active =
-                  pathname === href ||
-                  (href !== '/admin' && pathname.startsWith(href));
+            {/* Nav links (grouped, CMS-style) */}
+            <nav className="flex-1 px-3 py-4 overflow-y-auto">
+              {nav.top.map(({ href, label, icon: Icon }) => {
+                const active = pathname === href;
                 return (
                   <Link
                     key={href}
                     href={href}
                     onClick={() => setOpen(false)}
                     className={cn(
-                      'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition',
-                      active
-                        ? 'bg-accent text-white shadow-sm'
-                        : 'text-white/70 hover:text-white hover:bg-white/5'
+                      'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold transition mb-1',
+                      active ? 'bg-accent text-white shadow-sm' : 'text-white hover:bg-white/10'
                     )}
                   >
                     <Icon className="w-4 h-4" strokeWidth={2} />
@@ -204,6 +195,52 @@ export default function AdminMobileNav({
                   </Link>
                 );
               })}
+
+              {nav.sections.map((section) => (
+                <div key={section.id} className="mt-4">
+                  <div className="px-3 pb-1.5 text-[10px] font-bold uppercase tracking-[0.14em] text-white/35">
+                    {section.label}
+                  </div>
+                  <div className="space-y-0.5">
+                    {section.links.map(({ href, label, icon: Icon, soon }) => {
+                      if (soon) {
+                        return (
+                          <span
+                            key={`${section.id}-${label}`}
+                            aria-disabled="true"
+                            className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-white/30 cursor-default select-none"
+                          >
+                            <Icon className="w-4 h-4" strokeWidth={2} />
+                            <span className="flex-1 truncate">{label}</span>
+                            <span className="text-[8.5px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-white/10 text-white/45">
+                              Byento
+                            </span>
+                          </span>
+                        );
+                      }
+                      const active =
+                        pathname === href ||
+                        (href !== '/admin' && pathname.startsWith(href));
+                      return (
+                        <Link
+                          key={href}
+                          href={href}
+                          onClick={() => setOpen(false)}
+                          className={cn(
+                            'flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition',
+                            active
+                              ? 'bg-accent text-white shadow-sm'
+                              : 'text-white/70 hover:text-white hover:bg-white/5'
+                          )}
+                        >
+                          <Icon className="w-4 h-4" strokeWidth={2} />
+                          {label}
+                        </Link>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
             </nav>
 
             {/* Sign-out */}

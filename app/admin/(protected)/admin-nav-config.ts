@@ -22,6 +22,15 @@ import {
   Lightbulb,
   Image as ImageIcon,
   Settings as SettingsIcon,
+  Video,
+  PanelsTopLeft,
+  ListTree,
+  Search,
+  ShieldCheck,
+  KeyRound,
+  ScrollText,
+  Database,
+  ShoppingBag,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -160,11 +169,40 @@ export function hasCapability(
   return ROLE_CAPABILITIES[role].has(capability);
 }
 
+/**
+ * CMS sidebar groups (WordPress-style). Order here is the render order.
+ * `overview` is rendered standalone above the groups, not inside one.
+ */
+export type AdminNavGroup =
+  | 'content'
+  | 'media'
+  | 'design'
+  | 'community'
+  | 'commerce'
+  | 'seo'
+  | 'users'
+  | 'system';
+
+export const ADMIN_NAV_GROUPS: { id: AdminNavGroup; label: string }[] = [
+  { id: 'content', label: 'Kontni' },
+  { id: 'media', label: 'Medya' },
+  { id: 'design', label: 'Konsepsyon' },
+  { id: 'community', label: 'Kominote' },
+  { id: 'commerce', label: 'Komès' },
+  { id: 'seo', label: 'SEO' },
+  { id: 'users', label: 'Itilizatè & Wòl' },
+  { id: 'system', label: 'Sistèm' },
+];
+
 export type AdminNavLink = {
   href: string;
   label: string;
   icon: LucideIcon;
   capability: AdminCapability;
+  /** Which CMS group this link lives under. */
+  group: AdminNavGroup;
+  /** Planned-but-not-built section: shown disabled with a "Byento" tag. */
+  soon?: boolean;
 };
 
 /**
@@ -176,31 +214,72 @@ export type AdminNavLink = {
  * just what the signed-in admin can use.
  */
 export const ADMIN_NAV_LINKS: readonly AdminNavLink[] = [
-  { href: '/admin', label: 'Overview', icon: LayoutDashboard, capability: 'overview' },
-  { href: '/admin/users', label: 'Users', icon: Users, capability: 'manage_users' },
-  // Swivi Sante now hosts all three care sub-views (Pasyan, Segman, Plan)
-  // under tabs at /admin/health?tab=… — keeps the sidebar tight and
-  // mirrors how operators think about the work (one care workspace).
-  { href: '/admin/health', label: 'Swivi Sante', icon: Activity, capability: 'view_health' },
-  { href: '/admin/programs', label: 'Pwotokòl', icon: FolderKanban, capability: 'manage_programs' },
-  { href: '/admin/support', label: 'Sipò chat', icon: MessageCircle, capability: 'reply_support' },
-  { href: '/admin/contact', label: 'Mesaj kontak', icon: Inbox, capability: 'manage_contact' },
-  { href: '/admin/forum', label: 'Fowòm', icon: MessagesSquare, capability: 'moderate_forum' },
-  { href: '/admin/resources', label: 'Resources', icon: FileText, capability: 'manage_resources' },
-  { href: '/admin/guides', label: 'Guides', icon: BookOpen, capability: 'manage_guides' },
-  { href: '/admin/glose', label: 'Glosè plant', icon: Leaf, capability: 'manage_guides' },
-  { href: '/admin/laboratwa', label: 'Laboratwa', icon: Sprout, capability: 'manage_guides' },
-  { href: '/admin/doz', label: 'Resèt ak Dòz', icon: FlaskConical, capability: 'manage_guides' },
-  { href: '/admin/klas', label: 'Klas', icon: GraduationCap, capability: 'manage_courses' },
-  { href: '/admin/kesyon', label: 'Kesyon kou', icon: MessagesSquare, capability: 'manage_courses' },
-  { href: '/admin/advice', label: 'Konsèy jou a', icon: Sparkles, capability: 'manage_advice' },
-  { href: '/admin/badges', label: 'Badj', icon: Award, capability: 'manage_badges' },
-  { href: '/admin/subscriptions', label: 'Subscriptions', icon: CreditCard, capability: 'manage_subscriptions' },
-  { href: '/admin/hubspot', label: 'HubSpot CRM', icon: Link2, capability: 'view_hubspot' },
-  { href: '/admin/notifications', label: 'Notifications', icon: Bell, capability: 'broadcast_notifications' },
-  { href: '/admin/imaj', label: 'Imaj paj dakèy', icon: ImageIcon, capability: 'manage_resources' },
-  { href: '/admin/suggestions', label: 'Sijesyon manm', icon: Lightbulb, capability: 'manage_self' },
-  { href: '/admin/settings', label: 'Paramèt', icon: SettingsIcon, capability: 'manage_self' },
+  { href: '/admin', label: 'Dashboard', icon: LayoutDashboard, capability: 'overview', group: 'content' },
+
+  // ── Kontni ──────────────────────────────────────────────────────────
+  { href: '/admin/laboratwa', label: 'Laboratwa', icon: Sprout, capability: 'manage_guides', group: 'content' },
+  { href: '/admin/glose', label: 'Glosè plant', icon: Leaf, capability: 'manage_guides', group: 'content' },
+  { href: '/admin/doz', label: 'Resèt ak Dòz', icon: FlaskConical, capability: 'manage_guides', group: 'content' },
+  { href: '/admin/programs', label: 'Pwotokòl', icon: FolderKanban, capability: 'manage_programs', group: 'content' },
+  { href: '/admin/guides', label: 'Gid', icon: BookOpen, capability: 'manage_guides', group: 'content' },
+  { href: '/admin/resources', label: 'Resous', icon: FileText, capability: 'manage_resources', group: 'content' },
+  { href: '/admin/klas', label: 'Kou (Klas)', icon: GraduationCap, capability: 'manage_courses', group: 'content' },
+  { href: '/admin/kesyon', label: 'Kesyon kou', icon: MessagesSquare, capability: 'manage_courses', group: 'content' },
+  { href: '/admin/advice', label: 'Konsèy jou a', icon: Sparkles, capability: 'manage_advice', group: 'content' },
+
+  // ── Medya ───────────────────────────────────────────────────────────
+  { href: '/admin/imaj', label: 'Imaj paj dakèy', icon: ImageIcon, capability: 'manage_resources', group: 'media' },
+
+  // ── Kominote ────────────────────────────────────────────────────────
+  // Swivi Sante hosts Pasyan/Segman/Plan under tabs at /admin/health?tab=…
+  { href: '/admin/health', label: 'Swivi Sante', icon: Activity, capability: 'view_health', group: 'community' },
+  { href: '/admin/support', label: 'Sipò chat', icon: MessageCircle, capability: 'reply_support', group: 'community' },
+  { href: '/admin/contact', label: 'Mesaj kontak', icon: Inbox, capability: 'manage_contact', group: 'community' },
+  { href: '/admin/forum', label: 'Fowòm', icon: MessagesSquare, capability: 'moderate_forum', group: 'community' },
+  { href: '/admin/suggestions', label: 'Sijesyon manm', icon: Lightbulb, capability: 'manage_self', group: 'community' },
+  { href: '/admin/badges', label: 'Badj', icon: Award, capability: 'manage_badges', group: 'community' },
+
+  // ── Komès ───────────────────────────────────────────────────────────
+  { href: '/admin/subscriptions', label: 'Abònman & Plan', icon: CreditCard, capability: 'manage_subscriptions', group: 'commerce' },
+  { href: '/admin/hubspot', label: 'HubSpot CRM', icon: Link2, capability: 'view_hubspot', group: 'commerce' },
+
+  // ── Itilizatè & Wòl ─────────────────────────────────────────────────
+  { href: '/admin/users', label: 'Itilizatè', icon: Users, capability: 'manage_users', group: 'users' },
+
+  // ── Sistèm ──────────────────────────────────────────────────────────
+  { href: '/admin/notifications', label: 'Notifikasyon', icon: Bell, capability: 'broadcast_notifications', group: 'system' },
+  { href: '/admin/settings', label: 'Paramèt', icon: SettingsIcon, capability: 'manage_self', group: 'system' },
+];
+
+/**
+ * Planned CMS sections not built yet. Rendered disabled ("Byento") so the
+ * full CMS structure is visible and the roadmap is obvious. As each is
+ * built, move it into ADMIN_NAV_LINKS with a real href.
+ */
+export const ADMIN_NAV_SOON: readonly AdminNavLink[] = [
+  { href: '#', label: 'Paj', icon: FileText, capability: 'manage_guides', group: 'content', soon: true },
+  { href: '#', label: 'Atik', icon: FileText, capability: 'manage_guides', group: 'content', soon: true },
+  { href: '#', label: 'Videyo', icon: Video, capability: 'manage_guides', group: 'content', soon: true },
+  { href: '#', label: 'Temwayaj', icon: MessagesSquare, capability: 'manage_resources', group: 'content', soon: true },
+
+  { href: '#', label: 'Bibliyotèk Medya', icon: FolderKanban, capability: 'manage_resources', group: 'media', soon: true },
+
+  { href: '#', label: 'Page Builder', icon: PanelsTopLeft, capability: 'manage_admins', group: 'design', soon: true },
+  { href: '#', label: 'Meni', icon: ListTree, capability: 'manage_admins', group: 'design', soon: true },
+  { href: '#', label: 'Header & Footer', icon: PanelsTopLeft, capability: 'manage_admins', group: 'design', soon: true },
+  { href: '#', label: 'Modèl (Templates)', icon: Layers, capability: 'manage_admins', group: 'design', soon: true },
+
+  { href: '#', label: 'Pwodwi Shop', icon: ShoppingBag, capability: 'manage_subscriptions', group: 'commerce', soon: true },
+  { href: '#', label: 'Konsiltasyon', icon: CalendarRange, capability: 'manage_subscriptions', group: 'commerce', soon: true },
+
+  { href: '#', label: 'SEO Metadata', icon: Search, capability: 'manage_admins', group: 'seo', soon: true },
+  { href: '#', label: 'Redireksyon', icon: Link2, capability: 'manage_admins', group: 'seo', soon: true },
+
+  { href: '#', label: 'Wòl & Pèmisyon', icon: ShieldCheck, capability: 'manage_admins', group: 'users', soon: true },
+  { href: '#', label: 'Sesyon aktif', icon: KeyRound, capability: 'manage_admins', group: 'users', soon: true },
+
+  { href: '#', label: 'Jounal odit', icon: ScrollText, capability: 'manage_admins', group: 'system', soon: true },
+  { href: '#', label: 'Backup', icon: Database, capability: 'manage_admins', group: 'system', soon: true },
 ];
 
 export function navLinksForRole(role: AdminRole | null | undefined): AdminNavLink[] {
@@ -209,4 +288,39 @@ export function navLinksForRole(role: AdminRole | null | undefined): AdminNavLin
   // them down.
   const effective: AdminRole = role ?? 'admin';
   return ADMIN_NAV_LINKS.filter((l) => hasCapability(effective, l.capability));
+}
+
+export type AdminNavSection = {
+  id: AdminNavGroup;
+  label: string;
+  links: AdminNavLink[];
+};
+
+/**
+ * The sidebar as the CMS renders it: a standalone Dashboard link on top,
+ * then each group (in ADMIN_NAV_GROUPS order) holding the real links this
+ * role can use plus any "Byento" placeholders they'd eventually own. Empty
+ * groups are dropped so lesser roles never see hollow headers.
+ */
+export function groupedNavForRole(role: AdminRole | null | undefined): {
+  top: AdminNavLink[];
+  sections: AdminNavSection[];
+} {
+  const effective: AdminRole = role ?? 'admin';
+  const visible = (l: AdminNavLink) => hasCapability(effective, l.capability);
+  const real = ADMIN_NAV_LINKS.filter(visible);
+  const soon = ADMIN_NAV_SOON.filter(visible);
+
+  const top = real.filter((l) => l.href === '/admin');
+
+  const sections = ADMIN_NAV_GROUPS.map(({ id, label }) => ({
+    id,
+    label,
+    links: [
+      ...real.filter((l) => l.group === id && l.href !== '/admin'),
+      ...soon.filter((l) => l.group === id),
+    ],
+  })).filter((s) => s.links.length > 0);
+
+  return { top, sections };
 }
