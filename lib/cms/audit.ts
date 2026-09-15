@@ -13,7 +13,8 @@ export type AuditEntry = {
     | 'template'
     | 'product'
     | 'coupon'
-    | 'backup';
+    | 'backup'
+    | 'chrome';
   entity_id?: string | null;
   summary?: string | null;
 };

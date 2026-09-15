@@ -239,6 +239,7 @@ export const ADMIN_NAV_LINKS: readonly AdminNavLink[] = [
   { href: '/admin/imaj', label: 'Imaj paj dakèy', icon: ImageIcon, capability: 'manage_resources', group: 'media' },
 
   // ── Konsepsyon ──────────────────────────────────────────────────────
+  { href: '/admin/menus', label: 'Meni, Header & Footer', icon: ListTree, capability: 'manage_guides', group: 'design' },
   { href: '/admin/templates', label: 'Modèl', icon: Layers, capability: 'manage_guides', group: 'design' },
 
   // ── Kominote ────────────────────────────────────────────────────────
@@ -279,8 +280,6 @@ export const ADMIN_NAV_SOON: readonly AdminNavLink[] = [
   { href: '#', label: 'Temwayaj', icon: MessagesSquare, capability: 'manage_resources', group: 'content', soon: true },
 
   { href: '#', label: 'Page Builder', icon: PanelsTopLeft, capability: 'manage_admins', group: 'design', soon: true },
-  { href: '#', label: 'Meni', icon: ListTree, capability: 'manage_admins', group: 'design', soon: true },
-  { href: '#', label: 'Header & Footer', icon: PanelsTopLeft, capability: 'manage_admins', group: 'design', soon: true },
 
   { href: '#', label: 'Konsiltasyon', icon: CalendarRange, capability: 'manage_subscriptions', group: 'commerce', soon: true },
 

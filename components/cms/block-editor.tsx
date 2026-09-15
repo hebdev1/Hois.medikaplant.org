@@ -23,7 +23,7 @@ function reid(blocks: Block[]): Block[] {
   return blocks.map((b) => ({ ...b, id: gen() }));
 }
 
-const BLOCK_ORDER: BlockType[] = ['heading', 'paragraph', 'richtext', 'image', 'button', 'divider'];
+const BLOCK_ORDER: BlockType[] = ['heading', 'paragraph', 'richtext', 'image', 'button', 'badge', 'divider'];
 
 export function BlockEditor({
   blocks,
@@ -333,6 +333,39 @@ function BlockFields({
             className={`${inputCls} font-mono text-xs`}
             placeholder="Lyen (/paj/…, /laboratwa, oswa https://…)"
           />
+        </div>
+      );
+    case 'badge':
+      return (
+        <div className="space-y-2">
+          <input
+            value={block.label}
+            onChange={(e) => onChange({ label: e.target.value })}
+            className={inputCls}
+            placeholder="Tèks badj la (egz. Nouvo)"
+          />
+          <div className="grid grid-cols-2 gap-2">
+            <select
+              value={block.variant}
+              onChange={(e) => onChange({ variant: e.target.value })}
+              className="px-3 py-2 rounded-lg border border-cream-200 text-sm bg-white"
+            >
+              <option value="primary">Vèt (prensipal)</option>
+              <option value="secondary">Lò</option>
+              <option value="success">Siksè (vèt klè)</option>
+              <option value="warning">Avètisman</option>
+              <option value="error">Erè (wouj)</option>
+            </select>
+            <select
+              value={block.appearance}
+              onChange={(e) => onChange({ appearance: e.target.value })}
+              className="px-3 py-2 rounded-lg border border-cream-200 text-sm bg-white"
+            >
+              <option value="subtle">Dou</option>
+              <option value="solid">Plen</option>
+              <option value="outline">Kontou</option>
+            </select>
+          </div>
         </div>
       );
     case 'divider':

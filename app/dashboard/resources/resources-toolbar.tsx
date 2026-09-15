@@ -2,10 +2,10 @@
 
 import React from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Search, FileText, Play, Volume2, X, Loader2 } from 'lucide-react';
+import { Search, FileText, Play, Volume2, Film, X, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-type FilterType = 'all' | 'pdf' | 'video' | 'audio';
+type FilterType = 'all' | 'pdf' | 'video' | 'audio' | 'salon';
 
 type Counts = Record<FilterType, number>;
 
@@ -14,6 +14,7 @@ const FILTERS: { id: FilterType; label: string; icon: typeof FileText | null }[]
   { id: 'pdf', label: 'PDF', icon: FileText },
   { id: 'video', label: 'Videyo', icon: Play },
   { id: 'audio', label: 'Odyo', icon: Volume2 },
+  { id: 'salon', label: 'Salon', icon: Film },
 ];
 
 export default function ResourcesToolbar({ counts }: { counts: Counts }) {

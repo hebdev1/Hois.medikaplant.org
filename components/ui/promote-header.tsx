@@ -14,6 +14,7 @@ import {
   ArrowRight,
 } from 'lucide-react';
 import { studentPortalNav } from '@/app/aprann/portal-access';
+import { getPublicChrome } from './site-chrome-action';
 
 // ───────────────────────────────────────────────────────────────────────────
 // MedikaPlant landing header — adapted from the generic "PromoteHeader"
@@ -103,6 +104,16 @@ export default function PromoteHeader() {
   // the pricing anchor, which looks broken). Show their dashboard/panel instead.
   const [loggedIn, setLoggedIn] = React.useState(false);
   const [isAdmin, setIsAdmin] = React.useState(false);
+  // Header nav + announcement resolved from the CMS (site-chrome). Seeded with
+  // the hard-coded defaults so the bar renders instantly and never blanks even
+  // if the fetch fails.
+  const [nav, setNav] = React.useState<NavItem[]>(NAV);
+  const [ann, setAnn] = React.useState({
+    active: true,
+    text: 'Vin enskri kòm manb jodi a pou w ka tou benefisye nan rabè sa a.',
+    ctaLabel: 'Wè pri yo',
+    ctaHref: '#pri',
+  });
 
   React.useEffect(() => {
     let alive = true;
@@ -112,6 +123,15 @@ export default function PromoteHeader() {
         setShowPortal(r.show);
         setLoggedIn(r.loggedIn);
         setIsAdmin(r.isAdmin);
+      })
+      .catch(() => {});
+    getPublicChrome()
+      .then((c) => {
+        if (!alive) return;
+        if (c.headerNav?.length) {
+          setNav(c.headerNav.map((l) => ({ href: l.url, label: l.label, target: l.target })));
+        }
+        if (c.announcement) setAnn(c.announcement);
       })
       .catch(() => {});
     return () => {
@@ -190,27 +210,26 @@ export default function PromoteHeader() {
         Ale dirèkteman nan kontni
       </a>
 
-      {/* Announcement bar, drives traffic to pricing */}
-      <div className="w-full border-b border-cream-200 bg-gradient-to-r from-brand-50/60 to-white">
-        <div className="mx-auto flex max-w-7xl items-center justify-center gap-3 px-4 py-1.5 text-xs sm:text-sm">
-          <span className="inline-flex items-center gap-1 rounded-full border border-brand-200 bg-white px-2 py-0.5 font-bold text-brand-700">
-            Nouvo
-          </span>
-          <span className="text-ink-muted hidden sm:inline">
-            Vin enskri kòm manb jodi a pou w ka tou benefisye nan rabè sa a.
-          </span>
-          <span className="text-ink-muted sm:hidden">
-            Platfòm Hoïs VIP a ouvè
-          </span>
-          <Link
-            href="#pri"
-            className="inline-flex items-center gap-1 underline decoration-brand-300 decoration-dashed underline-offset-4 hover:decoration-solid text-ink font-medium"
-          >
-            Wè pri yo
-            <ArrowRight className="w-3 h-3" strokeWidth={2.4} />
-          </Link>
+      {/* Announcement bar — content managed in /admin/menus */}
+      {ann.active && (
+        <div className="w-full border-b border-cream-200 bg-gradient-to-r from-brand-50/60 to-white">
+          <div className="mx-auto flex max-w-7xl items-center justify-center gap-3 px-4 py-1.5 text-xs sm:text-sm">
+            <span className="inline-flex items-center gap-1 rounded-full border border-brand-200 bg-white px-2 py-0.5 font-bold text-brand-700 shrink-0">
+              Nouvo
+            </span>
+            <span className="text-ink-muted truncate">{ann.text}</span>
+            {ann.ctaLabel && (
+              <Link
+                href={ann.ctaHref || '#'}
+                className="inline-flex items-center gap-1 underline decoration-brand-300 decoration-dashed underline-offset-4 hover:decoration-solid text-ink font-medium shrink-0"
+              >
+                {ann.ctaLabel}
+                <ArrowRight className="w-3 h-3" strokeWidth={2.4} />
+              </Link>
+            )}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Sticky main header.
           Two layers of dynamic frosted-glass effect on scroll:
@@ -298,7 +317,7 @@ export default function PromoteHeader() {
                 cluster sits exactly between brand + CTAs no matter what
                 widths they have. */}
             <nav className="hidden md:flex justify-self-center items-center gap-1">
-              {NAV.map((item) => {
+              {nav.map((item) => {
                 // External links (e.g. Boutik → medikaplantshop.com)
                 // open in a new tab so the member's dashboard session
                 // stays put. Internal + hash links use the SPA path.

@@ -4,6 +4,7 @@
 
 import Link from 'next/link';
 import { sanitizeGuideHtml } from '@/lib/sanitize-html';
+import { Badge, type BadgeVariant, type BadgeAppearance } from '@/components/ui/cvui-badge';
 
 export type Block =
   | { id: string; type: 'heading'; text: string; level: 2 | 3 }
@@ -11,6 +12,7 @@ export type Block =
   | { id: string; type: 'richtext'; html: string }
   | { id: string; type: 'image'; url: string; alt?: string; caption?: string }
   | { id: string; type: 'button'; label: string; href: string; variant: 'primary' | 'secondary' }
+  | { id: string; type: 'badge'; label: string; variant: BadgeVariant; appearance: BadgeAppearance }
   | { id: string; type: 'divider' };
 
 export type BlockType = Block['type'];
@@ -21,6 +23,7 @@ export const BLOCK_LABELS: Record<BlockType, string> = {
   richtext: 'Tèks rich',
   image: 'Imaj',
   button: 'Bouton',
+  badge: 'Badj',
   divider: 'Liy separasyon',
 };
 
@@ -44,6 +47,8 @@ export function newBlock(type: BlockType): Block {
       return { id: uid(), type, url: '', alt: '', caption: '' };
     case 'button':
       return { id: uid(), type, label: 'Klike la', href: '#', variant: 'primary' };
+    case 'badge':
+      return { id: uid(), type, label: 'Nouvo', variant: 'primary', appearance: 'subtle' };
     case 'divider':
       return { id: uid(), type };
   }
@@ -134,6 +139,13 @@ function BlockView({ block }: { block: Block }) {
         </div>
       );
     }
+    case 'badge':
+      if (!block.label) return null;
+      return (
+        <div>
+          <Badge label={block.label} variant={block.variant} appearance={block.appearance} />
+        </div>
+      );
     case 'divider':
       return <hr className="border-cream-200" />;
   }
