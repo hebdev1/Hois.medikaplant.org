@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import ArticleEditor from './article-editor';
 import type { Block } from '@/components/cms/page-blocks';
+import { getLakouTabOptions } from '../../lakou/actions';
 
 export const metadata = { title: 'Admin · Modifye atik' };
 export const dynamic = 'force-dynamic';
@@ -9,13 +10,16 @@ export const dynamic = 'force-dynamic';
 export default async function EditArticle({ params }: { params: { id: string } }) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const sb = createClient() as any;
-  const { data } = await sb
-    .from('cms_articles')
-    .select(
-      'id, title, slug, status, excerpt, cover_image, category, tags, blocks, seo_title, seo_description'
-    )
-    .eq('id', params.id)
-    .maybeSingle();
+  const [{ data }, lakouTabs] = await Promise.all([
+    sb
+      .from('cms_articles')
+      .select(
+        'id, title, slug, status, excerpt, cover_image, category, tags, blocks, seo_title, seo_description, lakou_tab_id'
+      )
+      .eq('id', params.id)
+      .maybeSingle(),
+    getLakouTabOptions(),
+  ]);
 
   if (!data) notFound();
 
@@ -31,7 +35,8 @@ export default async function EditArticle({ params }: { params: { id: string } }
     blocks: (Array.isArray(data.blocks) ? data.blocks : []) as Block[],
     seo_title: (data.seo_title as string) ?? '',
     seo_description: (data.seo_description as string) ?? '',
+    lakou_tab_id: (data.lakou_tab_id as string | null) ?? '',
   };
 
-  return <ArticleEditor article={article} />;
+  return <ArticleEditor article={article} lakouTabs={lakouTabs} />;
 }

@@ -48,6 +48,7 @@ type FormInput = {
   duration_seconds: number | null;
   file_size_bytes: number | null;
   published: boolean;
+  lakou_tab_id: string | null;
 };
 
 function readForm(formData: FormData): FormInput {
@@ -69,6 +70,7 @@ function readForm(formData: FormData): FormInput {
     duration_seconds: numOrNull('duration_seconds'),
     file_size_bytes: numOrNull('file_size_bytes'),
     published: formData.get('published') === 'on',
+    lakou_tab_id: get('lakou_tab_id') || null,
   };
 }
 
@@ -135,11 +137,13 @@ export async function createResource(
   const v = validate(input);
   if (!v.ok) return { error: v.error };
 
-  const insert: ResourceInsert = { ...v.data, created_by: auth.user.id };
+  // lakou_tab_id isn't in the generated types yet — merge it in and cast.
+  const insert = { ...v.data, created_by: auth.user.id, lakou_tab_id: input.lakou_tab_id };
 
   const { data, error } = await auth.supabase
     .from('resources')
-    .insert(insert)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    .insert(insert as any)
     .select('id')
     .single();
   if (error || !data) return { error: error?.message ?? 'Erè inkoni.' };
@@ -164,11 +168,12 @@ export async function updateResource(
   const v = validate(input);
   if (!v.ok) return { error: v.error };
 
-  const update: ResourceUpdate = v.data;
+  const update = { ...v.data, lakou_tab_id: input.lakou_tab_id };
 
   const { error } = await auth.supabase
     .from('resources')
-    .update(update)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    .update(update as any)
     .eq('id', resourceId);
   if (error) return { error: error.message };
 

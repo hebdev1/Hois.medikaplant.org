@@ -63,6 +63,7 @@ export async function updateArticle(
     blocks: Block[];
     seo_title?: string;
     seo_description?: string;
+    lakou_tab_id?: string | null;
   }
 ): Promise<ArticleState> {
   const auth = await assertAdmin();
@@ -81,6 +82,7 @@ export async function updateArticle(
       blocks: patch.blocks,
       seo_title: patch.seo_title || null,
       seo_description: patch.seo_description || null,
+      lakou_tab_id: patch.lakou_tab_id ?? null,
       updated_at: new Date().toISOString(),
     })
     .eq('id', id);

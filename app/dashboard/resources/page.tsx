@@ -14,7 +14,6 @@ import { createClient } from '@/lib/supabase/server';
 import { getCurrentUser } from '@/lib/supabase/auth';
 import Topbar from '@/components/dashboard/topbar';
 import ResourcesToolbar from './resources-toolbar';
-import SalonGrid, { type SalonVideo } from './salon-grid';
 import { cn } from '@/lib/utils';
 import type { Database } from '@/types/database';
 
@@ -72,7 +71,7 @@ export default async function ResourcesPage({
   const user = await getCurrentUser();
   if (!user) return null;
 
-  const [profileResult, allResourcesResult, videosResult] = await Promise.all([
+  const [profileResult, allResourcesResult] = await Promise.all([
     supabase
       .from('profiles')
       .select('plan, full_name, email, avatar_url')
@@ -82,14 +81,6 @@ export default async function ResourcesPage({
       .from('resources')
       .select('*')
       .eq('published', true)
-      .order('created_at', { ascending: false }),
-    // cms_videos isn't in the generated types yet (same as the admin video
-    // pages) — read the published ones through a loose handle for the Salon tab.
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (supabase as any)
-      .from('cms_videos')
-      .select('id, title, slug, description, video_url, thumbnail, category')
-      .eq('status', 'published')
       .order('created_at', { ascending: false }),
   ]);
 
@@ -101,7 +92,6 @@ export default async function ResourcesPage({
   } | null;
 
   const allResources = (allResourcesResult.data ?? []) as ResourceRow[];
-  const videos = (videosResult.data ?? []) as SalonVideo[];
 
   // Counts per type (across the full library — independent of filter)
   const counts = {
@@ -109,17 +99,10 @@ export default async function ResourcesPage({
     pdf: allResources.filter((r) => r.type === 'pdf').length,
     video: allResources.filter((r) => r.type === 'video').length,
     audio: allResources.filter((r) => r.type === 'audio').length,
-    salon: videos.length,
   } as const;
 
   // Apply filters
-  const filterType = searchParams.type as
-    | 'pdf'
-    | 'video'
-    | 'audio'
-    | 'salon'
-    | undefined;
-  const isSalon = filterType === 'salon';
+  const filterType = searchParams.type as 'pdf' | 'video' | 'audio' | undefined;
   const query = searchParams.q?.toLowerCase().trim() ?? '';
 
   const filtered = allResources.filter((r) => {
@@ -130,14 +113,6 @@ export default async function ResourcesPage({
     }
     return true;
   });
-
-  const filteredVideos = isSalon
-    ? videos.filter((v) => {
-        if (!query) return true;
-        const blob = `${v.title} ${v.description ?? ''} ${v.category ?? ''}`.toLowerCase();
-        return blob.includes(query);
-      })
-    : [];
 
   const userPlanRank = PLAN_RANK[profile?.plan ?? 'basic'] ?? 0;
   const userName =
@@ -180,23 +155,7 @@ export default async function ResourcesPage({
         <ResourcesToolbar counts={counts} />
 
         {/* Grid or empty state */}
-        {isSalon ? (
-          filteredVideos.length === 0 ? (
-            <div className="rounded-2xl bg-cream-50 border border-dashed border-cream-200 p-10 md:p-14 text-center">
-              <div className="grid place-items-center w-12 h-12 rounded-2xl bg-white border border-cream-200 text-earth-500 mx-auto mb-3">
-                <Inbox className="w-5 h-5" strokeWidth={1.8} />
-              </div>
-              <div className="font-display text-lg font-bold text-ink">
-                Poko gen videyo nan Salon an.
-              </div>
-              <p className="text-sm text-earth-600 mt-1.5">
-                Videyo yo jere nan admin lan (Videyo). Se sèlman sa ki pibliye yo ki parèt la.
-              </p>
-            </div>
-          ) : (
-            <SalonGrid videos={filteredVideos} />
-          )
-        ) : filtered.length === 0 ? (
+        {filtered.length === 0 ? (
           <div className="rounded-2xl bg-cream-50 border border-dashed border-cream-200 p-10 md:p-14 text-center">
             <div className="grid place-items-center w-12 h-12 rounded-2xl bg-white border border-cream-200 text-earth-500 mx-auto mb-3">
               <Inbox className="w-5 h-5" strokeWidth={1.8} />

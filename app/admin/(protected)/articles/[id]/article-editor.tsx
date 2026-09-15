@@ -8,6 +8,7 @@ import { type Block } from '@/components/cms/page-blocks';
 import { BlockEditor } from '@/components/cms/block-editor';
 import { RevisionsPanel } from '@/components/cms/revisions-panel';
 import { updateArticle, setArticleStatus } from '../actions';
+import { type LakouTabOption } from '../../lakou/actions';
 
 type ArticleData = {
   id: string;
@@ -21,9 +22,16 @@ type ArticleData = {
   blocks: Block[];
   seo_title: string;
   seo_description: string;
+  lakou_tab_id: string;
 };
 
-export default function ArticleEditor({ article }: { article: ArticleData }) {
+export default function ArticleEditor({
+  article,
+  lakouTabs,
+}: {
+  article: ArticleData;
+  lakouTabs: LakouTabOption[];
+}) {
   const router = useRouter();
   const [title, setTitle] = React.useState(article.title);
   const [slug, setSlug] = React.useState(article.slug);
@@ -34,6 +42,7 @@ export default function ArticleEditor({ article }: { article: ArticleData }) {
   const [blocks, setBlocks] = React.useState<Block[]>(article.blocks);
   const [seoTitle, setSeoTitle] = React.useState(article.seo_title);
   const [seoDesc, setSeoDesc] = React.useState(article.seo_description);
+  const [lakouTabId, setLakouTabId] = React.useState(article.lakou_tab_id ?? '');
   const [status, setStatus] = React.useState(article.status);
   const [saving, setSaving] = React.useState(false);
   const [pub, setPub] = React.useState(false);
@@ -56,6 +65,7 @@ export default function ArticleEditor({ article }: { article: ArticleData }) {
       blocks,
       seo_title: seoTitle,
       seo_description: seoDesc,
+      lakou_tab_id: lakouTabId || null,
     });
     setSaving(false);
     if (res.ok) {
@@ -171,6 +181,21 @@ export default function ArticleEditor({ article }: { article: ArticleData }) {
               // eslint-disable-next-line @next/next/no-img-element
               <img src={cover} alt="" className="mt-2 w-full max-h-40 object-cover rounded-lg border border-cream-200" />
             )}
+          </label>
+          <label className="block">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-earth-600">Tab Lakou Limyè</span>
+            <select
+              value={lakouTabId}
+              onChange={(e) => setLakouTabId(e.target.value)}
+              className={inputCls}
+            >
+              <option value="">— Pa nan Lakou Limyè —</option>
+              {lakouTabs.map((t) => (
+                <option key={t.id} value={t.id}>
+                  {t.name}
+                </option>
+              ))}
+            </select>
           </label>
         </section>
 

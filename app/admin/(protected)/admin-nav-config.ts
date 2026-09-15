@@ -35,6 +35,7 @@ import {
   Images,
   ArrowRightLeft,
   Newspaper,
+  Clapperboard,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -224,6 +225,7 @@ export const ADMIN_NAV_LINKS: readonly AdminNavLink[] = [
   { href: '/admin/pages', label: 'Paj', icon: FileText, capability: 'manage_guides', group: 'content' },
   { href: '/admin/articles', label: 'Atik', icon: Newspaper, capability: 'manage_guides', group: 'content' },
   { href: '/admin/videos', label: 'Videyo', icon: Video, capability: 'manage_guides', group: 'content' },
+  { href: '/admin/lakou', label: 'Lakou Limyè', icon: Clapperboard, capability: 'manage_guides', group: 'content' },
   { href: '/admin/laboratwa', label: 'Laboratwa', icon: Sprout, capability: 'manage_guides', group: 'content' },
   { href: '/admin/glose', label: 'Glosè plant', icon: Leaf, capability: 'manage_guides', group: 'content' },
   { href: '/admin/doz', label: 'Resèt ak Dòz', icon: FlaskConical, capability: 'manage_guides', group: 'content' },

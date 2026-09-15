@@ -6,6 +6,7 @@ import { getCurrentUser } from '@/lib/supabase/auth';
 import ResourceForm from '../resource-form';
 import type { Database } from '@/types/database';
 import { hasCapability, type AdminRole } from '../../admin-nav-config';
+import { getLakouTabOptions } from '../../lakou/actions';
 
 export const metadata = { title: 'Admin · Modifye resous' };
 export const dynamic = 'force-dynamic';
@@ -42,6 +43,7 @@ export default async function EditResourcePage({
 
   if (error || !data) notFound();
   const resource = data as Resource;
+  const lakouTabs = await getLakouTabOptions();
 
   return (
     <div className="p-5 md:p-8 lg:p-10 max-w-[860px] mx-auto">
@@ -82,7 +84,7 @@ export default async function EditResourcePage({
       )}
 
       <section className="bg-white border border-cream-200 rounded-2xl shadow-card p-5 md:p-8">
-        <ResourceForm mode="edit" resource={resource} />
+        <ResourceForm mode="edit" resource={resource} lakouTabs={lakouTabs} />
       </section>
     </div>
   );

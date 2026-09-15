@@ -19,6 +19,7 @@ import {
   Crown,
   FlaskConical,
   Lock,
+  Sparkles,
   type LucideIcon,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -49,6 +50,7 @@ type NavItem = {
 
 const NAV_ITEMS: readonly NavItem[] = [
   { href: '/dashboard', label: 'Tablodebò', icon: LayoutDashboard },
+  { href: '/dashboard/lakou-limye', label: 'Lakou Limyè', icon: Sparkles },
   { href: '/dashboard/programs', label: 'Pwotokòl mwen yo', icon: FolderOpen },
   { href: '/dashboard/kou', label: 'Klas mwen yo', icon: GraduationCap },
   { href: '/dashboard/resources', label: 'Telechajman', icon: Download, badge: '12' },

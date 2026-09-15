@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Video, Plus, Loader2, X, Trash2, ExternalLink } from 'lucide-react';
 import { VideoEmbed } from '@/components/cms/video-embed';
 import { saveVideo, setVideoStatus, deleteVideo } from './actions';
+import { type LakouTabOption } from '../lakou/actions';
 
 type Row = {
   id: string;
@@ -15,9 +16,16 @@ type Row = {
   video_url: string | null;
   thumbnail: string | null;
   category: string | null;
+  lakou_tab_id: string | null;
 };
 
-export default function VideosAdmin({ videos }: { videos: Row[] }) {
+export default function VideosAdmin({
+  videos,
+  lakouTabs,
+}: {
+  videos: Row[];
+  lakouTabs: LakouTabOption[];
+}) {
   const router = useRouter();
   const [editing, setEditing] = React.useState<Row | null | 'new'>(null);
 
@@ -91,6 +99,7 @@ export default function VideosAdmin({ videos }: { videos: Row[] }) {
       {editing && (
         <VideoModal
           video={editing === 'new' ? null : editing}
+          lakouTabs={lakouTabs}
           onClose={() => setEditing(null)}
           onChanged={() => {
             setEditing(null);
@@ -104,10 +113,12 @@ export default function VideosAdmin({ videos }: { videos: Row[] }) {
 
 function VideoModal({
   video,
+  lakouTabs,
   onClose,
   onChanged,
 }: {
   video: Row | null;
+  lakouTabs: LakouTabOption[];
   onClose: () => void;
   onChanged: () => void;
 }) {
@@ -117,6 +128,7 @@ function VideoModal({
   const [desc, setDesc] = React.useState(video?.description ?? '');
   const [thumb, setThumb] = React.useState(video?.thumbnail ?? '');
   const [category, setCategory] = React.useState(video?.category ?? '');
+  const [lakouTabId, setLakouTabId] = React.useState(video?.lakou_tab_id ?? '');
   const [status, setStatus] = React.useState(video?.status ?? 'draft');
   const [busy, setBusy] = React.useState(false);
   const [confirmDel, setConfirmDel] = React.useState(false);
@@ -133,6 +145,7 @@ function VideoModal({
       video_url: url,
       thumbnail: thumb,
       category,
+      lakou_tab_id: lakouTabId || null,
     });
     setBusy(false);
     if (res.ok) return res.id ?? video?.id ?? null;
@@ -217,6 +230,25 @@ function VideoModal({
           <label className="block">
             <span className="text-[11px] font-bold uppercase tracking-wider text-earth-600">Imaj miniyati (opsyonèl, URL)</span>
             <input value={thumb} onChange={(e) => setThumb(e.target.value)} className={`${inputCls} font-mono text-xs`} />
+            <span className="mt-1 block text-[11px] text-earth-500">
+              Kite l vid pou videyo YouTube — n ap pran miniyati a otomatikman.
+            </span>
+          </label>
+
+          <label className="block">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-earth-600">Tab Lakou Limyè</span>
+            <select
+              value={lakouTabId}
+              onChange={(e) => setLakouTabId(e.target.value)}
+              className={inputCls}
+            >
+              <option value="">— Pa nan Lakou Limyè —</option>
+              {lakouTabs.map((t) => (
+                <option key={t.id} value={t.id}>
+                  {t.name}
+                </option>
+              ))}
+            </select>
           </label>
 
           {err && <p className="text-xs text-rose-700">{err}</p>}

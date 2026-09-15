@@ -5,6 +5,7 @@ import ResourceForm from '../resource-form';
 import { createClient } from '@/lib/supabase/server';
 import { getCurrentUser } from '@/lib/supabase/auth';
 import { hasCapability, type AdminRole } from '../../admin-nav-config';
+import { getLakouTabOptions } from '../../lakou/actions';
 
 export const metadata = { title: 'Admin · Nouvo resous' };
 export const dynamic = 'force-dynamic';
@@ -24,6 +25,8 @@ export default async function NewResourcePage() {
   if (!hasCapability(adminRole, 'manage_resources')) {
     redirect('/admin');
   }
+
+  const lakouTabs = await getLakouTabOptions();
 
   return (
     <div className="p-5 md:p-8 lg:p-10 max-w-[860px] mx-auto">
@@ -53,7 +56,7 @@ export default async function NewResourcePage() {
       </header>
 
       <section className="bg-white border border-cream-200 rounded-2xl shadow-card p-5 md:p-8">
-        <ResourceForm mode="create" />
+        <ResourceForm mode="create" lakouTabs={lakouTabs} />
       </section>
     </div>
   );

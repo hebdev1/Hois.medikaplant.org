@@ -43,6 +43,7 @@ export async function saveVideo(input: {
   video_url?: string;
   thumbnail?: string;
   category?: string;
+  lakou_tab_id?: string | null;
 }): Promise<VideoState> {
   const auth = await assertAdmin();
   if (!auth.ok) return { error: auth.error };
@@ -56,6 +57,7 @@ export async function saveVideo(input: {
     video_url: input.video_url || null,
     thumbnail: input.thumbnail || null,
     category: input.category || null,
+    lakou_tab_id: input.lakou_tab_id ?? null,
     updated_at: new Date().toISOString(),
   };
 

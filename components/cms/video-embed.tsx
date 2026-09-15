@@ -16,6 +16,19 @@ export function toEmbed(url: string): {
   return { kind: 'file', src: u };
 }
 
+/** Best-effort poster thumbnail for a video URL. YouTube links resolve to
+ *  their hqdefault frame; everything else returns null (caller shows a
+ *  placeholder or the video's own saved thumbnail). */
+export function videoThumb(url: string | null | undefined): string | null {
+  if (!url) return null;
+  const e = toEmbed(url);
+  if (e.kind === 'youtube') {
+    const id = e.src.split('/embed/')[1]?.split(/[?&]/)[0];
+    return id ? `https://img.youtube.com/vi/${id}/hqdefault.jpg` : null;
+  }
+  return null;
+}
+
 export function VideoEmbed({ url, title }: { url: string; title?: string }) {
   const e = toEmbed(url);
   if (e.kind === 'none') {

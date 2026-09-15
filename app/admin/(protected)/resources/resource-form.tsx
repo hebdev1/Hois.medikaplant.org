@@ -20,12 +20,14 @@ import {
 import ResourceUpload, { type UploadedFile } from './resource-upload';
 import type { Database } from '@/types/database';
 import { cn } from '@/lib/utils';
+import { type LakouTabOption } from '../lakou/actions';
 
 type ResourceRow = Database['public']['Tables']['resources']['Row'];
 
-type Props =
+type Props = (
   | { mode: 'create'; resource?: undefined }
-  | { mode: 'edit'; resource: ResourceRow };
+  | { mode: 'edit'; resource: ResourceRow }
+) & { lakouTabs: LakouTabOption[] };
 
 const TYPE_OPTIONS: {
   value: 'pdf' | 'video' | 'audio';
@@ -289,6 +291,34 @@ export default function ResourceForm(props: Props) {
             Ti badj ki parèt sou kat la (opsyonèl).
           </p>
         </div>
+      </div>
+
+      {/* Lakou Limyè tab */}
+      <div>
+        <label
+          htmlFor="lakou_tab_id"
+          className="block text-xs font-bold uppercase tracking-wide text-earth-700 mb-1.5"
+        >
+          Tab Lakou Limyè
+        </label>
+        <select
+          id="lakou_tab_id"
+          name="lakou_tab_id"
+          defaultValue={
+            (resource as { lakou_tab_id?: string | null } | null)?.lakou_tab_id ?? ''
+          }
+          className="w-full px-3 py-2.5 text-sm bg-white border border-cream-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-forest-200 focus:border-forest-300"
+        >
+          <option value="">— Pa nan Lakou Limyè —</option>
+          {props.lakouTabs.map((t) => (
+            <option key={t.id} value={t.id}>
+              {t.name}
+            </option>
+          ))}
+        </select>
+        <p className="mt-1 text-[11px] text-earth-500">
+          Si w chwazi yon tab, resous sa a ap parèt nan Lakou Limyè manm yo tou.
+        </p>
       </div>
 
       {/* Published toggle */}
