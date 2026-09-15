@@ -31,6 +31,10 @@ import {
   ScrollText,
   Database,
   ShoppingBag,
+  Ticket,
+  Images,
+  ArrowRightLeft,
+  Newspaper,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -217,6 +221,9 @@ export const ADMIN_NAV_LINKS: readonly AdminNavLink[] = [
   { href: '/admin', label: 'Dashboard', icon: LayoutDashboard, capability: 'overview', group: 'content' },
 
   // ── Kontni ──────────────────────────────────────────────────────────
+  { href: '/admin/pages', label: 'Paj', icon: FileText, capability: 'manage_guides', group: 'content' },
+  { href: '/admin/articles', label: 'Atik', icon: Newspaper, capability: 'manage_guides', group: 'content' },
+  { href: '/admin/videos', label: 'Videyo', icon: Video, capability: 'manage_guides', group: 'content' },
   { href: '/admin/laboratwa', label: 'Laboratwa', icon: Sprout, capability: 'manage_guides', group: 'content' },
   { href: '/admin/glose', label: 'Glosè plant', icon: Leaf, capability: 'manage_guides', group: 'content' },
   { href: '/admin/doz', label: 'Resèt ak Dòz', icon: FlaskConical, capability: 'manage_guides', group: 'content' },
@@ -228,7 +235,11 @@ export const ADMIN_NAV_LINKS: readonly AdminNavLink[] = [
   { href: '/admin/advice', label: 'Konsèy jou a', icon: Sparkles, capability: 'manage_advice', group: 'content' },
 
   // ── Medya ───────────────────────────────────────────────────────────
+  { href: '/admin/media', label: 'Bibliyotèk Medya', icon: Images, capability: 'manage_resources', group: 'media' },
   { href: '/admin/imaj', label: 'Imaj paj dakèy', icon: ImageIcon, capability: 'manage_resources', group: 'media' },
+
+  // ── Konsepsyon ──────────────────────────────────────────────────────
+  { href: '/admin/templates', label: 'Modèl', icon: Layers, capability: 'manage_guides', group: 'design' },
 
   // ── Kominote ────────────────────────────────────────────────────────
   // Swivi Sante hosts Pasyan/Segman/Plan under tabs at /admin/health?tab=…
@@ -241,13 +252,21 @@ export const ADMIN_NAV_LINKS: readonly AdminNavLink[] = [
 
   // ── Komès ───────────────────────────────────────────────────────────
   { href: '/admin/subscriptions', label: 'Abònman & Plan', icon: CreditCard, capability: 'manage_subscriptions', group: 'commerce' },
+  { href: '/admin/products', label: 'Pwodwi Shop', icon: ShoppingBag, capability: 'manage_subscriptions', group: 'commerce' },
+  { href: '/admin/coupons', label: 'Koupon', icon: Ticket, capability: 'manage_subscriptions', group: 'commerce' },
   { href: '/admin/hubspot', label: 'HubSpot CRM', icon: Link2, capability: 'view_hubspot', group: 'commerce' },
+
+  // ── SEO ─────────────────────────────────────────────────────────────
+  { href: '/admin/seo', label: 'SEO / Metadata', icon: Search, capability: 'manage_guides', group: 'seo' },
+  { href: '/admin/redirects', label: 'Redireksyon', icon: ArrowRightLeft, capability: 'manage_resources', group: 'seo' },
 
   // ── Itilizatè & Wòl ─────────────────────────────────────────────────
   { href: '/admin/users', label: 'Itilizatè', icon: Users, capability: 'manage_users', group: 'users' },
 
   // ── Sistèm ──────────────────────────────────────────────────────────
   { href: '/admin/notifications', label: 'Notifikasyon', icon: Bell, capability: 'broadcast_notifications', group: 'system' },
+  { href: '/admin/audit', label: 'Jounal odit', icon: ScrollText, capability: 'manage_admins', group: 'system' },
+  { href: '/admin/backup', label: 'Backup', icon: Database, capability: 'manage_admins', group: 'system' },
   { href: '/admin/settings', label: 'Paramèt', icon: SettingsIcon, capability: 'manage_self', group: 'system' },
 ];
 
@@ -257,29 +276,17 @@ export const ADMIN_NAV_LINKS: readonly AdminNavLink[] = [
  * built, move it into ADMIN_NAV_LINKS with a real href.
  */
 export const ADMIN_NAV_SOON: readonly AdminNavLink[] = [
-  { href: '#', label: 'Paj', icon: FileText, capability: 'manage_guides', group: 'content', soon: true },
-  { href: '#', label: 'Atik', icon: FileText, capability: 'manage_guides', group: 'content', soon: true },
-  { href: '#', label: 'Videyo', icon: Video, capability: 'manage_guides', group: 'content', soon: true },
   { href: '#', label: 'Temwayaj', icon: MessagesSquare, capability: 'manage_resources', group: 'content', soon: true },
-
-  { href: '#', label: 'Bibliyotèk Medya', icon: FolderKanban, capability: 'manage_resources', group: 'media', soon: true },
 
   { href: '#', label: 'Page Builder', icon: PanelsTopLeft, capability: 'manage_admins', group: 'design', soon: true },
   { href: '#', label: 'Meni', icon: ListTree, capability: 'manage_admins', group: 'design', soon: true },
   { href: '#', label: 'Header & Footer', icon: PanelsTopLeft, capability: 'manage_admins', group: 'design', soon: true },
-  { href: '#', label: 'Modèl (Templates)', icon: Layers, capability: 'manage_admins', group: 'design', soon: true },
 
-  { href: '#', label: 'Pwodwi Shop', icon: ShoppingBag, capability: 'manage_subscriptions', group: 'commerce', soon: true },
   { href: '#', label: 'Konsiltasyon', icon: CalendarRange, capability: 'manage_subscriptions', group: 'commerce', soon: true },
-
-  { href: '#', label: 'SEO Metadata', icon: Search, capability: 'manage_admins', group: 'seo', soon: true },
-  { href: '#', label: 'Redireksyon', icon: Link2, capability: 'manage_admins', group: 'seo', soon: true },
 
   { href: '#', label: 'Wòl & Pèmisyon', icon: ShieldCheck, capability: 'manage_admins', group: 'users', soon: true },
   { href: '#', label: 'Sesyon aktif', icon: KeyRound, capability: 'manage_admins', group: 'users', soon: true },
 
-  { href: '#', label: 'Jounal odit', icon: ScrollText, capability: 'manage_admins', group: 'system', soon: true },
-  { href: '#', label: 'Backup', icon: Database, capability: 'manage_admins', group: 'system', soon: true },
 ];
 
 export function navLinksForRole(role: AdminRole | null | undefined): AdminNavLink[] {
