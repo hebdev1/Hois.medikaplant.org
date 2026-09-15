@@ -1,5 +1,11 @@
 'use client';
 
+// Member dashboard sidebar. Refined, collapsible rail (w-64 ↔ icon-only)
+// adapted from a "dashboard sidebar" pattern, themed in the Hoïs palette and
+// wired to the real member navigation (grouped, with badges). Desktop collapse
+// state persists in localStorage; mobile uses a slide-in drawer triggered by
+// the topbar hamburger. Preserves the UserTour anchors + locked-path handling.
+
 import React from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -20,6 +26,8 @@ import {
   FlaskConical,
   Lock,
   Sparkles,
+  PanelLeftClose,
+  PanelLeftOpen,
   type LucideIcon,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -28,16 +36,11 @@ import { createClient } from '@/lib/supabase/client';
 import Avatar from './avatar';
 
 type SidebarProps = {
-  /** @deprecated kept for backward-compatibility with existing callers;
-   *  no longer used since admin/user dashboards are intentionally
-   *  isolated and there is no cross-link from here to /admin. */
+  /** @deprecated kept for backward-compatibility with existing callers. */
   isAdmin?: boolean;
   userName: string;
   planLabel: string;
   level?: number;
-  /** Optional public URL of the member's uploaded profile picture.
-   *  When present the sidebar user card renders it instead of the SVG
-   *  illustration so the member's identity is immediately recognizable. */
   avatarUrl?: string | null;
 };
 
@@ -48,21 +51,47 @@ type NavItem = {
   badge?: string;
 };
 
-const NAV_ITEMS: readonly NavItem[] = [
-  { href: '/dashboard', label: 'Tablodebò', icon: LayoutDashboard },
-  { href: '/dashboard/lakou-limye', label: 'Lakou Limyè', icon: Sparkles },
-  { href: '/dashboard/programs', label: 'Pwotokòl mwen yo', icon: FolderOpen },
-  { href: '/dashboard/kou', label: 'Klas mwen yo', icon: GraduationCap },
-  { href: '/dashboard/resources', label: 'Telechajman', icon: Download, badge: '12' },
-  { href: '/dashboard/health', label: 'Swivi Sante', icon: Activity },
-  { href: '/dashboard/guides', label: 'Gid & Konsèy', icon: BookOpen },
-  { href: '/dashboard/reset-doz', label: 'Resèt ak Dòz', icon: FlaskConical },
-  { href: '/dashboard/badges', label: 'Badj mwen yo', icon: Award },
-  { href: '/dashboard/vip', label: 'Espas VIP', icon: Crown },
-  { href: '/dashboard/forum', label: 'Fowòm', icon: MessagesSquare, badge: 'NEW' },
-  { href: '/dashboard/support', label: 'Sipò', icon: LifeBuoy },
+const NAV_GROUPS: { heading?: string; items: NavItem[] }[] = [
+  {
+    items: [
+      { href: '/dashboard', label: 'Tablodebò', icon: LayoutDashboard },
+      { href: '/dashboard/lakou-limye', label: 'Lakou Limyè', icon: Sparkles },
+    ],
+  },
+  {
+    heading: 'Sante',
+    items: [
+      { href: '/dashboard/health', label: 'Swivi Sante', icon: Activity },
+      { href: '/dashboard/programs', label: 'Pwotokòl mwen yo', icon: FolderOpen },
+      { href: '/dashboard/reset-doz', label: 'Resèt ak Dòz', icon: FlaskConical },
+    ],
+  },
+  {
+    heading: 'Aprann',
+    items: [
+      { href: '/dashboard/kou', label: 'Klas mwen yo', icon: GraduationCap },
+      { href: '/dashboard/guides', label: 'Gid & Konsèy', icon: BookOpen },
+      { href: '/dashboard/resources', label: 'Telechajman', icon: Download, badge: '12' },
+    ],
+  },
+  {
+    heading: 'Kominote',
+    items: [
+      { href: '/dashboard/forum', label: 'Fowòm', icon: MessagesSquare, badge: 'NEW' },
+      { href: '/dashboard/badges', label: 'Badj mwen yo', icon: Award },
+      { href: '/dashboard/vip', label: 'Espas VIP', icon: Crown },
+      { href: '/dashboard/support', label: 'Sipò', icon: LifeBuoy },
+    ],
+  },
+];
+
+// Plain bottom rows (model-style) — Settings + sign-out as clean nav rows,
+// not a heavy user card.
+const BOTTOM_ITEMS: NavItem[] = [
   { href: '/dashboard/settings', label: 'Kont mwen', icon: UserCircle },
 ];
+
+const STORAGE_KEY = 'hois:member:sidebar-open';
 
 export default function Sidebar({
   userName,
@@ -74,8 +103,29 @@ export default function Sidebar({
   const router = useRouter();
   const supabase = React.useMemo(() => createClient(), []);
   const [drawerOpen, setDrawerOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(true); // desktop expanded/collapsed
 
-  // Listen for the hamburger button in the topbar
+  React.useEffect(() => {
+    try {
+      if (localStorage.getItem(STORAGE_KEY) === '0') setOpen(false);
+    } catch {
+      /* storage blocked */
+    }
+  }, []);
+
+  function toggleCollapse() {
+    setOpen((prev) => {
+      const next = !prev;
+      try {
+        localStorage.setItem(STORAGE_KEY, next ? '1' : '0');
+      } catch {
+        /* ignore */
+      }
+      return next;
+    });
+  }
+
+  // Hamburger button in the topbar opens the mobile drawer
   React.useEffect(() => {
     function onOpen() {
       setDrawerOpen(true);
@@ -84,12 +134,10 @@ export default function Sidebar({
     return () => window.removeEventListener('open-user-nav-drawer', onOpen);
   }, []);
 
-  // Auto-close drawer on route change
   React.useEffect(() => {
     setDrawerOpen(false);
   }, [pathname]);
 
-  // Lock body scroll while drawer is open
   React.useEffect(() => {
     if (!drawerOpen) return;
     const original = document.body.style.overflow;
@@ -99,7 +147,6 @@ export default function Sidebar({
     };
   }, [drawerOpen]);
 
-  // ESC closes drawer
   React.useEffect(() => {
     if (!drawerOpen) return;
     function onKey(e: KeyboardEvent) {
@@ -115,146 +162,216 @@ export default function Sidebar({
     router.refresh();
   }
 
-  function NavList({
+  const isActive = (href: string) =>
+    href === '/dashboard'
+      ? pathname === '/dashboard'
+      : pathname === href || pathname.startsWith(`${href}/`);
+
+  function Row({
+    item,
+    collapsed,
     onLinkClick,
-    showBrand,
+  }: {
+    item: NavItem;
+    collapsed: boolean;
+    onLinkClick?: () => void;
+  }) {
+    const { href, label, icon: Icon, badge } = item;
+    const active = isActive(href);
+    const tourKey = 'nav-' + href.replace(/^\//, '').replace(/\//g, '-');
+
+    if (LOCKED_PATHS[href]) {
+      return (
+        <div
+          data-tour={tourKey}
+          aria-disabled="true"
+          title={collapsed ? `${label} (fèmen)` : 'Seksyon sa a fèmen pou kounye a'}
+          className={cn(
+            'flex items-center rounded-lg text-sm font-medium text-earth-400 cursor-not-allowed select-none',
+            collapsed ? 'justify-center py-2.5' : 'gap-3 px-3 py-2'
+          )}
+        >
+          <Icon className="w-[18px] h-[18px] shrink-0 text-earth-300" strokeWidth={1.75} />
+          {!collapsed && (
+            <>
+              <span className="flex-1 truncate">{label}</span>
+              <Lock className="w-3.5 h-3.5 shrink-0 text-earth-400" strokeWidth={2} />
+            </>
+          )}
+        </div>
+      );
+    }
+
+    return (
+      <Link
+        href={href}
+        onClick={onLinkClick}
+        data-tour={tourKey}
+        title={collapsed ? label : undefined}
+        aria-current={active ? 'page' : undefined}
+        className={cn(
+          'group relative flex items-center rounded-lg text-sm transition-all',
+          collapsed ? 'justify-center py-2.5' : 'gap-3 px-3 py-2',
+          active
+            ? 'bg-forest-50 text-forest-800 font-semibold'
+            : 'text-earth-600 font-medium hover:bg-cream-100 hover:text-ink'
+        )}
+      >
+        <span className="relative shrink-0">
+          <Icon
+            className={cn(
+              'w-[18px] h-[18px]',
+              active ? 'text-forest-700' : 'text-earth-400 group-hover:text-earth-600'
+            )}
+            strokeWidth={1.75}
+          />
+          {collapsed && badge && (
+            <span
+              className={cn(
+                'absolute -top-1 -right-1 w-2 h-2 rounded-full',
+                badge === 'NEW' ? 'bg-gold-400' : 'bg-forest-500'
+              )}
+            />
+          )}
+        </span>
+        {!collapsed && (
+          <>
+            <span className="flex-1 truncate">{label}</span>
+            {badge && (
+              <span
+                className={cn(
+                  'text-[10px] font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wide',
+                  badge === 'NEW' ? 'bg-gold-400 text-forest-900' : 'bg-forest-100 text-forest-700'
+                )}
+              >
+                {badge}
+              </span>
+            )}
+          </>
+        )}
+      </Link>
+    );
+  }
+
+  function NavContent({
+    collapsed,
+    onLinkClick,
     showClose,
   }: {
+    collapsed: boolean;
     onLinkClick?: () => void;
-    showBrand: boolean;
     showClose?: boolean;
   }) {
     return (
       <>
-        {/* Brand */}
-        {showBrand && (
-          <div className="px-6 pt-6 pb-5 border-b border-cream-200 flex items-center justify-between gap-2">
-            <Link
-              href="/"
-              className="flex items-center gap-2.5 min-w-0"
-              onClick={onLinkClick}
-            >
+        {/* Header: brand + collapse toggle */}
+        <div
+          className={cn(
+            'border-b border-cream-200 flex items-center gap-2',
+            collapsed ? 'justify-center px-2 py-4' : 'px-4 py-4'
+          )}
+        >
+          {!collapsed && (
+            <Link href="/" className="flex items-center min-w-0 flex-1" onClick={onLinkClick}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/logo-hois.png"
-                alt="Hoïs"
-                className="h-10 w-auto shrink-0"
-              />
+              <img src="/logo-hois.png" alt="Hoïs" className="h-9 w-auto shrink-0" />
             </Link>
-            {showClose && (
-              <button
-                type="button"
-                onClick={() => setDrawerOpen(false)}
-                aria-label="Fèmen"
-                className="grid place-items-center w-9 h-9 rounded-lg bg-cream-100 hover:bg-cream-200 text-earth-700 shrink-0 transition"
-              >
-                <X className="w-4 h-4" strokeWidth={2.2} />
-              </button>
-            )}
-          </div>
-        )}
-
-        {/* Nav */}
-        <div className="flex-1 px-3 pt-5 overflow-y-auto">
-          <div className="px-3 pb-3 text-[10px] uppercase tracking-[0.18em] text-earth-500 font-semibold">
-            Navigasyon
-          </div>
-          <nav className="space-y-1">
-            {NAV_ITEMS.map(({ href, label, icon: Icon, badge }) => {
-              const active = pathname === href;
-              // Tour anchor: derive a stable selector from the href so the
-              // UserTour client component can highlight individual nav
-              // entries (e.g. data-tour="nav-dashboard-health").
-              const tourKey =
-                'nav-' + href.replace(/^\//, '').replace(/\//g, '-');
-
-              // Locked (under construction): render a muted, non-clickable row
-              // with a lock icon instead of a link.
-              if (LOCKED_PATHS[href]) {
-                return (
-                  <div
-                    key={href}
-                    data-tour={tourKey}
-                    aria-disabled="true"
-                    title="Seksyon sa a fèmen pou kounye a"
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-earth-400 cursor-not-allowed select-none"
-                  >
-                    <Icon
-                      className="w-[18px] h-[18px] shrink-0 text-earth-300"
-                      strokeWidth={1.8}
-                    />
-                    <span className="flex-1 truncate">{label}</span>
-                    <Lock
-                      className="w-3.5 h-3.5 shrink-0 text-earth-400"
-                      strokeWidth={2}
-                    />
-                  </div>
-                );
-              }
-
-              return (
-                <Link
-                  key={href}
-                  href={href}
-                  onClick={onLinkClick}
-                  data-tour={tourKey}
-                  className={cn(
-                    'group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all',
-                    active
-                      ? 'bg-forest-700 text-cream-50 shadow-plant'
-                      : 'text-earth-700 hover:bg-cream-100 hover:text-forest-800'
-                  )}
-                >
-                  <Icon
-                    className={cn(
-                      'w-[18px] h-[18px] shrink-0',
-                      active
-                        ? 'text-gold-300'
-                        : 'text-forest-500 group-hover:text-forest-700'
-                    )}
-                    strokeWidth={1.8}
-                  />
-                  <span className="flex-1 truncate">{label}</span>
-                  {badge && (
-                    <span
-                      className={cn(
-                        'text-[10px] font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wide',
-                        badge === 'NEW'
-                          ? 'bg-gold-400 text-forest-900'
-                          : active
-                          ? 'bg-cream-50 text-forest-700'
-                          : 'bg-forest-100 text-forest-700'
-                      )}
-                    >
-                      {badge}
-                    </span>
-                  )}
-                </Link>
-              );
-            })}
-          </nav>
+          )}
+          {showClose ? (
+            <button
+              type="button"
+              onClick={() => setDrawerOpen(false)}
+              aria-label="Fèmen"
+              className="grid place-items-center w-9 h-9 rounded-lg bg-cream-100 hover:bg-cream-200 text-earth-700 shrink-0 transition"
+            >
+              <X className="w-4 h-4" strokeWidth={2.2} />
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={toggleCollapse}
+              aria-label={collapsed ? 'Ouvri meni an' : 'Kache meni an'}
+              className="grid place-items-center w-9 h-9 rounded-lg text-earth-500 hover:bg-cream-100 hover:text-ink shrink-0 transition"
+            >
+              {collapsed ? (
+                <PanelLeftOpen className="w-[18px] h-[18px]" strokeWidth={1.75} />
+              ) : (
+                <PanelLeftClose className="w-[18px] h-[18px]" strokeWidth={1.75} />
+              )}
+            </button>
+          )}
         </div>
 
-        {/* User card */}
-        <div
-          data-tour="user-card"
-          className="m-3 rounded-2xl bg-gradient-to-br from-forest-700 to-forest-900 text-cream-50 p-3 flex items-center gap-3 shadow-plant"
-        >
-          <Avatar size={42} src={avatarUrl} alt={userName} />
-          <div className="flex-1 min-w-0">
-            <div className="text-sm font-semibold truncate font-display">
-              {userName}
-            </div>
-            <div className="text-[11px] text-cream-200 truncate">
-              {planLabel} · Niv. {level}
-            </div>
+        {/* Account chip (identity at top, model-style) */}
+        {collapsed ? (
+          <div className="px-2 pt-3 flex justify-center">
+            <Link
+              href="/dashboard/settings"
+              onClick={onLinkClick}
+              data-tour="user-card"
+              title={`${userName} · ${planLabel}`}
+              className="rounded-full ring-2 ring-transparent hover:ring-forest-200 transition"
+            >
+              <Avatar size={36} src={avatarUrl} alt={userName} />
+            </Link>
           </div>
-          <button
-            onClick={onSignOut}
-            aria-label="Dekonekte"
-            className="grid place-items-center w-8 h-8 rounded-lg text-cream-200 hover:text-white hover:bg-white/10 transition"
+        ) : (
+          <Link
+            href="/dashboard/settings"
+            onClick={onLinkClick}
+            data-tour="user-card"
+            className="mx-2.5 mt-3 flex items-center gap-2.5 px-2 py-2 rounded-lg hover:bg-cream-100 transition"
           >
-            <LogOut className="w-4 h-4" strokeWidth={2} />
+            <Avatar size={38} src={avatarUrl} alt={userName} />
+            <div className="flex-1 min-w-0">
+              <div className="text-[13px] font-semibold text-ink truncate leading-tight">
+                {userName}
+              </div>
+              <div className="text-[11px] text-earth-500 truncate mt-0.5">
+                {planLabel} · Niv. {level}
+              </div>
+            </div>
+          </Link>
+        )}
+
+        {/* Nav groups */}
+        <div className="flex-1 px-2.5 py-3 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] flex flex-col gap-3">
+          {NAV_GROUPS.map((group, i) => (
+            <div key={group.heading ?? `g${i}`} className="flex flex-col gap-0.5">
+              {group.heading &&
+                (collapsed ? (
+                  i > 0 && <div className="mx-2 my-1 border-t border-cream-200" aria-hidden />
+                ) : (
+                  <span className="px-2.5 mb-1 text-[11px] font-semibold tracking-wider text-earth-400 uppercase">
+                    {group.heading}
+                  </span>
+                ))}
+              {group.items.map((item) => (
+                <Row key={item.href} item={item} collapsed={collapsed} onLinkClick={onLinkClick} />
+              ))}
+            </div>
+          ))}
+        </div>
+
+        {/* Bottom: Settings + sign out as clean plain rows (model-style) */}
+        <div className="mt-auto border-t border-cream-200 p-2.5 flex flex-col gap-0.5">
+          {BOTTOM_ITEMS.map((item) => (
+            <Row key={item.href} item={item} collapsed={collapsed} onLinkClick={onLinkClick} />
+          ))}
+          <button
+            type="button"
+            onClick={onSignOut}
+            title={collapsed ? 'Dekonekte' : undefined}
+            className={cn(
+              'group flex items-center rounded-lg text-sm font-medium text-earth-600 hover:bg-rose-50 hover:text-rose-700 transition w-full',
+              collapsed ? 'justify-center py-2.5' : 'gap-3 px-3 py-2'
+            )}
+          >
+            <LogOut
+              className="w-[18px] h-[18px] shrink-0 text-earth-400 group-hover:text-rose-600"
+              strokeWidth={1.75}
+            />
+            {!collapsed && <span className="flex-1 text-left truncate">Dekonekte</span>}
           </button>
         </div>
       </>
@@ -263,30 +380,32 @@ export default function Sidebar({
 
   return (
     <>
-      {/* ── Desktop sidebar ──────────────────────────────────────────── */}
-      <aside className="hidden lg:flex flex-col w-64 shrink-0 bg-cream-50 border-r border-cream-200 h-screen sticky top-0">
-        <NavList showBrand />
+      {/* ── Desktop sidebar (collapsible) ────────────────────────────── */}
+      <aside
+        className={cn(
+          'hidden lg:flex flex-col shrink-0 bg-cream-50 border-r border-cream-200 h-screen sticky top-0 z-30 transition-[width] duration-300 ease-in-out',
+          open ? 'w-64' : 'w-[76px]'
+        )}
+      >
+        <NavContent collapsed={!open} />
       </aside>
 
       {/* ── Mobile drawer ────────────────────────────────────────────── */}
       {drawerOpen && (
         <>
-          {/* Scrim */}
           <button
             type="button"
             onClick={() => setDrawerOpen(false)}
             aria-label="Fèmen navigasyon"
             className="lg:hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-sm animate-fadeIn"
           />
-
-          {/* Drawer */}
           <aside
             className="lg:hidden fixed left-0 top-0 bottom-0 w-72 max-w-[85vw] z-50 bg-cream-50 border-r border-cream-200 flex flex-col shadow-2xl animate-slideInLeft"
             role="dialog"
             aria-modal="true"
             aria-label="Navigasyon manm"
           >
-            <NavList showBrand showClose onLinkClick={() => setDrawerOpen(false)} />
+            <NavContent collapsed={false} showClose onLinkClick={() => setDrawerOpen(false)} />
           </aside>
         </>
       )}
