@@ -21,13 +21,24 @@ async function refresh(): Promise<void> {
     cache = { map: new Map(), at: Date.now() };
     return;
   }
+  // CRITICAL: this runs in middleware on EVERY public navigation. A fetch
+  // with no timeout can hang the whole request if Supabase stalls — which
+  // takes the public site down. Bound it hard, and on any failure reuse the
+  // last-known (or empty) map AND reset `at`, so we serve from cache for the
+  // TTL instead of re-hanging on every request.
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 2500);
   try {
     const res = await fetch(
       `${base}/rest/v1/redirects?active=eq.true&select=from_path,to_path,status_code`,
-      { headers: { apikey: key, Authorization: `Bearer ${key}` }, cache: 'no-store' }
+      {
+        headers: { apikey: key, Authorization: `Bearer ${key}` },
+        cache: 'no-store',
+        signal: controller.signal,
+      }
     );
     if (!res.ok) {
-      if (!cache) cache = { map: new Map(), at: Date.now() };
+      cache = { map: cache?.map ?? new Map(), at: Date.now() };
       return;
     }
     const rows = (await res.json()) as Array<{
@@ -41,9 +52,11 @@ async function refresh(): Promise<void> {
     }
     cache = { map, at: Date.now() };
   } catch {
-    // Network hiccup: keep any stale cache, else start an empty one so we
-    // don't refetch on every request.
-    if (!cache) cache = { map: new Map(), at: Date.now() };
+    // Timeout or network error: never hang the request — fall back to the
+    // last-known (or empty) map and reset the TTL.
+    cache = { map: cache?.map ?? new Map(), at: Date.now() };
+  } finally {
+    clearTimeout(timer);
   }
 }
 

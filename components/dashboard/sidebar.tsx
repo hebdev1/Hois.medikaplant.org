@@ -26,6 +26,8 @@ import {
   FlaskConical,
   Lock,
   Sparkles,
+  Leaf,
+  Sprout,
   PanelLeftClose,
   PanelLeftOpen,
   type LucideIcon,
@@ -71,6 +73,8 @@ const NAV_GROUPS: { heading?: string; items: NavItem[] }[] = [
     items: [
       { href: '/dashboard/kou', label: 'Klas mwen yo', icon: GraduationCap },
       { href: '/dashboard/guides', label: 'Gid & Konsèy', icon: BookOpen },
+      { href: '/glose', label: 'Glosè plant', icon: Leaf },
+      { href: '/laboratwa', label: 'Laboratwa', icon: Sprout },
       { href: '/dashboard/resources', label: 'Telechajman', icon: Download, badge: '12' },
     ],
   },

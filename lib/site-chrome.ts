@@ -148,24 +148,34 @@ async function refresh(): Promise<void> {
     cache = { chrome: DEFAULT_CHROME, at: Date.now() };
     return;
   }
+  // The footer awaits this on every public page render — a no-timeout fetch
+  // that stalls would hang the whole page. Bound it hard and, on any failure,
+  // serve the last-known (or default) chrome AND reset `at` so we don't
+  // re-hang on every request.
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 2500);
   try {
     const headers = { apikey: key, Authorization: `Bearer ${key}` };
     const [navRes, setRes] = await Promise.all([
       fetch(
         `${base}/rest/v1/nav_items?active=eq.true&select=location,group_title,label,url,target,display_order&order=display_order.asc`,
-        { headers, cache: 'no-store' }
+        { headers, cache: 'no-store', signal: controller.signal }
       ),
       fetch(`${base}/rest/v1/site_settings?id=eq.1&select=*`, {
         headers,
         cache: 'no-store',
+        signal: controller.signal,
       }),
     ]);
     const nav = navRes.ok ? ((await navRes.json()) as NavRow[]) : [];
     const settingsRows = setRes.ok ? ((await setRes.json()) as SettingsRow[]) : [];
     cache = { chrome: buildChrome(nav, settingsRows[0] ?? null), at: Date.now() };
   } catch {
-    // Keep any stale cache; otherwise fall back to defaults.
-    if (!cache) cache = { chrome: DEFAULT_CHROME, at: Date.now() };
+    // Timeout or network error: never hang the page — reuse last-known chrome
+    // (or defaults) and reset the TTL.
+    cache = { chrome: cache?.chrome ?? DEFAULT_CHROME, at: Date.now() };
+  } finally {
+    clearTimeout(timer);
   }
 }
 
