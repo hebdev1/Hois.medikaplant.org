@@ -59,9 +59,9 @@ const NAV: NavItem[] = [
   { href: 'https://www.medikaplantshop.com', label: 'Boutik',  target: '_blank'},
   { href: '/glose', label: 'Glosè' },
   { href: '/laboratwa', label: 'Laboratwa' },
-  { href: '#istwa', label: 'Istwa' },
-  { href: '#hois', label: 'HOÏS' },
-  { href: '#pri', label: 'Pri' },
+  { href: '/#istwa', label: 'Istwa' },
+  { href: '/#hois', label: 'HOÏS' },
+  { href: '/#pri', label: 'Pri' },
 ];
 
 const RESOURCES: Resource[] = [
@@ -112,7 +112,7 @@ export default function PromoteHeader() {
     active: true,
     text: 'Vin enskri kòm manb jodi a pou w ka tou benefisye nan rabè sa a.',
     ctaLabel: 'Wè pri yo',
-    ctaHref: '#pri',
+    ctaHref: '/#pri',
   });
 
   React.useEffect(() => {
@@ -173,9 +173,15 @@ export default function PromoteHeader() {
     };
   }, [open]);
 
+  // A bare hash link (#pri) points at a section of the HOMEPAGE. From any
+  // other page (e.g. /glose, /laboratwa) it must resolve to /#pri so the
+  // browser navigates home AND scrolls to the section — otherwise the click
+  // does nothing. Normalise every anchor href through this.
+  const resolveHref = (href: string) => (href.startsWith('#') ? `/${href}` : href);
+
   const isActive = (href: string) =>
-    href.startsWith('#')
-      ? false // Anchor links on a single-page landing never claim "current page".
+    href.includes('#')
+      ? false // Anchor links never claim "current page".
       : href === '/'
       ? pathname === '/'
       : pathname.startsWith(href);
@@ -220,7 +226,7 @@ export default function PromoteHeader() {
             <span className="text-ink-muted truncate">{ann.text}</span>
             {ann.ctaLabel && (
               <Link
-                href={ann.ctaHref || '#'}
+                href={resolveHref(ann.ctaHref || '#')}
                 className="inline-flex items-center gap-1 underline decoration-brand-300 decoration-dashed underline-offset-4 hover:decoration-solid text-ink font-medium shrink-0"
               >
                 {ann.ctaLabel}
@@ -325,7 +331,7 @@ export default function PromoteHeader() {
                 return (
                   <Link
                     key={item.href}
-                    href={item.href}
+                    href={resolveHref(item.href)}
                     aria-current={isActive(item.href) ? 'page' : undefined}
                     className={desktopLink(isActive(item.href))}
                     {...(isExternal
@@ -417,7 +423,7 @@ export default function PromoteHeader() {
                   <Link href="/auth/login" className={secondaryBtn}>
                     Konekte
                   </Link>
-                  <Link href="#pri" className={primaryBtn}>
+                  <Link href="/#pri" className={primaryBtn}>
                     Vin manm
                     <ArrowRight className="ml-1.5 h-3.5 w-3.5" strokeWidth={2.4} />
                   </Link>
@@ -432,7 +438,7 @@ export default function PromoteHeader() {
                   {isAdmin ? 'Panèl' : 'Tablodebò'}
                 </Link>
               ) : (
-                <Link href="#pri" className={primaryBtn}>
+                <Link href="/#pri" className={primaryBtn}>
                   Vin manm
                 </Link>
               )}
@@ -497,12 +503,12 @@ export default function PromoteHeader() {
 
           {/* Nav list */}
           <nav className="space-y-1">
-            {NAV.map((item) => {
+            {nav.map((item) => {
               const isExternal = /^https?:\/\//i.test(item.href);
               return (
                 <Link
                   key={item.href}
-                  href={item.href}
+                  href={resolveHref(item.href)}
                   onClick={() => setOpen(false)}
                   className={[
                     'block rounded-md px-2.5 py-2 text-sm font-medium transition-colors',
@@ -574,7 +580,7 @@ export default function PromoteHeader() {
                   Konekte
                 </Link>
                 <Link
-                  href="#pri"
+                  href="/#pri"
                   onClick={() => setOpen(false)}
                   className={primaryBtn}
                 >

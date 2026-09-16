@@ -22,16 +22,16 @@ export const DEFAULT_CHROME: SiteChrome = {
     active: true,
     text: 'Vin enskri kòm manb jodi a pou w ka tou benefisye nan rabè sa a.',
     ctaLabel: 'Wè pri yo',
-    ctaHref: '#pri',
+    ctaHref: '/#pri',
   },
   headerNav: [
     { label: 'Akèy', url: 'https://www.hoismedikaplant.com', target: '_self' },
     { label: 'Boutik', url: 'https://www.medikaplantshop.com', target: '_blank' },
     { label: 'Glosè', url: '/glose', target: '_self' },
     { label: 'Laboratwa', url: '/laboratwa', target: '_self' },
-    { label: 'Istwa', url: '#istwa', target: '_self' },
-    { label: 'HOÏS', url: '#hois', target: '_self' },
-    { label: 'Pri', url: '#pri', target: '_self' },
+    { label: 'Istwa', url: '/#istwa', target: '_self' },
+    { label: 'HOÏS', url: '/#hois', target: '_self' },
+    { label: 'Pri', url: '/#pri', target: '_self' },
   ],
   footerColumns: [
     {
@@ -45,7 +45,7 @@ export const DEFAULT_CHROME: SiteChrome = {
     {
       title: 'Hoïs Inivèsite',
       links: [
-        { label: 'Plan VIP', url: '#pri', target: '_self' },
+        { label: 'Plan VIP', url: '/#pri', target: '_self' },
         { label: 'Fòmasyon', url: '#', target: '_self' },
         { label: 'Blòg', url: '#', target: '_self' },
         { label: 'Evènman', url: '#', target: '_self' },

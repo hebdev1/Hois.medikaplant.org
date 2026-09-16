@@ -51,7 +51,7 @@ export default async function Footer() {
                 {col.links.map((l, j) => (
                   <li key={`${l.label}-${j}`}>
                     <a
-                      href={l.url || '#'}
+                      href={l.url?.startsWith('#') ? `/${l.url}` : l.url || '#'}
                       target={l.target === '_blank' ? '_blank' : undefined}
                       rel={l.target === '_blank' ? 'noopener noreferrer' : undefined}
                       className="text-sm hover:text-brand-300 transition-colors"
