@@ -16,7 +16,7 @@ const thirdColumn = testimonials.slice(14, 21);
 
 export default function TestimonialsSection() {
   return (
-    <section className="relative w-full pt-4 md:pt-6 pb-24 md:pb-32 -mt-8 md:-mt-14 bg-white overflow-hidden">
+    <section className="relative w-full py-16 md:py-20 bg-white overflow-hidden">
       <div className="max-w-[1400px] mx-auto px-4 md:px-12 lg:px-20 xl:px-32">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

@@ -42,7 +42,7 @@ const FEATURES = [
 
 export default function FeaturesSection() {
   return (
-    <section id="pwodui" className="relative w-full py-24 md:py-32 bg-white">
+    <section id="pwodui" className="relative w-full py-16 md:py-20 bg-white">
       <div className="max-w-[1400px] mx-auto px-4 md:px-12 lg:px-20 xl:px-32">
         <div className="flex flex-col items-center text-center max-w-[720px] mx-auto mb-16">
           <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-ink">

@@ -17,7 +17,7 @@ export default async function HoisSection() {
   return (
     <section
       id="hois"
-      className="relative w-full py-24 md:py-32 overflow-hidden bg-gradient-to-b from-white via-amber-50/30 to-white"
+      className="relative w-full py-16 md:py-20 overflow-hidden bg-gradient-to-b from-white via-amber-50/30 to-white"
     >
       <div className="relative max-w-[1280px] mx-auto px-4 md:px-12 lg:px-20 xl:px-32">
         {/* Eyebrow + headline */}

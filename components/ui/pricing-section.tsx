@@ -190,7 +190,7 @@ export default function PricingSection() {
   return (
     <section
       id="pri"
-      className="relative w-full py-24 md:py-32 bg-gradient-to-b from-white via-brand-50/30 to-white overflow-hidden"
+      className="relative w-full py-16 md:py-20 bg-gradient-to-b from-white via-brand-50/30 to-white overflow-hidden"
       ref={pricingRef}
     >
       <div

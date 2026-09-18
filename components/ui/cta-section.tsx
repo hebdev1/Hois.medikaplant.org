@@ -3,7 +3,7 @@ import { ArrowRight } from 'lucide-react';
 
 export default function CtaSection() {
   return (
-    <section className="relative w-full py-24 md:py-32 overflow-hidden">
+    <section className="relative w-full py-16 md:py-20 overflow-hidden">
       <div className="max-w-[1400px] mx-auto px-4 md:px-12 lg:px-20 xl:px-32">
         <div className="relative isolate rounded-[2.5rem] overflow-hidden bg-brand-gradient text-white p-10 md:p-16 lg:p-20 shadow-card">
           {/* Decorative pattern */}
