@@ -33,6 +33,16 @@ const STEPS: DriveStep[] = [
     },
   },
   {
+    element: '[data-tour="user-card"]',
+    popover: {
+      title: '👤 Kont ou',
+      description:
+        'Non ou, plan abònman ou, ak nivo w. Klike pou ale dirèkteman nan paramèt ou.',
+      side: 'right',
+      align: 'start',
+    },
+  },
+  {
     element: '[data-tour="nav-dashboard"]',
     popover: {
       title: '🏠 Tablodebò',
@@ -43,11 +53,11 @@ const STEPS: DriveStep[] = [
     },
   },
   {
-    element: '[data-tour="nav-dashboard-programs"]',
+    element: '[data-tour="nav-dashboard-lakou-limye"]',
     popover: {
-      title: '📒 Pwotokòl mwen yo',
+      title: '✨ Lakou Limyè',
       description:
-        'Tout pwotokòl pèsonalize w yo, ak tach pa jou pou kondisyon sante w lan.',
+        'Nouvo! Salon mistik, emisyon spirityèl, ak pakou limyè — videyo, odyo, ak atik pou nouri chemen limyè w.',
       side: 'right',
       align: 'start',
     },
@@ -63,11 +73,51 @@ const STEPS: DriveStep[] = [
     },
   },
   {
+    element: '[data-tour="nav-dashboard-programs"]',
+    popover: {
+      title: '📒 Pwotokòl mwen yo',
+      description:
+        'Tout pwotokòl pèsonalize w yo, ak tach pa jou pou kondisyon sante w lan.',
+      side: 'right',
+      align: 'start',
+    },
+  },
+  {
+    element: '[data-tour="nav-dashboard-kou"]',
+    popover: {
+      title: '🎓 Klas mwen yo',
+      description:
+        'Kou ou enskri yo — videyo, modil, ak sesyon Zoom dirèk yo.',
+      side: 'right',
+      align: 'start',
+    },
+  },
+  {
     element: '[data-tour="nav-dashboard-guides"]',
     popover: {
       title: '📚 Gid & Konsèy',
       description:
         'Atik konplè sou plant Ayisyen, fason pou prepare yo, ak entèraksyon ak medikaman.',
+      side: 'right',
+      align: 'start',
+    },
+  },
+  {
+    element: '[data-tour="nav-glose"]',
+    popover: {
+      title: '🌿 Glosè plant',
+      description:
+        'Nouvo! Dekouvri plant Ayisyen yo, pwopriyete yo, ak jan pou itilize yo an sekirite.',
+      side: 'right',
+      align: 'start',
+    },
+  },
+  {
+    element: '[data-tour="nav-laboratwa"]',
+    popover: {
+      title: '🔬 Laboratwa',
+      description:
+        'Nouvo! Achiv rechèch la sou maladi ak remèd plant yo, ak zouti pou eksplore yo.',
       side: 'right',
       align: 'start',
     },
@@ -109,16 +159,6 @@ const STEPS: DriveStep[] = [
       description:
         'Tout alèt yo, tretman, fowòm, repons sipò, badj. Klike pou wè detay yo.',
       side: 'bottom',
-      align: 'end',
-    },
-  },
-  {
-    element: '[data-tour="user-card"]',
-    popover: {
-      title: '👤 Pwofil ou',
-      description:
-        'Plan abònman ou + bouton dekonekte. Klike pou ale nan paramèt ou.',
-      side: 'right',
       align: 'end',
     },
   },
