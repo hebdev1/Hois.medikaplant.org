@@ -88,12 +88,21 @@ export default function SupportChat({
   );
 
   const bodyRef = React.useRef<HTMLDivElement | null>(null);
+  const stickRef = React.useRef(true);
   const messageIds = React.useRef(new Set(initialMessages.map((m) => m.id)));
 
-  // Auto-scroll to bottom on new messages
-  React.useEffect(() => {
+  // Track whether the reader is parked near the bottom. Once they scroll up to
+  // read older messages, we stop force-scrolling them back down.
+  function onBodyScroll() {
     const el = bodyRef.current;
     if (!el) return;
+    stickRef.current = el.scrollHeight - el.scrollTop - el.clientHeight < 80;
+  }
+
+  // Auto-scroll to bottom on new messages — only when already at the bottom.
+  React.useEffect(() => {
+    const el = bodyRef.current;
+    if (!el || !stickRef.current) return;
     el.scrollTop = el.scrollHeight;
   }, [messages, typing]);
 
@@ -172,6 +181,8 @@ export default function SupportChat({
     setError(null);
     setDraft('');
     setAttachment(null);
+    // Sending my own message always jumps me back to the newest message.
+    stickRef.current = true;
 
     // Optimistic insert — replaced by realtime echo when it arrives
     const optimistic: Message = {
@@ -318,6 +329,7 @@ export default function SupportChat({
       {/* Body */}
       <div
         ref={bodyRef}
+        onScroll={onBodyScroll}
         className="flex-1 overflow-y-auto px-4 md:px-5 py-5 space-y-3 bg-[radial-gradient(circle_at_1px_1px,rgba(122,175,82,0.05)_1px,transparent_0)] bg-[length:22px_22px]"
       >
         {messages.map((m) => (
@@ -693,9 +705,9 @@ function TypingBubble() {
     <div className="flex justify-start">
       <div className="bg-white border border-cream-200 rounded-2xl rounded-bl-md px-4 py-3 shadow-sm">
         <div className="flex items-center gap-1">
-          <span className="w-1.5 h-1.5 rounded-full bg-earth-400 animate-bounce" style={{ animationDelay: '0ms' }} />
-          <span className="w-1.5 h-1.5 rounded-full bg-earth-400 animate-bounce" style={{ animationDelay: '150ms' }} />
-          <span className="w-1.5 h-1.5 rounded-full bg-earth-400 animate-bounce" style={{ animationDelay: '300ms' }} />
+          <span className="w-1.5 h-1.5 rounded-full bg-earth-400 animate-pulse" style={{ animationDelay: '0ms' }} />
+          <span className="w-1.5 h-1.5 rounded-full bg-earth-400 animate-pulse" style={{ animationDelay: '200ms' }} />
+          <span className="w-1.5 h-1.5 rounded-full bg-earth-400 animate-pulse" style={{ animationDelay: '400ms' }} />
         </div>
       </div>
     </div>

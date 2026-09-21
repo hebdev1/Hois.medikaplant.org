@@ -159,8 +159,22 @@ export default function MessageBox({
     };
   }, [supabase, thread]);
 
+  // Jump to the latest message when the Mesaj tab (re)opens.
   React.useEffect(() => {
-    if (open && tab === 'mesaj') bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (open && tab === 'mesaj') {
+      requestAnimationFrame(() => bottomRef.current?.scrollIntoView());
+    }
+  }, [open, tab]);
+
+  // On new/updated messages, stick to the bottom only when already near it, so
+  // scrolling up to read older messages isn't interrupted.
+  React.useEffect(() => {
+    if (!(open && tab === 'mesaj')) return;
+    const sentinel = bottomRef.current;
+    const container = sentinel?.parentElement;
+    if (!container || !sentinel) return;
+    const dist = container.scrollHeight - container.scrollTop - container.clientHeight;
+    if (dist < 140) sentinel.scrollIntoView({ behavior: 'smooth' });
   }, [messages, open, tab]);
 
   // Opening the Mesaj tab: ensure a thread exists, load it, and clear unread.
@@ -220,6 +234,7 @@ export default function MessageBox({
       setMessages((prev) =>
         prev.some((x) => x.id === res.message.id) ? prev : [...prev, res.message as Msg]
       );
+      requestAnimationFrame(() => bottomRef.current?.scrollIntoView());
     }
   }
 

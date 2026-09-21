@@ -93,6 +93,13 @@ export default function SupportInbox({ initialThreads, adminPersona }: Props) {
   const [search, setSearch] = React.useState('');
   const messageIds = React.useRef(new Set<string>());
   const bodyRef = React.useRef<HTMLDivElement | null>(null);
+  const stickRef = React.useRef(true);
+
+  function onBodyScroll() {
+    const el = bodyRef.current;
+    if (!el) return;
+    stickRef.current = el.scrollHeight - el.scrollTop - el.clientHeight < 80;
+  }
 
   const activeThread = threads.find((t) => t.id === activeThreadId) ?? null;
 
@@ -223,6 +230,7 @@ export default function SupportInbox({ initialThreads, adminPersona }: Props) {
       return;
     }
     let cancelled = false;
+    stickRef.current = true; // opening a thread → jump to the latest message
     setLoadingMessages(true);
     setError(null);
     messageIds.current.clear();
@@ -254,10 +262,10 @@ export default function SupportInbox({ initialThreads, adminPersona }: Props) {
     };
   }, [supabase, activeThreadId]);
 
-  // ── Auto-scroll to bottom on new messages ─────────────────────────────────
+  // ── Auto-scroll to bottom on new messages (only if already at bottom) ──────
   React.useEffect(() => {
     const el = bodyRef.current;
-    if (!el) return;
+    if (!el || !stickRef.current) return;
     el.scrollTop = el.scrollHeight;
   }, [messages]);
 
@@ -286,6 +294,7 @@ export default function SupportInbox({ initialThreads, adminPersona }: Props) {
     setError(null);
     setDraft('');
     setAttachment(null);
+    stickRef.current = true; // my own reply jumps to the newest message
 
     // Optimistic
     const optimistic: Message = {
@@ -533,6 +542,7 @@ export default function SupportInbox({ initialThreads, adminPersona }: Props) {
 
             <div
               ref={bodyRef}
+              onScroll={onBodyScroll}
               className="flex-1 overflow-y-auto px-4 md:px-5 py-5 space-y-3 bg-[radial-gradient(circle_at_1px_1px,rgba(122,175,82,0.05)_1px,transparent_0)] bg-[length:22px_22px]"
             >
               {loadingMessages ? (
