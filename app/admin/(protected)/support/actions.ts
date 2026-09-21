@@ -6,6 +6,12 @@ import { createServiceClient } from '@/lib/supabase/service';
 import { emailNotifyMember } from '@/lib/email/notify';
 import type { Database } from '@/types/database';
 import { hasCapability, type AdminRole } from '../admin-nav-config';
+import {
+  normalizeHours,
+  DEFAULT_OFFLINE_MESSAGE,
+  DEFAULT_TIMEZONE,
+  type DayHours,
+} from '@/lib/support-presence';
 
 type MessageRow = Database['public']['Tables']['support_messages']['Row'];
 
@@ -36,10 +42,12 @@ async function assertAdmin() {
  */
 export async function adminSendSupportReply(
   threadId: string,
-  body: string
+  body: string,
+  imageUrl?: string | null
 ): Promise<{ ok: true; message: MessageRow } | { ok: false; error: string }> {
   const text = body.trim();
-  if (text.length === 0) return { ok: false, error: 'Mesaj la vid.' };
+  const image = supportImageUrlOrNull(imageUrl);
+  if (text.length === 0 && !image) return { ok: false, error: 'Mesaj la vid.' };
   if (text.length > 4000) {
     return { ok: false, error: 'Mesaj la twò long (maks 4000 karaktè).' };
   }
@@ -47,10 +55,15 @@ export async function adminSendSupportReply(
   const auth = await assertAdmin();
   if (!auth.ok) return { ok: false, error: auth.error };
 
-  const { data, error } = await auth.supabase.rpc('admin_send_support_reply', {
-    p_thread_id: threadId,
-    p_body: text,
-  });
+  // The RPC signature gained p_image_url; the generated types still describe
+  // the old 2-arg shape, so call through an untyped view.
+  const { data, error } = await (auth.supabase.rpc as unknown as (
+    fn: string,
+    args: Record<string, unknown>
+  ) => Promise<{ data: MessageRow | null; error: { message: string } | null }>)(
+    'admin_send_support_reply',
+    { p_thread_id: threadId, p_body: text, p_image_url: image }
+  );
   if (error || !data) {
     return { ok: false, error: error?.message ?? 'Erè inkoni.' };
   }
@@ -125,5 +138,151 @@ export async function adminReopenThread(
   if (error) return { ok: false, error: error.message };
 
   revalidatePath('/admin/support');
+  return { ok: true };
+}
+
+// ─── Support presence / identity settings ────────────────────────────────────
+
+const ALLOWED_PHOTO_MIME = ['image/jpeg', 'image/png', 'image/webp'];
+const MAX_PHOTO_BYTES = 4 * 1024 * 1024; // 4 Mo
+
+// Only persist image URLs from our own public bucket (never an external URL).
+function supportImageUrlOrNull(url: string | null | undefined): string | null {
+  const v = (url ?? '').trim();
+  if (!v) return null;
+  const base = process.env.NEXT_PUBLIC_SUPABASE_URL ?? '';
+  const prefix = `${base}/storage/v1/object/public/`;
+  return base && v.startsWith(prefix) ? v : null;
+}
+
+/** Save availability mode + weekly hours + offline message + agent identity. */
+export async function updateSupportSettings(input: {
+  mode: 'auto' | 'online' | 'offline';
+  hours: DayHours[];
+  timezone: string;
+  offlineMessage: string;
+  agentName: string | null;
+  agentRole: string | null;
+}): Promise<{ ok: true } | { ok: false; error: string }> {
+  const auth = await assertAdmin();
+  if (!auth.ok) return { ok: false, error: auth.error };
+
+  const mode =
+    input.mode === 'online' || input.mode === 'offline' ? input.mode : 'auto';
+  const hours = normalizeHours(input.hours);
+  let tz = (input.timezone || '').trim() || DEFAULT_TIMEZONE;
+  try {
+    // Reject an unusable IANA zone so presence never throws downstream.
+    new Intl.DateTimeFormat('en-US', { timeZone: tz });
+  } catch {
+    tz = DEFAULT_TIMEZONE;
+  }
+
+  const { error } = await (auth.supabase as any)
+    .from('support_settings')
+    .update({
+      availability_mode: mode,
+      hours,
+      timezone: tz,
+      offline_message: (input.offlineMessage || '').trim() || DEFAULT_OFFLINE_MESSAGE,
+      agent_name: (input.agentName || '').trim() || null,
+      agent_role: (input.agentRole || '').trim() || null,
+      updated_by: auth.user.id,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', 1);
+  if (error) return { ok: false, error: error.message };
+
+  revalidatePath('/admin/support');
+  revalidatePath('/dashboard/support');
+  return { ok: true };
+}
+
+/** Upload / replace the global support agent photo. */
+export async function uploadSupportPhoto(
+  formData: FormData
+): Promise<{ ok: true; url: string } | { ok: false; error: string }> {
+  const auth = await assertAdmin();
+  if (!auth.ok) return { ok: false, error: auth.error };
+
+  const file = formData.get('file');
+  if (!(file instanceof File)) return { ok: false, error: 'Pa gen fichye.' };
+  if (!ALLOWED_PHOTO_MIME.includes(file.type)) {
+    return { ok: false, error: 'Sèl JPG, PNG, ak WEBP otorize.' };
+  }
+  if (file.size > MAX_PHOTO_BYTES) {
+    return { ok: false, error: 'Foto a twò gwo (maks 4 Mo).' };
+  }
+
+  const ext =
+    file.type === 'image/jpeg' ? 'jpg' : file.type === 'image/png' ? 'png' : 'webp';
+  const objectPath = `support/agent/${Date.now()}.${ext}`;
+
+  const { error: upErr } = await auth.supabase.storage
+    .from('public-assets')
+    .upload(objectPath, await file.arrayBuffer(), {
+      contentType: file.type,
+      cacheControl: '3600',
+      upsert: true,
+    });
+  if (upErr) return { ok: false, error: upErr.message };
+
+  const {
+    data: { publicUrl },
+  } = auth.supabase.storage.from('public-assets').getPublicUrl(objectPath);
+
+  // Delete older agent photos so we don't leak storage.
+  const { data: prev } = await auth.supabase.storage
+    .from('public-assets')
+    .list('support/agent');
+  const toDelete = (prev ?? [])
+    .map((f: { name: string }) => `support/agent/${f.name}`)
+    .filter((p: string) => p !== objectPath);
+  if (toDelete.length > 0) {
+    await auth.supabase.storage.from('public-assets').remove(toDelete);
+  }
+
+  const { error } = await (auth.supabase as any)
+    .from('support_settings')
+    .update({
+      agent_photo_url: publicUrl,
+      updated_by: auth.user.id,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', 1);
+  if (error) return { ok: false, error: error.message };
+
+  revalidatePath('/admin/support');
+  revalidatePath('/dashboard/support');
+  return { ok: true, url: publicUrl };
+}
+
+/** Remove the support agent photo (revert to initials avatar). */
+export async function removeSupportPhoto(): Promise<
+  { ok: true } | { ok: false; error: string }
+> {
+  const auth = await assertAdmin();
+  if (!auth.ok) return { ok: false, error: auth.error };
+
+  const { data: prev } = await auth.supabase.storage
+    .from('public-assets')
+    .list('support/agent');
+  const paths = (prev ?? []).map((f: { name: string }) => `support/agent/${f.name}`);
+  if (paths.length > 0) {
+    await auth.supabase.storage.from('public-assets').remove(paths);
+  }
+
+  const { error } = await (auth.supabase as any)
+    .from('support_settings')
+    .update({
+      agent_photo_url: null,
+      updated_by: auth.user.id,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', 1);
+  if (error) return { ok: false, error: error.message };
+
+  revalidatePath('/admin/support');
+  revalidatePath('/dashboard/support');
   return { ok: true };
 }

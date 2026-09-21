@@ -6,6 +6,7 @@ import SupportChat from '@/components/dashboard/support-chat';
 import SupportContacts from '@/components/dashboard/support-contacts';
 import SupportFaqs from '@/components/dashboard/support-faqs';
 import { getOrCreateThread } from './actions';
+import { getSupportSettings } from '@/lib/support-settings';
 import type { Database } from '@/types/database';
 
 export const metadata = { title: 'Sipò' };
@@ -28,6 +29,7 @@ export default async function SupportPage() {
   // The thread getter creates a welcome message + thread on first visit,
   // so we can call it unconditionally on every page load.
   const threadResult = await getOrCreateThread();
+  const support = await getSupportSettings();
 
   const [profileResult, faqsResult, contactsResult, unreadCountResult] = await Promise.all([
     supabase
@@ -118,6 +120,7 @@ export default async function SupportPage() {
             <SupportChat
               thread={threadResult.data.thread}
               initialMessages={threadResult.data.messages}
+              support={support}
             />
 
             {/* Right, contacts + FAQs */}

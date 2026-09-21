@@ -11,6 +11,8 @@ import {
   RefreshCw,
   MessageCircle,
   Search,
+  ImagePlus,
+  X,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { cn } from '@/lib/utils';
@@ -19,6 +21,7 @@ import {
   adminResolveThread,
   adminReopenThread,
 } from './actions';
+import { uploadSupportImage } from '@/app/dashboard/support/actions';
 import type { Database } from '@/types/database';
 
 type Thread = Database['public']['Tables']['support_threads']['Row'];
@@ -74,6 +77,9 @@ export default function SupportInbox({ initialThreads, adminPersona }: Props) {
   const [loadingMessages, setLoadingMessages] = React.useState(false);
   const [draft, setDraft] = React.useState('');
   const [sending, setSending] = React.useState(false);
+  const [attachment, setAttachment] = React.useState<{ url: string; name: string } | null>(null);
+  const [uploading, setUploading] = React.useState(false);
+  const fileRef = React.useRef<HTMLInputElement | null>(null);
   const [error, setError] = React.useState<string | null>(null);
   const [statusFilter, setStatusFilter] = React.useState<'open' | 'all'>('open');
   const [search, setSearch] = React.useState('');
@@ -234,15 +240,31 @@ export default function SupportInbox({ initialThreads, adminPersona }: Props) {
     el.scrollTop = el.scrollHeight;
   }, [messages]);
 
+  async function onPickImage(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+    setError(null);
+    setUploading(true);
+    const fd = new FormData();
+    fd.append('file', file);
+    const res = await uploadSupportImage(fd);
+    setUploading(false);
+    if (res.ok) setAttachment({ url: res.url, name: file.name });
+    else setError(res.error);
+  }
+
   async function onSend(e?: React.FormEvent) {
     e?.preventDefault();
     if (!activeThreadId) return;
     const text = draft.trim();
-    if (!text || sending) return;
+    const img = attachment?.url ?? null;
+    if ((!text && !img) || sending || uploading) return;
 
     setSending(true);
     setError(null);
     setDraft('');
+    setAttachment(null);
 
     // Optimistic
     const optimistic: Message = {
@@ -251,11 +273,12 @@ export default function SupportInbox({ initialThreads, adminPersona }: Props) {
       sender_role: 'agent',
       sender_id: null,
       body: text,
+      image_url: img,
       created_at: new Date().toISOString(),
     };
     setMessages((prev) => [...prev, optimistic]);
 
-    const res = await adminSendSupportReply(activeThreadId, text);
+    const res = await adminSendSupportReply(activeThreadId, text, img);
     if (!res.ok) {
       setError(res.error);
       setMessages((prev) => prev.filter((m) => m.id !== optimistic.id));
@@ -467,10 +490,50 @@ export default function SupportInbox({ initialThreads, adminPersona }: Props) {
               )}
             </div>
 
+            {attachment && (
+              <div className="px-3 md:px-4 pt-3 bg-white">
+                <div className="relative inline-block">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={attachment.url}
+                    alt={attachment.name}
+                    className="h-20 w-20 rounded-xl object-cover border border-cream-200"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setAttachment(null)}
+                    aria-label="Retire imaj la"
+                    className="absolute -top-2 -right-2 grid place-items-center w-6 h-6 rounded-full bg-ink text-cream-50 shadow"
+                  >
+                    <X className="w-3.5 h-3.5" strokeWidth={2.4} />
+                  </button>
+                </div>
+              </div>
+            )}
             <form
               onSubmit={onSend}
               className="px-3 md:px-4 py-3 border-t border-cream-200 bg-white flex items-end gap-2"
             >
+              <input
+                ref={fileRef}
+                type="file"
+                accept="image/png,image/jpeg,image/webp,image/gif"
+                hidden
+                onChange={onPickImage}
+              />
+              <button
+                type="button"
+                onClick={() => fileRef.current?.click()}
+                disabled={uploading || sending || activeThread.status !== 'open'}
+                aria-label="Ajoute yon imaj"
+                className="grid place-items-center w-10 h-10 rounded-full bg-cream-50 hover:bg-cream-100 text-earth-700 transition shrink-0 disabled:opacity-50"
+              >
+                {uploading ? (
+                  <Loader2 className="w-4 h-4 animate-spin" strokeWidth={2.2} />
+                ) : (
+                  <ImagePlus className="w-4 h-4" strokeWidth={2} />
+                )}
+              </button>
               <textarea
                 value={draft}
                 onChange={(e) => setDraft(e.target.value)}
@@ -487,7 +550,7 @@ export default function SupportInbox({ initialThreads, adminPersona }: Props) {
               />
               <button
                 type="submit"
-                disabled={!draft.trim() || sending || activeThread.status !== 'open'}
+                disabled={(!draft.trim() && !attachment) || sending || uploading || activeThread.status !== 'open'}
                 aria-label="Voye"
                 className="grid place-items-center w-10 h-10 rounded-full bg-forest-700 hover:bg-forest-800 disabled:opacity-50 disabled:cursor-not-allowed text-cream-50 transition shrink-0"
               >
@@ -530,23 +593,42 @@ function Bubble({ message }: { message: Message }) {
     <div className={cn('flex', isAgent ? 'justify-end' : 'justify-start')}>
       <div
         className={cn(
-          'max-w-[78%] px-3.5 py-2 rounded-2xl text-sm leading-relaxed shadow-sm',
+          'max-w-[78%] rounded-2xl text-sm leading-relaxed shadow-sm overflow-hidden',
           isAgent
             ? 'bg-forest-700 text-cream-50 rounded-br-md'
             : 'bg-white border border-cream-200 text-ink rounded-bl-md'
         )}
       >
-        <div className="whitespace-pre-wrap break-words">{message.body}</div>
-        <div
-          className={cn(
-            'text-[10px] mt-1 text-right',
-            isAgent ? 'text-cream-200/80' : 'text-earth-500'
+        {message.image_url && (
+          <a
+            href={message.image_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block bg-cream-50"
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={message.image_url}
+              alt="Imaj"
+              className="max-h-72 max-w-full object-contain"
+            />
+          </a>
+        )}
+        <div className={cn(message.image_url && !message.body ? 'px-3 pb-1.5 pt-1' : 'px-3.5 py-2')}>
+          {message.body && (
+            <div className="whitespace-pre-wrap break-words">{message.body}</div>
           )}
-        >
-          {formatTime(message.created_at)}
-          {message.sender_role === 'system' && (
-            <span className="ml-1 italic">· auto</span>
-          )}
+          <div
+            className={cn(
+              'text-[10px] mt-1 text-right',
+              isAgent ? 'text-cream-200/80' : 'text-earth-500'
+            )}
+          >
+            {formatTime(message.created_at)}
+            {message.sender_role === 'system' && (
+              <span className="ml-1 italic">· auto</span>
+            )}
+          </div>
         </div>
       </div>
     </div>

@@ -1127,6 +1127,7 @@ export type Database = {
           body: string
           created_at: string
           id: string
+          image_url: string | null
           sender_id: string | null
           sender_role: Database["public"]["Enums"]["support_sender_role"]
           thread_id: string
@@ -1135,6 +1136,7 @@ export type Database = {
           body: string
           created_at?: string
           id?: string
+          image_url?: string | null
           sender_id?: string | null
           sender_role: Database["public"]["Enums"]["support_sender_role"]
           thread_id: string
@@ -1143,6 +1145,7 @@ export type Database = {
           body?: string
           created_at?: string
           id?: string
+          image_url?: string | null
           sender_id?: string | null
           sender_role?: Database["public"]["Enums"]["support_sender_role"]
           thread_id?: string

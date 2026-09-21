@@ -4,6 +4,7 @@ import { getCurrentUser } from '@/lib/supabase/auth';
 import Sidebar from '@/components/dashboard/sidebar';
 import UserAppearance from '@/components/dashboard/user-appearance';
 import MessageBox from '@/components/dashboard/message-box';
+import { getSupportSettings } from '@/lib/support-settings';
 import type { Database } from '@/types/database';
 
 type PrefsRow = Database['public']['Tables']['user_preferences']['Row'];
@@ -39,6 +40,9 @@ export default async function DashboardLayout({
   // triggers on profiles will populate user_preferences and
   // user_medical_info automatically.
   let profile: SidebarProfile | null = null;
+
+  // Kick off the support-settings read (cached, timeout-safe) in parallel.
+  const supportPromise = getSupportSettings();
 
   const [profileResult, prefsResult] = await Promise.all([
     supabase
@@ -109,6 +113,7 @@ export default async function DashboardLayout({
     profile?.full_name || profile?.email?.split('@')[0] || user.email?.split('@')[0] || 'Manm';
   const shortName = userName.split(' ')[0];
   const planLabel = profile ? PLAN_LABELS[profile.plan] : 'Hoïs Bazilik';
+  const support = await supportPromise;
 
   // Defaults mirror the DB defaults so the UI is consistent even when
   // the prefs row hasn't been auto-healed yet.
@@ -143,7 +148,7 @@ export default async function DashboardLayout({
         />
         <div className="flex-1 min-w-0">{children}</div>
       </div>
-      <MessageBox />
+      <MessageBox support={support} />
     </UserAppearance>
   );
 }

@@ -9,6 +9,7 @@ import {
   Lightbulb,
   CheckCircle2,
   AlertCircle,
+  ImagePlus,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { createClient } from '@/lib/supabase/client';
@@ -17,17 +18,27 @@ import {
   getOrCreateThread,
   sendMessage as sendMemberMessage,
   markThreadRead,
+  uploadSupportImage,
 } from '@/app/dashboard/support/actions';
 import { submitSuggestion } from '@/app/dashboard/actions';
+import {
+  computePresence,
+  resolveAgentIdentity,
+  DEFAULT_SUPPORT_SETTINGS,
+  type SupportSettings,
+  type Presence,
+} from '@/lib/support-presence';
 
 // ── Types kept minimal; the server actions own the source shapes ────────────
 type Msg = {
   id: string;
   sender_role: string;
   body: string;
+  image_url?: string | null;
   created_at: string;
 };
 type Thread = { id: string; member_last_read_at: string | null };
+type Attachment = { url: string; name: string };
 
 type Tab = 'mesaj' | 'sijesyon';
 
@@ -50,7 +61,11 @@ const SUGGESTION_CATEGORIES: { value: string; label: string }[] = [
   { value: 'other', label: 'Lòt' },
 ];
 
-export default function MessageBox() {
+export default function MessageBox({
+  support = DEFAULT_SUPPORT_SETTINGS,
+}: {
+  support?: SupportSettings;
+}) {
   const supabase = React.useMemo(() => createClient(), []);
   const [open, setOpen] = React.useState(false);
   const [tab, setTab] = React.useState<Tab>('mesaj');
@@ -60,9 +75,31 @@ export default function MessageBox() {
   const [loading, setLoading] = React.useState(false);
   const [draft, setDraft] = React.useState('');
   const [sending, setSending] = React.useState(false);
+  const [attachment, setAttachment] = React.useState<Attachment | null>(null);
+  const [uploading, setUploading] = React.useState(false);
   const bottomRef = React.useRef<HTMLDivElement>(null);
+  const fileRef = React.useRef<HTMLInputElement>(null);
 
   const unread = countUnread(thread, messages);
+
+  // Live availability + support identity for the header.
+  const [presence, setPresence] = React.useState<Presence>(() =>
+    computePresence(support)
+  );
+  React.useEffect(() => {
+    setPresence(computePresence(support));
+    const t = window.setInterval(() => setPresence(computePresence(support)), 60_000);
+    return () => window.clearInterval(t);
+  }, [support]);
+  const identity = React.useMemo(
+    () =>
+      resolveAgentIdentity(support, {
+        name: 'Hoïs',
+        role: 'Sipò',
+        initials: 'H',
+      }),
+    [support]
+  );
 
   // On mount: read-only fetch so the badge can show without creating a thread.
   React.useEffect(() => {
@@ -129,14 +166,36 @@ export default function MessageBox() {
     if (tab === 'mesaj') await openMesaj();
   }
 
+  async function onPickImage(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+    // Ensure a thread exists so the composer is ready when the upload lands.
+    if (!thread) {
+      const res = await getOrCreateThread();
+      if (res.ok) {
+        setThread(res.data.thread as Thread);
+        setMessages(res.data.messages as Msg[]);
+      }
+    }
+    setUploading(true);
+    const fd = new FormData();
+    fd.append('file', file);
+    const res = await uploadSupportImage(fd);
+    setUploading(false);
+    if (res.ok) setAttachment({ url: res.url, name: file.name });
+  }
+
   async function send() {
     const text = draft.trim();
-    if (!text || !thread || sending) return;
+    const img = attachment?.url ?? null;
+    if ((!text && !img) || !thread || sending || uploading) return;
     setSending(true);
-    const res = await sendMemberMessage(thread.id, text);
+    const res = await sendMemberMessage(thread.id, text, img);
     setSending(false);
     if (res.ok) {
       setDraft('');
+      setAttachment(null);
       setMessages((prev) =>
         prev.some((x) => x.id === res.message.id) ? prev : [...prev, res.message as Msg]
       );
@@ -167,8 +226,24 @@ export default function MessageBox() {
         <div className="notranslate fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[101] w-[calc(100vw-2rem)] max-w-sm rounded-2xl bg-white shadow-2xl border border-cream-200 overflow-hidden flex flex-col max-h-[70vh]">
           {/* Header + tabs */}
           <div className="bg-forest-800 text-cream-50 px-4 pt-3">
-            <div className="flex items-center justify-between">
-              <span className="font-display font-bold">Hoïs</span>
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <WidgetAvatar identity={identity} online={presence.online} />
+                <div className="min-w-0">
+                  <div className="font-display font-bold leading-tight truncate">
+                    {identity.name}
+                  </div>
+                  <div className="text-[10px] text-cream-100/80 flex items-center gap-1">
+                    <span
+                      className={cn(
+                        'w-1.5 h-1.5 rounded-full',
+                        presence.online ? 'bg-emerald-400' : 'bg-cream-100/50'
+                      )}
+                    />
+                    {presence.online ? 'An liy' : 'Pa disponib'}
+                  </div>
+                </div>
+              </div>
               <button type="button" onClick={() => setOpen(false)} aria-label="Fèmen">
                 <X className="w-4 h-4" strokeWidth={2.4} />
               </button>
@@ -197,6 +272,12 @@ export default function MessageBox() {
               sending={sending}
               send={send}
               bottomRef={bottomRef}
+              presence={presence}
+              attachment={attachment}
+              onRemoveAttachment={() => setAttachment(null)}
+              uploading={uploading}
+              fileRef={fileRef}
+              onPickImage={onPickImage}
             />
           ) : (
             <SijesyonTab />
@@ -204,6 +285,37 @@ export default function MessageBox() {
         </div>
       )}
     </>
+  );
+}
+
+function WidgetAvatar({
+  identity,
+  online,
+}: {
+  identity: { name: string; initials: string; photoUrl: string | null };
+  online: boolean;
+}) {
+  return (
+    <div className="relative shrink-0 w-8 h-8">
+      {identity.photoUrl ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={identity.photoUrl}
+          alt={identity.name}
+          className="w-8 h-8 rounded-full object-cover"
+        />
+      ) : (
+        <div className="grid place-items-center w-8 h-8 rounded-full bg-cream-50/15 text-cream-50 text-xs font-display font-bold">
+          {identity.initials}
+        </div>
+      )}
+      <span
+        className={cn(
+          'absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-forest-800',
+          online ? 'bg-emerald-400' : 'bg-cream-100/50'
+        )}
+      />
+    </div>
   );
 }
 
@@ -238,6 +350,12 @@ function MesajTab({
   sending,
   send,
   bottomRef,
+  presence,
+  attachment,
+  onRemoveAttachment,
+  uploading,
+  fileRef,
+  onPickImage,
 }: {
   loading: boolean;
   messages: Msg[];
@@ -246,9 +364,22 @@ function MesajTab({
   sending: boolean;
   send: () => void;
   bottomRef: React.RefObject<HTMLDivElement>;
+  presence: Presence;
+  attachment: Attachment | null;
+  onRemoveAttachment: () => void;
+  uploading: boolean;
+  fileRef: React.RefObject<HTMLInputElement>;
+  onPickImage: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }) {
+  const canSend = (!!draft.trim() || !!attachment) && !sending && !uploading;
   return (
     <>
+      {!presence.online && (
+        <div className="px-3 py-1.5 text-[10px] text-earth-700 bg-amber-50 border-b border-amber-100 flex items-center gap-1.5">
+          <span className="w-1.5 h-1.5 rounded-full bg-earth-300 shrink-0" />
+          {presence.detail}
+        </div>
+      )}
       <div className="flex-1 overflow-y-auto p-3 space-y-2 bg-cream-50/60 min-h-[220px]">
         {loading && messages.length === 0 ? (
           <div className="grid place-items-center h-full text-earth-500 text-sm">
@@ -265,13 +396,30 @@ function MesajTab({
               <div key={m.id} className={cn('flex', mine ? 'justify-end' : 'justify-start')}>
                 <div
                   className={cn(
-                    'max-w-[80%] px-3 py-2 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap break-words',
+                    'max-w-[80%] rounded-2xl text-sm leading-relaxed overflow-hidden',
                     mine
                       ? 'bg-forest-700 text-cream-50 rounded-br-sm'
                       : 'bg-white border border-cream-200 text-ink rounded-bl-sm'
                   )}
                 >
-                  {m.body}
+                  {m.image_url && (
+                    <a
+                      href={m.image_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block bg-cream-50"
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={m.image_url}
+                        alt="Imaj"
+                        className="max-h-48 max-w-full object-contain"
+                      />
+                    </a>
+                  )}
+                  {m.body && (
+                    <div className="px-3 py-2 whitespace-pre-wrap break-words">{m.body}</div>
+                  )}
                 </div>
               </div>
             );
@@ -279,7 +427,49 @@ function MesajTab({
         )}
         <div ref={bottomRef} />
       </div>
+
+      {attachment && (
+        <div className="px-2.5 pt-2">
+          <div className="relative inline-block">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={attachment.url}
+              alt={attachment.name}
+              className="h-16 w-16 rounded-lg object-cover border border-cream-200"
+            />
+            <button
+              type="button"
+              onClick={onRemoveAttachment}
+              aria-label="Retire imaj la"
+              className="absolute -top-1.5 -right-1.5 grid place-items-center w-5 h-5 rounded-full bg-ink text-cream-50 shadow"
+            >
+              <X className="w-3 h-3" strokeWidth={2.4} />
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="p-2.5 border-t border-cream-200 flex items-end gap-2">
+        <input
+          ref={fileRef}
+          type="file"
+          accept="image/png,image/jpeg,image/webp,image/gif"
+          hidden
+          onChange={onPickImage}
+        />
+        <button
+          type="button"
+          onClick={() => fileRef.current?.click()}
+          disabled={uploading || sending}
+          aria-label="Ajoute yon imaj"
+          className="grid place-items-center w-9 h-9 rounded-xl bg-cream-50 hover:bg-cream-100 text-earth-700 shrink-0 disabled:opacity-50"
+        >
+          {uploading ? (
+            <Loader2 className="w-4 h-4 animate-spin" />
+          ) : (
+            <ImagePlus className="w-4 h-4" strokeWidth={2.2} />
+          )}
+        </button>
         <textarea
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
@@ -296,7 +486,7 @@ function MesajTab({
         <button
           type="button"
           onClick={send}
-          disabled={sending || !draft.trim()}
+          disabled={!canSend}
           className="grid place-items-center w-9 h-9 rounded-xl bg-forest-700 hover:bg-forest-800 disabled:opacity-40 text-cream-50 shrink-0"
           aria-label="Voye"
         >

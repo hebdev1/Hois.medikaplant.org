@@ -16,6 +16,20 @@ const DEFAULT_WELCOME =
 const AUTO_REPLY =
   'Mèsi pou mesaj la. M ap reponn ou nan mwens ke 5 minit. Pandan tan an, gade gid yo nan paj Telechajman.';
 
+// ─── Image attachments (shared public-assets bucket) ────────────────────────
+const ALLOWED_IMAGE_MIME = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+const MAX_IMAGE_BYTES = 5 * 1024 * 1024; // 5 Mo
+
+// Only accept image URLs we produced (our own Supabase public bucket) — never
+// an arbitrary external URL a client might try to inject into a message.
+function supportImageUrlOrNull(url: string | null | undefined): string | null {
+  const v = (url ?? '').trim();
+  if (!v) return null;
+  const base = process.env.NEXT_PUBLIC_SUPABASE_URL ?? '';
+  const prefix = `${base}/storage/v1/object/public/`;
+  return base && v.startsWith(prefix) ? v : null;
+}
+
 // ─── Get-or-create the user's open thread ───────────────────────────────────
 
 export type ThreadWithMessages = {
@@ -79,12 +93,14 @@ export async function getOrCreateThread(): Promise<
 
 export async function sendMessage(
   threadId: string,
-  body: string
+  body: string,
+  imageUrl?: string | null
 ): Promise<
   { ok: true; message: MessageRow } | { ok: false; error: string }
 > {
   const text = body.trim();
-  if (text.length === 0) return { ok: false, error: 'Mesaj la vid.' };
+  const image = supportImageUrlOrNull(imageUrl);
+  if (text.length === 0 && !image) return { ok: false, error: 'Mesaj la vid.' };
   if (text.length > 4000) return { ok: false, error: 'Mesaj la twò long (maks 4000 karaktè).' };
 
   const supabase = createClient();
@@ -114,6 +130,7 @@ export async function sendMessage(
       sender_role: 'user',
       sender_id: user.id,
       body: text,
+      image_url: image,
     })
     .select('*')
     .single();
@@ -228,4 +245,51 @@ export async function markThreadResolved(
 
   revalidatePath('/dashboard/support');
   return { ok: true };
+}
+
+// ─── Upload a chat image (member or admin — any authenticated user) ──────────
+// Returns a public URL in our own bucket, which sendMessage /
+// adminSendSupportReply then validate before persisting to a message.
+export async function uploadSupportImage(
+  formData: FormData
+): Promise<{ ok: true; url: string } | { ok: false; error: string }> {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, error: 'Ou dwe konekte.' };
+
+  const file = formData.get('file');
+  if (!(file instanceof File)) return { ok: false, error: 'Pa gen fichye.' };
+  if (!ALLOWED_IMAGE_MIME.includes(file.type)) {
+    return { ok: false, error: 'Sèl imaj JPG, PNG, WEBP oswa GIF otorize.' };
+  }
+  if (file.size > MAX_IMAGE_BYTES) {
+    return { ok: false, error: 'Imaj la twò gwo (maks 5 Mo).' };
+  }
+
+  const ext =
+    file.type === 'image/jpeg'
+      ? 'jpg'
+      : file.type === 'image/png'
+        ? 'png'
+        : file.type === 'image/gif'
+          ? 'gif'
+          : 'webp';
+  const rand = Math.random().toString(36).slice(2, 8);
+  const objectPath = `support/attachments/${user.id}/${Date.now()}-${rand}.${ext}`;
+
+  const { error: uploadError } = await supabase.storage
+    .from('public-assets')
+    .upload(objectPath, await file.arrayBuffer(), {
+      contentType: file.type,
+      cacheControl: '3600',
+      upsert: false,
+    });
+  if (uploadError) return { ok: false, error: uploadError.message };
+
+  const {
+    data: { publicUrl },
+  } = supabase.storage.from('public-assets').getPublicUrl(objectPath);
+  return { ok: true, url: publicUrl };
 }

@@ -2,6 +2,8 @@ import { redirect } from 'next/navigation';
 import { MessageCircle } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import SupportInbox from './support-inbox';
+import SupportSettingsPanel from './support-settings-panel';
+import { normalizeSupportSettings } from '@/lib/support-presence';
 import type { Database } from '@/types/database';
 import { hasCapability, type AdminRole } from '../admin-nav-config';
 
@@ -123,6 +125,14 @@ export default async function AdminSupportPage() {
       new Date(a.last_message_at).getTime()
   );
 
+  // Support presence / identity settings (read fresh so edits show immediately).
+  const { data: settingsRaw } = await (supabase as any)
+    .from('support_settings')
+    .select('*')
+    .eq('id', 1)
+    .maybeSingle();
+  const supportSettings = normalizeSupportSettings(settingsRaw);
+
   return (
     <div className="p-5 md:p-8 lg:p-10 max-w-[1320px] mx-auto">
       <header className="mb-5">
@@ -139,6 +149,8 @@ export default async function AdminSupportPage() {
           ap parèt nan kloch li.
         </p>
       </header>
+
+      <SupportSettingsPanel initial={supportSettings} />
 
       <SupportInbox initialThreads={enriched} adminPersona={adminPersona} />
     </div>
