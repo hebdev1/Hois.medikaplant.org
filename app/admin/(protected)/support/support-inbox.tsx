@@ -13,6 +13,10 @@ import {
   Search,
   ImagePlus,
   X,
+  Pencil,
+  Trash2,
+  Check,
+  Ban,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { cn } from '@/lib/utils';
@@ -21,7 +25,11 @@ import {
   adminResolveThread,
   adminReopenThread,
 } from './actions';
-import { uploadSupportImage } from '@/app/dashboard/support/actions';
+import {
+  uploadSupportImage,
+  editSupportMessage,
+  deleteSupportMessage,
+} from '@/app/dashboard/support/actions';
 import type { Database } from '@/types/database';
 
 type Thread = Database['public']['Tables']['support_threads']['Row'];
@@ -137,6 +145,19 @@ export default function SupportInbox({ initialThreads, adminPersona }: Props) {
             messageIds.current.add(row.id);
             setMessages((prev) => [...prev, row]);
           }
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'support_messages',
+        },
+        (payload) => {
+          // Edit / delete — patch the row in the open conversation.
+          const row = payload.new as Message;
+          setMessages((prev) => prev.map((m) => (m.id === row.id ? row : m)));
         }
       )
       .on(
@@ -274,6 +295,8 @@ export default function SupportInbox({ initialThreads, adminPersona }: Props) {
       sender_id: null,
       body: text,
       image_url: img,
+      edited_at: null,
+      deleted_at: null,
       created_at: new Date().toISOString(),
     };
     setMessages((prev) => [...prev, optimistic]);
@@ -300,6 +323,42 @@ export default function SupportInbox({ initialThreads, adminPersona }: Props) {
       activeThread.status === 'open' ? adminResolveThread : adminReopenThread;
     const res = await fn(activeThread.id);
     if (!res.ok) setError(res.error);
+  }
+
+  async function onEditMessage(id: string, newBody: string) {
+    const text = newBody.trim();
+    if (!text) return;
+    const prev = messages.find((m) => m.id === id) ?? null;
+    setMessages((list) =>
+      list.map((m) =>
+        m.id === id ? { ...m, body: text, edited_at: new Date().toISOString() } : m
+      )
+    );
+    const res = await editSupportMessage(id, text);
+    if (res.ok) {
+      setMessages((list) => list.map((m) => (m.id === id ? res.message : m)));
+    } else {
+      setError(res.error);
+      if (prev) setMessages((list) => list.map((m) => (m.id === id ? prev : m)));
+    }
+  }
+
+  async function onDeleteMessage(id: string) {
+    const prev = messages.find((m) => m.id === id) ?? null;
+    setMessages((list) =>
+      list.map((m) =>
+        m.id === id
+          ? { ...m, body: '', image_url: null, deleted_at: new Date().toISOString() }
+          : m
+      )
+    );
+    const res = await deleteSupportMessage(id);
+    if (res.ok) {
+      setMessages((list) => list.map((m) => (m.id === id ? res.message : m)));
+    } else {
+      setError(res.error);
+      if (prev) setMessages((list) => list.map((m) => (m.id === id ? prev : m)));
+    }
   }
 
   const visibleThreads = threads.filter((t) => {
@@ -486,7 +545,18 @@ export default function SupportInbox({ initialThreads, adminPersona }: Props) {
                   Pa gen mesaj nan konvèsasyon sa.
                 </div>
               ) : (
-                messages.map((m) => <Bubble key={m.id} message={m} />)
+                messages.map((m) => (
+                  <Bubble
+                    key={m.id}
+                    message={m}
+                    editable={
+                      (m.sender_role === 'agent' || m.sender_role === 'system') &&
+                      !m.id.startsWith('optimistic-')
+                    }
+                    onEdit={onEditMessage}
+                    onDelete={onDeleteMessage}
+                  />
+                ))
               )}
             </div>
 
@@ -587,10 +657,111 @@ export default function SupportInbox({ initialThreads, adminPersona }: Props) {
   );
 }
 
-function Bubble({ message }: { message: Message }) {
+function Bubble({
+  message,
+  editable,
+  onEdit,
+  onDelete,
+}: {
+  message: Message;
+  editable: boolean;
+  onEdit: (id: string, body: string) => void;
+  onDelete: (id: string) => void;
+}) {
   const isAgent = message.sender_role === 'agent' || message.sender_role === 'system';
+  const [editing, setEditing] = React.useState(false);
+  const [editText, setEditText] = React.useState(message.body);
+  const [confirming, setConfirming] = React.useState(false);
+
+  if (message.deleted_at) {
+    return (
+      <div className={cn('flex', isAgent ? 'justify-end' : 'justify-start')}>
+        <div
+          className={cn(
+            'max-w-[78%] px-3.5 py-2 rounded-2xl text-xs italic shadow-sm inline-flex items-center gap-1.5',
+            isAgent
+              ? 'bg-forest-700/50 text-cream-100 rounded-br-md'
+              : 'bg-cream-100 text-earth-500 border border-cream-200 rounded-bl-md'
+          )}
+        >
+          <Ban className="w-3 h-3" strokeWidth={2} />
+          Mesaj efase
+        </div>
+      </div>
+    );
+  }
+
+  if (editing) {
+    const save = () => {
+      const t = editText.trim();
+      if (t) {
+        onEdit(message.id, t);
+        setEditing(false);
+      }
+    };
+    return (
+      <div className={cn('flex', isAgent ? 'justify-end' : 'justify-start')}>
+        <div className="max-w-[85%] w-full">
+          <textarea
+            value={editText}
+            onChange={(e) => setEditText(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                save();
+              }
+              if (e.key === 'Escape') {
+                setEditing(false);
+                setEditText(message.body);
+              }
+            }}
+            rows={2}
+            autoFocus
+            className="w-full resize-none px-3 py-2 text-sm bg-white border border-forest-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-forest-200"
+          />
+          <div className="flex items-center gap-2 mt-1 justify-end">
+            <button
+              type="button"
+              onClick={() => {
+                setEditing(false);
+                setEditText(message.body);
+              }}
+              className="text-xs font-semibold text-earth-500 hover:text-ink px-2 py-1"
+            >
+              Anile
+            </button>
+            <button
+              type="button"
+              onClick={save}
+              disabled={!editText.trim()}
+              className="text-xs font-semibold text-cream-50 bg-forest-700 hover:bg-forest-800 disabled:opacity-50 px-3 py-1 rounded-lg"
+            >
+              Anrejistre
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className={cn('flex', isAgent ? 'justify-end' : 'justify-start')}>
+    <div className={cn('group flex items-end gap-1', isAgent ? 'justify-end' : 'justify-start')}>
+      {isAgent && editable && (
+        <BubbleActions
+          confirming={confirming}
+          canEdit={!!message.body}
+          onEdit={() => {
+            setEditText(message.body);
+            setEditing(true);
+          }}
+          onAskDelete={() => setConfirming(true)}
+          onConfirmDelete={() => {
+            setConfirming(false);
+            onDelete(message.id);
+          }}
+          onCancelDelete={() => setConfirming(false)}
+        />
+      )}
       <div
         className={cn(
           'max-w-[78%] rounded-2xl text-sm leading-relaxed shadow-sm overflow-hidden',
@@ -624,6 +795,7 @@ function Bubble({ message }: { message: Message }) {
               isAgent ? 'text-cream-200/80' : 'text-earth-500'
             )}
           >
+            {message.edited_at && <span className="mr-1 italic">modifye ·</span>}
             {formatTime(message.created_at)}
             {message.sender_role === 'system' && (
               <span className="ml-1 italic">· auto</span>
@@ -631,6 +803,68 @@ function Bubble({ message }: { message: Message }) {
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+function BubbleActions({
+  confirming,
+  canEdit,
+  onEdit,
+  onAskDelete,
+  onConfirmDelete,
+  onCancelDelete,
+}: {
+  confirming: boolean;
+  canEdit: boolean;
+  onEdit: () => void;
+  onAskDelete: () => void;
+  onConfirmDelete: () => void;
+  onCancelDelete: () => void;
+}) {
+  if (confirming) {
+    return (
+      <div className="flex items-center gap-1 mb-1 shrink-0">
+        <span className="text-[10px] text-earth-500">Efase?</span>
+        <button
+          type="button"
+          onClick={onConfirmDelete}
+          aria-label="Konfime efase"
+          className="grid place-items-center w-6 h-6 rounded-full bg-rose-600 text-white hover:bg-rose-700"
+        >
+          <Check className="w-3 h-3" strokeWidth={2.6} />
+        </button>
+        <button
+          type="button"
+          onClick={onCancelDelete}
+          aria-label="Anile"
+          className="grid place-items-center w-6 h-6 rounded-full bg-cream-100 text-earth-600 hover:bg-cream-200"
+        >
+          <X className="w-3 h-3" strokeWidth={2.6} />
+        </button>
+      </div>
+    );
+  }
+  return (
+    <div className="flex items-center gap-0.5 mb-1 shrink-0 opacity-60 sm:opacity-0 sm:group-hover:opacity-100 focus-within:opacity-100 transition">
+      {canEdit && (
+        <button
+          type="button"
+          onClick={onEdit}
+          aria-label="Modifye mesaj la"
+          className="grid place-items-center w-6 h-6 rounded-full bg-cream-100 text-earth-600 hover:text-forest-700 hover:bg-cream-200"
+        >
+          <Pencil className="w-3 h-3" strokeWidth={2.2} />
+        </button>
+      )}
+      <button
+        type="button"
+        onClick={onAskDelete}
+        aria-label="Efase mesaj la"
+        className="grid place-items-center w-6 h-6 rounded-full bg-cream-100 text-earth-600 hover:text-rose-600 hover:bg-cream-200"
+      >
+        <Trash2 className="w-3 h-3" strokeWidth={2.2} />
+      </button>
     </div>
   );
 }

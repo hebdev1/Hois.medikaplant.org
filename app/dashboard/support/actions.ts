@@ -293,3 +293,50 @@ export async function uploadSupportImage(
   } = supabase.storage.from('public-assets').getPublicUrl(objectPath);
   return { ok: true, url: publicUrl };
 }
+
+// ─── Edit / delete a message ────────────────────────────────────────────────
+// Permissions are enforced in the SECURITY DEFINER RPCs: a member may touch
+// only their own 'user' messages, an admin only 'agent'/'system' messages.
+
+export async function editSupportMessage(
+  messageId: string,
+  body: string
+): Promise<{ ok: true; message: MessageRow } | { ok: false; error: string }> {
+  const text = body.trim();
+  if (text.length === 0) return { ok: false, error: 'Mesaj la vid.' };
+  if (text.length > 4000) return { ok: false, error: 'Mesaj la twò long (maks 4000 karaktè).' };
+
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, error: 'Ou dwe konekte.' };
+
+  const { data, error } = await (
+    supabase.rpc as unknown as (
+      fn: string,
+      args: Record<string, unknown>
+    ) => Promise<{ data: MessageRow | null; error: { message: string } | null }>
+  )('edit_support_message', { p_message_id: messageId, p_body: text });
+  if (error || !data) return { ok: false, error: error?.message ?? 'Erè inkoni.' };
+  return { ok: true, message: data as MessageRow };
+}
+
+export async function deleteSupportMessage(
+  messageId: string
+): Promise<{ ok: true; message: MessageRow } | { ok: false; error: string }> {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, error: 'Ou dwe konekte.' };
+
+  const { data, error } = await (
+    supabase.rpc as unknown as (
+      fn: string,
+      args: Record<string, unknown>
+    ) => Promise<{ data: MessageRow | null; error: { message: string } | null }>
+  )('delete_support_message', { p_message_id: messageId });
+  if (error || !data) return { ok: false, error: error?.message ?? 'Erè inkoni.' };
+  return { ok: true, message: data as MessageRow };
+}

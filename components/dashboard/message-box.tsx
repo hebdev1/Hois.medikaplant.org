@@ -10,6 +10,10 @@ import {
   CheckCircle2,
   AlertCircle,
   ImagePlus,
+  Pencil,
+  Trash2,
+  Check,
+  Ban,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { createClient } from '@/lib/supabase/client';
@@ -19,6 +23,8 @@ import {
   sendMessage as sendMemberMessage,
   markThreadRead,
   uploadSupportImage,
+  editSupportMessage,
+  deleteSupportMessage,
 } from '@/app/dashboard/support/actions';
 import { submitSuggestion } from '@/app/dashboard/actions';
 import {
@@ -35,6 +41,8 @@ type Msg = {
   sender_role: string;
   body: string;
   image_url?: string | null;
+  edited_at?: string | null;
+  deleted_at?: string | null;
   created_at: string;
 };
 type Thread = { id: string; member_last_read_at: string | null };
@@ -132,6 +140,19 @@ export default function MessageBox({
           setMessages((prev) => (prev.some((x) => x.id === m.id) ? prev : [...prev, m]));
         }
       )
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'support_messages',
+          filter: `thread_id=eq.${thread.id}`,
+        },
+        (payload) => {
+          const m = payload.new as Msg;
+          setMessages((prev) => prev.map((x) => (x.id === m.id ? m : x)));
+        }
+      )
       .subscribe();
     return () => {
       supabase.removeChannel(channel);
@@ -200,6 +221,34 @@ export default function MessageBox({
         prev.some((x) => x.id === res.message.id) ? prev : [...prev, res.message as Msg]
       );
     }
+  }
+
+  async function onEditMessage(id: string, newBody: string) {
+    const text = newBody.trim();
+    if (!text) return;
+    const prev = messages.find((m) => m.id === id) ?? null;
+    setMessages((list) =>
+      list.map((m) =>
+        m.id === id ? { ...m, body: text, edited_at: new Date().toISOString() } : m
+      )
+    );
+    const res = await editSupportMessage(id, text);
+    if (res.ok) setMessages((list) => list.map((m) => (m.id === id ? (res.message as Msg) : m)));
+    else if (prev) setMessages((list) => list.map((m) => (m.id === id ? prev : m)));
+  }
+
+  async function onDeleteMessage(id: string) {
+    const prev = messages.find((m) => m.id === id) ?? null;
+    setMessages((list) =>
+      list.map((m) =>
+        m.id === id
+          ? { ...m, body: '', image_url: null, deleted_at: new Date().toISOString() }
+          : m
+      )
+    );
+    const res = await deleteSupportMessage(id);
+    if (res.ok) setMessages((list) => list.map((m) => (m.id === id ? (res.message as Msg) : m)));
+    else if (prev) setMessages((list) => list.map((m) => (m.id === id ? prev : m)));
   }
 
   return (
@@ -278,6 +327,8 @@ export default function MessageBox({
               uploading={uploading}
               fileRef={fileRef}
               onPickImage={onPickImage}
+              onEdit={onEditMessage}
+              onDelete={onDeleteMessage}
             />
           ) : (
             <SijesyonTab />
@@ -356,6 +407,8 @@ function MesajTab({
   uploading,
   fileRef,
   onPickImage,
+  onEdit,
+  onDelete,
 }: {
   loading: boolean;
   messages: Msg[];
@@ -370,6 +423,8 @@ function MesajTab({
   uploading: boolean;
   fileRef: React.RefObject<HTMLInputElement>;
   onPickImage: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onEdit: (id: string, body: string) => void;
+  onDelete: (id: string) => void;
 }) {
   const canSend = (!!draft.trim() || !!attachment) && !sending && !uploading;
   return (
@@ -390,40 +445,15 @@ function MesajTab({
             Ekri yon mesaj, ekip Hoïs ap reponn ou.
           </p>
         ) : (
-          messages.map((m) => {
-            const mine = m.sender_role === 'user';
-            return (
-              <div key={m.id} className={cn('flex', mine ? 'justify-end' : 'justify-start')}>
-                <div
-                  className={cn(
-                    'max-w-[80%] rounded-2xl text-sm leading-relaxed overflow-hidden',
-                    mine
-                      ? 'bg-forest-700 text-cream-50 rounded-br-sm'
-                      : 'bg-white border border-cream-200 text-ink rounded-bl-sm'
-                  )}
-                >
-                  {m.image_url && (
-                    <a
-                      href={m.image_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="block bg-cream-50"
-                    >
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={m.image_url}
-                        alt="Imaj"
-                        className="max-h-48 max-w-full object-contain"
-                      />
-                    </a>
-                  )}
-                  {m.body && (
-                    <div className="px-3 py-2 whitespace-pre-wrap break-words">{m.body}</div>
-                  )}
-                </div>
-              </div>
-            );
-          })
+          messages.map((m) => (
+            <WidgetBubble
+              key={m.id}
+              message={m}
+              editable={m.sender_role === 'user' && !m.id.startsWith('optimistic-')}
+              onEdit={onEdit}
+              onDelete={onDelete}
+            />
+          ))
         )}
         <div ref={bottomRef} />
       </div>
@@ -498,6 +528,179 @@ function MesajTab({
         </button>
       </div>
     </>
+  );
+}
+
+function WidgetBubble({
+  message,
+  editable,
+  onEdit,
+  onDelete,
+}: {
+  message: Msg;
+  editable: boolean;
+  onEdit: (id: string, body: string) => void;
+  onDelete: (id: string) => void;
+}) {
+  const mine = message.sender_role === 'user';
+  const [editing, setEditing] = React.useState(false);
+  const [editText, setEditText] = React.useState(message.body);
+  const [confirming, setConfirming] = React.useState(false);
+
+  if (message.deleted_at) {
+    return (
+      <div className={cn('flex', mine ? 'justify-end' : 'justify-start')}>
+        <div
+          className={cn(
+            'max-w-[80%] px-3 py-1.5 rounded-2xl text-xs italic inline-flex items-center gap-1',
+            mine
+              ? 'bg-forest-700/50 text-cream-100 rounded-br-sm'
+              : 'bg-cream-100 text-earth-500 border border-cream-200 rounded-bl-sm'
+          )}
+        >
+          <Ban className="w-3 h-3" strokeWidth={2} /> Mesaj efase
+        </div>
+      </div>
+    );
+  }
+
+  if (editing) {
+    const save = () => {
+      const t = editText.trim();
+      if (t) {
+        onEdit(message.id, t);
+        setEditing(false);
+      }
+    };
+    return (
+      <div className={cn('flex', mine ? 'justify-end' : 'justify-start')}>
+        <div className="max-w-[90%] w-full">
+          <textarea
+            value={editText}
+            onChange={(e) => setEditText(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                save();
+              }
+              if (e.key === 'Escape') {
+                setEditing(false);
+                setEditText(message.body);
+              }
+            }}
+            rows={2}
+            autoFocus
+            className="w-full resize-none px-2.5 py-1.5 text-sm rounded-lg border border-forest-300 focus:outline-none focus:ring-2 focus:ring-forest-200"
+          />
+          <div className="flex justify-end gap-2 mt-1">
+            <button
+              type="button"
+              onClick={() => {
+                setEditing(false);
+                setEditText(message.body);
+              }}
+              className="text-[11px] font-semibold text-earth-500 px-1.5"
+            >
+              Anile
+            </button>
+            <button
+              type="button"
+              onClick={save}
+              disabled={!editText.trim()}
+              className="text-[11px] font-semibold text-cream-50 bg-forest-700 disabled:opacity-50 px-2.5 py-0.5 rounded-md"
+            >
+              Anrejistre
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className={cn('group flex items-end gap-1', mine ? 'justify-end' : 'justify-start')}>
+      {mine &&
+        editable &&
+        (confirming ? (
+          <div className="flex items-center gap-1 shrink-0">
+            <button
+              type="button"
+              onClick={() => {
+                setConfirming(false);
+                onDelete(message.id);
+              }}
+              aria-label="Konfime efase"
+              className="grid place-items-center w-5 h-5 rounded-full bg-rose-600 text-white"
+            >
+              <Check className="w-2.5 h-2.5" strokeWidth={2.8} />
+            </button>
+            <button
+              type="button"
+              onClick={() => setConfirming(false)}
+              aria-label="Anile"
+              className="grid place-items-center w-5 h-5 rounded-full bg-cream-200 text-earth-600"
+            >
+              <X className="w-2.5 h-2.5" strokeWidth={2.8} />
+            </button>
+          </div>
+        ) : (
+          <div className="flex items-center gap-0.5 shrink-0 opacity-60 sm:opacity-0 sm:group-hover:opacity-100 transition">
+            {!!message.body && (
+              <button
+                type="button"
+                onClick={() => {
+                  setEditText(message.body);
+                  setEditing(true);
+                }}
+                aria-label="Modifye"
+                className="grid place-items-center w-5 h-5 rounded-full bg-cream-100 text-earth-500 hover:text-forest-700"
+              >
+                <Pencil className="w-2.5 h-2.5" strokeWidth={2.2} />
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={() => setConfirming(true)}
+              aria-label="Efase"
+              className="grid place-items-center w-5 h-5 rounded-full bg-cream-100 text-earth-500 hover:text-rose-600"
+            >
+              <Trash2 className="w-2.5 h-2.5" strokeWidth={2.2} />
+            </button>
+          </div>
+        ))}
+      <div
+        className={cn(
+          'max-w-[80%] rounded-2xl text-sm leading-relaxed overflow-hidden',
+          mine
+            ? 'bg-forest-700 text-cream-50 rounded-br-sm'
+            : 'bg-white border border-cream-200 text-ink rounded-bl-sm'
+        )}
+      >
+        {message.image_url && (
+          <a
+            href={message.image_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block bg-cream-50"
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={message.image_url}
+              alt="Imaj"
+              className="max-h-48 max-w-full object-contain"
+            />
+          </a>
+        )}
+        {message.body && (
+          <div className="px-3 py-2 whitespace-pre-wrap break-words">
+            {message.body}
+            {message.edited_at && (
+              <span className="block text-[9px] opacity-70 italic mt-0.5">modifye</span>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
 
