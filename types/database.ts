@@ -1128,6 +1128,8 @@ export type Database = {
           created_at: string
           deleted_at: string | null
           edited_at: string | null
+          file_name: string | null
+          file_url: string | null
           id: string
           image_url: string | null
           sender_id: string | null
@@ -1139,6 +1141,8 @@ export type Database = {
           created_at?: string
           deleted_at?: string | null
           edited_at?: string | null
+          file_name?: string | null
+          file_url?: string | null
           id?: string
           image_url?: string | null
           sender_id?: string | null
@@ -1150,6 +1154,8 @@ export type Database = {
           created_at?: string
           deleted_at?: string | null
           edited_at?: string | null
+          file_name?: string | null
+          file_url?: string | null
           id?: string
           image_url?: string | null
           sender_id?: string | null

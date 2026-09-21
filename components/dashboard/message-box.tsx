@@ -9,7 +9,8 @@ import {
   Lightbulb,
   CheckCircle2,
   AlertCircle,
-  ImagePlus,
+  Paperclip,
+  FileText,
   Pencil,
   Trash2,
   Check,
@@ -22,10 +23,13 @@ import {
   getOrCreateThread,
   sendMessage as sendMemberMessage,
   markThreadRead,
-  uploadSupportImage,
+  uploadSupportAttachment,
   editSupportMessage,
   deleteSupportMessage,
 } from '@/app/dashboard/support/actions';
+
+const ATTACH_ACCEPT =
+  'image/png,image/jpeg,image/webp,image/gif,application/pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.zip';
 import { submitSuggestion } from '@/app/dashboard/actions';
 import {
   computePresence,
@@ -41,12 +45,14 @@ type Msg = {
   sender_role: string;
   body: string;
   image_url?: string | null;
+  file_url?: string | null;
+  file_name?: string | null;
   edited_at?: string | null;
   deleted_at?: string | null;
   created_at: string;
 };
 type Thread = { id: string; member_last_read_at: string | null };
-type Attachment = { url: string; name: string };
+type Attachment = { url: string; name: string; kind: 'image' | 'file' };
 
 type Tab = 'mesaj' | 'sijesyon';
 
@@ -201,7 +207,7 @@ export default function MessageBox({
     if (tab === 'mesaj') await openMesaj();
   }
 
-  async function onPickImage(e: React.ChangeEvent<HTMLInputElement>) {
+  async function onPickFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     e.target.value = '';
     if (!file) return;
@@ -216,17 +222,22 @@ export default function MessageBox({
     setUploading(true);
     const fd = new FormData();
     fd.append('file', file);
-    const res = await uploadSupportImage(fd);
+    const res = await uploadSupportAttachment(fd);
     setUploading(false);
-    if (res.ok) setAttachment({ url: res.url, name: file.name });
+    if (res.ok) setAttachment({ url: res.url, name: res.name, kind: res.kind });
   }
 
   async function send() {
     const text = draft.trim();
-    const img = attachment?.url ?? null;
-    if ((!text && !img) || !thread || sending || uploading) return;
+    const staged = attachment;
+    if ((!text && !staged) || !thread || sending || uploading) return;
+    const att = staged
+      ? staged.kind === 'image'
+        ? { imageUrl: staged.url }
+        : { fileUrl: staged.url, fileName: staged.name }
+      : undefined;
     setSending(true);
-    const res = await sendMemberMessage(thread.id, text, img);
+    const res = await sendMemberMessage(thread.id, text, att);
     setSending(false);
     if (res.ok) {
       setDraft('');
@@ -341,7 +352,7 @@ export default function MessageBox({
               onRemoveAttachment={() => setAttachment(null)}
               uploading={uploading}
               fileRef={fileRef}
-              onPickImage={onPickImage}
+              onPickFile={onPickFile}
               onEdit={onEditMessage}
               onDelete={onDeleteMessage}
             />
@@ -421,7 +432,7 @@ function MesajTab({
   onRemoveAttachment,
   uploading,
   fileRef,
-  onPickImage,
+  onPickFile,
   onEdit,
   onDelete,
 }: {
@@ -437,7 +448,7 @@ function MesajTab({
   onRemoveAttachment: () => void;
   uploading: boolean;
   fileRef: React.RefObject<HTMLInputElement>;
-  onPickImage: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onPickFile: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onEdit: (id: string, body: string) => void;
   onDelete: (id: string) => void;
 }) {
@@ -476,16 +487,27 @@ function MesajTab({
       {attachment && (
         <div className="px-2.5 pt-2">
           <div className="relative inline-block">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={attachment.url}
-              alt={attachment.name}
-              className="h-16 w-16 rounded-lg object-cover border border-cream-200"
-            />
+            {attachment.kind === 'image' ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={attachment.url}
+                alt={attachment.name}
+                className="h-16 w-16 rounded-lg object-cover border border-cream-200"
+              />
+            ) : (
+              <div className="flex items-center gap-2 max-w-[200px] pl-1.5 pr-3 py-1.5 rounded-lg border border-cream-200 bg-cream-50">
+                <span className="grid place-items-center w-7 h-7 rounded-md bg-white text-forest-700 shrink-0">
+                  <FileText className="w-3.5 h-3.5" strokeWidth={2} />
+                </span>
+                <span className="text-[11px] font-medium text-ink truncate">
+                  {attachment.name}
+                </span>
+              </div>
+            )}
             <button
               type="button"
               onClick={onRemoveAttachment}
-              aria-label="Retire imaj la"
+              aria-label="Retire fichye a"
               className="absolute -top-1.5 -right-1.5 grid place-items-center w-5 h-5 rounded-full bg-ink text-cream-50 shadow"
             >
               <X className="w-3 h-3" strokeWidth={2.4} />
@@ -498,21 +520,21 @@ function MesajTab({
         <input
           ref={fileRef}
           type="file"
-          accept="image/png,image/jpeg,image/webp,image/gif"
+          accept={ATTACH_ACCEPT}
           hidden
-          onChange={onPickImage}
+          onChange={onPickFile}
         />
         <button
           type="button"
           onClick={() => fileRef.current?.click()}
           disabled={uploading || sending}
-          aria-label="Ajoute yon imaj"
+          aria-label="Ajoute yon fichye"
           className="grid place-items-center w-9 h-9 rounded-xl bg-cream-50 hover:bg-cream-100 text-earth-700 shrink-0 disabled:opacity-50"
         >
           {uploading ? (
             <Loader2 className="w-4 h-4 animate-spin" />
           ) : (
-            <ImagePlus className="w-4 h-4" strokeWidth={2.2} />
+            <Paperclip className="w-4 h-4" strokeWidth={2.2} />
           )}
         </button>
         <textarea
@@ -704,6 +726,29 @@ function WidgetBubble({
               alt="Imaj"
               className="max-h-48 max-w-full object-contain"
             />
+          </a>
+        )}
+        {message.file_url && (
+          <a
+            href={message.file_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={cn(
+              'flex items-center gap-2 m-1 px-2.5 py-1.5 rounded-xl',
+              mine ? 'bg-cream-50/15' : 'bg-cream-100'
+            )}
+          >
+            <span
+              className={cn(
+                'grid place-items-center w-7 h-7 rounded-md shrink-0',
+                mine ? 'bg-cream-50/20 text-cream-50' : 'bg-white text-forest-700'
+              )}
+            >
+              <FileText className="w-3.5 h-3.5" strokeWidth={2} />
+            </span>
+            <span className="text-[11px] font-semibold truncate max-w-[150px]">
+              {message.file_name || 'Fichye'}
+            </span>
           </a>
         )}
         {message.body && (

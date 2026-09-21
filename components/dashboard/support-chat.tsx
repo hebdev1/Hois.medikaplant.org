@@ -7,7 +7,8 @@ import {
   MoreHorizontal,
   CheckCircle2,
   Loader2,
-  ImagePlus,
+  Paperclip,
+  FileText,
   X,
   Pencil,
   Trash2,
@@ -19,10 +20,15 @@ import {
   sendMessage,
   simulateAgentReply,
   markThreadResolved,
-  uploadSupportImage,
+  uploadSupportAttachment,
   editSupportMessage,
   deleteSupportMessage,
 } from '@/app/dashboard/support/actions';
+
+const ATTACH_ACCEPT =
+  'image/png,image/jpeg,image/webp,image/gif,application/pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.zip';
+
+type StagedAttachment = { url: string; name: string; kind: 'image' | 'file' };
 import type { Database } from '@/types/database';
 import { cn } from '@/lib/utils';
 import {
@@ -62,8 +68,8 @@ export default function SupportChat({
   const [resolved, setResolved] = React.useState(thread.status !== 'open');
   const [resolving, setResolving] = React.useState(false);
 
-  // An image staged for the next send.
-  const [attachment, setAttachment] = React.useState<{ url: string; name: string } | null>(null);
+  // An attachment (image or file) staged for the next send.
+  const [attachment, setAttachment] = React.useState<StagedAttachment | null>(null);
   const [uploading, setUploading] = React.useState(false);
   const fileRef = React.useRef<HTMLInputElement | null>(null);
 
@@ -152,7 +158,7 @@ export default function SupportChat({
     };
   }, [supabase, thread.id]);
 
-  async function onPickImage(e: React.ChangeEvent<HTMLInputElement>) {
+  async function onPickFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     e.target.value = '';
     if (!file) return;
@@ -160,17 +166,17 @@ export default function SupportChat({
     setUploading(true);
     const fd = new FormData();
     fd.append('file', file);
-    const res = await uploadSupportImage(fd);
+    const res = await uploadSupportAttachment(fd);
     setUploading(false);
-    if (res.ok) setAttachment({ url: res.url, name: file.name });
+    if (res.ok) setAttachment({ url: res.url, name: res.name, kind: res.kind });
     else setError(res.error);
   }
 
   async function onSend(e?: React.FormEvent) {
     e?.preventDefault();
     const text = draft.trim();
-    const img = attachment?.url ?? null;
-    if ((!text && !img) || sending || resolved || uploading) return;
+    const staged = attachment;
+    if ((!text && !staged) || sending || resolved || uploading) return;
 
     // Decide BEFORE the optimistic insert so the just-sent message is not
     // counted. The auto-reply should fire exactly once per thread — right
@@ -184,6 +190,12 @@ export default function SupportChat({
     // Sending my own message always jumps me back to the newest message.
     stickRef.current = true;
 
+    const att = staged
+      ? staged.kind === 'image'
+        ? { imageUrl: staged.url }
+        : { fileUrl: staged.url, fileName: staged.name }
+      : undefined;
+
     // Optimistic insert — replaced by realtime echo when it arrives
     const optimistic: Message = {
       id: `optimistic-${Date.now()}`,
@@ -191,14 +203,16 @@ export default function SupportChat({
       sender_role: 'user',
       sender_id: null,
       body: text,
-      image_url: img,
+      image_url: staged?.kind === 'image' ? staged.url : null,
+      file_url: staged?.kind === 'file' ? staged.url : null,
+      file_name: staged?.kind === 'file' ? staged.name : null,
       edited_at: null,
       deleted_at: null,
       created_at: new Date().toISOString(),
     };
     setMessages((prev) => [...prev, optimistic]);
 
-    const result = await sendMessage(thread.id, text, img);
+    const result = await sendMessage(thread.id, text, att);
     if (!result.ok) {
       setError(result.error);
       setMessages((prev) => prev.filter((m) => m.id !== optimistic.id));
@@ -364,21 +378,21 @@ export default function SupportChat({
             <input
               ref={fileRef}
               type="file"
-              accept="image/png,image/jpeg,image/webp,image/gif"
+              accept={ATTACH_ACCEPT}
               hidden
-              onChange={onPickImage}
+              onChange={onPickFile}
             />
             <button
               type="button"
               onClick={() => fileRef.current?.click()}
               disabled={uploading || sending}
-              aria-label="Ajoute yon imaj"
+              aria-label="Ajoute yon fichye"
               className="grid place-items-center w-10 h-10 rounded-full bg-cream-50 hover:bg-cream-100 text-earth-700 transition shrink-0 disabled:opacity-50"
             >
               {uploading ? (
                 <Loader2 className="w-4 h-4 animate-spin" strokeWidth={2.2} />
               ) : (
-                <ImagePlus className="w-4 h-4" strokeWidth={2} />
+                <Paperclip className="w-4 h-4" strokeWidth={2} />
               )}
             </button>
             <textarea
@@ -464,28 +478,68 @@ function AttachmentPreview({
   attachment,
   onRemove,
 }: {
-  attachment: { url: string; name: string };
+  attachment: StagedAttachment;
   onRemove: () => void;
 }) {
   return (
     <div className="px-3 md:px-4 pt-3">
       <div className="relative inline-block">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={attachment.url}
-          alt={attachment.name}
-          className="h-20 w-20 rounded-xl object-cover border border-cream-200"
-        />
+        {attachment.kind === 'image' ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={attachment.url}
+            alt={attachment.name}
+            className="h-20 w-20 rounded-xl object-cover border border-cream-200"
+          />
+        ) : (
+          <div className="flex items-center gap-2 max-w-[240px] pl-2 pr-4 py-2 rounded-xl border border-cream-200 bg-cream-50">
+            <span className="grid place-items-center w-9 h-9 rounded-lg bg-white text-forest-700 shrink-0">
+              <FileText className="w-4 h-4" strokeWidth={2} />
+            </span>
+            <span className="text-xs font-medium text-ink truncate">{attachment.name}</span>
+          </div>
+        )}
         <button
           type="button"
           onClick={onRemove}
-          aria-label="Retire imaj la"
+          aria-label="Retire fichye a"
           className="absolute -top-2 -right-2 grid place-items-center w-6 h-6 rounded-full bg-ink text-cream-50 shadow"
         >
           <X className="w-3.5 h-3.5" strokeWidth={2.4} />
         </button>
       </div>
     </div>
+  );
+}
+
+function FileChip({ url, name, mine }: { url: string; name: string | null; mine: boolean }) {
+  return (
+    <a
+      href={url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={cn(
+        'flex items-center gap-2 m-1.5 px-3 py-2 rounded-xl transition',
+        mine ? 'bg-cream-50/15 hover:bg-cream-50/25' : 'bg-cream-100 hover:bg-cream-200'
+      )}
+    >
+      <span
+        className={cn(
+          'grid place-items-center w-9 h-9 rounded-lg shrink-0',
+          mine ? 'bg-cream-50/20 text-cream-50' : 'bg-white text-forest-700'
+        )}
+      >
+        <FileText className="w-4 h-4" strokeWidth={2} />
+      </span>
+      <span className="min-w-0">
+        <span className="block text-xs font-semibold truncate max-w-[190px]">
+          {name || 'Fichye'}
+        </span>
+        <span className={cn('block text-[10px]', mine ? 'text-cream-100/70' : 'text-earth-500')}>
+          Telechaje
+        </span>
+      </span>
+    </a>
   );
 }
 
@@ -619,7 +673,16 @@ function ChatBubble({
             />
           </a>
         )}
-        <div className={cn(message.image_url && !message.body ? 'px-3 pb-1.5 pt-1' : 'px-3.5 py-2')}>
+        {message.file_url && (
+          <FileChip url={message.file_url} name={message.file_name} mine={isMe} />
+        )}
+        <div
+          className={cn(
+            (message.image_url || message.file_url) && !message.body
+              ? 'px-3 pb-1.5 pt-1'
+              : 'px-3.5 py-2'
+          )}
+        >
           {message.body && (
             <div className="whitespace-pre-wrap break-words">{message.body}</div>
           )}

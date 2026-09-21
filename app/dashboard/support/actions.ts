@@ -16,13 +16,43 @@ const DEFAULT_WELCOME =
 const AUTO_REPLY =
   'Mèsi pou mesaj la. M ap reponn ou nan mwens ke 5 minit. Pandan tan an, gade gid yo nan paj Telechajman.';
 
-// ─── Image attachments (shared public-assets bucket) ────────────────────────
+// ─── Attachments (shared public-assets bucket) ──────────────────────────────
+// Images render inline; every other allowed type becomes a download chip.
 const ALLOWED_IMAGE_MIME = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
-const MAX_IMAGE_BYTES = 5 * 1024 * 1024; // 5 Mo
+const ALLOWED_FILE_MIME = [
+  'application/pdf',
+  'application/msword',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'application/vnd.ms-excel',
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  'application/vnd.ms-powerpoint',
+  'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+  'text/plain',
+  'text/csv',
+  'application/zip',
+];
+const MAX_ATTACHMENT_BYTES = 10 * 1024 * 1024; // 10 Mo
 
-// Only accept image URLs we produced (our own Supabase public bucket) — never
-// an arbitrary external URL a client might try to inject into a message.
-function supportImageUrlOrNull(url: string | null | undefined): string | null {
+const EXT_BY_MIME: Record<string, string> = {
+  'image/jpeg': 'jpg',
+  'image/png': 'png',
+  'image/webp': 'webp',
+  'image/gif': 'gif',
+  'application/pdf': 'pdf',
+  'application/msword': 'doc',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'docx',
+  'application/vnd.ms-excel': 'xls',
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'xlsx',
+  'application/vnd.ms-powerpoint': 'ppt',
+  'application/vnd.openxmlformats-officedocument.presentationml.presentation': 'pptx',
+  'text/plain': 'txt',
+  'text/csv': 'csv',
+  'application/zip': 'zip',
+};
+
+// Only accept attachment URLs we produced (our own Supabase public bucket) —
+// never an arbitrary external URL a client might try to inject into a message.
+function ownBucketUrlOrNull(url: string | null | undefined): string | null {
   const v = (url ?? '').trim();
   if (!v) return null;
   const base = process.env.NEXT_PUBLIC_SUPABASE_URL ?? '';
@@ -94,13 +124,17 @@ export async function getOrCreateThread(): Promise<
 export async function sendMessage(
   threadId: string,
   body: string,
-  imageUrl?: string | null
+  attachment?: { imageUrl?: string | null; fileUrl?: string | null; fileName?: string | null }
 ): Promise<
   { ok: true; message: MessageRow } | { ok: false; error: string }
 > {
   const text = body.trim();
-  const image = supportImageUrlOrNull(imageUrl);
-  if (text.length === 0 && !image) return { ok: false, error: 'Mesaj la vid.' };
+  const image = ownBucketUrlOrNull(attachment?.imageUrl);
+  const fileUrl = ownBucketUrlOrNull(attachment?.fileUrl);
+  const fileName = fileUrl
+    ? ((attachment?.fileName ?? '').trim() || 'fichye').slice(0, 200)
+    : null;
+  if (text.length === 0 && !image && !fileUrl) return { ok: false, error: 'Mesaj la vid.' };
   if (text.length > 4000) return { ok: false, error: 'Mesaj la twò long (maks 4000 karaktè).' };
 
   const supabase = createClient();
@@ -131,6 +165,8 @@ export async function sendMessage(
       sender_id: user.id,
       body: text,
       image_url: image,
+      file_url: fileUrl,
+      file_name: fileName,
     })
     .select('*')
     .single();
@@ -247,12 +283,16 @@ export async function markThreadResolved(
   return { ok: true };
 }
 
-// ─── Upload a chat image (member or admin — any authenticated user) ──────────
-// Returns a public URL in our own bucket, which sendMessage /
-// adminSendSupportReply then validate before persisting to a message.
-export async function uploadSupportImage(
+// ─── Upload a chat attachment (member or admin — any authenticated user) ─────
+// Handles images and documents. Returns a public URL in our own bucket plus
+// the original filename and a kind, which the composer uses to render the
+// staged attachment and which sendMessage / adminSendSupportReply validate.
+export async function uploadSupportAttachment(
   formData: FormData
-): Promise<{ ok: true; url: string } | { ok: false; error: string }> {
+): Promise<
+  | { ok: true; url: string; name: string; kind: 'image' | 'file' }
+  | { ok: false; error: string }
+> {
   const supabase = createClient();
   const {
     data: { user },
@@ -261,21 +301,18 @@ export async function uploadSupportImage(
 
   const file = formData.get('file');
   if (!(file instanceof File)) return { ok: false, error: 'Pa gen fichye.' };
-  if (!ALLOWED_IMAGE_MIME.includes(file.type)) {
-    return { ok: false, error: 'Sèl imaj JPG, PNG, WEBP oswa GIF otorize.' };
+  const isImage = ALLOWED_IMAGE_MIME.includes(file.type);
+  const isFile = ALLOWED_FILE_MIME.includes(file.type);
+  if (!isImage && !isFile) {
+    return { ok: false, error: 'Kalite fichye sa a pa otorize.' };
   }
-  if (file.size > MAX_IMAGE_BYTES) {
-    return { ok: false, error: 'Imaj la twò gwo (maks 5 Mo).' };
+  if (file.size > MAX_ATTACHMENT_BYTES) {
+    return { ok: false, error: 'Fichye a twò gwo (maks 10 Mo).' };
   }
 
   const ext =
-    file.type === 'image/jpeg'
-      ? 'jpg'
-      : file.type === 'image/png'
-        ? 'png'
-        : file.type === 'image/gif'
-          ? 'gif'
-          : 'webp';
+    EXT_BY_MIME[file.type] ??
+    (file.name.split('.').pop() || 'bin').toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 8);
   const rand = Math.random().toString(36).slice(2, 8);
   const objectPath = `support/attachments/${user.id}/${Date.now()}-${rand}.${ext}`;
 
@@ -291,7 +328,12 @@ export async function uploadSupportImage(
   const {
     data: { publicUrl },
   } = supabase.storage.from('public-assets').getPublicUrl(objectPath);
-  return { ok: true, url: publicUrl };
+  return {
+    ok: true,
+    url: publicUrl,
+    name: file.name,
+    kind: isImage ? 'image' : 'file',
+  };
 }
 
 // ─── Edit / delete a message ────────────────────────────────────────────────

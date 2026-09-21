@@ -43,11 +43,15 @@ async function assertAdmin() {
 export async function adminSendSupportReply(
   threadId: string,
   body: string,
-  imageUrl?: string | null
+  attachment?: { imageUrl?: string | null; fileUrl?: string | null; fileName?: string | null }
 ): Promise<{ ok: true; message: MessageRow } | { ok: false; error: string }> {
   const text = body.trim();
-  const image = supportImageUrlOrNull(imageUrl);
-  if (text.length === 0 && !image) return { ok: false, error: 'Mesaj la vid.' };
+  const image = ownBucketUrlOrNull(attachment?.imageUrl);
+  const fileUrl = ownBucketUrlOrNull(attachment?.fileUrl);
+  const fileName = fileUrl
+    ? ((attachment?.fileName ?? '').trim() || 'fichye').slice(0, 200)
+    : null;
+  if (text.length === 0 && !image && !fileUrl) return { ok: false, error: 'Mesaj la vid.' };
   if (text.length > 4000) {
     return { ok: false, error: 'Mesaj la twò long (maks 4000 karaktè).' };
   }
@@ -55,14 +59,19 @@ export async function adminSendSupportReply(
   const auth = await assertAdmin();
   if (!auth.ok) return { ok: false, error: auth.error };
 
-  // The RPC signature gained p_image_url; the generated types still describe
-  // the old 2-arg shape, so call through an untyped view.
+  // The generated types still describe the old RPC shape, so call untyped.
   const { data, error } = await (auth.supabase.rpc as unknown as (
     fn: string,
     args: Record<string, unknown>
   ) => Promise<{ data: MessageRow | null; error: { message: string } | null }>)(
     'admin_send_support_reply',
-    { p_thread_id: threadId, p_body: text, p_image_url: image }
+    {
+      p_thread_id: threadId,
+      p_body: text,
+      p_image_url: image,
+      p_file_url: fileUrl,
+      p_file_name: fileName,
+    }
   );
   if (error || !data) {
     return { ok: false, error: error?.message ?? 'Erè inkoni.' };
@@ -146,8 +155,8 @@ export async function adminReopenThread(
 const ALLOWED_PHOTO_MIME = ['image/jpeg', 'image/png', 'image/webp'];
 const MAX_PHOTO_BYTES = 4 * 1024 * 1024; // 4 Mo
 
-// Only persist image URLs from our own public bucket (never an external URL).
-function supportImageUrlOrNull(url: string | null | undefined): string | null {
+// Only persist attachment URLs from our own public bucket (never external).
+function ownBucketUrlOrNull(url: string | null | undefined): string | null {
   const v = (url ?? '').trim();
   if (!v) return null;
   const base = process.env.NEXT_PUBLIC_SUPABASE_URL ?? '';
