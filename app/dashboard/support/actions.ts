@@ -313,8 +313,10 @@ export async function uploadSupportAttachment(
   const ext =
     EXT_BY_MIME[file.type] ??
     (file.name.split('.').pop() || 'bin').toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 8);
-  const rand = Math.random().toString(36).slice(2, 8);
-  const objectPath = `support/attachments/${user.id}/${Date.now()}-${rand}.${ext}`;
+  // High-entropy key so attachment URLs in the public bucket can't be guessed
+  // or enumerated (defense-in-depth until these move to a private bucket).
+  const rand = crypto.randomUUID();
+  const objectPath = `support/attachments/${user.id}/${rand}.${ext}`;
 
   const { error: uploadError } = await supabase.storage
     .from('public-assets')

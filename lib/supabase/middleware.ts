@@ -91,28 +91,19 @@ export async function updateSession(request: NextRequest) {
     return response;
   }
 
-  // ── Authed: gather every per-request read in ONE parallel batch ────────
-  // Hostinger→Supabase round-trips dominate dashboard navigation, so we pay
-  // that latency once (Promise.all) instead of firing these checks one after
-  // another. Same reads, same rules — just not sequential:
-  //   • suspended — always (closes the suspend→token-still-valid window)
-  //   • role — only when the JWT claim didn't carry it (pre-hook sessions)
-  //   • active subscription — only for a member (non-admin) on /dashboard
-  const metadataRole = (user.user_metadata as { app_role?: string } | null)
-    ?.app_role;
-  const roleInJwt = metadataRole === 'admin' || metadataRole === 'user';
-  const isAdminFromJwt = metadataRole === 'admin';
-  // When the JWT lacks the claim we can't yet know admin-ness, so fetch the
-  // subscription for any member route and simply ignore it if the DB role
-  // turns out to be admin.
-  const needsSub = isMemberRoute && !isAdminFromJwt;
-
-  const [suspendedRes, roleRes, subRes] = await Promise.all([
-    supabase.from('profiles').select('suspended').eq('id', user.id).maybeSingle(),
-    roleInJwt
-      ? Promise.resolve(null)
-      : supabase.from('profiles').select('role').eq('id', user.id).maybeSingle(),
-    needsSub
+  // ── 1. Authorization inputs come from the DB, NEVER user_metadata ──────
+  // user_metadata (e.g. app_role) is writable by the user themselves via
+  // supabase.auth.updateUser({ data: … }), so it must never drive role or
+  // paywall decisions. We read suspended + role from profiles, and — for any
+  // member route — the active-subscription count, in one parallel batch to
+  // keep the Hostinger→Supabase round-trips down.
+  const [profileRes, subRes] = await Promise.all([
+    supabase
+      .from('profiles')
+      .select('suspended, role')
+      .eq('id', user.id)
+      .maybeSingle(),
+    isMemberRoute
       ? supabase
           .from('subscriptions')
           .select('id', { count: 'exact', head: true })
@@ -121,12 +112,15 @@ export async function updateSession(request: NextRequest) {
       : Promise.resolve(null),
   ]);
 
+  const profile = profileRes.data as
+    | { suspended: boolean | null; role: 'user' | 'admin' | null }
+    | null;
+
   // ── 1b. Suspended members are out, immediately ─────────────────────────
-  // Suspending bans the auth account, which blocks new logins and kills
-  // token refresh — but an access token already in hand stays valid until it
-  // expires (up to an hour). This check closes that window: the moment an
-  // admin suspends someone, their next page load ends the session.
-  if ((suspendedRes?.data as { suspended: boolean } | null)?.suspended) {
+  // Suspending bans the auth account, which blocks new logins and kills token
+  // refresh — but an access token already in hand stays valid until it expires
+  // (up to an hour). This ends the session on their next page load.
+  if (profile?.suspended) {
     await supabase.auth.signOut();
     const url = request.nextUrl.clone();
     url.pathname = isAdminRoute ? '/admin/login' : '/auth/login';
@@ -134,15 +128,8 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  // ── 2. Role: JWT claim (fast, no round-trip) or the DB fallback above ──
-  //    The fallback only fires for sessions issued BEFORE the access-token
-  //    hook was enabled; once the user signs in again we hit the fast path.
-  let role: 'user' | 'admin' = 'user';
-  if (roleInJwt) {
-    role = metadataRole as 'user' | 'admin';
-  } else {
-    role = (roleRes?.data as { role: 'user' | 'admin' } | null)?.role ?? 'user';
-  }
+  // ── 2. Role from the DB (authoritative) ────────────────────────────────
+  const role: 'user' | 'admin' = profile?.role === 'admin' ? 'admin' : 'user';
   const isAdmin = role === 'admin';
 
   // Already signed in but visiting a public auth/login page → bounce home

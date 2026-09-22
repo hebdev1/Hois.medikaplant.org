@@ -11,7 +11,11 @@ const SUSPENDED_MSG = 'Kont ou sispann. Kontakte sipò a pou plis enfòmasyon.';
 export default function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirect = searchParams.get('redirect') || '/dashboard';
+  // Only honor a same-origin relative path — never an absolute or
+  // protocol-relative URL — so ?redirect= can't bounce a just-authenticated
+  // user to a phishing site.
+  const rawRedirect = searchParams.get('redirect') || '/dashboard';
+  const redirect = /^\/(?![/\\])/.test(rawRedirect) ? rawRedirect : '/dashboard';
   const supabase = createClient();
 
   const [email, setEmail] = React.useState('');

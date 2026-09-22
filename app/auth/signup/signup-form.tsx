@@ -37,8 +37,12 @@ export default function SignupForm() {
     setError(null);
     setLoading(true);
 
+    // Only honor a same-origin relative ?redirect= (guards open-redirect via
+    // emailRedirectTo + router.push below).
+    const safeRedirect =
+      redirectParam && /^\/(?![/\\])/.test(redirectParam) ? redirectParam : null;
     const postSignupDestination =
-      redirectParam ||
+      safeRedirect ||
       (planParam ? `/checkout?plan=${planParam}` : '/dashboard');
 
     const { data, error } = await supabase.auth.signUp({
