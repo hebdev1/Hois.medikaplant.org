@@ -24,11 +24,6 @@ import {
   editSupportMessage,
   deleteSupportMessage,
 } from '@/app/dashboard/support/actions';
-
-const ATTACH_ACCEPT =
-  'image/png,image/jpeg,image/webp,image/gif,application/pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.zip';
-
-type StagedAttachment = { url: string; name: string; kind: 'image' | 'file' };
 import type { Database } from '@/types/database';
 import { cn } from '@/lib/utils';
 import {
@@ -38,8 +33,18 @@ import {
   type Presence,
 } from '@/lib/support-presence';
 
+const ATTACH_ACCEPT =
+  'image/png,image/jpeg,image/webp,image/gif,application/pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.zip';
+
+type StagedAttachment = { url: string; name: string; kind: 'image' | 'file' };
 type Thread = Database['public']['Tables']['support_threads']['Row'];
 type Message = Database['public']['Tables']['support_messages']['Row'];
+
+/** The signed-in member — used to render their avatar + name on own messages. */
+type Viewer = { name: string; avatarUrl: string | null };
+
+/** Who a message is from, resolved for the per-message avatar + label. */
+type Persona = { name: string; photoUrl: string | null; initials: string };
 
 const TIME_FORMAT = new Intl.DateTimeFormat('fr-HT', {
   hour: '2-digit',
@@ -50,14 +55,27 @@ function formatTime(iso: string) {
   return TIME_FORMAT.format(new Date(iso));
 }
 
+function initialsOf(name: string): string {
+  return (
+    name
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((w) => w[0]?.toUpperCase() ?? '')
+      .join('') || 'M'
+  );
+}
+
 export default function SupportChat({
   thread,
   initialMessages,
   support,
+  viewer,
 }: {
   thread: Thread;
   initialMessages: Message[];
   support: SupportSettings;
+  viewer: Viewer;
 }) {
   const supabase = React.useMemo(() => createClient(), []);
   const [messages, setMessages] = React.useState<Message[]>(initialMessages);
@@ -92,6 +110,18 @@ export default function SupportChat({
       }),
     [support, thread.agent_name, thread.agent_role, thread.agent_initials]
   );
+
+  // Personas for the per-message avatar + name label.
+  const agentPersona: Persona = {
+    name: identity.name,
+    photoUrl: identity.photoUrl,
+    initials: identity.initials,
+  };
+  const viewerPersona: Persona = {
+    name: viewer.name,
+    photoUrl: viewer.avatarUrl,
+    initials: initialsOf(viewer.name),
+  };
 
   const bodyRef = React.useRef<HTMLDivElement | null>(null);
   const stickRef = React.useRef(true);
@@ -288,7 +318,7 @@ export default function SupportChat({
 
   return (
     <div className="flex flex-col bg-white border border-cream-200 rounded-2xl shadow-card overflow-hidden h-[640px]">
-      {/* Header */}
+      {/* Header — who you're talking to + live availability */}
       <header className="flex items-center gap-3 px-5 py-3.5 border-b border-cream-200 bg-gradient-to-r from-cream-50 to-white">
         <AgentAvatar identity={identity} online={presence.online} size={44} />
         <div className="flex-1 min-w-0">
@@ -340,22 +370,26 @@ export default function SupportChat({
         </div>
       )}
 
-      {/* Body */}
-      <div
-        ref={bodyRef}
-        onScroll={onBodyScroll}
-        className="flex-1 overflow-y-auto px-4 md:px-5 py-5 space-y-3 bg-[radial-gradient(circle_at_1px_1px,rgba(122,175,82,0.05)_1px,transparent_0)] bg-[length:22px_22px]"
-      >
-        {messages.map((m) => (
-          <ChatBubble
-            key={m.id}
-            message={m}
-            editable={m.sender_role === 'user' && !m.id.startsWith('optimistic-')}
-            onEdit={onEditMessage}
-            onDelete={onDeleteMessage}
-          />
-        ))}
-        {typing && <TypingBubble />}
+      {/* Body — messages, with a soft fade at the bottom edge */}
+      <div className="relative min-h-0 flex-1">
+        <div
+          ref={bodyRef}
+          onScroll={onBodyScroll}
+          className="h-full overflow-y-auto px-4 md:px-5 py-5 space-y-4 bg-[radial-gradient(circle_at_1px_1px,rgba(122,175,82,0.05)_1px,transparent_0)] bg-[length:22px_22px]"
+        >
+          {messages.map((m) => (
+            <ChatBubble
+              key={m.id}
+              message={m}
+              persona={m.sender_role === 'user' ? viewerPersona : agentPersona}
+              editable={m.sender_role === 'user' && !m.id.startsWith('optimistic-')}
+              onEdit={onEditMessage}
+              onDelete={onDeleteMessage}
+            />
+          ))}
+          {typing && <TypingBubble persona={agentPersona} />}
+        </div>
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-white to-transparent" />
       </div>
 
       {/* Composer */}
@@ -474,6 +508,35 @@ function AgentAvatar({
   );
 }
 
+/** Small per-message avatar (no presence dot). */
+function MsgAvatar({ persona, mine }: { persona: Persona; mine: boolean }) {
+  if (persona.photoUrl) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        src={persona.photoUrl}
+        alt={persona.name}
+        className="h-8 w-8 shrink-0 rounded-full object-cover"
+      />
+    );
+  }
+  return (
+    <div
+      className={cn(
+        'grid h-8 w-8 shrink-0 place-items-center rounded-full text-cream-50 text-[11px] font-display font-bold',
+        mine && 'bg-forest-600'
+      )}
+      style={
+        mine
+          ? undefined
+          : { backgroundImage: 'linear-gradient(135deg, #e78e17, #985c0c)' }
+      }
+    >
+      {persona.initials}
+    </div>
+  );
+}
+
 function AttachmentPreview({
   attachment,
   onRemove,
@@ -545,11 +608,13 @@ function FileChip({ url, name, mine }: { url: string; name: string | null; mine:
 
 function ChatBubble({
   message,
+  persona,
   editable,
   onEdit,
   onDelete,
 }: {
   message: Message;
+  persona: Persona;
   editable: boolean;
   onEdit: (id: string, body: string) => void;
   onDelete: (id: string) => void;
@@ -559,16 +624,16 @@ function ChatBubble({
   const [editText, setEditText] = React.useState(message.body);
   const [confirming, setConfirming] = React.useState(false);
 
-  // Deleted → tombstone
+  // Deleted → tombstone (kept simple, still aligned to the sender's side)
   if (message.deleted_at) {
     return (
       <div className={cn('flex', isMe ? 'justify-end' : 'justify-start')}>
         <div
           className={cn(
-            'max-w-[78%] px-3.5 py-2 rounded-2xl text-xs italic shadow-sm inline-flex items-center gap-1.5',
+            'max-w-[78%] px-3.5 py-2 rounded-2xl text-xs italic inline-flex items-center gap-1.5',
             isMe
-              ? 'bg-forest-700/50 text-cream-100 rounded-br-md'
-              : 'bg-cream-100 text-earth-500 border border-cream-200 rounded-bl-md'
+              ? 'bg-forest-700/40 text-cream-100'
+              : 'bg-cream-100 text-earth-500 border border-cream-200'
           )}
         >
           <Ban className="w-3 h-3" strokeWidth={2} />
@@ -633,68 +698,68 @@ function ChatBubble({
   }
 
   return (
-    <div className={cn('group flex items-end gap-1', isMe ? 'justify-end' : 'justify-start')}>
-      {isMe && editable && (
-        <BubbleActions
-          confirming={confirming}
-          canEdit={!!message.body}
-          onEdit={() => {
-            setEditText(message.body);
-            setEditing(true);
-          }}
-          onAskDelete={() => setConfirming(true)}
-          onConfirmDelete={() => {
-            setConfirming(false);
-            onDelete(message.id);
-          }}
-          onCancelDelete={() => setConfirming(false)}
-        />
-      )}
-      <div
-        className={cn(
-          'max-w-[78%] rounded-2xl text-sm leading-relaxed shadow-sm overflow-hidden',
-          isMe
-            ? 'bg-forest-700 text-cream-50 rounded-br-md'
-            : 'bg-white border border-cream-200 text-ink rounded-bl-md'
-        )}
-      >
-        {message.image_url && (
-          <a
-            href={message.image_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="block bg-cream-50"
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={message.image_url}
-              alt="Imaj"
-              className="max-h-72 max-w-full object-contain"
-            />
-          </a>
-        )}
-        {message.file_url && (
-          <FileChip url={message.file_url} name={message.file_name} mine={isMe} />
-        )}
-        <div
-          className={cn(
-            (message.image_url || message.file_url) && !message.body
-              ? 'px-3 pb-1.5 pt-1'
-              : 'px-3.5 py-2'
+    <div className={cn('group flex items-start gap-2', isMe ? 'flex-row-reverse' : 'flex-row')}>
+      <MsgAvatar persona={persona} mine={isMe} />
+      <div className={cn('flex max-w-[78%] flex-col gap-1', isMe ? 'items-end' : 'items-start')}>
+        {/* Name + time label above the bubble */}
+        <div className="flex items-center gap-2 px-1">
+          <span className="text-[11px] font-semibold text-ink truncate max-w-[160px]">
+            {persona.name}
+          </span>
+          <span className="text-[10px] text-earth-500">{formatTime(message.created_at)}</span>
+          {message.edited_at && (
+            <span className="text-[10px] italic text-earth-400">modifye</span>
           )}
-        >
-          {message.body && (
-            <div className="whitespace-pre-wrap break-words">{message.body}</div>
-          )}
+        </div>
+
+        <div className={cn('flex items-end gap-1', isMe && 'flex-row-reverse')}>
           <div
             className={cn(
-              'text-[10px] mt-1 text-right',
-              isMe ? 'text-cream-200/80' : 'text-earth-500'
+              'rounded-2xl text-sm leading-relaxed shadow-sm overflow-hidden',
+              isMe
+                ? 'bg-forest-700 text-cream-50 rounded-tr-sm'
+                : 'bg-white border border-cream-200 text-ink rounded-tl-sm'
             )}
           >
-            {message.edited_at && <span className="mr-1 italic">modifye ·</span>}
-            {formatTime(message.created_at)}
+            {message.image_url && (
+              <a
+                href={message.image_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block bg-cream-50"
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={message.image_url}
+                  alt="Imaj"
+                  className="max-h-72 max-w-full object-contain"
+                />
+              </a>
+            )}
+            {message.file_url && (
+              <FileChip url={message.file_url} name={message.file_name} mine={isMe} />
+            )}
+            {message.body && (
+              <div className="px-3.5 py-2 whitespace-pre-wrap break-words">{message.body}</div>
+            )}
           </div>
+
+          {isMe && editable && (
+            <BubbleActions
+              confirming={confirming}
+              canEdit={!!message.body}
+              onEdit={() => {
+                setEditText(message.body);
+                setEditing(true);
+              }}
+              onAskDelete={() => setConfirming(true)}
+              onConfirmDelete={() => {
+                setConfirming(false);
+                onDelete(message.id);
+              }}
+              onCancelDelete={() => setConfirming(false)}
+            />
+          )}
         </div>
       </div>
     </div>
@@ -718,7 +783,7 @@ function BubbleActions({
 }) {
   if (confirming) {
     return (
-      <div className="flex items-center gap-1 mb-1 shrink-0">
+      <div className="flex items-center gap-1 pb-1 shrink-0">
         <span className="text-[10px] text-earth-500">Efase?</span>
         <button
           type="button"
@@ -740,7 +805,7 @@ function BubbleActions({
     );
   }
   return (
-    <div className="flex items-center gap-0.5 mb-1 shrink-0 opacity-60 sm:opacity-0 sm:group-hover:opacity-100 focus-within:opacity-100 transition">
+    <div className="flex items-center gap-0.5 pb-1 shrink-0 opacity-60 sm:opacity-0 sm:group-hover:opacity-100 focus-within:opacity-100 transition">
       {canEdit && (
         <button
           type="button"
@@ -763,10 +828,11 @@ function BubbleActions({
   );
 }
 
-function TypingBubble() {
+function TypingBubble({ persona }: { persona: Persona }) {
   return (
-    <div className="flex justify-start">
-      <div className="bg-white border border-cream-200 rounded-2xl rounded-bl-md px-4 py-3 shadow-sm">
+    <div className="flex items-start gap-2">
+      <MsgAvatar persona={persona} mine={false} />
+      <div className="bg-white border border-cream-200 rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm mt-5">
         <div className="flex items-center gap-1">
           <span className="w-1.5 h-1.5 rounded-full bg-earth-400 animate-pulse" style={{ animationDelay: '0ms' }} />
           <span className="w-1.5 h-1.5 rounded-full bg-earth-400 animate-pulse" style={{ animationDelay: '200ms' }} />

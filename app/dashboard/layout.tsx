@@ -148,7 +148,10 @@ export default async function DashboardLayout({
         />
         <div className="flex-1 min-w-0">{children}</div>
       </div>
-      <MessageBox support={support} />
+      <MessageBox
+        support={support}
+        viewer={{ name: shortName, avatarUrl: profile?.avatar_url ?? null }}
+      />
     </UserAppearance>
   );
 }

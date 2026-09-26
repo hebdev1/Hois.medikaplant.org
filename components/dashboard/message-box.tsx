@@ -54,7 +54,30 @@ type Msg = {
 type Thread = { id: string; member_last_read_at: string | null };
 type Attachment = { url: string; name: string; kind: 'image' | 'file' };
 
+/** Who a message is from — drives the per-message avatar + name label. */
+type Persona = { name: string; photoUrl: string | null; initials: string };
+
 type Tab = 'mesaj' | 'sijesyon';
+
+const TIME_FORMAT = new Intl.DateTimeFormat('fr-HT', {
+  hour: '2-digit',
+  minute: '2-digit',
+});
+
+function formatTime(iso: string) {
+  return TIME_FORMAT.format(new Date(iso));
+}
+
+function initialsOf(name: string): string {
+  return (
+    name
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((w) => w[0]?.toUpperCase() ?? '')
+      .join('') || 'M'
+  );
+}
 
 // Unread = agent (real admin) messages newer than the member's read marker.
 function countUnread(thread: Thread | null, messages: Msg[]): number {
@@ -77,8 +100,10 @@ const SUGGESTION_CATEGORIES: { value: string; label: string }[] = [
 
 export default function MessageBox({
   support = DEFAULT_SUPPORT_SETTINGS,
+  viewer = { name: 'Ou', avatarUrl: null },
 }: {
   support?: SupportSettings;
+  viewer?: { name: string; avatarUrl: string | null };
 }) {
   const supabase = React.useMemo(() => createClient(), []);
   const [open, setOpen] = React.useState(false);
@@ -114,6 +139,18 @@ export default function MessageBox({
       }),
     [support]
   );
+
+  // Personas for the per-message avatar + name label (mirror support-chat).
+  const agentPersona: Persona = {
+    name: identity.name,
+    photoUrl: identity.photoUrl,
+    initials: identity.initials,
+  };
+  const viewerPersona: Persona = {
+    name: viewer.name,
+    photoUrl: viewer.avatarUrl,
+    initials: initialsOf(viewer.name),
+  };
 
   // On mount: read-only fetch so the badge can show without creating a thread.
   React.useEffect(() => {
@@ -355,6 +392,8 @@ export default function MessageBox({
               onPickFile={onPickFile}
               onEdit={onEditMessage}
               onDelete={onDeleteMessage}
+              viewerPersona={viewerPersona}
+              agentPersona={agentPersona}
             />
           ) : (
             <SijesyonTab />
@@ -435,6 +474,8 @@ function MesajTab({
   onPickFile,
   onEdit,
   onDelete,
+  viewerPersona,
+  agentPersona,
 }: {
   loading: boolean;
   messages: Msg[];
@@ -451,6 +492,8 @@ function MesajTab({
   onPickFile: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onEdit: (id: string, body: string) => void;
   onDelete: (id: string) => void;
+  viewerPersona: Persona;
+  agentPersona: Persona;
 }) {
   const canSend = (!!draft.trim() || !!attachment) && !sending && !uploading;
   return (
@@ -475,6 +518,7 @@ function MesajTab({
             <WidgetBubble
               key={m.id}
               message={m}
+              persona={m.sender_role === 'user' ? viewerPersona : agentPersona}
               editable={m.sender_role === 'user' && !m.id.startsWith('optimistic-')}
               onEdit={onEdit}
               onDelete={onDelete}
@@ -568,13 +612,44 @@ function MesajTab({
   );
 }
 
+/** Small per-message avatar for the widget — compact (h-7 w-7). */
+function WidgetMsgAvatar({ persona, mine }: { persona: Persona; mine: boolean }) {
+  if (persona.photoUrl) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        src={persona.photoUrl}
+        alt={persona.name}
+        className="h-7 w-7 shrink-0 rounded-full object-cover"
+      />
+    );
+  }
+  return (
+    <div
+      className={cn(
+        'grid h-7 w-7 shrink-0 place-items-center rounded-full text-cream-50 text-[10px] font-display font-bold',
+        mine && 'bg-forest-600'
+      )}
+      style={
+        mine
+          ? undefined
+          : { backgroundImage: 'linear-gradient(135deg, #e78e17, #985c0c)' }
+      }
+    >
+      {persona.initials}
+    </div>
+  );
+}
+
 function WidgetBubble({
   message,
+  persona,
   editable,
   onEdit,
   onDelete,
 }: {
   message: Msg;
+  persona: Persona;
   editable: boolean;
   onEdit: (id: string, body: string) => void;
   onDelete: (id: string) => void;
@@ -655,110 +730,122 @@ function WidgetBubble({
   }
 
   return (
-    <div className={cn('group flex items-end gap-1', mine ? 'justify-end' : 'justify-start')}>
-      {mine &&
-        editable &&
-        (confirming ? (
-          <div className="flex items-center gap-1 shrink-0">
-            <button
-              type="button"
-              onClick={() => {
-                setConfirming(false);
-                onDelete(message.id);
-              }}
-              aria-label="Konfime efase"
-              className="grid place-items-center w-5 h-5 rounded-full bg-rose-600 text-white"
-            >
-              <Check className="w-2.5 h-2.5" strokeWidth={2.8} />
-            </button>
-            <button
-              type="button"
-              onClick={() => setConfirming(false)}
-              aria-label="Anile"
-              className="grid place-items-center w-5 h-5 rounded-full bg-cream-200 text-earth-600"
-            >
-              <X className="w-2.5 h-2.5" strokeWidth={2.8} />
-            </button>
-          </div>
-        ) : (
-          <div className="flex items-center gap-0.5 shrink-0 opacity-60 sm:opacity-0 sm:group-hover:opacity-100 transition">
-            {!!message.body && (
-              <button
-                type="button"
-                onClick={() => {
-                  setEditText(message.body);
-                  setEditing(true);
-                }}
-                aria-label="Modifye"
-                className="grid place-items-center w-5 h-5 rounded-full bg-cream-100 text-earth-500 hover:text-forest-700"
-              >
-                <Pencil className="w-2.5 h-2.5" strokeWidth={2.2} />
-              </button>
-            )}
-            <button
-              type="button"
-              onClick={() => setConfirming(true)}
-              aria-label="Efase"
-              className="grid place-items-center w-5 h-5 rounded-full bg-cream-100 text-earth-500 hover:text-rose-600"
-            >
-              <Trash2 className="w-2.5 h-2.5" strokeWidth={2.2} />
-            </button>
-          </div>
-        ))}
-      <div
-        className={cn(
-          'max-w-[80%] rounded-2xl text-sm leading-relaxed overflow-hidden',
-          mine
-            ? 'bg-forest-700 text-cream-50 rounded-br-sm'
-            : 'bg-white border border-cream-200 text-ink rounded-bl-sm'
-        )}
-      >
-        {message.image_url && (
-          <a
-            href={message.image_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="block bg-cream-50"
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={message.image_url}
-              alt="Imaj"
-              className="max-h-48 max-w-full object-contain"
-            />
-          </a>
-        )}
-        {message.file_url && (
-          <a
-            href={message.file_url}
-            target="_blank"
-            rel="noopener noreferrer"
+    <div className={cn('group flex items-start gap-1.5', mine ? 'flex-row-reverse' : 'flex-row')}>
+      <WidgetMsgAvatar persona={persona} mine={mine} />
+      <div className={cn('flex max-w-[80%] flex-col gap-0.5', mine ? 'items-end' : 'items-start')}>
+        {/* Name + time label above the bubble */}
+        <div className="flex items-center gap-1.5 px-0.5">
+          <span className="text-[10px] font-semibold text-ink truncate max-w-[120px]">
+            {persona.name}
+          </span>
+          <span className="text-[10px] text-earth-500">{formatTime(message.created_at)}</span>
+          {message.edited_at && (
+            <span className="text-[10px] italic text-earth-400">modifye</span>
+          )}
+        </div>
+
+        <div className={cn('flex items-end gap-1', mine && 'flex-row-reverse')}>
+          <div
             className={cn(
-              'flex items-center gap-2 m-1 px-2.5 py-1.5 rounded-xl',
-              mine ? 'bg-cream-50/15' : 'bg-cream-100'
+              'rounded-2xl text-sm leading-relaxed shadow-sm overflow-hidden',
+              mine
+                ? 'bg-forest-700 text-cream-50 rounded-tr-sm'
+                : 'bg-white border border-cream-200 text-ink rounded-tl-sm'
             )}
           >
-            <span
-              className={cn(
-                'grid place-items-center w-7 h-7 rounded-md shrink-0',
-                mine ? 'bg-cream-50/20 text-cream-50' : 'bg-white text-forest-700'
-              )}
-            >
-              <FileText className="w-3.5 h-3.5" strokeWidth={2} />
-            </span>
-            <span className="text-[11px] font-semibold truncate max-w-[150px]">
-              {message.file_name || 'Fichye'}
-            </span>
-          </a>
-        )}
-        {message.body && (
-          <div className="px-3 py-2 whitespace-pre-wrap break-words">
-            {message.body}
-            {message.edited_at && (
-              <span className="block text-[9px] opacity-70 italic mt-0.5">modifye</span>
+            {message.image_url && (
+              <a
+                href={message.image_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block bg-cream-50"
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={message.image_url}
+                  alt="Imaj"
+                  className="max-h-48 max-w-full object-contain"
+                />
+              </a>
+            )}
+            {message.file_url && (
+              <a
+                href={message.file_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={cn(
+                  'flex items-center gap-2 m-1 px-2.5 py-1.5 rounded-xl',
+                  mine ? 'bg-cream-50/15' : 'bg-cream-100'
+                )}
+              >
+                <span
+                  className={cn(
+                    'grid place-items-center w-7 h-7 rounded-md shrink-0',
+                    mine ? 'bg-cream-50/20 text-cream-50' : 'bg-white text-forest-700'
+                  )}
+                >
+                  <FileText className="w-3.5 h-3.5" strokeWidth={2} />
+                </span>
+                <span className="text-[11px] font-semibold truncate max-w-[150px]">
+                  {message.file_name || 'Fichye'}
+                </span>
+              </a>
+            )}
+            {message.body && (
+              <div className="px-3 py-2 whitespace-pre-wrap break-words">{message.body}</div>
             )}
           </div>
-        )}
+
+          {mine &&
+            editable &&
+            (confirming ? (
+              <div className="flex items-center gap-1 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setConfirming(false);
+                    onDelete(message.id);
+                  }}
+                  aria-label="Konfime efase"
+                  className="grid place-items-center w-5 h-5 rounded-full bg-rose-600 text-white"
+                >
+                  <Check className="w-2.5 h-2.5" strokeWidth={2.8} />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setConfirming(false)}
+                  aria-label="Anile"
+                  className="grid place-items-center w-5 h-5 rounded-full bg-cream-200 text-earth-600"
+                >
+                  <X className="w-2.5 h-2.5" strokeWidth={2.8} />
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-0.5 shrink-0 opacity-60 sm:opacity-0 sm:group-hover:opacity-100 transition">
+                {!!message.body && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEditText(message.body);
+                      setEditing(true);
+                    }}
+                    aria-label="Modifye"
+                    className="grid place-items-center w-5 h-5 rounded-full bg-cream-100 text-earth-500 hover:text-forest-700"
+                  >
+                    <Pencil className="w-2.5 h-2.5" strokeWidth={2.2} />
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={() => setConfirming(true)}
+                  aria-label="Efase"
+                  className="grid place-items-center w-5 h-5 rounded-full bg-cream-100 text-earth-500 hover:text-rose-600"
+                >
+                  <Trash2 className="w-2.5 h-2.5" strokeWidth={2.2} />
+                </button>
+              </div>
+            ))}
+        </div>
       </div>
     </div>
   );

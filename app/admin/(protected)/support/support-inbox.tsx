@@ -81,6 +81,20 @@ function relativeLabel(iso: string): string {
   return `${Math.floor(days / 7)} sem`;
 }
 
+function initialsOf(name: string): string {
+  return (
+    name
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((w) => w[0]?.toUpperCase() ?? '')
+      .join('') || 'M'
+  );
+}
+
+/** Who a message is from — drives the per-message avatar + name label. */
+type Persona = { name: string; initials: string };
+
 export default function SupportInbox({ initialThreads, adminPersona }: Props) {
   const supabase = React.useMemo(() => createClient(), []);
   const [threads, setThreads] = React.useState<ThreadWithUser[]>(initialThreads);
@@ -108,6 +122,16 @@ export default function SupportInbox({ initialThreads, adminPersona }: Props) {
   }
 
   const activeThread = threads.find((t) => t.id === activeThreadId) ?? null;
+
+  // Personas for the per-message avatar + name label. The member is the thread
+  // owner (left, forest-600); agent + system messages carry the admin persona
+  // (right, gold gradient).
+  const memberName =
+    activeThread?.user_full_name ||
+    activeThread?.user_email.split('@')[0] ||
+    'Manm';
+  const memberPersona: Persona = { name: memberName, initials: initialsOf(memberName) };
+  const agentPersona: Persona = { name: adminPersona, initials: initialsOf(adminPersona) };
 
   // ── Realtime: any new support_message — refresh both panes ────────────────
   React.useEffect(() => {
@@ -573,6 +597,7 @@ export default function SupportInbox({ initialThreads, adminPersona }: Props) {
                   <Bubble
                     key={m.id}
                     message={m}
+                    persona={m.sender_role === 'user' ? memberPersona : agentPersona}
                     editable={
                       (m.sender_role === 'agent' || m.sender_role === 'system') &&
                       !m.id.startsWith('optimistic-')
@@ -694,11 +719,13 @@ export default function SupportInbox({ initialThreads, adminPersona }: Props) {
 
 function Bubble({
   message,
+  persona,
   editable,
   onEdit,
   onDelete,
 }: {
   message: Message;
+  persona: Persona;
   editable: boolean;
   onEdit: (id: string, body: string) => void;
   onDelete: (id: string) => void;
@@ -780,73 +807,92 @@ function Bubble({
   }
 
   return (
-    <div className={cn('group flex items-end gap-1', isAgent ? 'justify-end' : 'justify-start')}>
-      {isAgent && editable && (
-        <BubbleActions
-          confirming={confirming}
-          canEdit={!!message.body}
-          onEdit={() => {
-            setEditText(message.body);
-            setEditing(true);
-          }}
-          onAskDelete={() => setConfirming(true)}
-          onConfirmDelete={() => {
-            setConfirming(false);
-            onDelete(message.id);
-          }}
-          onCancelDelete={() => setConfirming(false)}
-        />
-      )}
-      <div
-        className={cn(
-          'max-w-[78%] rounded-2xl text-sm leading-relaxed shadow-sm overflow-hidden',
-          isAgent
-            ? 'bg-forest-700 text-cream-50 rounded-br-md'
-            : 'bg-white border border-cream-200 text-ink rounded-bl-md'
-        )}
-      >
-        {message.image_url && (
-          <a
-            href={message.image_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="block bg-cream-50"
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={message.image_url}
-              alt="Imaj"
-              className="max-h-72 max-w-full object-contain"
-            />
-          </a>
-        )}
-        {message.file_url && (
-          <FileChip url={message.file_url} name={message.file_name} mine={isAgent} />
-        )}
-        <div
-          className={cn(
-            (message.image_url || message.file_url) && !message.body
-              ? 'px-3 pb-1.5 pt-1'
-              : 'px-3.5 py-2'
+    <div className={cn('group flex items-start gap-2', isAgent ? 'flex-row-reverse' : 'flex-row')}>
+      <MsgAvatar persona={persona} member={!isAgent} />
+      <div className={cn('flex max-w-[78%] flex-col gap-1', isAgent ? 'items-end' : 'items-start')}>
+        {/* Name + time label above the bubble */}
+        <div className="flex items-center gap-2 px-1">
+          <span className="text-[11px] font-semibold text-ink truncate max-w-[160px]">
+            {persona.name}
+          </span>
+          <span className="text-[10px] text-earth-500">{formatTime(message.created_at)}</span>
+          {message.edited_at && (
+            <span className="text-[10px] italic text-earth-400">modifye</span>
           )}
-        >
-          {message.body && (
-            <div className="whitespace-pre-wrap break-words">{message.body}</div>
+          {message.sender_role === 'system' && (
+            <span className="text-[10px] italic text-earth-400">auto</span>
           )}
+        </div>
+
+        <div className={cn('flex items-end gap-1', isAgent && 'flex-row-reverse')}>
           <div
             className={cn(
-              'text-[10px] mt-1 text-right',
-              isAgent ? 'text-cream-200/80' : 'text-earth-500'
+              'rounded-2xl text-sm leading-relaxed shadow-sm overflow-hidden',
+              isAgent
+                ? 'bg-forest-700 text-cream-50 rounded-tr-sm'
+                : 'bg-white border border-cream-200 text-ink rounded-tl-sm'
             )}
           >
-            {message.edited_at && <span className="mr-1 italic">modifye ·</span>}
-            {formatTime(message.created_at)}
-            {message.sender_role === 'system' && (
-              <span className="ml-1 italic">· auto</span>
+            {message.image_url && (
+              <a
+                href={message.image_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block bg-cream-50"
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={message.image_url}
+                  alt="Imaj"
+                  className="max-h-72 max-w-full object-contain"
+                />
+              </a>
+            )}
+            {message.file_url && (
+              <FileChip url={message.file_url} name={message.file_name} mine={isAgent} />
+            )}
+            {message.body && (
+              <div className="px-3.5 py-2 whitespace-pre-wrap break-words">{message.body}</div>
             )}
           </div>
+
+          {isAgent && editable && (
+            <BubbleActions
+              confirming={confirming}
+              canEdit={!!message.body}
+              onEdit={() => {
+                setEditText(message.body);
+                setEditing(true);
+              }}
+              onAskDelete={() => setConfirming(true)}
+              onConfirmDelete={() => {
+                setConfirming(false);
+                onDelete(message.id);
+              }}
+              onCancelDelete={() => setConfirming(false)}
+            />
+          )}
         </div>
       </div>
+    </div>
+  );
+}
+
+/** Small per-message avatar (initials only) — mirrors support-chat's MsgAvatar. */
+function MsgAvatar({ persona, member }: { persona: Persona; member: boolean }) {
+  return (
+    <div
+      className={cn(
+        'grid h-8 w-8 shrink-0 place-items-center rounded-full text-cream-50 text-[11px] font-display font-bold',
+        member && 'bg-forest-600'
+      )}
+      style={
+        member
+          ? undefined
+          : { backgroundImage: 'linear-gradient(135deg, #e78e17, #985c0c)' }
+      }
+    >
+      {persona.initials}
     </div>
   );
 }

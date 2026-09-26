@@ -121,6 +121,7 @@ export default async function SupportPage() {
               thread={threadResult.data.thread}
               initialMessages={threadResult.data.messages}
               support={support}
+              viewer={{ name: shortName, avatarUrl: profile?.avatar_url ?? null }}
             />
 
             {/* Right, contacts + FAQs */}
