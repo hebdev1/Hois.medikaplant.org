@@ -249,7 +249,7 @@ export default async function AdminOverview() {
           value={segmentCounts.size.toString()}
           sub={`${medicalRows.length} manm ak yon kondisyon`}
           tone="rose"
-          href="/admin/segments"
+          href="/admin/health?tab=segments"
         />
         <KpiCard
           icon={<CalendarRange className="w-4 h-4" strokeWidth={2.4} />}
@@ -425,7 +425,7 @@ export default async function AdminOverview() {
         <SectionCard
           icon={<Layers className="w-4 h-4" strokeWidth={2.4} />}
           title="Top segman maladi"
-          href="/admin/segments"
+          href="/admin/health?tab=segments"
           badge={`${segmentCounts.size} segman`}
           badgeTone="cream"
         >

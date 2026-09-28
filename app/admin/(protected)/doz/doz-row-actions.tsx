@@ -23,9 +23,13 @@ export default function DozRowActions({
         title={published ? 'Kache' : 'Pibliye'}
         onClick={async () => {
           setBusy('pub');
-          await toggleDozPublished(id);
-          setBusy(null);
-          router.refresh();
+          try {
+            const res = await toggleDozPublished(id);
+            if (res?.error) { window.alert(res.error); return; }
+            router.refresh();
+          } finally {
+            setBusy(null);
+          }
         }}
         className="p-1.5 rounded-lg hover:bg-cream-100 text-earth-600"
       >
@@ -47,9 +51,13 @@ export default function DozRowActions({
             return;
           }
           setBusy('del');
-          await deleteDoz(id);
-          setBusy(null);
-          router.refresh();
+          try {
+            const res = await deleteDoz(id);
+            if (res?.error) { window.alert(res.error); return; }
+            router.refresh();
+          } finally {
+            setBusy(null);
+          }
         }}
         className={`p-1.5 rounded-lg ${confirm ? 'bg-rose-600 text-white' : 'hover:bg-cream-100 text-earth-600'}`}
       >

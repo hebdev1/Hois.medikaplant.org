@@ -7,6 +7,8 @@ import { hasCapability, type AdminRole } from '../../../admin-nav-config';
 
 type NotificationInsert = Database['public']['Tables']['notifications']['Insert'];
 
+const METRIC_VALUES = ['blood_sugar', 'weight', 'pressure'] as const;
+
 async function assertAdmin() {
   const supabase = createClient();
   const {
@@ -140,6 +142,15 @@ export async function createTreatmentForSegment(input: {
     !TREATMENT_KINDS.includes(input.kind as (typeof TREATMENT_KINDS)[number])
   )
     return { ok: false, error: 'Tip tretman pa valid.' };
+  // Mirror the single-member createTreatment check: reject an out-of-vocabulary
+  // metric rather than casting a bad value into every member's row.
+  if (
+    input.relatedMetric?.trim() &&
+    !METRIC_VALUES.includes(
+      input.relatedMetric.trim() as (typeof METRIC_VALUES)[number]
+    )
+  )
+    return { ok: false, error: 'Metrik lye a pa valid.' };
 
   const userIds = input.userIds.filter(
     (id, i, arr) => id && arr.indexOf(id) === i

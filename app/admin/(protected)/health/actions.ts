@@ -12,6 +12,7 @@ type TreatmentRow = Database['public']['Tables']['treatment_recommendations']['R
 const KIND_VALUES = ['medication', 'herbal', 'lifestyle', 'monitoring', 'referral'] as const;
 const STATUS_VALUES = ['active', 'completed', 'cancelled'] as const;
 const METRIC_VALUES = ['blood_sugar', 'weight', 'pressure'] as const;
+const PLAN_VALUES = ['basic', 'premium', 'vip'] as const;
 
 async function assertAdmin() {
   const supabase = createClient();
@@ -273,6 +274,15 @@ export async function createPersonalProgram(
     chip_kind: t.chip_kind ?? 'forest',
   }));
 
+  // Validate the plan tier server-side. An unknown value would rank as 0 in the
+  // plan-gate (migration 136) and expose the program to every tier, so a bad or
+  // spoofed value must fall back to the safest tier rather than pass through.
+  const planRequired = PLAN_VALUES.includes(
+    input.plan_required as (typeof PLAN_VALUES)[number]
+  )
+    ? (input.plan_required as (typeof PLAN_VALUES)[number])
+    : 'basic';
+
   const { data, error } = await auth.supabase.rpc(
     'admin_create_personal_program',
     {
@@ -280,7 +290,7 @@ export async function createPersonalProgram(
       p_name: name,
       p_variant: input.variant?.trim() || null,
       p_total_days: input.total_days,
-      p_plan_required: input.plan_required ?? 'basic',
+      p_plan_required: planRequired,
       p_tasks: tasksPayload,
     }
   );

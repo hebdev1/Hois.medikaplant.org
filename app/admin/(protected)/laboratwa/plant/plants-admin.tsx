@@ -52,8 +52,13 @@ export default function PlantsAdmin({ initial }: { initial: AdminPlant[] }) {
   }
   async function remove(id: string) {
     setBusy(true);
-    await deletePlant(id);
-    setBusy(false); setDelId(null); router.refresh();
+    try {
+      const res = await deletePlant(id);
+      if (!res.ok) { window.alert(res.error); return; }
+      setDelId(null); router.refresh();
+    } finally {
+      setBusy(false);
+    }
   }
 
   return (

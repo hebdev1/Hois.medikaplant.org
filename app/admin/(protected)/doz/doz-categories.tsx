@@ -23,10 +23,13 @@ export default function DozCategories({ categories }: { categories: DozCategory[
     setErr(null);
     const fd = new FormData();
     fd.set('label', label);
-    const res = await saveDozCategory(null, {}, fd);
-    setBusy(false);
-    if (res.error) setErr(res.error);
-    else { setLabel(''); router.refresh(); }
+    try {
+      const res = await saveDozCategory(null, {}, fd);
+      if (res.error) setErr(res.error);
+      else { setLabel(''); router.refresh(); }
+    } finally {
+      setBusy(false);
+    }
   }
 
   return (
@@ -68,16 +71,24 @@ function CategoryRow({ category, onChanged }: { category: DozCategory; onChanged
     const fd = new FormData();
     fd.set('label', label);
     fd.set('display_order', String(category.display_order));
-    await saveDozCategory(category.id, {}, fd);
-    setBusy(false);
-    setEditing(false);
-    onChanged();
+    try {
+      const res = await saveDozCategory(category.id, {}, fd);
+      if (res?.error) { window.alert(res.error); return; }
+      setEditing(false);
+      onChanged();
+    } finally {
+      setBusy(false);
+    }
   }
   async function del() {
     setBusy(true);
-    await deleteDozCategory(category.id);
-    setBusy(false);
-    onChanged();
+    try {
+      const res = await deleteDozCategory(category.id);
+      if (res?.error) { window.alert(res.error); return; }
+      onChanged();
+    } finally {
+      setBusy(false);
+    }
   }
 
   if (editing) {

@@ -49,7 +49,16 @@ export default function ConditionsAdmin({ initial }: { initial: AdminCondition[]
     if (!res.ok) { setErr(res.error); return; }
     setEditing(null); router.refresh();
   }
-  async function remove(id: string) { setBusy(true); await deleteCondition(id); setBusy(false); setDelId(null); router.refresh(); }
+  async function remove(id: string) {
+    setBusy(true);
+    try {
+      const res = await deleteCondition(id);
+      if (!res.ok) { window.alert(res.error); return; }
+      setDelId(null); router.refresh();
+    } finally {
+      setBusy(false);
+    }
+  }
 
   return (
     <div className="p-5 md:p-8 lg:p-10 max-w-[1000px] mx-auto">

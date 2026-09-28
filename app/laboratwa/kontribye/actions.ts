@@ -5,6 +5,7 @@
 // validates + shapes every value and only ever writes a fresh 'draft' row.
 
 import { createServiceClient } from '@/lib/supabase/service';
+import { rateLimit, clientIp } from '@/lib/rate-limit';
 
 const BUCKET = 'public-assets';
 const PREFIX = 'laboratwa-contributions';
@@ -13,6 +14,9 @@ const DEPTS = ['AR', 'CE', 'GA', 'NI', 'NO', 'NE', 'NW', 'OU', 'SU', 'SE'];
 const s = (v: unknown, max = 400) => String(v ?? '').trim().slice(0, max);
 
 export async function uploadLabPhoto(dataUrl: string): Promise<{ url?: string; error?: string }> {
+  if (!rateLimit(`lab-upload:${clientIp()}`, 10, 60_000)) {
+    return { error: 'Twòp tantativ. Tanpri tann yon ti moman anvan ou reeseye.' };
+  }
   const m = /^data:(image\/(?:jpeg|png|webp));base64,([A-Za-z0-9+/=]+)$/.exec(dataUrl || '');
   if (!m) return { error: 'Foto a pa nan yon fòma nou aksepte.' };
   const bytes = Buffer.from(m[2], 'base64');
@@ -25,7 +29,10 @@ export async function uploadLabPhoto(dataUrl: string): Promise<{ url?: string; e
   const { error } = await sb.storage.from(BUCKET).upload(path, bytes, {
     contentType: m[1], cacheControl: '3600', upsert: false,
   });
-  if (error) return { error: error.message };
+  if (error) {
+    console.error('[lab] photo upload failed', error);
+    return { error: 'Nou pa ka telechaje foto a kounye a. Reeseye pita.' };
+  }
   const { data: { publicUrl } } = sb.storage.from(BUCKET).getPublicUrl(path);
   return { url: publicUrl };
 }
@@ -41,6 +48,9 @@ export type LabContribInput = {
 export async function submitLabContribution(
   input: LabContribInput
 ): Promise<{ ok: true } | { ok: false; error: string }> {
+  if (!rateLimit(`lab-submit:${clientIp()}`, 5, 60_000)) {
+    return { ok: false, error: 'Twòp tantativ. Tanpri tann yon ti moman anvan ou reeseye.' };
+  }
   const local_name = s(input.local_name, 160);
   const body = s(input.body, 2000);
   if (local_name.length < 2 && body.length < 2) {
@@ -57,6 +67,9 @@ export async function submitLabContribution(
     plant_id, local_name: local_name || null, region: region || null,
     body: body || null, photo_path: photo, status: 'draft',
   });
-  if (error) return { ok: false, error: error.message };
+  if (error) {
+    console.error('[lab] contribution insert failed', error);
+    return { ok: false, error: 'Nou pa ka anrejistre kontribisyon an kounye a. Reeseye pita.' };
+  }
   return { ok: true };
 }

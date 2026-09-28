@@ -7,6 +7,7 @@
 // and only ever writes a fresh 'nouvo' row. A curator approves it later.
 
 import { createServiceClient } from '@/lib/supabase/service';
+import { rateLimit, clientIp } from '@/lib/rate-limit';
 import type { ContributionInput } from './types';
 
 const BUCKET = 'public-assets';
@@ -26,6 +27,9 @@ const DEPTS = ['AR', 'CE', 'GA', 'NI', 'NO', 'NE', 'NW', 'OU', 'SU', 'SE'];
 export async function uploadContributionPhoto(
   dataUrl: string
 ): Promise<{ url?: string; error?: string }> {
+  if (!rateLimit(`glose-upload:${clientIp()}`, 10, 60_000)) {
+    return { error: 'Twòp tantativ. Tanpri tann yon ti moman anvan ou reeseye.' };
+  }
   const m = /^data:(image\/(?:jpeg|png|webp));base64,([A-Za-z0-9+/=]+)$/.exec(
     dataUrl || ''
   );
@@ -43,7 +47,10 @@ export async function uploadContributionPhoto(
   const { error } = await sb.storage
     .from(BUCKET)
     .upload(path, bytes, { contentType: mime, cacheControl: '3600', upsert: false });
-  if (error) return { error: error.message };
+  if (error) {
+    console.error('[glose] photo upload failed', error);
+    return { error: 'Nou pa ka telechaje foto a kounye a. Reeseye pita.' };
+  }
 
   const {
     data: { publicUrl },
@@ -56,6 +63,9 @@ const s = (v: unknown, max = 400) => String(v ?? '').trim().slice(0, max);
 export async function submitContribution(
   input: ContributionInput
 ): Promise<{ ok: true; id: string } | { ok: false; error: string }> {
+  if (!rateLimit(`glose-submit:${clientIp()}`, 5, 60_000)) {
+    return { ok: false, error: 'Twòp tantativ. Tanpri tann yon ti moman anvan ou reeseye.' };
+  }
   const kind = KINDS.includes(input.kind) ? input.kind : '';
   if (!kind) return { ok: false, error: 'Chwazi yon kalite enfòmasyon.' };
 
@@ -113,6 +123,9 @@ export async function submitContribution(
     .insert(row)
     .select('id')
     .single();
-  if (error) return { ok: false, error: error.message };
+  if (error) {
+    console.error('[glose] contribution insert failed', error);
+    return { ok: false, error: 'Nou pa ka anrejistre kontribisyon an kounye a. Reeseye pita.' };
+  }
   return { ok: true, id: (data as { id: string }).id };
 }

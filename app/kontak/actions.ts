@@ -1,6 +1,7 @@
 'use server';
 
 import { createClient } from '@/lib/supabase/server';
+import { rateLimit, clientIp } from '@/lib/rate-limit';
 import type { Database } from '@/types/database';
 
 type ContactInsert = Database['public']['Tables']['contact_messages']['Insert'];
@@ -24,6 +25,10 @@ export async function submitContactMessage(
   // doesn't realise it was caught.
   if (formData.get('company_name')) {
     return { status: 'ok' };
+  }
+
+  if (!rateLimit(`contact:${clientIp()}`, 5, 60_000)) {
+    return { status: 'error', error: 'Twòp mesaj. Tanpri tann yon ti moman anvan ou reeseye.' };
   }
 
   const fullName = (formData.get('full_name')?.toString() ?? '').trim();
@@ -82,7 +87,8 @@ export async function submitContactMessage(
 
   const { error } = await supabase.from('contact_messages').insert(insert);
   if (error) {
-    return { status: 'error', error: error.message };
+    console.error('[contact] insert failed', error);
+    return { status: 'error', error: 'Nou pa ka voye mesaj la kounye a. Reeseye pita.' };
   }
 
   return { status: 'ok' };

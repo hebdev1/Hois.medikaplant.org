@@ -125,18 +125,23 @@ async function applySubscription(
     .maybeSingle();
 
   if (existing) {
-    await sb
+    const { error } = await sb
       .from('subscriptions')
       .update(row)
       .eq('id', (existing as { id: string }).id);
+    // Throw on a failed write so the outer catch removes the idempotency
+    // marker and returns 500 — Stripe retries rather than a member paying and
+    // silently losing access.
+    if (error) throw new Error(`subscription update failed: ${error.message}`);
   } else if (status === 'active') {
     // Only a real, paid activation creates a row. A 'cancelled' event with no
     // existing row means an incomplete/abandoned checkout that never became a
     // paid subscription — recording it (even as cancelled) would clutter the
     // admin panel and the accounting with a payment that never happened.
-    await sb
+    const { error } = await sb
       .from('subscriptions')
       .insert({ ...row, start_date: new Date().toISOString() });
+    if (error) throw new Error(`subscription insert failed: ${error.message}`);
   } else {
     return; // nothing paid, nothing to cancel, leave no trace
   }
@@ -145,12 +150,13 @@ async function applySubscription(
   // active row from the pre-Stripe mock checkout — that would leave two
   // active subscriptions fighting over profiles.plan. Stripe is authoritative.
   if (status === 'active') {
-    await sb
+    const { error } = await sb
       .from('subscriptions')
       .update({ status: 'cancelled' })
       .eq('user_id', userId)
       .eq('status', 'active')
       .is('stripe_subscription_id', null);
+    if (error) throw new Error(`cancel stale subscription failed: ${error.message}`);
   }
 }
 
@@ -177,7 +183,7 @@ async function applyCoursePurchase(
     .maybeSingle();
 
   if (!already) {
-    await sb.from('course_purchases').insert({
+    const { error } = await sb.from('course_purchases').insert({
       course_id: courseId,
       user_id: userId,
       amount_cents: session.amount_total ?? 0,
@@ -185,6 +191,7 @@ async function applyCoursePurchase(
       payment_reference: paymentRef,
       status: 'paid',
     });
+    if (error) throw new Error(`course_purchases insert failed: ${error.message}`);
   }
 
   // Enrol them. Separate existence check so a replay cannot duplicate.
@@ -196,9 +203,10 @@ async function applyCoursePurchase(
     .maybeSingle();
 
   if (!enrolled) {
-    await sb
+    const { error } = await sb
       .from('course_enrollments')
       .insert({ course_id: courseId, user_id: userId, source: 'purchase' });
+    if (error) throw new Error(`course_enrollments insert failed: ${error.message}`);
   }
 }
 
@@ -221,7 +229,7 @@ async function applyCoursePurchaseFromIntent(
     .maybeSingle();
 
   if (!already) {
-    await sb.from('course_purchases').insert({
+    const { error } = await sb.from('course_purchases').insert({
       course_id: courseId,
       user_id: userId,
       amount_cents: intent.amount_received || intent.amount,
@@ -229,6 +237,7 @@ async function applyCoursePurchaseFromIntent(
       payment_reference: intent.id,
       status: 'paid',
     });
+    if (error) throw new Error(`course_purchases insert failed: ${error.message}`);
   }
 
   const { data: enrolled } = await sb
@@ -239,9 +248,10 @@ async function applyCoursePurchaseFromIntent(
     .maybeSingle();
 
   if (!enrolled) {
-    await sb
+    const { error } = await sb
       .from('course_enrollments')
       .insert({ course_id: courseId, user_id: userId, source: 'purchase' });
+    if (error) throw new Error(`course_enrollments insert failed: ${error.message}`);
   }
 }
 
@@ -275,9 +285,14 @@ export async function POST(req: NextRequest) {
     .from('stripe_events')
     .insert({ id: event.id, type: event.type });
   if (seenError) {
-    // Unique violation = already processed. Anything else is still safest to
-    // acknowledge, or Stripe will hammer the endpoint forever.
-    return NextResponse.json({ received: true, duplicate: true });
+    // Unique violation (23505) = already processed → ack so Stripe stops.
+    if ((seenError as { code?: string }).code === '23505') {
+      return NextResponse.json({ received: true, duplicate: true });
+    }
+    // Any other error is a transient DB failure — do NOT swallow a real
+    // payment event. 500 so Stripe retries instead of dropping it forever.
+    console.error('[stripe] idempotency insert failed', seenError);
+    return NextResponse.json({ error: 'idempotency_write_failed' }, { status: 500 });
   }
 
   try {

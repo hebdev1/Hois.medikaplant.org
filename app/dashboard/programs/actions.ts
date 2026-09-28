@@ -36,8 +36,24 @@ export async function enrollInProgram(
     .select('id, active, plan_required')
     .eq('id', programId)
     .maybeSingle();
-  if (!program || !(program as { active: boolean }).active) {
+  const prog = program as { active: boolean; plan_required: string | null } | null;
+  if (!prog || !prog.active) {
     return { ok: false, error: 'Pwotokòl sa pa disponib.' };
+  }
+
+  // Enforce the plan gate SERVER-SIDE. The page only computes the lock for the
+  // UI; a direct call to this action must not let a lower tier activate a
+  // higher-tier protocol (mirrors the course-enroll RPC in migration 136).
+  const PLAN_RANK: Record<string, number> = { basic: 1, premium: 2, vip: 3 };
+  const { data: profileRow } = await supabase
+    .from('profiles')
+    .select('plan')
+    .eq('id', auth.userId)
+    .maybeSingle();
+  const userPlan = (profileRow as { plan?: string } | null)?.plan ?? 'basic';
+  const required = prog.plan_required ?? 'basic';
+  if ((PLAN_RANK[userPlan] ?? 1) < (PLAN_RANK[required] ?? 1)) {
+    return { ok: false, error: 'Plan ou pa kouvri pwotokòl sa a.' };
   }
 
   // Deactivate any current active enrollment (don't mark finished — pause-style)
