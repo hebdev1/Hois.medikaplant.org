@@ -28,6 +28,7 @@ import {
   Sparkles,
   Leaf,
   Sprout,
+  Compass,
   PanelLeftClose,
   PanelLeftOpen,
   type LucideIcon,
@@ -92,6 +93,7 @@ const NAV_GROUPS: { heading?: string; items: NavItem[] }[] = [
 // Plain bottom rows (model-style) — Settings + sign-out as clean nav rows,
 // not a heavy user card.
 const BOTTOM_ITEMS: NavItem[] = [
+  { href: '/dashboard/tutorial', label: 'Tutoryèl', icon: Compass },
   { href: '/dashboard/settings', label: 'Kont mwen', icon: UserCircle },
 ];
 
