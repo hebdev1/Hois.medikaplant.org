@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { AnimatePresence, motion } from 'motion/react';
+import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { cn } from '@/lib/utils';
 import {
   LayoutDashboard,
@@ -28,9 +28,10 @@ import {
 } from 'lucide-react';
 
 // Detailed, written "how to use the platform" guide shown at /dashboard/tutorial.
-// Accordion style (adapted from an FAQ model, re-themed to MedikaPlant and
-// animated with the project's `motion` lib): each member section is a card you
-// click to expand for the full step-by-step. Static content, no data fetch.
+// Read-mode help surface: an accordion of member sections you click to expand
+// for the full step-by-step. Static content, no data fetch. Re-themed to the
+// MedikaPlant system (Playfair display, forest/gold/cream/ink) and animated
+// with the project's `motion` lib; motion is disabled under reduced-motion.
 
 type GuideItem = {
   icon: LucideIcon;
@@ -235,38 +236,66 @@ export default function TutorialGuide() {
   );
 
   return (
-    <div className="max-w-[820px]">
+    <div className="max-w-[820px] animate-fadeUp">
       {/* Intro */}
-      <div className="rounded-2xl border border-cream-200 bg-gradient-to-br from-forest-50 via-white to-cream-50 p-6 md:p-8 shadow-card">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-forest-100 text-forest-700 text-xs font-semibold mb-3">
-          <Compass className="w-3.5 h-3.5" strokeWidth={2.2} />
-          Titoryèl
+      <header className="relative overflow-hidden rounded-3xl border border-cream-200 bg-white shadow-card">
+        <div
+          className="pointer-events-none absolute inset-0 leaf-grid opacity-60"
+          aria-hidden
+        />
+        <div
+          className="pointer-events-none absolute -top-24 -left-16 h-64 w-64 rounded-full"
+          style={{
+            background:
+              'radial-gradient(circle, rgba(101,136,26,0.16), transparent 70%)',
+          }}
+          aria-hidden
+        />
+        <div
+          className="pointer-events-none absolute -bottom-24 -right-12 h-56 w-56 rounded-full"
+          style={{
+            background:
+              'radial-gradient(circle, rgba(231,142,23,0.14), transparent 70%)',
+          }}
+          aria-hidden
+        />
+        <div className="relative p-6 md:p-9">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-forest-100 text-forest-700 text-xs font-semibold mb-4 dark:bg-forest-900/60 dark:text-forest-200">
+            <Compass className="w-3.5 h-3.5" strokeWidth={2.2} />
+            Titoryèl
+          </div>
+          <h1 className="font-display text-3xl md:text-[2.75rem] md:leading-[1.05] font-bold tracking-tight text-ink">
+            Kijan pou itilize platfòm nan
+          </h1>
+          <p className="mt-3 text-sm md:text-base text-earth-600 max-w-xl leading-relaxed">
+            Men yon gid detaye sou chak pati nan Hoïs. Klike sou yon seksyon pou
+            louvri l epi wè etap pa etap yo. Ou ka tounen isit la nenpòt lè.
+          </p>
+          <div className="mt-6">
+            <Link
+              href="/dashboard?tour=1"
+              className="group inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-forest-700 hover:bg-forest-800 text-cream-50 text-sm font-semibold shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forest-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-[#15132a]"
+            >
+              <PlayCircle
+                className="w-4 h-4 transition-transform group-hover:scale-110"
+                strokeWidth={2.2}
+              />
+              Fè yon vizit gide rapid
+            </Link>
+          </div>
         </div>
-        <h1 className="font-display text-2xl md:text-4xl font-bold tracking-tight text-ink">
-          Kijan pou itilize platfòm nan
-        </h1>
-        <p className="mt-3 text-sm md:text-base text-earth-600 max-w-2xl leading-relaxed">
-          Men yon gid detaye sou chak pati nan Hoïs. Klike sou yon seksyon pou
-          louvri l epi wè etap pa etap yo. Ou ka tounen isit la nenpòt lè.
-        </p>
-        <div className="mt-5">
-          <Link
-            href="/dashboard?tour=1"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-forest-700 hover:bg-forest-800 text-cream-50 text-sm font-semibold transition shadow-sm"
-          >
-            <PlayCircle className="w-4 h-4" strokeWidth={2.2} />
-            Fè yon vizit gide rapid
-          </Link>
-        </div>
-      </div>
+      </header>
 
       {/* Accordion sections */}
-      <div className="mt-8 space-y-8">
+      <div className="mt-4">
         {SECTIONS.map((section) => (
-          <section key={section.heading}>
-            <h2 className="px-1 mb-3 text-[13px] font-bold uppercase tracking-wider text-earth-400">
-              {section.heading}
-            </h2>
+          <section key={section.heading} className="mt-9 first:mt-8">
+            <div className="mb-4 flex items-center gap-3 px-1">
+              <h2 className="whitespace-nowrap text-xs font-bold uppercase tracking-[0.14em] text-forest-700 dark:text-forest-300">
+                {section.heading}
+              </h2>
+              <span className="h-px flex-1 bg-cream-200" aria-hidden />
+            </div>
             <div className="space-y-3">
               {section.items.map((item) => (
                 <AccordionCard
@@ -297,26 +326,30 @@ function AccordionCard({
 }) {
   const Icon = item.icon;
   const gold = item.tone === 'gold';
+  const reduce = useReducedMotion();
   return (
     <div
       className={cn(
         'rounded-2xl border bg-white shadow-card overflow-hidden transition-colors',
-        open ? 'border-forest-200' : 'border-cream-200'
+        open
+          ? 'border-forest-200 dark:border-forest-800'
+          : 'border-cream-200'
       )}
     >
       <motion.button
         type="button"
         onClick={onToggle}
         aria-expanded={open}
-        whileHover={{ x: 2 }}
-        className="flex w-full items-center gap-3.5 px-4 md:px-5 py-4 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forest-200 rounded-2xl"
+        whileHover={reduce ? undefined : { x: 2 }}
+        className="flex w-full items-center gap-3.5 px-4 md:px-5 py-4 text-left rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forest-500"
       >
         <span
-          className={
+          className={cn(
+            'grid place-items-center w-11 h-11 rounded-xl shrink-0',
             gold
-              ? 'grid place-items-center w-11 h-11 rounded-xl bg-gold-100 text-gold-700 shrink-0'
-              : 'grid place-items-center w-11 h-11 rounded-xl bg-forest-100 text-forest-700 shrink-0'
-          }
+              ? 'bg-gold-100 text-gold-700'
+              : 'bg-forest-100 text-forest-700'
+          )}
         >
           <Icon className="w-5 h-5" strokeWidth={2} />
         </span>
@@ -324,14 +357,16 @@ function AccordionCard({
           <span className="block font-display text-base font-bold text-ink">
             {item.title}
           </span>
-          <span className="block text-[13px] text-earth-600 leading-snug mt-0.5 line-clamp-2">
-            {item.what}
-          </span>
+          {!open && (
+            <span className="mt-0.5 line-clamp-2 text-[13px] leading-snug text-earth-600">
+              {item.what}
+            </span>
+          )}
         </span>
         <motion.span
           animate={{ rotate: open ? 180 : 0 }}
-          transition={{ duration: 0.3 }}
-          className="shrink-0 text-earth-400"
+          transition={{ duration: reduce ? 0 : 0.3, ease: [0.22, 1, 0.36, 1] }}
+          className="shrink-0 text-earth-500"
           aria-hidden
         >
           <ChevronDown className="w-5 h-5" strokeWidth={2} />
@@ -344,43 +379,66 @@ function AccordionCard({
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3, ease: 'easeInOut' }}
+            transition={{
+              duration: reduce ? 0 : 0.32,
+              ease: [0.22, 1, 0.36, 1],
+            }}
           >
             <div className="px-4 md:px-5 pb-5">
-              <div className="border-t border-cream-100 pt-4 pl-1">
-                <p className="text-[11px] font-bold uppercase tracking-wider text-earth-400 mb-2.5">
+              <div className="border-t border-cream-200 pt-4">
+                <p className="text-sm leading-relaxed text-earth-700">
+                  {item.what}
+                </p>
+
+                <p className="mt-4 mb-2.5 text-[11px] font-bold uppercase tracking-wider text-earth-500">
                   Etap pa etap
                 </p>
                 <ol className="space-y-2.5">
                   {item.steps.map((step, i) => (
                     <li key={i} className="flex gap-3">
                       <span
-                        className={
+                        className={cn(
+                          'grid place-items-center w-5 h-5 shrink-0 rounded-full text-[11px] font-bold mt-0.5',
                           gold
-                            ? 'grid place-items-center w-5 h-5 shrink-0 rounded-full bg-gold-100 text-gold-700 text-[11px] font-bold mt-0.5'
-                            : 'grid place-items-center w-5 h-5 shrink-0 rounded-full bg-forest-100 text-forest-700 text-[11px] font-bold mt-0.5'
-                        }
+                            ? 'bg-gold-100 text-gold-700'
+                            : 'bg-forest-100 text-forest-700'
+                        )}
                       >
                         {i + 1}
                       </span>
-                      <span className="text-sm text-earth-700 leading-relaxed">{step}</span>
+                      <span className="text-sm leading-relaxed text-earth-700">
+                        {step}
+                      </span>
                     </li>
                   ))}
                 </ol>
 
                 {item.tip && (
                   <div
-                    className={
+                    className={cn(
+                      'mt-4 flex items-start gap-2 rounded-xl border px-3.5 py-2.5',
                       gold
-                        ? 'mt-4 flex items-start gap-2 rounded-xl bg-gold-50 border border-gold-100 px-3.5 py-2.5'
-                        : 'mt-4 flex items-start gap-2 rounded-xl bg-forest-50 border border-forest-100 px-3.5 py-2.5'
-                    }
+                        ? 'bg-gold-50 border-gold-100 dark:bg-gold-700/15 dark:border-gold-700/40'
+                        : 'bg-forest-50 border-forest-100 dark:bg-forest-900/40 dark:border-forest-800/60'
+                    )}
                   >
                     <Lightbulb
-                      className={gold ? 'w-4 h-4 text-gold-600 shrink-0 mt-0.5' : 'w-4 h-4 text-forest-600 shrink-0 mt-0.5'}
+                      className={cn(
+                        'w-4 h-4 shrink-0 mt-0.5',
+                        gold
+                          ? 'text-gold-600 dark:text-gold-300'
+                          : 'text-forest-600 dark:text-forest-300'
+                      )}
                       strokeWidth={2}
                     />
-                    <p className={gold ? 'text-[13px] text-gold-800 leading-relaxed' : 'text-[13px] text-forest-800 leading-relaxed'}>
+                    <p
+                      className={cn(
+                        'text-[13px] leading-relaxed',
+                        gold
+                          ? 'text-gold-700 dark:text-gold-200'
+                          : 'text-forest-800 dark:text-forest-100'
+                      )}
+                    >
                       {item.tip}
                     </p>
                   </div>
