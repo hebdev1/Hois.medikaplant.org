@@ -95,12 +95,19 @@ const nextConfig = {
   },
 
   images: {
+    // SECURITY (2026-09-29): image optimization is disabled as an INTERIM
+    // mitigation for the Next.js < 15.5.24 AVIF/libheif RCE (Critical). With
+    // the optimizer off, /_next/image no longer decodes attacker-supplied
+    // AVIF via sharp/libheif. Reversible — remove this once Next is upgraded
+    // to >= 15.5.24 (see security-audit memory / CODE-REVIEW). Also dropped
+    // the unused raw.githubusercontent.com allow-list entry: it was the one
+    // host where anyone could host an arbitrary file for the optimizer.
+    unoptimized: true,
     remotePatterns: [
       { protocol: 'https', hostname: 'images.unsplash.com' },
       { protocol: 'https', hostname: 'images.pexels.com' },
       { protocol: 'https', hostname: 'cdn.pixabay.com' },
       { protocol: 'https', hostname: 'kmzmtuthwssyuoklmydy.supabase.co' },
-      { protocol: 'https', hostname: 'raw.githubusercontent.com' },
       { protocol: 'https', hostname: 'medikaplantshop.com' },
     ],
   },
