@@ -13,13 +13,14 @@ export const dynamic = 'force-dynamic';
 
 type Resource = Database['public']['Tables']['resources']['Row'];
 
-export default async function EditResourcePage({
-  params,
-  searchParams,
-}: {
-  params: { id: string };
-  searchParams: { created?: string };
-}) {
+export default async function EditResourcePage(
+  props: {
+    params: Promise<{ id: string }>;
+    searchParams: Promise<{ created?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
+  const params = await props.params;
   const supabase = createClient();
   const user = await getCurrentUser();
   if (!user) redirect('/admin/login');

@@ -107,11 +107,12 @@ const TREATMENT_LABEL: Record<string, string> = {
   referral: 'Referans',
 };
 
-export default async function AdminUserDetailPage({
-  params,
-}: {
-  params: { userId: string };
-}) {
+export default async function AdminUserDetailPage(
+  props: {
+    params: Promise<{ userId: string }>;
+  }
+) {
+  const params = await props.params;
   const supabase = createClient();
 
   // 1) Auth + admin check + fetch current admin id (for "isSelf" logic).

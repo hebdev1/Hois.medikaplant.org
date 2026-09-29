@@ -8,7 +8,7 @@ type AnimationVariants = Variants & {
   visible: (i: number) => Record<string, unknown>;
 };
 
-type TimelineContentProps<T extends keyof JSX.IntrinsicElements = 'div'> = {
+type TimelineContentProps<T extends keyof React.JSX.IntrinsicElements = 'div'> = {
   as?: T;
   animationNum: number;
   timelineRef: React.RefObject<HTMLElement | null>;
@@ -26,7 +26,7 @@ type TimelineContentProps<T extends keyof JSX.IntrinsicElements = 'div'> = {
  * Lightweight replacement for the missing `@/components/ui/timeline-animation`
  * import in the shadcn pricing demo.
  */
-export function TimelineContent<T extends keyof JSX.IntrinsicElements = 'div'>({
+export function TimelineContent<T extends keyof React.JSX.IntrinsicElements = 'div'>({
   as,
   animationNum,
   timelineRef,

@@ -5,7 +5,8 @@ import ContributeForm from './form';
 export const metadata = { title: 'Kontribye · Laboratwa' };
 export const dynamic = 'force-dynamic';
 
-export default async function KontribyePage({ searchParams }: { searchParams: { lang?: string } }) {
+export default async function KontribyePage(props: { searchParams: Promise<{ lang?: string }> }) {
+  const searchParams = await props.searchParams;
   const lang = readLang(searchParams);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const sb = createClient() as any;

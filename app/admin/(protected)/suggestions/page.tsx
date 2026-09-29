@@ -64,11 +64,12 @@ const STATUS_TONE: Record<string, string> = {
   declined: 'bg-slate-200 text-slate-700',
 };
 
-export default async function AdminSuggestionsPage({
-  searchParams,
-}: {
-  searchParams: { status?: string };
-}) {
+export default async function AdminSuggestionsPage(
+  props: {
+    searchParams: Promise<{ status?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
   const supabase = createClient();
   const user = await getCurrentUser();
   if (!user) redirect('/admin/login');

@@ -87,11 +87,12 @@ function valueOf(metric: MetricKey, row: HealthLog): number | null {
   return row.blood_pressure_systolic;
 }
 
-export default async function HealthPage({
-  searchParams,
-}: {
-  searchParams: { metric?: string; range?: string };
-}) {
+export default async function HealthPage(
+  props: {
+    searchParams: Promise<{ metric?: string; range?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
   const supabase = createClient();
   const user = await getCurrentUser();
   if (!user) return null;

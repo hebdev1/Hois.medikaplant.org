@@ -46,11 +46,12 @@ function formatDateTime(iso: string): string {
   return `${d.getDate()} ${MOIS[d.getMonth()]} ${d.getFullYear()} · ${TIME_FORMAT.format(d)}`;
 }
 
-export default async function AdminForumTopicPage({
-  params,
-}: {
-  params: { slug: string };
-}) {
+export default async function AdminForumTopicPage(
+  props: {
+    params: Promise<{ slug: string }>;
+  }
+) {
+  const params = await props.params;
   const supabase = createClient();
 
   const {

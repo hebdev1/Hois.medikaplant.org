@@ -42,11 +42,12 @@ const LEVEL_LABEL: Record<string, string> = {
   tout_nivo: 'Tout nivo',
 };
 
-export default async function AdminProgramsPage({
-  searchParams,
-}: {
-  searchParams: { filter?: 'active' | 'inactive' | 'all' };
-}) {
+export default async function AdminProgramsPage(
+  props: {
+    searchParams: Promise<{ filter?: 'active' | 'inactive' | 'all' }>;
+  }
+) {
+  const searchParams = await props.searchParams;
   const supabase = createClient();
   const user = await getCurrentUser();
   if (!user) redirect('/admin/login');

@@ -16,11 +16,12 @@ type P = {
   support_kr: string | null; cautions_kr: string[] | null;
 };
 
-export default async function KonparezonPage({
-  searchParams,
-}: {
-  searchParams: { p?: string; lang?: string };
-}) {
+export default async function KonparezonPage(
+  props: {
+    searchParams: Promise<{ p?: string; lang?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
   const lang = readLang(searchParams);
   const slugs = csv(searchParams.p).slice(0, 3);
 

@@ -21,11 +21,12 @@ export const dynamic = 'force-dynamic';
 type Guide = Database['public']['Tables']['guides']['Row'];
 type Category = Database['public']['Tables']['guide_categories']['Row'];
 
-export default async function AdminGuidesPage({
-  searchParams,
-}: {
-  searchParams: { filter?: string; cat?: string };
-}) {
+export default async function AdminGuidesPage(
+  props: {
+    searchParams: Promise<{ filter?: string; cat?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
   const supabase = createClient();
 
   const user = await getCurrentUser();

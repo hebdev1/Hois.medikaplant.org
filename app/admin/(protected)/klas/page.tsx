@@ -100,11 +100,12 @@ function dollars(cents: number | null): string {
   return `$${(cents / 100).toFixed(2)}`;
 }
 
-export default async function AdminKlasPage({
-  searchParams,
-}: {
-  searchParams: SearchParams;
-}) {
+export default async function AdminKlasPage(
+  props: {
+    searchParams: Promise<SearchParams>;
+  }
+) {
+  const searchParams = await props.searchParams;
   const supabase = createClient();
   const user = await getCurrentUser();
   if (!user) redirect('/admin/login');

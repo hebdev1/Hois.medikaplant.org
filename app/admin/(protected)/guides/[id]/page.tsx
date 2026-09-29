@@ -14,13 +14,14 @@ export const dynamic = 'force-dynamic';
 type Guide = Database['public']['Tables']['guides']['Row'];
 type Category = Database['public']['Tables']['guide_categories']['Row'];
 
-export default async function EditGuidePage({
-  params,
-  searchParams,
-}: {
-  params: { id: string };
-  searchParams: { created?: string };
-}) {
+export default async function EditGuidePage(
+  props: {
+    params: Promise<{ id: string }>;
+    searchParams: Promise<{ created?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
+  const params = await props.params;
   const supabase = createClient();
   const user = await getCurrentUser();
   if (!user) redirect('/admin/login');

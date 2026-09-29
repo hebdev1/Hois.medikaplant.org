@@ -14,11 +14,12 @@ const PLAN_LABEL: Record<string, string> = {
   vip: 'Hoïs Melis',
 };
 
-export default async function LakouLimyePage({
-  searchParams,
-}: {
-  searchParams: { tab?: string };
-}) {
+export default async function LakouLimyePage(
+  props: {
+    searchParams: Promise<{ tab?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
   const supabase = createClient();
   const user = await getCurrentUser();
   if (!user) return null;

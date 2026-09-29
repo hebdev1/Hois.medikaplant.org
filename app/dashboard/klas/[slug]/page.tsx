@@ -32,11 +32,12 @@ type ModuleRow = {
   preview: boolean;
 };
 
-export default async function CoursePlayerPage({
-  params,
-}: {
-  params: { slug: string };
-}) {
+export default async function CoursePlayerPage(
+  props: {
+    params: Promise<{ slug: string }>;
+  }
+) {
+  const params = await props.params;
   const supabase = createClient();
   const user = await getCurrentUser();
   if (!user) redirect(`/auth/login?redirect=/dashboard/klas/${params.slug}`);

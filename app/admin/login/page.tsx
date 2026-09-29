@@ -11,11 +11,12 @@ export const metadata = {
 };
 export const dynamic = 'force-dynamic';
 
-export default async function AdminLoginPage({
-  searchParams,
-}: {
-  searchParams: { error?: string };
-}) {
+export default async function AdminLoginPage(
+  props: {
+    searchParams: Promise<{ error?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
   // If already authed AND already admin, jump straight in.
   const supabase = createClient();
   const user = await getCurrentUser();

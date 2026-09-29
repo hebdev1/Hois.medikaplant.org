@@ -7,7 +7,8 @@ import { getLakouTabOptions } from '../../lakou/actions';
 export const metadata = { title: 'Admin · Modifye atik' };
 export const dynamic = 'force-dynamic';
 
-export default async function EditArticle({ params }: { params: { id: string } }) {
+export default async function EditArticle(props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const sb = createClient() as any;
   const [{ data }, lakouTabs] = await Promise.all([

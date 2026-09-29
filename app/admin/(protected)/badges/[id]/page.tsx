@@ -14,11 +14,12 @@ export const dynamic = 'force-dynamic';
 
 type BadgeRow = Database['public']['Tables']['badges']['Row'];
 
-export default async function EditBadgePage({
-  params,
-}: {
-  params: { id: string };
-}) {
+export default async function EditBadgePage(
+  props: {
+    params: Promise<{ id: string }>;
+  }
+) {
+  const params = await props.params;
   const supabase = createClient();
 
   const user = await getCurrentUser();

@@ -40,11 +40,12 @@ function formatDateTime(iso: string | null) {
   }).format(new Date(iso));
 }
 
-export default async function ReceiptPage({
-  params,
-}: {
-  params: { id: string };
-}) {
+export default async function ReceiptPage(
+  props: {
+    params: Promise<{ id: string }>;
+  }
+) {
+  const params = await props.params;
   const supabase = createClient();
   const user = await getCurrentUser();
   if (!user) notFound();

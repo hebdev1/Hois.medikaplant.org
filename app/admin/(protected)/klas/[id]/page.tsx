@@ -10,13 +10,14 @@ import SessionsManager from './sessions-manager';
 export const metadata = { title: 'Admin · Edite klas' };
 export const dynamic = 'force-dynamic';
 
-export default async function AdminEditCoursePage({
-  params,
-  searchParams,
-}: {
-  params: { id: string };
-  searchParams: { created?: string };
-}) {
+export default async function AdminEditCoursePage(
+  props: {
+    params: Promise<{ id: string }>;
+    searchParams: Promise<{ created?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
+  const params = await props.params;
   const supabase = createClient();
   const user = await getCurrentUser();
   if (!user) redirect('/admin/login');

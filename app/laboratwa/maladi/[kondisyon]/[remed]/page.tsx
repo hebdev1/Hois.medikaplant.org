@@ -28,19 +28,21 @@ async function load(kondisyon: string, remed: string) {
   return plant ? { cond, plant } : null;
 }
 
-export async function generateMetadata({ params }: { params: { kondisyon: string; remed: string } }) {
+export async function generateMetadata(props: { params: Promise<{ kondisyon: string; remed: string }> }) {
+  const params = await props.params;
   const r = await load(params.kondisyon, params.remed);
   if (!r) return { title: 'Remèd · Laboratwa' };
   return { title: `${r.plant.name_kr} · ${r.cond.name_kr} · Laboratwa` };
 }
 
-export default async function RemedPage({
-  params,
-  searchParams,
-}: {
-  params: { kondisyon: string; remed: string };
-  searchParams: { lang?: string };
-}) {
+export default async function RemedPage(
+  props: {
+    params: Promise<{ kondisyon: string; remed: string }>;
+    searchParams: Promise<{ lang?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
+  const params = await props.params;
   const lang = readLang(searchParams);
   const r = await load(params.kondisyon, params.remed);
   if (!r) notFound();

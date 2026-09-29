@@ -23,11 +23,12 @@ type InviteRow = {
   is_consumed: boolean;
 };
 
-export default async function AcceptInvitePage({
-  params,
-}: {
-  params: { token: string };
-}) {
+export default async function AcceptInvitePage(
+  props: {
+    params: Promise<{ token: string }>;
+  }
+) {
+  const params = await props.params;
   const supabase = createClient();
   const { data: rawInvite } = await supabase
     .rpc('get_admin_invite', { p_token: params.token })

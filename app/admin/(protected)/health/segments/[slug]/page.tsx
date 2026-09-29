@@ -21,21 +21,23 @@ const PLAN_TONE: Record<string, string> = {
   vip: 'bg-amber-100 text-amber-700',
 };
 
-export async function generateMetadata({
-  params,
-}: {
-  params: { slug: string };
-}) {
+export async function generateMetadata(
+  props: {
+    params: Promise<{ slug: string }>;
+  }
+) {
+  const params = await props.params;
   const slug = decodeURIComponent(params.slug);
   const info = describeCondition(slug);
   return { title: `Admin · Segman ${info.label}` };
 }
 
-export default async function SegmentDetailPage({
-  params,
-}: {
-  params: { slug: string };
-}) {
+export default async function SegmentDetailPage(
+  props: {
+    params: Promise<{ slug: string }>;
+  }
+) {
+  const params = await props.params;
   const slug = decodeURIComponent(params.slug);
   const info = describeCondition(slug);
   const supabase = createClient();

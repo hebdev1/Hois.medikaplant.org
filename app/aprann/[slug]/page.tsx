@@ -34,11 +34,12 @@ type ModuleRow = {
   resource_links: { label: string; url: string }[] | null;
 };
 
-export default async function AprannCoursePage({
-  params,
-}: {
-  params: { slug: string };
-}) {
+export default async function AprannCoursePage(
+  props: {
+    params: Promise<{ slug: string }>;
+  }
+) {
+  const params = await props.params;
   const supabase = createClient();
   const user = await getCurrentUser();
   if (!user) redirect(`/auth/login?redirect=/aprann/${params.slug}`);

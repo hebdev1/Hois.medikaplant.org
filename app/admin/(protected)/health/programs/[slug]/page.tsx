@@ -19,11 +19,12 @@ const PLAN_LABEL: Record<string, string> = {
   vip: 'Melis',
 };
 
-export async function generateMetadata({
-  params,
-}: {
-  params: { slug: string };
-}) {
+export async function generateMetadata(
+  props: {
+    params: Promise<{ slug: string }>;
+  }
+) {
+  const params = await props.params;
   const supabase = createClient();
   const { data } = await supabase
     .from('programs')
@@ -34,11 +35,12 @@ export async function generateMetadata({
   return { title: name ? `Admin · ${name}` : 'Admin · Plan' };
 }
 
-export default async function AdminProgramSchedulerPage({
-  params,
-}: {
-  params: { slug: string };
-}) {
+export default async function AdminProgramSchedulerPage(
+  props: {
+    params: Promise<{ slug: string }>;
+  }
+) {
+  const params = await props.params;
   const supabase = createClient();
 
   const user = await getCurrentUser();

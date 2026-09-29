@@ -39,11 +39,12 @@ async function loadArticle(slug: string): Promise<LoadedArticle | null> {
   } as LoadedArticle;
 }
 
-export async function generateMetadata({
-  params,
-}: {
-  params: { slug: string };
-}): Promise<Metadata> {
+export async function generateMetadata(
+  props: {
+    params: Promise<{ slug: string }>;
+  }
+): Promise<Metadata> {
+  const params = await props.params;
   const a = await loadArticle(params.slug);
   if (!a) return { title: 'Atik pa jwenn · Hoïs' };
   return {
@@ -53,11 +54,12 @@ export async function generateMetadata({
   };
 }
 
-export default async function ArticleDetail({
-  params,
-}: {
-  params: { slug: string };
-}) {
+export default async function ArticleDetail(
+  props: {
+    params: Promise<{ slug: string }>;
+  }
+) {
+  const params = await props.params;
   const a = await loadArticle(params.slug);
   if (!a) notFound();
 

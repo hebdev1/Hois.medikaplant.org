@@ -47,7 +47,8 @@ function build(plants: P[], n = 8): Question[] {
   return qs;
 }
 
-export default async function JwetPage({ searchParams }: { searchParams: { lang?: string } }) {
+export default async function JwetPage(props: { searchParams: Promise<{ lang?: string }> }) {
+  const searchParams = await props.searchParams;
   const lang = readLang(searchParams);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const sb = createClient() as any;

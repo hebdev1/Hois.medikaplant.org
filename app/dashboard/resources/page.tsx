@@ -62,11 +62,12 @@ function formatDuration(seconds: number | null, type: string): string | null {
   return `${mins} min`;
 }
 
-export default async function ResourcesPage({
-  searchParams,
-}: {
-  searchParams: { type?: string; q?: string };
-}) {
+export default async function ResourcesPage(
+  props: {
+    searchParams: Promise<{ type?: string; q?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
   const supabase = createClient();
   const user = await getCurrentUser();
   if (!user) return null;

@@ -19,11 +19,12 @@ function dateHT(d: Date) {
 
 // A course-completion certificate. Only reachable once the member owns the
 // course AND has finished every module — both checked server-side here.
-export default async function CertificatePage({
-  params,
-}: {
-  params: { slug: string };
-}) {
+export default async function CertificatePage(
+  props: {
+    params: Promise<{ slug: string }>;
+  }
+) {
+  const params = await props.params;
   const supabase = createClient();
   const user = await getCurrentUser();
   if (!user) redirect(`/etidyan/login?redirect=/setifika/${params.slug}`);

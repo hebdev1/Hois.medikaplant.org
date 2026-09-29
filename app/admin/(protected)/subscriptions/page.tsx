@@ -70,11 +70,12 @@ function formatCurrency(amount: number | null | undefined): string {
   return `$${amount.toFixed(2)}`;
 }
 
-export default async function AdminSubscriptionsPage({
-  searchParams,
-}: {
-  searchParams: { q?: string; plan?: string; status?: string };
-}) {
+export default async function AdminSubscriptionsPage(
+  props: {
+    searchParams: Promise<{ q?: string; plan?: string; status?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
   const supabase = createClient();
 
   const user = await getCurrentUser();

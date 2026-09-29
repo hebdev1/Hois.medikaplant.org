@@ -29,11 +29,12 @@ async function loadPage(slug: string): Promise<LoadedPage | null> {
   return { ...data, blocks: Array.isArray(data.blocks) ? data.blocks : [] } as LoadedPage;
 }
 
-export async function generateMetadata({
-  params,
-}: {
-  params: { slug: string };
-}): Promise<Metadata> {
+export async function generateMetadata(
+  props: {
+    params: Promise<{ slug: string }>;
+  }
+): Promise<Metadata> {
+  const params = await props.params;
   const page = await loadPage(params.slug);
   if (!page) return { title: 'Paj pa jwenn · Hoïs' };
   return {
@@ -43,11 +44,12 @@ export async function generateMetadata({
   };
 }
 
-export default async function PublicCmsPage({
-  params,
-}: {
-  params: { slug: string };
-}) {
+export default async function PublicCmsPage(
+  props: {
+    params: Promise<{ slug: string }>;
+  }
+) {
+  const params = await props.params;
   const page = await loadPage(params.slug);
   if (!page) notFound();
 

@@ -54,11 +54,12 @@ function relativeLabel(iso: string): string {
   return `${Math.floor(days / 365)} an pase`;
 }
 
-export default async function AdminUsersListPage({
-  searchParams,
-}: {
-  searchParams: { q?: string; plan?: string; role?: string; status?: string };
-}) {
+export default async function AdminUsersListPage(
+  props: {
+    searchParams: Promise<{ q?: string; plan?: string; role?: string; status?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
   const supabase = createClient();
 
   // Viewer admin_role — controls whether the "Ajoute admin" CTA appears

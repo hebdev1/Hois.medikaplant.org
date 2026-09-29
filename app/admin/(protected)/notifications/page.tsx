@@ -62,11 +62,12 @@ function relativeLabel(iso: string): string {
   return `${Math.floor(days / 365)} ane`;
 }
 
-export default async function AdminNotificationsPage({
-  searchParams,
-}: {
-  searchParams: { target?: string };
-}) {
+export default async function AdminNotificationsPage(
+  props: {
+    searchParams: Promise<{ target?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
   const supabase = createClient();
 
   const user = await getCurrentUser();

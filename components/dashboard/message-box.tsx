@@ -483,12 +483,12 @@ function MesajTab({
   setDraft: (v: string) => void;
   sending: boolean;
   send: () => void;
-  bottomRef: React.RefObject<HTMLDivElement>;
+  bottomRef: React.RefObject<HTMLDivElement | null>;
   presence: Presence;
   attachment: Attachment | null;
   onRemoveAttachment: () => void;
   uploading: boolean;
-  fileRef: React.RefObject<HTMLInputElement>;
+  fileRef: React.RefObject<HTMLInputElement | null>;
   onPickFile: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onEdit: (id: string, body: string) => void;
   onDelete: (id: string) => void;

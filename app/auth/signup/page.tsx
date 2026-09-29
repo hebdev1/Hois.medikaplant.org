@@ -12,11 +12,12 @@ export const metadata = { title: 'Kreye yon kont' };
  *   • Otherwise, send them to the landing-page pricing section so they
  *     pick a plan first.
  */
-export default function SignupPage({
-  searchParams,
-}: {
-  searchParams: { plan?: string };
-}) {
+export default async function SignupPage(
+  props: {
+    searchParams: Promise<{ plan?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
   if (searchParams.plan) {
     redirect(`/checkout?plan=${searchParams.plan}`);
   }

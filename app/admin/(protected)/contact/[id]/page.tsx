@@ -55,11 +55,12 @@ function formatDateTime(iso: string | null): string {
   return `${d.getDate()} ${MONTHS_HT[d.getMonth()]} ${d.getFullYear()} · ${hh}h${mm}`;
 }
 
-export default async function ContactDetailPage({
-  params,
-}: {
-  params: { id: string };
-}) {
+export default async function ContactDetailPage(
+  props: {
+    params: Promise<{ id: string }>;
+  }
+) {
+  const params = await props.params;
   const supabase = createClient();
 
   const user = await getCurrentUser();

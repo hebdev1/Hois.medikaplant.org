@@ -66,11 +66,12 @@ function formatHaitianDate(d: Date) {
 
 export const dynamic = 'force-dynamic';
 
-export default async function DashboardHome({
-  searchParams,
-}: {
-  searchParams: { welcome?: string; tour?: string };
-}) {
+export default async function DashboardHome(
+  props: {
+    searchParams: Promise<{ welcome?: string; tour?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
   const supabase = createClient();
   const user = await getCurrentUser();
   if (!user) return null;

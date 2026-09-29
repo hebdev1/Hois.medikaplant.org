@@ -55,11 +55,12 @@ function formatHaitianDateTime(iso: string | null): string {
   return `${d.getDate()} ${MONTHS_HT[d.getMonth()]} · ${hh}h${mm}`;
 }
 
-export async function generateMetadata({
-  params,
-}: {
-  params: { slug: string };
-}) {
+export async function generateMetadata(
+  props: {
+    params: Promise<{ slug: string }>;
+  }
+) {
+  const params = await props.params;
   const supabase = createClient();
   const { data } = await supabase
     .from('badges')
@@ -70,11 +71,12 @@ export async function generateMetadata({
   return { title: name ? `${name} · Badj` : 'Badj' };
 }
 
-export default async function BadgeDetailPage({
-  params,
-}: {
-  params: { slug: string };
-}) {
+export default async function BadgeDetailPage(
+  props: {
+    params: Promise<{ slug: string }>;
+  }
+) {
+  const params = await props.params;
   if (LOCKED_PATHS['/dashboard/badges'])
     return <LockedPage title="Badj mwen yo" />;
 

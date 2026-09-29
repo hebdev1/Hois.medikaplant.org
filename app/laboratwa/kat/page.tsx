@@ -6,7 +6,8 @@ import { REGIONS } from '../eksplorate/facets';
 export const metadata = { title: 'Rejyon · Laboratwa' };
 export const dynamic = 'force-dynamic';
 
-export default async function KatPage({ searchParams }: { searchParams: { lang?: string } }) {
+export default async function KatPage(props: { searchParams: Promise<{ lang?: string }> }) {
+  const searchParams = await props.searchParams;
   const lang = readLang(searchParams);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const sb = createClient() as any;

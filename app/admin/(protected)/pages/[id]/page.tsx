@@ -6,7 +6,8 @@ import type { Block } from '@/components/cms/page-blocks';
 export const metadata = { title: 'Admin · Modifye paj' };
 export const dynamic = 'force-dynamic';
 
-export default async function EditPage({ params }: { params: { id: string } }) {
+export default async function EditPage(props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const sb = createClient() as any;
   const { data } = await sb

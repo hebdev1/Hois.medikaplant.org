@@ -14,11 +14,12 @@ import CheckoutForm from './checkout-form';
 export const metadata = { title: 'Checkout' };
 export const dynamic = 'force-dynamic';
 
-export default async function CheckoutPage({
-  searchParams,
-}: {
-  searchParams: { plan?: string; cycle?: string };
-}) {
+export default async function CheckoutPage(
+  props: {
+    searchParams: Promise<{ plan?: string; cycle?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
   const planKey = searchParams.plan;
 
   if (!isValidPlan(planKey)) {

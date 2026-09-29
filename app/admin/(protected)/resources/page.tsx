@@ -93,11 +93,12 @@ function formatDuration(seconds: number | null): string {
   return `${Math.round(seconds / 60)} min`;
 }
 
-export default async function AdminResourcesPage({
-  searchParams,
-}: {
-  searchParams: { filter?: string; type?: string; plan?: string };
-}) {
+export default async function AdminResourcesPage(
+  props: {
+    searchParams: Promise<{ filter?: string; type?: string; plan?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
   const supabase = createClient();
 
   const user = await getCurrentUser();

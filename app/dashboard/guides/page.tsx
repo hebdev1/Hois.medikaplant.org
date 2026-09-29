@@ -67,11 +67,12 @@ function settledData<T>(
   return (raw.data as T | null) ?? fallback;
 }
 
-export default async function GuidesIndexPage({
-  searchParams,
-}: {
-  searchParams: { cat?: string };
-}) {
+export default async function GuidesIndexPage(
+  props: {
+    searchParams: Promise<{ cat?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
   const supabase = createClient();
   const user = await getCurrentUser();
   if (!user) return null;

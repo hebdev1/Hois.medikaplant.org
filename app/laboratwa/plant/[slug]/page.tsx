@@ -11,7 +11,8 @@ const partLabel = (v: string) => (PARTS.find((x) => x[0] === v) ?? [v, v])[1];
 const prepLabel = (v: string) => (PREPS.find((x) => x[0] === v) ?? [v, v])[1];
 const regionLabel = (v: string) => (REGIONS.find((x) => x[0] === v) ?? [v, v])[1];
 
-export async function generateMetadata({ params }: { params: { slug: string } }) {
+export async function generateMetadata(props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const sb = createClient() as any;
   const { data } = await sb
@@ -24,13 +25,14 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   return { title: `${data.name_kr} · Laboratwa`, description: `${data.name_kr} (${data.name_sci}) nan achiv Laboratwa a.` };
 }
 
-export default async function PlantDetail({
-  params,
-  searchParams,
-}: {
-  params: { slug: string };
-  searchParams: { lang?: string };
-}) {
+export default async function PlantDetail(
+  props: {
+    params: Promise<{ slug: string }>;
+    searchParams: Promise<{ lang?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
+  const params = await props.params;
   const lang = readLang(searchParams);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const sb = createClient() as any;

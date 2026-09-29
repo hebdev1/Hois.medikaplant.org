@@ -14,7 +14,8 @@ const PLAN_LABEL: Record<string, string> = {
   vip: 'Hoïs Melis',
 };
 
-export default async function DozDetailPage({ params }: { params: { slug: string } }) {
+export default async function DozDetailPage(props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params;
   const supabase = createClient();
   const user = await getCurrentUser();
   if (!user) return null;

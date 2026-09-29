@@ -8,13 +8,14 @@ import DozForm, { type DozRecipe } from '../doz-form';
 export const metadata = { title: 'Admin · Edite resèt' };
 export const dynamic = 'force-dynamic';
 
-export default async function EditDozPage({
-  params,
-  searchParams,
-}: {
-  params: { id: string };
-  searchParams: { created?: string };
-}) {
+export default async function EditDozPage(
+  props: {
+    params: Promise<{ id: string }>;
+    searchParams: Promise<{ created?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
+  const params = await props.params;
   const supabase = createClient();
   const user = await getCurrentUser();
   if (!user) redirect('/admin/login');

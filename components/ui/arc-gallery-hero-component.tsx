@@ -123,9 +123,12 @@ export const ArcGalleryHero: React.FC<ArcGalleryHeroProps> = ({
             const angle = startAngle + step * i; // degrees
             const angleRad = (angle * Math.PI) / 180;
 
-            // Compute x/y on the circle.
-            const x = Math.cos(angleRad) * dimensions.radius;
-            const y = Math.sin(angleRad) * dimensions.radius;
+            // Compute x/y on the circle. Round to 3 decimals so the server
+            // (Node) and client (browser) emit byte-identical style strings —
+            // Math.cos/sin can differ by 1 ULP across V8 builds, which React 19
+            // flags as a hydration mismatch. Sub-0.001px rounding is invisible.
+            const x = (Math.cos(angleRad) * dimensions.radius).toFixed(3);
+            const y = (Math.sin(angleRad) * dimensions.radius).toFixed(3);
 
             return (
               <div
@@ -144,7 +147,7 @@ export const ArcGalleryHero: React.FC<ArcGalleryHeroProps> = ({
               >
                 <div
                   className="rounded-2xl shadow-xl overflow-hidden ring-1 ring-gray-200 bg-white transition-transform hover:scale-105 w-full h-full"
-                  style={{ transform: `rotate(${angle / 4}deg)` }}
+                  style={{ transform: `rotate(${(angle / 4).toFixed(3)}deg)` }}
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img

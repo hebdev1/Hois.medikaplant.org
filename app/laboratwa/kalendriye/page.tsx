@@ -10,11 +10,12 @@ const FULL = ['Janvye','Fevriye','Mas','Avril','Me','Jen','Jiyè','Out','Septanm
 
 type P = { slug: string; name_kr: string; season_months: number[] | null };
 
-export default async function KalendriyePage({
-  searchParams,
-}: {
-  searchParams: { mwa?: string; lang?: string };
-}) {
+export default async function KalendriyePage(
+  props: {
+    searchParams: Promise<{ mwa?: string; lang?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
   const lang = readLang(searchParams);
   const mwa = Math.min(12, Math.max(0, Number(searchParams.mwa) || 0)); // 0 = none selected
 

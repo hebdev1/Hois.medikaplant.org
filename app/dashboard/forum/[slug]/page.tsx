@@ -47,11 +47,12 @@ async function deleteTopicAction(id: string) {
   await deleteTopic(id);
 }
 
-export default async function ForumTopicPage({
-  params,
-}: {
-  params: { slug: string };
-}) {
+export default async function ForumTopicPage(
+  props: {
+    params: Promise<{ slug: string }>;
+  }
+) {
+  const params = await props.params;
   const supabase = createClient();
   const user = await getCurrentUser();
   if (!user) return null;

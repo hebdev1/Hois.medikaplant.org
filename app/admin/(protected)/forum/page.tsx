@@ -52,11 +52,12 @@ function relativeLabel(iso: string | null | undefined): string {
   return `${d.getDate()} ${MOIS[d.getMonth()]} ${d.getFullYear()}`;
 }
 
-export default async function AdminForumPage({
-  searchParams,
-}: {
-  searchParams: { cat?: string; status?: string; q?: string };
-}) {
+export default async function AdminForumPage(
+  props: {
+    searchParams: Promise<{ cat?: string; status?: string; q?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
   const supabase = createClient();
 
   const user = await getCurrentUser();

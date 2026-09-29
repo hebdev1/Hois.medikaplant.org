@@ -5,11 +5,12 @@ import { ArrowRight } from 'lucide-react';
 
 export const metadata = { title: 'Konekte' };
 
-export default function LoginPage({
-  searchParams,
-}: {
-  searchParams: { redirect?: string; plan?: string };
-}) {
+export default async function LoginPage(
+  props: {
+    searchParams: Promise<{ redirect?: string; plan?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
   // Account creation is gated behind plan selection: you can't have an
   // account without paying for one. If a plan is already carried in the
   // URL (the visitor came from a pricing card), send them straight back

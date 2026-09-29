@@ -18,7 +18,8 @@ type Cond = {
   plants: PlantRec[];
 };
 
-export default async function MaladiPage({ searchParams }: { searchParams: { lang?: string } }) {
+export default async function MaladiPage(props: { searchParams: Promise<{ lang?: string }> }) {
+  const searchParams = await props.searchParams;
   const lang = readLang(searchParams);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const sb = createClient() as any;

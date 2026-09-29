@@ -36,11 +36,12 @@ function pctOf(done: number, total: number) {
   return total > 0 ? Math.round((done / total) * 100) : 0;
 }
 
-export default async function AprannPage({
-  searchParams,
-}: {
-  searchParams: { achte?: string; t?: string };
-}) {
+export default async function AprannPage(
+  props: {
+    searchParams: Promise<{ achte?: string; t?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
   const supabase = createClient();
   const user = await getCurrentUser();
   if (!user) redirect('/auth/login?redirect=/aprann');

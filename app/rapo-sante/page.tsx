@@ -38,11 +38,12 @@ const METRICS: {
   { key: 'heart_rate', label: 'Batman kè', unit: 'bpm', decimals: 0 },
 ];
 
-export default async function HealthReportPage({
-  searchParams,
-}: {
-  searchParams: { jou?: string };
-}) {
+export default async function HealthReportPage(
+  props: {
+    searchParams: Promise<{ jou?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
   const supabase = createClient();
   const user = await getCurrentUser();
   if (!user) redirect('/auth/login?redirect=/rapo-sante');

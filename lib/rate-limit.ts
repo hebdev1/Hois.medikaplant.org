@@ -1,4 +1,4 @@
-import { headers } from 'next/headers';
+import { headers, type UnsafeUnwrappedHeaders } from 'next/headers';
 
 // Lightweight in-memory rate limiter for UNAUTHENTICATED public server actions
 // (contact form, glossary/lab contributions). Hostinger runs a single Node
@@ -33,7 +33,10 @@ export function rateLimit(key: string, limit: number, windowMs: number): boolean
 
 /** Best-effort client IP from the proxy headers (Hostinger hCDN / Cloudflare). */
 export function clientIp(): string {
-  const h = headers();
+  // Next 15 made headers() async; the sync-unwrap keeps clientIp() synchronous
+  // (officially supported, dev-only deprecation warning). TODO: switch to
+  // `await headers()` when convenient.
+  const h = headers() as unknown as UnsafeUnwrappedHeaders;
   const xff = h.get('x-forwarded-for');
   if (xff) return xff.split(',')[0]?.trim() || 'unknown';
   return h.get('cf-connecting-ip') || h.get('x-real-ip') || 'unknown';

@@ -30,7 +30,8 @@ const METHODS: Record<string, Method> = {
 export function generateStaticParams() {
   return Object.keys(METHODS).map((metod) => ({ metod }));
 }
-export function generateMetadata({ params }: { params: { metod: string } }) {
+export async function generateMetadata(props: { params: Promise<{ metod: string }> }) {
+  const params = await props.params;
   const m = METHODS[params.metod];
   return { title: m ? `${m.label} · Preparasyon · Laboratwa` : 'Preparasyon · Laboratwa' };
 }
@@ -52,13 +53,14 @@ function Col({ m }: { m: Method }) {
   );
 }
 
-export default function PreparasyonPage({
-  params,
-  searchParams,
-}: {
-  params: { metod: string };
-  searchParams: { lang?: string };
-}) {
+export default async function PreparasyonPage(
+  props: {
+    params: Promise<{ metod: string }>;
+    searchParams: Promise<{ lang?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
+  const params = await props.params;
   const lang = readLang(searchParams);
   const m = METHODS[params.metod];
   if (!m) notFound();

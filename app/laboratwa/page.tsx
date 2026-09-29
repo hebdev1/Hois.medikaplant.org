@@ -11,11 +11,12 @@ export const metadata = {
 };
 export const dynamic = 'force-dynamic';
 
-export default async function LaboratwaHome({
-  searchParams,
-}: {
-  searchParams: { lang?: string };
-}) {
+export default async function LaboratwaHome(
+  props: {
+    searchParams: Promise<{ lang?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
   const lang = readLang(searchParams);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

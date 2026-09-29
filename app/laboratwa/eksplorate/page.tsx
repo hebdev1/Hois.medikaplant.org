@@ -18,13 +18,14 @@ const csv = (v?: string) =>
 const overlaps = (a: string[] | null, b: string[]) =>
   !!a && b.some((x) => a.includes(x));
 
-export default async function EksploratePage({
-  searchParams,
-}: {
-  searchParams: {
-    q?: string; pati?: string; prep?: string; sezon?: string; rejyon?: string; lang?: string;
-  };
-}) {
+export default async function EksploratePage(
+  props: {
+    searchParams: Promise<{
+      q?: string; pati?: string; prep?: string; sezon?: string; rejyon?: string; lang?: string;
+    }>;
+  }
+) {
+  const searchParams = await props.searchParams;
   const lang = readLang(searchParams);
   const q = (searchParams.q ?? '').trim();
   const selPati = csv(searchParams.pati);

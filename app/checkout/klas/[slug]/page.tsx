@@ -28,11 +28,12 @@ type Course = {
   active: boolean;
 };
 
-export async function generateMetadata({
-  params,
-}: {
-  params: { slug: string };
-}) {
+export async function generateMetadata(
+  props: {
+    params: Promise<{ slug: string }>;
+  }
+) {
+  const params = await props.params;
   return { title: `Achte klas · ${params.slug}` };
 }
 
@@ -40,11 +41,12 @@ function dollars(cents: number): string {
   return `$${(cents / 100).toFixed(2)}`;
 }
 
-export default async function CourseCheckoutPage({
-  params,
-}: {
-  params: { slug: string };
-}) {
+export default async function CourseCheckoutPage(
+  props: {
+    params: Promise<{ slug: string }>;
+  }
+) {
+  const params = await props.params;
   const supabase = createClient();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const sb = supabase as any;

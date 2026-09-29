@@ -53,11 +53,12 @@ function formatDate(iso: string): string {
 
 type Tab = 'new' | 'responded' | 'archived';
 
-export default async function AdminContactInbox({
-  searchParams,
-}: {
-  searchParams: { tab?: string };
-}) {
+export default async function AdminContactInbox(
+  props: {
+    searchParams: Promise<{ tab?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
   const tab: Tab =
     searchParams.tab === 'responded' ||
     searchParams.tab === 'archived' ||

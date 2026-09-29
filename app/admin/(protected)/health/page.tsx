@@ -36,11 +36,12 @@ function normalizeTab(raw?: string): CareTab {
   return 'patients';
 }
 
-export default async function AdminCarePage({
-  searchParams,
-}: {
-  searchParams: { tab?: string; q?: string; condition?: string };
-}) {
+export default async function AdminCarePage(
+  props: {
+    searchParams: Promise<{ tab?: string; q?: string; condition?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
   const supabase = createClient();
   const user = await getCurrentUser();
   if (!user) redirect('/admin/login');

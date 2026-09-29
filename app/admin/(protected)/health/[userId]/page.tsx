@@ -98,11 +98,12 @@ function calcAge(dob: string | null): number | null {
   return Math.floor(ms / (365.25 * 24 * 3600 * 1000));
 }
 
-export default async function AdminPatientPage({
-  params,
-}: {
-  params: { userId: string };
-}) {
+export default async function AdminPatientPage(
+  props: {
+    params: Promise<{ userId: string }>;
+  }
+) {
+  const params = await props.params;
   const supabase = createClient();
 
   const user = await getCurrentUser();
