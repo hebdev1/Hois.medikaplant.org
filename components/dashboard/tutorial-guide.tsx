@@ -51,7 +51,7 @@ const SECTIONS: { heading: string; items: GuideItem[] }[] = [
         what: 'Se premye paj ou wè lè ou konekte. Li rasanble tout sa ki enpòtan pou jou a nan yon sèl kote, epi li chanje selon plan ou ak objektif sante w.',
         steps: [
           'Anlè paj la, w ap jwenn konsèy plant jou a — yon ti konsèy sante ki chanje chak jou. Li li pou kòmanse jounen w.',
-          'Nan lis “tach pou jou a”, chak tach gen yon ti kaz. Klike kaz la lè ou fè tach la — pousantaj pwogrè jou a ap monte otomatikman.',
+          'Nan lis "tach pou jou a", chak tach gen yon ti kaz. Klike kaz la lè ou fè tach la — pousantaj pwogrè jou a ap monte otomatikman.',
           'Sekans (streak) ou montre konbyen jou youn apre lòt ou rete aktif. Konekte epi fè omwen yon tach chak jou pou kenbe l.',
           'Pi ba, w ap jwenn badj ou yo, grafik swivi sante w, ak sijesyon remèd dapre kondisyon w.',
         ],
@@ -80,7 +80,7 @@ const SECTIONS: { heading: string; items: GuideItem[] }[] = [
         title: 'Swivi Sante',
         what: 'Se kaye sante dijital ou. Ou note chif ou yo (sik nan san, tansyon, pwa) epi platfòm nan montre w evolisyon yo sou grafik pou w wè si w ap amelyore.',
         steps: [
-          'Klike bouton “Ajoute” a pou antre yon nouvo mezi.',
+          'Klike bouton "Ajoute" a pou antre yon nouvo mezi.',
           'Chwazi kalite mezi a (sik, tansyon, oswa pwa), antre valè a ak dat la, epi anrejistre.',
           'Grafik yo mete ajou otomatikman — w ap wè liy evolisyon w nan tan.',
           'Antre valè yo chak jou (oswa chak fwa ou mezire) pou grafik la ba w yon vrè imaj.',
@@ -125,7 +125,7 @@ const SECTIONS: { heading: string; items: GuideItem[] }[] = [
           'Pou kou ki gen sesyon an dirèk, w ap jwenn yon lyen Zoom pèsonèl — klike l lè lè sesyon an rive.',
           'Gen kou ki gratis ak plan ou; lòt yo mande yon acha anvan ou ka wè yo.',
         ],
-        tip: 'Kite yon modil louvri jiskaske li make “fèt” pou pwogrè w byen konte.',
+        tip: 'Kite yon modil louvri jiskaske li make "fèt" pou pwogrè w byen konte.',
       },
       {
         icon: BookOpen,
@@ -205,7 +205,7 @@ const SECTIONS: { heading: string; items: GuideItem[] }[] = [
         title: 'Sipò',
         what: 'Chat dirèk ak ekip Hoïs la. Se la ou poze kesyon epi jwenn èd rapid lè ou bezwen l.',
         steps: [
-          'Ekri mesaj ou epi voye l. Anlè chat la, ou wè si ekip la “An liy” oswa lè y ap tounen.',
+          'Ekri mesaj ou epi voye l. Anlè chat la, ou wè si ekip la "An liy" oswa lè y ap tounen.',
           'Klike bouton agraf la pou voye yon foto oswa yon fichye (PDF, dokiman, elatriye).',
           'Pase sou pwòp mesaj ou pou modifye l oswa efase l.',
           'W ap resevwa yon repons, epi yon notifikasyon nan kloch la lè ekip la reponn ou.',
@@ -219,9 +219,9 @@ const SECTIONS: { heading: string; items: GuideItem[] }[] = [
         what: 'Kote ou jere pwofil ou, plan ou, ak jan platfòm nan parèt pou ou.',
         steps: [
           'Mete oswa chanje foto ak enfòmasyon pèsonèl ou.',
-          'Nan “Aparans”, chanje mòd fonse, koulè, ak gwosè tèks pou konfò w.',
+          'Nan "Aparans", chanje mòd fonse, koulè, ak gwosè tèks pou konfò w.',
           'Jere plan/abònman ou.',
-          'Ou ka rejwe tutoryèl rapid la (vizit gide a) nenpòt lè depi la.',
+          'Ou ka rejwe titoryèl rapid la (vizit gide a) nenpòt lè depi la.',
         ],
       },
     ],
@@ -240,7 +240,7 @@ export default function TutorialGuide() {
       <div className="rounded-2xl border border-cream-200 bg-gradient-to-br from-forest-50 via-white to-cream-50 p-6 md:p-8 shadow-card">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-forest-100 text-forest-700 text-xs font-semibold mb-3">
           <Compass className="w-3.5 h-3.5" strokeWidth={2.2} />
-          Tutoryèl
+          Titoryèl
         </div>
         <h1 className="font-display text-2xl md:text-4xl font-bold tracking-tight text-ink">
           Kijan pou itilize platfòm nan
