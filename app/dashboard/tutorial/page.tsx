@@ -3,7 +3,7 @@ import { getCurrentUser } from '@/lib/supabase/auth';
 import Topbar from '@/components/dashboard/topbar';
 import TutorialGuide from '@/components/dashboard/tutorial-guide';
 
-export const metadata = { title: 'Tutoryèl' };
+export const metadata = { title: 'Titoryèl' };
 export const dynamic = 'force-dynamic';
 
 const PLAN_LABELS: Record<string, string> = {
