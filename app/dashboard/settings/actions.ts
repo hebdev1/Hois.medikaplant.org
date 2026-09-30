@@ -587,6 +587,7 @@ export async function exportUserData(): Promise<
     userPrograms,
     taskCompletions,
     consultations,
+    consultationBookings,
   ] = await Promise.all([
     supabase.from('profiles').select('*').eq('id', user.id).maybeSingle(),
     supabase.from('user_preferences').select('*').eq('user_id', user.id).maybeSingle(),
@@ -627,6 +628,14 @@ export async function exportUserData(): Promise<
       .select('*')
       .eq('user_id', user.id)
       .order('scheduled_at', { ascending: false }),
+    // New in-app consultation bookings (migration 140). Newer table — accessed
+    // untyped like the other post-019 tables.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (supabase as any)
+      .from('consultation_bookings')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false }),
   ]);
 
   const payload = {
@@ -649,6 +658,7 @@ export async function exportUserData(): Promise<
     programs: userPrograms.data ?? [],
     task_completions: taskCompletions.data ?? [],
     consultations: consultations.data ?? [],
+    consultation_bookings: consultationBookings.data ?? [],
   };
 
   const stamp = new Date().toISOString().slice(0, 10);

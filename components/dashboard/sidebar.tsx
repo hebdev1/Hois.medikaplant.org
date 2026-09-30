@@ -29,6 +29,7 @@ import {
   Leaf,
   Sprout,
   Compass,
+  Stethoscope,
   PanelLeftClose,
   PanelLeftOpen,
   type LucideIcon,
@@ -65,6 +66,7 @@ const NAV_GROUPS: { heading?: string; items: NavItem[] }[] = [
     heading: 'Sante',
     items: [
       { href: '/dashboard/health', label: 'Swivi Sante', icon: Activity },
+      { href: '/dashboard/konsiltasyon', label: 'Konsiltasyon', icon: Stethoscope },
       { href: '/dashboard/programs', label: 'Pwotokòl mwen yo', icon: FolderOpen },
       { href: '/dashboard/reset-doz', label: 'Resèt ak Dòz', icon: FlaskConical },
     ],

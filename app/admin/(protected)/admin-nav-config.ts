@@ -259,6 +259,7 @@ export const ADMIN_NAV_LINKS: readonly AdminNavLink[] = [
   { href: '/admin/subscriptions', label: 'Abònman & Plan', icon: CreditCard, capability: 'manage_subscriptions', group: 'commerce' },
   { href: '/admin/products', label: 'Pwodwi Shop', icon: ShoppingBag, capability: 'manage_subscriptions', group: 'commerce' },
   { href: '/admin/coupons', label: 'Koupon', icon: Ticket, capability: 'manage_subscriptions', group: 'commerce' },
+  { href: '/admin/konsiltasyon', label: 'Konsiltasyon', icon: CalendarRange, capability: 'manage_subscriptions', group: 'commerce' },
   { href: '/admin/hubspot', label: 'HubSpot CRM', icon: Link2, capability: 'view_hubspot', group: 'commerce' },
 
   // ── SEO ─────────────────────────────────────────────────────────────
@@ -284,8 +285,6 @@ export const ADMIN_NAV_SOON: readonly AdminNavLink[] = [
   { href: '#', label: 'Temwayaj', icon: MessagesSquare, capability: 'manage_resources', group: 'content', soon: true },
 
   { href: '#', label: 'Page Builder', icon: PanelsTopLeft, capability: 'manage_admins', group: 'design', soon: true },
-
-  { href: '#', label: 'Konsiltasyon', icon: CalendarRange, capability: 'manage_subscriptions', group: 'commerce', soon: true },
 
   { href: '#', label: 'Wòl & Pèmisyon', icon: ShieldCheck, capability: 'manage_admins', group: 'users', soon: true },
   { href: '#', label: 'Sesyon aktif', icon: KeyRound, capability: 'manage_admins', group: 'users', soon: true },

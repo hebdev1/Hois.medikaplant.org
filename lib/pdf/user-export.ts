@@ -526,6 +526,16 @@ function renderBadges(b: PdfBuilder, data: ExportData) {
   );
 }
 
+const BOOKING_STATUS_LABEL: Record<string, string> = {
+  pending: 'Ann atant',
+  confirmed: 'Konfime',
+  reschedule_proposed: 'Repwograme',
+  declined: 'Refize',
+  cancelled: 'Anile',
+  completed: 'Fèt',
+  no_show: 'Pa vini',
+};
+
 function renderConsultations(b: PdfBuilder, data: ExportData) {
   const rows = asArray(data.consultations);
   b.sectionTitle(`9 · Konsiltasyon (${rows.length})`);
@@ -539,6 +549,25 @@ function renderConsultations(b: PdfBuilder, data: ExportData) {
       { key: 'when', label: 'Dat', width: 180 },
       { key: 'type', label: 'Tip', width: 180 },
       { key: 'status', label: 'Eta', width: 100 },
+    ]
+  );
+
+  // In-app consultation bookings (migration 140).
+  const bookings = asArray(data.consultation_bookings);
+  b.sectionTitle(`9b · Randevou konsiltasyon (${bookings.length})`);
+  b.listRows(
+    bookings.map((r) => ({
+      when: formatDate(r.scheduled_at ?? r.created_at),
+      status:
+        typeof r.status === 'string'
+          ? BOOKING_STATUS_LABEL[r.status] ?? safe(r.status)
+          : '-',
+      topic: safe(r.topic),
+    })),
+    [
+      { key: 'when', label: 'Dat', width: 180 },
+      { key: 'status', label: 'Eta', width: 120 },
+      { key: 'topic', label: 'Sijè', width: 160 },
     ]
   );
 }

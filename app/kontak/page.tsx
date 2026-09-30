@@ -71,11 +71,11 @@ const FAQS = [
   },
   {
     q: 'Ki enfòmasyon pou m mete pou jwenn repons pi rapid?',
-    a: 'Bay non ou, imèl kote pou nou reponn, epi eksplike sitiyasyon w klèman. Si se yon pwoblèm teknik, mete non navigatè w ak sa ki t ap pase avan pwoblèm nan parèt. Si se yon kesyon konsiltasyon, mete plan ou ak preferans dat.',
+    a: 'Bay non ou, imèl kote pou nou reponn, epi eksplike sitiyasyon w klèman. Si se yon pwoblèm teknik, mete non navigatè w ak sa ki t ap pase avan pwoblèm nan parèt. Si se yon kesyon konsiltasyon, di nou sou ki sa w vle pale.',
   },
   {
     q: 'Kesyon m nan se sou kont oswa sante m. Kote pou m ale?',
-    a: 'Konekte sou kont ou, epi ale nan "Kont mwen → Sipò" pou kesyon administratif (fakti, chanjman plan, modpas). Pou kesyon medikal, ale nan "Sante" epi mande yon konsiltasyon, yon Gid ap kontakte w pou pwograme yon randevou Zoom.',
+    a: 'Konekte sou kont ou, epi ale nan "Kont mwen → Sipò" pou kesyon administratif (fakti, chanjman plan, modpas). Pou kesyon medikal, konsiltasyon patikilye yo se yon avantaj plan Melis: ale nan "Konsiltasyon", chwazi yon kreno ki disponib, epi n ap verifye epi konfime randevou w.',
   },
   {
     q: 'Èske mesaj m nan rete konfidansyèl?',

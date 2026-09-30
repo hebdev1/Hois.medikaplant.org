@@ -515,10 +515,10 @@ export default async function HealthPage(
           <TreatmentsSection treatments={treatments} />
         </div>
 
-        {/* Consultations, bookings now happen on
-            medikaplantshop.com/consultation. Panel is a pure outbound CTA. */}
+        {/* Consultations: a Melis benefit. Melis members book an in-app slot;
+            everyone else sees an upgrade nudge. */}
         <div className="mt-6">
-          <ConsultationsPanel />
+          <ConsultationsPanel isMelis={profile?.plan === 'vip'} />
         </div>
       </div>
     </>

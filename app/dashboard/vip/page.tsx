@@ -170,7 +170,7 @@ export default async function VipPage() {
             <VipSessionCard request={request} />
 
             {/* Real consultation booking */}
-            <ConsultationsPanel />
+            <ConsultationsPanel isMelis />
 
             {/* Benefit 3 — opt into the VIP circle (name featured) */}
             <section className="bg-white border border-gold-200 rounded-2xl p-5 md:p-6 shadow-card">
