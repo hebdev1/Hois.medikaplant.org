@@ -13,6 +13,7 @@ import {
   Sparkles,
   Link2,
   Award,
+  Crown,
   Inbox,
   Layers,
   CalendarRange,
@@ -251,6 +252,7 @@ export const ADMIN_NAV_LINKS: readonly AdminNavLink[] = [
   { href: '/admin/contact', label: 'Mesaj kontak', icon: Inbox, capability: 'manage_contact', group: 'community' },
   { href: '/admin/forum', label: 'Fowòm', icon: MessagesSquare, capability: 'moderate_forum', group: 'community' },
   { href: '/admin/suggestions', label: 'Sijesyon manm', icon: Lightbulb, capability: 'manage_self', group: 'community' },
+  { href: '/admin/sesyon-vip', label: 'Sesyon VIP', icon: Crown, capability: 'manage_subscriptions', group: 'community' },
   { href: '/admin/badges', label: 'Badj', icon: Award, capability: 'manage_badges', group: 'community' },
 
   // ── Komès ───────────────────────────────────────────────────────────

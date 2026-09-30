@@ -3,7 +3,7 @@
 // BOTH the sidebar link and the route in one place.
 export const LOCKED_PATHS: Record<string, boolean> = {
   '/dashboard/badges': false,
-  '/dashboard/vip': true,
+  '/dashboard/vip': false,
 };
 
 // True when `pathname` is a locked page or lives under one (e.g. a badge
