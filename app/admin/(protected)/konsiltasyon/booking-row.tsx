@@ -11,6 +11,8 @@ import {
   Check,
   X,
   UserX,
+  ExternalLink,
+  UserRound,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
@@ -61,10 +63,11 @@ export default function BookingRow({
   const router = useRouter();
   const [pending, setPending] = React.useState<string | null>(null);
   const [newSlotId, setNewSlotId] = React.useState('');
-  const [meetingUrl, setMeetingUrl] = React.useState(booking.meetingUrl ?? '');
-  const [consultant, setConsultant] = React.useState(booking.consultantName ?? '');
-  const [note, setNote] = React.useState(booking.adminNote ?? '');
-  const [noteDirty, setNoteDirty] = React.useState(false);
+  // Inputs are "add / change" fields — empty by default. The currently-saved
+  // values are shown read-only below, and each box clears after a save.
+  const [meetingUrl, setMeetingUrl] = React.useState('');
+  const [consultant, setConsultant] = React.useState('');
+  const [note, setNote] = React.useState('');
   const [savedFlash, setSavedFlash] = React.useState<string | null>(null);
 
   const st = booking.status;
@@ -76,7 +79,8 @@ export default function BookingRow({
   async function run(
     key: string,
     fn: () => Promise<{ ok: boolean; error?: string }>,
-    flash?: string
+    flash?: string,
+    onOk?: () => void
   ) {
     if (pending) return;
     setPending(key);
@@ -87,6 +91,7 @@ export default function BookingRow({
           setSavedFlash(flash);
           window.setTimeout(() => setSavedFlash(null), 1500);
         }
+        onOk?.(); // clear the just-saved input(s)
         router.refresh();
       } else {
         window.alert(res.error ?? 'Erè enkoni.');
@@ -95,6 +100,8 @@ export default function BookingRow({
       setPending(null);
     }
   }
+
+  const hasMeetingInput = meetingUrl.trim() !== '' || consultant.trim() !== '';
 
   return (
     <div className="space-y-3 border-t border-cream-100 pt-3 mt-3">
@@ -204,7 +211,9 @@ export default function BookingRow({
           <button
             type="button"
             onClick={() =>
-              run('reschedule', () => rescheduleBooking(booking.id, newSlotId))
+              run('reschedule', () => rescheduleBooking(booking.id, newSlotId), undefined, () =>
+                setNewSlotId('')
+              )
             }
             disabled={pending !== null || !newSlotId}
             className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-gold-400 hover:bg-gold-300 disabled:opacity-60 text-forest-900 text-xs font-bold transition"
@@ -219,13 +228,36 @@ export default function BookingRow({
         </div>
       )}
 
-      {/* Meeting link + consultant */}
+      {/* Currently-saved meeting link + consultant (read-only) */}
+      {(booking.meetingUrl || booking.consultantName) && (
+        <div className="flex flex-wrap items-center gap-2">
+          {booking.meetingUrl && (
+            <a
+              href={booking.meetingUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-forest-50 border border-forest-200 text-forest-800 text-[11px] font-semibold hover:bg-forest-100 transition max-w-full"
+            >
+              <ExternalLink className="w-3 h-3 shrink-0" strokeWidth={2.4} />
+              <span className="truncate">Louvri randevou a</span>
+            </a>
+          )}
+          {booking.consultantName && (
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-cream-100 border border-cream-200 text-earth-700 text-[11px] font-semibold">
+              <UserRound className="w-3 h-3" strokeWidth={2.4} />
+              {booking.consultantName}
+            </span>
+          )}
+        </div>
+      )}
+
+      {/* Change the meeting link / consultant */}
       {canSetMeeting && (
         <div className="grid sm:grid-cols-[1fr_auto] gap-2 items-end">
           <div className="grid sm:grid-cols-2 gap-2">
             <div>
               <label className="text-[11px] font-bold uppercase tracking-wider text-earth-600 mb-1 block">
-                Lyen randevou
+                {booking.meetingUrl ? 'Chanje lyen randevou' : 'Lyen randevou'}
               </label>
               <input
                 value={meetingUrl}
@@ -236,7 +268,7 @@ export default function BookingRow({
             </div>
             <div>
               <label className="text-[11px] font-bold uppercase tracking-wider text-earth-600 mb-1 block">
-                Gid
+                {booking.consultantName ? 'Chanje gid' : 'Gid'}
               </label>
               <input
                 value={consultant}
@@ -251,11 +283,21 @@ export default function BookingRow({
             onClick={() =>
               run(
                 'meeting',
-                () => setBookingMeeting(booking.id, meetingUrl, consultant),
-                'Anrejistre'
+                () =>
+                  setBookingMeeting(
+                    booking.id,
+                    // keep the existing value for any field left blank
+                    meetingUrl.trim() || booking.meetingUrl || '',
+                    consultant.trim() || booking.consultantName || ''
+                  ),
+                'Anrejistre',
+                () => {
+                  setMeetingUrl('');
+                  setConsultant('');
+                }
               )
             }
-            disabled={pending !== null}
+            disabled={pending !== null || !hasMeetingInput}
             className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-forest-700 hover:bg-forest-800 disabled:opacity-60 text-cream-50 text-xs font-bold transition"
           >
             {pending === 'meeting' ? (
@@ -263,7 +305,7 @@ export default function BookingRow({
             ) : (
               <Link2 className="w-3.5 h-3.5" strokeWidth={2.4} />
             )}
-            Anrejistre lyen
+            Anrejistre
           </button>
         </div>
       )}
@@ -273,15 +315,19 @@ export default function BookingRow({
         <label className="text-[11px] font-bold uppercase tracking-wider text-earth-600 mb-1 block">
           Nòt admin (prive)
         </label>
+        {booking.adminNote && (
+          <p className="mb-1.5 text-[12px] text-earth-700 bg-cream-50 border border-cream-200 rounded-lg px-3 py-2 whitespace-pre-wrap">
+            {booking.adminNote}
+          </p>
+        )}
         <textarea
           value={note}
-          onChange={(e) => {
-            setNote(e.target.value);
-            setNoteDirty(true);
-          }}
+          onChange={(e) => setNote(e.target.value)}
           rows={2}
           maxLength={4000}
-          placeholder="Nòt entèn sou demann sa a…"
+          placeholder={
+            booking.adminNote ? 'Chanje nòt la…' : 'Nòt entèn sou demann sa a…'
+          }
           className="w-full px-3 py-2 text-sm bg-cream-50 border border-cream-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-forest-200 focus:border-forest-300 text-ink resize-y"
         />
         <button
@@ -290,10 +336,11 @@ export default function BookingRow({
             run(
               'note',
               () => updateBookingAdminNote(booking.id, note),
-              'Anrejistre'
-            ).then(() => setNoteDirty(false))
+              'Anrejistre',
+              () => setNote('')
+            )
           }
-          disabled={!noteDirty || pending !== null}
+          disabled={note.trim() === '' || pending !== null}
           className={cn(
             'mt-1.5 inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg transition',
             'bg-forest-700 hover:bg-forest-800 disabled:opacity-60 text-cream-50'

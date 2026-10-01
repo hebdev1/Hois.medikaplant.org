@@ -60,11 +60,15 @@ export async function POST(req: Request) {
     tag: `notif-${n.id}`,
   };
 
-  let pushes = 0;
-  for (const uid of userIds) {
-    const res = await sendPushToUser(uid, payload);
-    if (res) pushes += res.sent;
-  }
+  // Fan out to all recipients in parallel so one slow recipient (or a broadcast
+  // to many users) can't serialize the whole request past pg_net's window.
+  const results = await Promise.allSettled(
+    userIds.map((uid) => sendPushToUser(uid, payload))
+  );
+  const pushes = results.reduce(
+    (acc, r) => (r.status === 'fulfilled' && r.value ? acc + r.value.sent : acc),
+    0
+  );
 
   return NextResponse.json({ ok: true, recipients: userIds.length, pushes });
 }

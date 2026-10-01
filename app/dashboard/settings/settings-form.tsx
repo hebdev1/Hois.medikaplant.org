@@ -25,6 +25,7 @@ import PlanCard, {
   type PastSubscription,
 } from '@/components/dashboard/plan-card';
 import PasswordSection from '@/components/dashboard/password-section';
+import EnablePush from '@/components/push/enable-push';
 import PaymentHistoryPanel, {
   type PaymentRecord,
 } from '@/components/dashboard/payment-history-panel';
@@ -590,7 +591,7 @@ export default function SettingsForm({
       {/* ── Notifikasyon ───────────────────────────────────────────────────── */}
       <SettingsSection
         title="Notifikasyon"
-        description="Chwazi ki notifikasyon ou vle resevwa. Kounye a, notifikasyon yo disponib dirèkteman nan aplikasyon an. Notifikasyon pa imèl ak sou navigatè a ap disponib byento."
+        description="Chwazi ki notifikasyon ou vle resevwa. Notifikasyon yo parèt nan aplikasyon an (kloch la), epi ou ka aktive notifikasyon push sou aparèy ou pou w resevwa yo menm lè sit la fèmen."
       >
         <ToggleSetting
           label="Notifikasyon nan aplikasyon an"
@@ -598,13 +599,7 @@ export default function SettingsForm({
           value={prefs.email_notifications}
           commit={commitPref('email_notifications')}
         />
-        <ToggleSetting
-          label="Notifikasyon push sou navigatè"
-          description="Resevwa yon alèt menm lè tablodebò a fèmen."
-          value={prefs.push_notifications}
-          commit={commitPref('push_notifications')}
-          comingSoon
-        />
+        <EnablePush />
         <ToggleSetting
           label="Konsèy plant chak jou pa imèl"
           description="Resevwa konsèy chak maten nan bwat imèl ou (7am Ayiti)."

@@ -23,6 +23,26 @@ function ensureConfigured(): boolean {
 
 export type PushPayload = { title: string; body: string; url?: string; tag?: string };
 
+// A dead or very slow push endpoint can otherwise hang the whole fanout past
+// pg_net's HTTP timeout, so nothing gets delivered. Cap each send so one bad
+// endpoint can't stall delivery to the others. A timeout is treated as a
+// (transient) failure — not pruned, since it may just be a slow network.
+const SEND_TIMEOUT_MS = 8000;
+function sendWithTimeout(
+  sub: { endpoint: string; keys: { p256dh: string; auth: string } },
+  body: string
+): Promise<unknown> {
+  return Promise.race([
+    webpush.sendNotification(sub, body),
+    new Promise((_, reject) =>
+      setTimeout(
+        () => reject(Object.assign(new Error('push-timeout'), { statusCode: 0 })),
+        SEND_TIMEOUT_MS
+      )
+    ),
+  ]);
+}
+
 // Push to every subscription a user has. Dead endpoints (404/410) are pruned.
 // Returns false (no-op) when VAPID isn't configured on this server.
 export async function sendPushToUser(
@@ -52,7 +72,7 @@ export async function sendPushToUser(
   await Promise.all(
     rows.map(async (r) => {
       try {
-        await webpush.sendNotification(
+        await sendWithTimeout(
           { endpoint: r.endpoint, keys: { p256dh: r.p256dh, auth: r.auth } },
           body
         );
