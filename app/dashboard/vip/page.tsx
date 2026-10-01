@@ -10,7 +10,10 @@ import {
   Activity,
   ChevronRight,
   ArrowUpRight,
+  ArrowRight,
   CheckCircle2,
+  UserRound,
+  Users,
   type LucideIcon,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
@@ -164,6 +167,44 @@ export default async function VipPage() {
                   </div>
                 )}
               </div>
+            </section>
+
+            {/* Profile + Wall — the member showcase */}
+            <section className="grid sm:grid-cols-2 gap-3 md:gap-4">
+              <Link
+                href="/dashboard/vip/pwofil"
+                className="group bg-white border border-gold-200 rounded-2xl p-5 shadow-card hover:shadow-cardHover hover:border-gold-300 transition flex items-center gap-4"
+              >
+                <span className="grid place-items-center w-12 h-12 rounded-xl bg-gold-100 text-gold-700 shrink-0">
+                  <UserRound className="w-6 h-6" strokeWidth={2} />
+                </span>
+                <div className="min-w-0 flex-1">
+                  <h3 className="font-display text-lg font-bold text-ink">
+                    Pwofil VIP ou
+                  </h3>
+                  <p className="text-[13px] text-earth-600 leading-snug">
+                    Nivo, badj, sètifika ak pakou ou — tout nan yon sèl kote.
+                  </p>
+                </div>
+                <ArrowRight className="w-4 h-4 text-earth-400 shrink-0 group-hover:translate-x-0.5 transition-transform" strokeWidth={2.4} />
+              </Link>
+              <Link
+                href="/dashboard/vip/miray"
+                className="group bg-white border border-gold-200 rounded-2xl p-5 shadow-card hover:shadow-cardHover hover:border-gold-300 transition flex items-center gap-4"
+              >
+                <span className="grid place-items-center w-12 h-12 rounded-xl bg-gold-100 text-gold-700 shrink-0">
+                  <Users className="w-6 h-6" strokeWidth={2} />
+                </span>
+                <div className="min-w-0 flex-1">
+                  <h3 className="font-display text-lg font-bold text-ink">
+                    Miray VIP
+                  </h3>
+                  <p className="text-[13px] text-earth-600 leading-snug">
+                    Dekouvri lòt manm Sèk Melis la ki chwazi parèt.
+                  </p>
+                </div>
+                <ArrowRight className="w-4 h-4 text-earth-400 shrink-0 group-hover:translate-x-0.5 transition-transform" strokeWidth={2.4} />
+              </Link>
             </section>
 
             {/* Marquee: the 21-min session with Vye Ewòl */}

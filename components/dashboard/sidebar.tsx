@@ -15,8 +15,6 @@ import {
   GraduationCap,
   Download,
   Activity,
-  BookOpen,
-  LifeBuoy,
   UserCircle,
   LogOut,
   X,
@@ -25,7 +23,6 @@ import {
   Crown,
   FlaskConical,
   Lock,
-  Sparkles,
   Leaf,
   Sprout,
   Compass,
@@ -59,7 +56,6 @@ const NAV_GROUPS: { heading?: string; items: NavItem[] }[] = [
   {
     items: [
       { href: '/dashboard', label: 'Tablodebò', icon: LayoutDashboard },
-      { href: '/dashboard/lakou-limye', label: 'Lakou Limyè', icon: Sparkles },
     ],
   },
   {
@@ -75,7 +71,6 @@ const NAV_GROUPS: { heading?: string; items: NavItem[] }[] = [
     heading: 'Aprann',
     items: [
       { href: '/dashboard/kou', label: 'Klas mwen yo', icon: GraduationCap },
-      { href: '/dashboard/guides', label: 'Gid & Konsèy', icon: BookOpen },
       { href: '/glose', label: 'Glosè plant', icon: Leaf },
       { href: '/laboratwa', label: 'Laboratwa', icon: Sprout },
       { href: '/dashboard/resources', label: 'Telechajman', icon: Download, badge: '12' },
@@ -87,7 +82,6 @@ const NAV_GROUPS: { heading?: string; items: NavItem[] }[] = [
       { href: '/dashboard/forum', label: 'Fowòm', icon: MessagesSquare, badge: 'NEW' },
       { href: '/dashboard/badges', label: 'Badj mwen yo', icon: Award },
       { href: '/dashboard/vip', label: 'Espas VIP', icon: Crown },
-      { href: '/dashboard/support', label: 'Sipò', icon: LifeBuoy },
     ],
   },
 ];
