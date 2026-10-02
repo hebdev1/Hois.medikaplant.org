@@ -23,6 +23,7 @@ import {
   Crown,
   FlaskConical,
   Lock,
+  Sparkles,
   Leaf,
   Sprout,
   Compass,
@@ -41,6 +42,7 @@ type SidebarProps = {
   isAdmin?: boolean;
   userName: string;
   planLabel: string;
+  plan?: 'basic' | 'premium' | 'vip';
   level?: number;
   avatarUrl?: string | null;
 };
@@ -98,6 +100,7 @@ const STORAGE_KEY = 'hois:member:sidebar-open';
 export default function Sidebar({
   userName,
   planLabel,
+  plan = 'basic',
   level = 3,
   avatarUrl,
 }: SidebarProps) {
@@ -106,6 +109,28 @@ export default function Sidebar({
   const supabase = React.useMemo(() => createClient(), []);
   const [drawerOpen, setDrawerOpen] = React.useState(false);
   const [open, setOpen] = React.useState(true); // desktop expanded/collapsed
+
+  // Melis reaches Lakou Limyè from the Espas VIP page; the other plans don't
+  // have that hub, so surface it directly in their sidebar (after Tablodebò).
+  const navGroups =
+    plan === 'vip'
+      ? NAV_GROUPS
+      : NAV_GROUPS.map((g, i) =>
+          i === 0
+            ? {
+                ...g,
+                items: [
+                  g.items[0],
+                  {
+                    href: '/dashboard/lakou-limye',
+                    label: 'Lakou Limyè',
+                    icon: Sparkles,
+                  } as NavItem,
+                  ...g.items.slice(1),
+                ],
+              }
+            : g
+        );
 
   React.useEffect(() => {
     try {
@@ -338,7 +363,7 @@ export default function Sidebar({
 
         {/* Nav groups */}
         <div className="flex-1 px-2.5 py-3 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] flex flex-col gap-3">
-          {NAV_GROUPS.map((group, i) => (
+          {navGroups.map((group, i) => (
             <div key={group.heading ?? `g${i}`} className="flex flex-col gap-0.5">
               {group.heading &&
                 (collapsed ? (

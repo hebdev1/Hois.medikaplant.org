@@ -147,6 +147,7 @@ export default async function DashboardLayout({
           isAdmin={profile?.role === 'admin'}
           userName={shortName}
           planLabel={planLabel}
+          plan={profile?.plan ?? 'basic'}
           level={level}
           avatarUrl={profile?.avatar_url ?? null}
         />
