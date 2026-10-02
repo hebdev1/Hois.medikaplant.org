@@ -15,7 +15,7 @@ export default async function Footer() {
 
   return (
     <footer className="bg-ink text-white/80">
-      <div className="max-w-[1400px] mx-auto px-4 md:px-12 lg:px-20 xl:px-32 py-16 md:py-20">
+      <div className="max-w-[1400px] mx-auto px-4 md:px-12 lg:px-20 xl:px-32 pt-16 md:pt-20 pb-24 md:pb-28">
         <div className="grid grid-cols-2 md:grid-cols-5 gap-8 md:gap-12">
           {/* Brand */}
           <div className="col-span-2">
@@ -65,13 +65,19 @@ export default async function Footer() {
           ))}
         </div>
 
-        <div className="mt-14 pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="mt-14 pt-8 border-t border-white/10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <p className="text-xs text-white/60">
             © {new Date().getFullYear()} MedikaPlant · Hoïs Inivèsite. Tout dwa rezève.
           </p>
-          <div className="flex items-center gap-6 text-xs text-white/60">
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-white/60">
             <Link href="/konfidansyalite" className="hover:text-white">
               Konfidansyalite
+            </Link>
+            <Link href="/paj/kondisyon-itilizasyon" className="hover:text-white">
+              Kondisyon Itilizasyon
+            </Link>
+            <Link href="/paj/politik-ranbousman" className="hover:text-white">
+              Politik Ranbousman
             </Link>
           </div>
         </div>
