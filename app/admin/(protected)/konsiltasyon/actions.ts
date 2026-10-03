@@ -10,44 +10,9 @@ import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
 import { emailNotifyMember } from '@/lib/email/notify';
 import { hasCapability, type AdminRole } from '../admin-nav-config';
+import { haitiLocalToUtcISO } from '@/lib/haiti-time';
 
-const HAITI_TZ = 'America/Port-au-Prince';
 const MODALITIES = ['video', 'phone', 'in_person'] as const;
-
-// Convert a Haiti-local date + time into a UTC ISO instant. Haiti observes DST
-// (US rules, since 2017), so a fixed -05:00 offset is wrong ~8 months a year and
-// shifts the stored instant by an hour vs. the DST-aware display. We derive the
-// actual America/Port-au-Prince offset for that specific date via Intl instead.
-function tzOffsetMinutes(utcMillis: number): number {
-  const dtf = new Intl.DateTimeFormat('en-US', {
-    timeZone: HAITI_TZ,
-    hour12: false,
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-  });
-  const m: Record<string, number> = {};
-  for (const p of dtf.formatToParts(new Date(utcMillis))) {
-    if (p.type !== 'literal') m[p.type] = Number(p.value);
-  }
-  const asUtc = Date.UTC(m.year, m.month - 1, m.day, m.hour % 24, m.minute, m.second);
-  return (asUtc - utcMillis) / 60000; // minutes the zone is ahead of UTC
-}
-
-function haitiLocalToUtcISO(date: string, time: string): string {
-  const [y, mo, d] = date.split('-').map(Number);
-  const [h, mi] = time.split(':').map(Number);
-  const naiveAsUtc = Date.UTC(y, mo - 1, d, h, mi);
-  const off = tzOffsetMinutes(naiveAsUtc);
-  let utc = naiveAsUtc - off * 60000;
-  // Re-check once in case the first guess crossed a DST boundary.
-  const off2 = tzOffsetMinutes(utc);
-  if (off2 !== off) utc = naiveAsUtc - off2 * 60000;
-  return new Date(utc).toISOString();
-}
 
 export type SlotFormState = { ok?: boolean; error?: string };
 type Result = { ok: boolean; error?: string };

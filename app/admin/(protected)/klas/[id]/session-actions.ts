@@ -10,6 +10,7 @@ import {
   listPastInstances,
   getParticipants,
 } from '@/lib/zoom/meetings';
+import { haitiLocalToUtcISO, HAITI_TZ } from '@/lib/haiti-time';
 
 // Admin management of a course's live Zoom sessions. Reads/writes go through the
 // service role (the new course_sessions table has no client-write policy, and
@@ -32,11 +33,6 @@ async function assertAdmin() {
   }
   return { ok: true as const, userId: user.id };
 }
-
-// Haiti has no DST — a fixed −05:00 offset. We store starts_at as a real UTC
-// instant, but send Zoom the naive local time + timezone so it schedules right.
-const HAITI_OFFSET = '-05:00';
-const HAITI_TZ = 'America/Port-au-Prince';
 
 export type SessionActionState = { ok?: boolean; error?: string };
 
@@ -63,7 +59,8 @@ export async function createCourseSession(
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return { error: 'Dat la pa valid.' };
   if (!/^\d{2}:\d{2}$/.test(time)) return { error: 'Lè a pa valid.' };
 
-  const startsAtUtc = new Date(`${date}T${time}:00${HAITI_OFFSET}`).toISOString();
+  const startsAtUtc = haitiLocalToUtcISO(date, time);
+  if (Number.isNaN(Date.parse(startsAtUtc))) return { error: 'Dat/lè pa valid.' };
   const naiveLocal = `${date}T${time}:00`;
 
   let recurrence: { weeklyDays: number[]; endDate?: string } | undefined;
