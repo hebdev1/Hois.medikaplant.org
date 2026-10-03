@@ -42,7 +42,7 @@ export default async function NotificationsPage(props: {
 
   const { data: profileData } = await supabase
     .from('profiles')
-    .select('full_name, email, plan, avatar_url')
+    .select('full_name, email, plan, avatar_url, created_at')
     .eq('id', user.id)
     .maybeSingle();
   const profile = profileData as {
@@ -50,8 +50,12 @@ export default async function NotificationsPage(props: {
     email: string;
     plan: 'basic' | 'premium' | 'vip';
     avatar_url: string | null;
+    created_at: string | null;
   } | null;
   const plan = profile?.plan ?? 'basic';
+  // Members only see notifications sent AFTER they joined — a brand-new member
+  // shouldn't inherit every historical broadcast as unread.
+  const since = profile?.created_at ?? '1970-01-01T00:00:00Z';
 
   const [notifsRes, readsRes, unreadRes] = await Promise.all([
     // Scope to THIS member explicitly. RLS also lets admins read every row
@@ -63,6 +67,7 @@ export default async function NotificationsPage(props: {
       .or(
         `target.eq.all,and(target.eq.plan,target_plan.eq.${plan}),and(target.eq.user,target_user_id.eq.${user.id})`
       )
+      .gte('created_at', since)
       .order('created_at', { ascending: false })
       .limit(50),
     supabase

@@ -61,6 +61,17 @@ export default function NotificationBell({
   React.useEffect(() => {
     let cancelled = false;
     (async () => {
+      // Members only see notifications sent AFTER they joined, so a brand-new
+      // member's bell isn't flooded with every historical broadcast.
+      const { data: prof } = await supabase
+        .from('profiles')
+        .select('created_at')
+        .eq('id', userId)
+        .maybeSingle();
+      if (cancelled) return;
+      const since =
+        (prof as { created_at: string | null } | null)?.created_at ??
+        '1970-01-01T00:00:00Z';
       const [notifResult, readsResult] = await Promise.all([
         supabase
           .from('notifications')
@@ -73,6 +84,7 @@ export default function NotificationBell({
           .or(
             `target.eq.all,and(target.eq.plan,target_plan.eq.${userPlan}),and(target.eq.user,target_user_id.eq.${userId})`
           )
+          .gte('created_at', since)
           .order('created_at', { ascending: false })
           .limit(20),
         supabase
