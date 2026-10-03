@@ -44,7 +44,7 @@ export default async function DashboardLayout({
   // Kick off the support-settings read (cached, timeout-safe) in parallel.
   const supportPromise = getSupportSettings();
 
-  const [profileResult, prefsResult, levelResult] = await Promise.all([
+  const [profileResult, prefsResult, levelResult, unreadResult] = await Promise.all([
     supabase
       .from('profiles')
       .select('role, suspended, full_name, plan, email, avatar_url')
@@ -60,8 +60,11 @@ export default async function DashboardLayout({
     // Real member level (count of unlocked badges, named tiers). The sidebar
     // used to hardcode "Niv. 3" for everyone.
     supabase.rpc('user_level', { uid: user.id }),
+    // Unread notification count → badge on the sidebar "Notifikasyon" entry.
+    supabase.rpc('user_unread_notifications_count', { uid: user.id }),
   ]);
   const level = (levelResult.data as number | null) ?? 1;
+  const unreadCount = (unreadResult.data as number | null) ?? 0;
 
   const { data: existing, error: fetchError } = profileResult;
   const prefs = (prefsResult.data ?? null) as Pick<
@@ -149,6 +152,7 @@ export default async function DashboardLayout({
           planLabel={planLabel}
           plan={profile?.plan ?? 'basic'}
           level={level}
+          unreadCount={unreadCount}
           avatarUrl={profile?.avatar_url ?? null}
         />
         <div className="flex-1 min-w-0">{children}</div>

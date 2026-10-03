@@ -28,6 +28,7 @@ import {
   Sprout,
   Compass,
   Stethoscope,
+  Bell,
   PanelLeftClose,
   PanelLeftOpen,
   type LucideIcon,
@@ -44,6 +45,7 @@ type SidebarProps = {
   planLabel: string;
   plan?: 'basic' | 'premium' | 'vip';
   level?: number;
+  unreadCount?: number;
   avatarUrl?: string | null;
 };
 
@@ -102,6 +104,7 @@ export default function Sidebar({
   planLabel,
   plan = 'basic',
   level = 3,
+  unreadCount = 0,
   avatarUrl,
 }: SidebarProps) {
   const pathname = usePathname();
@@ -110,27 +113,36 @@ export default function Sidebar({
   const [drawerOpen, setDrawerOpen] = React.useState(false);
   const [open, setOpen] = React.useState(true); // desktop expanded/collapsed
 
-  // Melis reaches Lakou Limyè from the Espas VIP page; the other plans don't
-  // have that hub, so surface it directly in their sidebar (after Tablodebò).
-  const navGroups =
-    plan === 'vip'
-      ? NAV_GROUPS
-      : NAV_GROUPS.map((g, i) =>
-          i === 0
-            ? {
-                ...g,
-                items: [
-                  g.items[0],
+  // First group = Tablodebò, then (for non-Melis) Lakou Limyè, then the
+  // Notifikasyon inbox with a live unread badge. Melis reaches Lakou Limyè
+  // from the Espas VIP page, so it's only injected for the other plans.
+  const notifItem: NavItem = {
+    href: '/dashboard/notifications',
+    label: 'Notifikasyon',
+    icon: Bell,
+    badge: unreadCount > 0 ? (unreadCount > 99 ? '99+' : String(unreadCount)) : undefined,
+  };
+  const navGroups = NAV_GROUPS.map((g, i) =>
+    i === 0
+      ? {
+          ...g,
+          items: [
+            g.items[0],
+            ...(plan !== 'vip'
+              ? [
                   {
                     href: '/dashboard/lakou-limye',
                     label: 'Lakou Limyè',
                     icon: Sparkles,
                   } as NavItem,
-                  ...g.items.slice(1),
-                ],
-              }
-            : g
-        );
+                ]
+              : []),
+            notifItem,
+            ...g.items.slice(1),
+          ],
+        }
+      : g
+  );
 
   React.useEffect(() => {
     try {

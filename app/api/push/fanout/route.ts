@@ -56,7 +56,9 @@ export async function POST(req: Request) {
   const payload = {
     title: n.title as string,
     body: (n.message as string) ?? '',
-    url: (n.link_url as string) ?? '/dashboard/notifications',
+    // When no explicit link, deep-link to this exact message in the inbox so
+    // the click opens it (and the inbox can highlight + mark it read).
+    url: (n.link_url as string) ?? `/dashboard/notifications?n=${n.id}`,
     tag: `notif-${n.id}`,
   };
 

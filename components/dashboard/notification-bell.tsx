@@ -296,14 +296,13 @@ export default function NotificationBell({
               <ul className="divide-y divide-cream-100">
                 {notifications.map((n) => {
                   const unread = !readIds.has(n.id);
-                  const Wrapper = n.link_url ? Link : 'div';
-                  const wrapperProps = n.link_url
-                    ? { href: n.link_url }
-                    : { role: 'button' as const };
+                  // Every row goes somewhere: its own link, or the inbox
+                  // deep-linked to this message so a link-less promo still opens.
+                  const href = n.link_url || `/dashboard/notifications?n=${n.id}`;
                   return (
                     <li key={n.id}>
-                      <Wrapper
-                        {...(wrapperProps as { href: string })}
+                      <Link
+                        href={href}
                         onClick={() => onClickNotification(n)}
                         className={cn(
                           'block px-4 py-3 cursor-pointer transition relative group',
@@ -367,7 +366,7 @@ export default function NotificationBell({
                             </div>
                           </div>
                         </div>
-                      </Wrapper>
+                      </Link>
                     </li>
                   );
                 })}
@@ -395,7 +394,7 @@ export default function NotificationBell({
               setReadIds((p) => new Set(p).add(t.id));
               markNotificationRead(t.id);
             }
-            if (t.link_url) window.location.href = t.link_url;
+            window.location.href = t.link_url || `/dashboard/notifications?n=${t.id}`;
           }}
           className="fixed bottom-4 right-4 z-[80] w-[320px] max-w-[calc(100vw-2rem)] text-left rounded-2xl border border-cream-200 bg-white shadow-2xl p-3.5 flex items-start gap-2.5 animate-fadeIn"
         >

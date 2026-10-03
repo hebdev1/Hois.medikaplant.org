@@ -30,6 +30,31 @@ export async function markNotificationRead(
 }
 
 /**
+ * Mark a single notification as UNREAD again by deleting the caller's
+ * `notification_reads` marker. RLS ("Users can delete their reads") restricts
+ * this to the caller's own rows. Idempotent — deleting a missing row is a no-op.
+ */
+export async function markNotificationUnread(
+  notificationId: string
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, error: 'Ou dwe konekte.' };
+
+  const { error } = await supabase
+    .from('notification_reads')
+    .delete()
+    .eq('user_id', user.id)
+    .eq('notification_id', notificationId);
+  if (error) return { ok: false, error: error.message };
+
+  revalidatePath('/dashboard');
+  return { ok: true };
+}
+
+/**
  * Mark every notification visible to the current user as read.
  * Picks up notifications targeted to all/plan/user and fans out reads.
  */
