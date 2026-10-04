@@ -60,7 +60,28 @@ export default function DashboardError({
     // hard reload fetches the new HTML + fresh chunk manifest and the
     // navigation continues transparently.
     if (isChunkLoadError(error) || isDomMutationError(error)) {
-      window.location.reload();
+      // Guard against an infinite reload loop. Google Translate re-wraps the
+      // DOM after every reload, so a translate-induced insertBefore crash would
+      // otherwise reload forever ("dashboard spins and never settles"). Cap at
+      // 2 rapid auto-reloads; the window resets after ~12s so a genuine
+      // stale-chunk error later still self-heals.
+      const KEY = 'hois:dash-reload';
+      const now = Date.now();
+      let n = 0;
+      try {
+        const prev = JSON.parse(sessionStorage.getItem(KEY) || '{}');
+        if (prev.t && now - prev.t < 12000) n = prev.n || 0;
+      } catch {
+        /* storage blocked — treat as first attempt */
+      }
+      if (n < 2) {
+        try {
+          sessionStorage.setItem(KEY, JSON.stringify({ n: n + 1, t: now }));
+        } catch {
+          /* ignore */
+        }
+        window.location.reload();
+      }
     }
   }, [error]);
 

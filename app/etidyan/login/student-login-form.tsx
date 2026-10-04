@@ -31,33 +31,39 @@ export default function StudentLoginForm() {
     setNoCourses(false);
     setLoading(true);
 
-    const { data: signInData, error: signInError } =
-      await supabase.auth.signInWithPassword({ email, password });
-    if (signInError || !signInData.user) {
+    try {
+      const { data: signInData, error: signInError } =
+        await supabase.auth.signInWithPassword({ email, password });
+      if (signInError || !signInData.user) {
+        const banned = /banned|user_banned/i.test(
+          `${signInError?.message ?? ''} ${(signInError as { code?: string } | null)?.code ?? ''}`
+        );
+        setError(banned ? SUSPENDED_MSG : 'Imèl oswa modpas pa kòrèk.');
+        return;
+      }
+
+      // Buyers only. Count this user's enrolments; no course = not a student.
+      // If the check itself errors, fall through — the portal's own server-side
+      // gate is the backstop and will bounce a non-buyer to the catalogue.
+      const { count, error: enrErr } = await supabase
+        .from('course_enrollments')
+        .select('id', { count: 'exact', head: true })
+        .eq('user_id', signInData.user.id);
+
+      if (!enrErr && (count ?? 0) === 0) {
+        setNoCourses(true);
+        return;
+      }
+
+      router.push(redirect);
+      router.refresh();
+    } catch {
+      // Without this, a thrown signIn / enrolment query leaves the button
+      // spinning forever (setLoading(false) only lived in the branches).
+      setError('Nou pa ka konekte kounye a. Tcheke koneksyon entènèt ou epi eseye ankò.');
+    } finally {
       setLoading(false);
-      const banned = /banned|user_banned/i.test(
-        `${signInError?.message ?? ''} ${(signInError as { code?: string } | null)?.code ?? ''}`
-      );
-      setError(banned ? SUSPENDED_MSG : 'Imèl oswa modpas pa kòrèk.');
-      return;
     }
-
-    // Buyers only. Count this user's enrolments; no course = not a student.
-    // If the check itself errors, fall through — the portal's own server-side
-    // gate is the backstop and will bounce a non-buyer to the catalogue.
-    const { count, error: enrErr } = await supabase
-      .from('course_enrollments')
-      .select('id', { count: 'exact', head: true })
-      .eq('user_id', signInData.user.id);
-
-    if (!enrErr && (count ?? 0) === 0) {
-      setLoading(false);
-      setNoCourses(true);
-      return;
-    }
-
-    router.push(redirect);
-    router.refresh();
   }
 
   return (

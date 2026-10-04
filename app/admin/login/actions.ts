@@ -34,34 +34,43 @@ export async function signInAsAdmin(
 
   const supabase = createClient();
 
-  const { data: signInData, error: signInError } =
-    await supabase.auth.signInWithPassword({ email, password });
+  try {
+    const { data: signInData, error: signInError } =
+      await supabase.auth.signInWithPassword({ email, password });
 
-  if (signInError || !signInData.user) {
-    return { error: 'Imel oswa modpas pa kòrèk.' };
+    if (signInError || !signInData.user) {
+      return { error: 'Imel oswa modpas pa kòrèk.' };
+    }
+
+    const { data: profileRaw } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', signInData.user.id)
+      .maybeSingle();
+
+    const role = (profileRaw as { role: 'user' | 'admin' } | null)?.role;
+
+    if (!profileRaw) {
+      await supabase.auth.signOut();
+      return { error: 'Pwofil pa jwenn. Kontakte sipò teknik.' };
+    }
+
+    if (role !== 'admin') {
+      await supabase.auth.signOut();
+      return {
+        error:
+          'Kont sa pa gen aksè administratè. Sèvi ak /auth/login pou kont manm.',
+      };
+    }
+  } catch {
+    // signInWithPassword / the profile read re-throw non-auth errors; without
+    // this the server action rejects (a 500 / error boundary) instead of
+    // returning a friendly message to the form.
+    return { error: 'Nou pa ka konekte kounye a. Tanpri eseye ankò.' };
   }
 
-  const { data: profileRaw } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('id', signInData.user.id)
-    .maybeSingle();
-
-  const role = (profileRaw as { role: 'user' | 'admin' } | null)?.role;
-
-  if (!profileRaw) {
-    await supabase.auth.signOut();
-    return { error: 'Pwofil pa jwenn. Kontakte sipò teknik.' };
-  }
-
-  if (role !== 'admin') {
-    await supabase.auth.signOut();
-    return {
-      error:
-        'Kont sa pa gen aksè administratè. Sèvi ak /auth/login pou kont manm.',
-    };
-  }
-
+  // Outside the try: redirect() throws NEXT_REDIRECT by design and must
+  // propagate, not be swallowed as an error.
   revalidatePath('/admin', 'layout');
   redirect('/admin');
 }

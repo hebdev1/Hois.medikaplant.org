@@ -48,6 +48,18 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
+  // getUser() may rotate an expired token, which Supabase writes onto `response`
+  // via the set() handler above. A NextResponse.redirect() starts blank, so
+  // every redirect below MUST carry those refreshed cookies — otherwise a token
+  // rotation that coincides with a redirect is lost, the browser keeps a spent
+  // refresh token, and the next request has no session → the user is bounced
+  // back to login (the classic @supabase/ssr middleware pitfall).
+  const redirectTo = (url: URL) => {
+    const r = NextResponse.redirect(url);
+    response.cookies.getAll().forEach((c) => r.cookies.set(c));
+    return r;
+  };
+
   const pathname = request.nextUrl.pathname;
   const isAdminRoute = pathname.startsWith('/admin');
   const isAdminLogin = pathname === '/admin/login' || pathname.startsWith('/admin/login/');
@@ -75,7 +87,7 @@ export async function updateSession(request: NextRequest) {
       const url = request.nextUrl.clone();
       url.search = '';
       url.pathname = '/admin/login';
-      return NextResponse.redirect(url);
+      return redirectTo(url);
     }
     // /dashboard/* → the member login; /aprann/* → the dedicated student login.
     if (isMemberRoute || isLearnRoute) {
@@ -86,7 +98,7 @@ export async function updateSession(request: NextRequest) {
       url.pathname = isLearnRoute ? '/etidyan/login' : '/auth/login';
       url.searchParams.set('redirect', `${pathname}${originalSearch}`);
       if (originalPlan) url.searchParams.set('plan', originalPlan);
-      return NextResponse.redirect(url);
+      return redirectTo(url);
     }
     return response;
   }
@@ -125,7 +137,7 @@ export async function updateSession(request: NextRequest) {
     const url = request.nextUrl.clone();
     url.pathname = isAdminRoute ? '/admin/login' : '/auth/login';
     url.search = '?error=suspended';
-    return NextResponse.redirect(url);
+    return redirectTo(url);
   }
 
   // ── 2. Role from the DB (authoritative) ────────────────────────────────
@@ -136,7 +148,7 @@ export async function updateSession(request: NextRequest) {
   if (isMemberAuthRoute) {
     const url = request.nextUrl.clone();
     url.pathname = isAdmin ? '/admin' : '/dashboard';
-    return NextResponse.redirect(url);
+    return redirectTo(url);
   }
 
   // Already signed in as admin visiting /admin/login → straight into /admin
@@ -146,7 +158,7 @@ export async function updateSession(request: NextRequest) {
     const url = request.nextUrl.clone();
     url.search = '';
     url.pathname = '/admin';
-    return NextResponse.redirect(url);
+    return redirectTo(url);
   }
 
   // ── 3. Per-tab isolation: admins are FREE to also browse /dashboard ────
@@ -167,7 +179,7 @@ export async function updateSession(request: NextRequest) {
     url.search = '';
     url.pathname = '/admin/login';
     url.searchParams.set('error', 'not_admin');
-    return NextResponse.redirect(url);
+    return redirectTo(url);
   }
 
   // ── 4b. Member without an active subscription → forced to checkout ────
@@ -183,7 +195,7 @@ export async function updateSession(request: NextRequest) {
       url.search = '';
       url.pathname = '/checkout';
       url.searchParams.set('reason', 'no_active_plan');
-      return NextResponse.redirect(url);
+      return redirectTo(url);
     }
   }
 

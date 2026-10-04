@@ -43,7 +43,26 @@ export default function GlobalError({
     // eslint-disable-next-line no-console
     console.error('[global error]', error);
     if (isChunkLoadError(error) || isDomMutationError(error)) {
-      window.location.reload();
+      // Cap rapid auto-reloads so a Google-Translate-induced DOM crash can't
+      // loop forever; the window resets after ~12s so a genuine stale-chunk
+      // error later still self-heals. Mirrors app/dashboard/error.tsx.
+      const KEY = 'hois:app-reload';
+      const now = Date.now();
+      let n = 0;
+      try {
+        const prev = JSON.parse(sessionStorage.getItem(KEY) || '{}');
+        if (prev.t && now - prev.t < 12000) n = prev.n || 0;
+      } catch {
+        /* storage blocked — treat as first attempt */
+      }
+      if (n < 2) {
+        try {
+          sessionStorage.setItem(KEY, JSON.stringify({ n: n + 1, t: now }));
+        } catch {
+          /* ignore */
+        }
+        window.location.reload();
+      }
     }
   }, [error]);
 

@@ -31,20 +31,28 @@ export default function LoginForm() {
     e.preventDefault();
     setError(null);
     setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    setLoading(false);
-    if (error) {
-      // A suspended member is banned at the auth level, and Supabase reports
-      // that in English ("User is banned"). Translate it into something the
-      // member can act on instead of a raw API string.
-      const banned = /banned|user_banned/i.test(
-        `${error.message} ${(error as { code?: string }).code ?? ''}`
-      );
-      setError(banned ? SUSPENDED_MSG : error.message);
-      return;
+    try {
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) {
+        // A suspended member is banned at the auth level, and Supabase reports
+        // that in English ("User is banned"). Translate it into something the
+        // member can act on instead of a raw API string.
+        const banned = /banned|user_banned/i.test(
+          `${error.message} ${(error as { code?: string }).code ?? ''}`
+        );
+        setError(banned ? SUSPENDED_MSG : error.message);
+        return;
+      }
+      router.push(redirect);
+      router.refresh();
+    } catch {
+      // signInWithPassword re-throws non-auth errors (network blip, a failed
+      // session-cookie write, etc.). Without this the button would spin
+      // forever because setLoading(false) sat after the await.
+      setError('Nou pa ka konekte kounye a. Tcheke koneksyon entènèt ou epi eseye ankò.');
+    } finally {
+      setLoading(false);
     }
-    router.push(redirect);
-    router.refresh();
   }
 
   return (
