@@ -4,6 +4,8 @@
 // per-request database round-trip. Runs in the edge runtime, but on the
 // self-hosted `next start` server the module scope persists across requests.
 
+import { withTimeout } from '@/lib/with-timeout';
+
 type Hit = { to: string; code: number };
 
 let cache: { map: Map<string, Hit>; at: number } | null = null;
@@ -29,23 +31,32 @@ async function refresh(): Promise<void> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 2500);
   try {
-    const res = await fetch(
-      `${base}/rest/v1/redirects?active=eq.true&select=from_path,to_path,status_code`,
-      {
-        headers: { apikey: key, Authorization: `Bearer ${key}` },
-        cache: 'no-store',
-        signal: controller.signal,
-      }
+    // withTimeout bounds the read even when the abort signal is ignored (see
+    // lib/with-timeout.ts) — this sits in front of EVERY request.
+    const rows = await withTimeout(
+      (async () => {
+        const res = await fetch(
+          `${base}/rest/v1/redirects?active=eq.true&select=from_path,to_path,status_code`,
+          {
+            headers: { apikey: key, Authorization: `Bearer ${key}` },
+            cache: 'no-store',
+            signal: controller.signal,
+          }
+        );
+        if (!res.ok) return null;
+        return (await res.json()) as Array<{
+          from_path: string;
+          to_path: string;
+          status_code: number;
+        }>;
+      })(),
+      2500,
+      null
     );
-    if (!res.ok) {
+    if (!rows) {
       cache = { map: cache?.map ?? new Map(), at: Date.now() };
       return;
     }
-    const rows = (await res.json()) as Array<{
-      from_path: string;
-      to_path: string;
-      status_code: number;
-    }>;
     const map = new Map<string, Hit>();
     for (const r of rows) {
       map.set(normalize(r.from_path), { to: r.to_path, code: r.status_code });
@@ -60,10 +71,17 @@ async function refresh(): Promise<void> {
   }
 }
 
+let inflight: Promise<void> | null = null;
+
 /** Returns the redirect target for a pathname, or null. Cheap + cached. */
 export async function getRedirectFor(pathname: string): Promise<Hit | null> {
   if (!cache || Date.now() - cache.at > TTL_MS) {
-    await refresh();
+    // Share one refresh across concurrent requests — a slow database must not
+    // turn every in-flight navigation into its own stalled fetch.
+    inflight ??= refresh().finally(() => {
+      inflight = null;
+    });
+    await inflight;
   }
   return cache?.map.get(normalize(pathname)) ?? null;
 }

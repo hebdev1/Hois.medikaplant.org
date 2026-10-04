@@ -1,5 +1,6 @@
 import { cache } from 'react';
 import { createPublicClient } from '@/lib/supabase/public';
+import { withTimeout } from '@/lib/with-timeout';
 import { SITE_IMAGE_SLOTS } from './site-image-slots';
 
 export type SiteImageMap = Record<string, string>;
@@ -19,7 +20,14 @@ export const getSiteImages = cache(async (): Promise<SiteImageMap> => {
   try {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const sb = createPublicClient() as any;
-    const { data } = await sb.from('site_images').select('key, url');
+    // Time-boxed: the homepage is ISR, so this also runs during `next build`.
+    // A stalled database once hung static generation past Next's 60s limit and
+    // failed the deploy (2026-10-04) — fall back to the code defaults instead.
+    const { data } = await withTimeout(
+      sb.from('site_images').select('key, url').abortSignal(AbortSignal.timeout(3000)),
+      3000,
+      { data: null }
+    );
     for (const row of (data ?? []) as Array<{ key: string; url: string }>) {
       if (row.url) map[row.key] = row.url;
     }

@@ -11,6 +11,7 @@ import {
   normalizeSupportSettings,
   type SupportSettings,
 } from '@/lib/support-presence';
+import { withTimeout } from '@/lib/with-timeout';
 
 let cache: { settings: SupportSettings; at: number } | null = null;
 const TTL_MS = 60_000;
@@ -25,15 +26,24 @@ async function refresh(): Promise<void> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 2500);
   try {
-    const res = await fetch(
-      `${base}/rest/v1/support_settings?id=eq.1&select=*`,
-      {
-        headers: { apikey: key, Authorization: `Bearer ${key}` },
-        cache: 'no-store',
-        signal: controller.signal,
-      }
+    // withTimeout bounds the read even when the abort signal is ignored (see
+    // lib/with-timeout.ts) — every member page render awaits this.
+    const rows = await withTimeout(
+      (async () => {
+        const res = await fetch(
+          `${base}/rest/v1/support_settings?id=eq.1&select=*`,
+          {
+            headers: { apikey: key, Authorization: `Bearer ${key}` },
+            cache: 'no-store',
+            signal: controller.signal,
+          }
+        );
+        return res.ok ? ((await res.json()) as unknown[]) : [];
+      })(),
+      2500,
+      null
     );
-    const rows = res.ok ? ((await res.json()) as unknown[]) : [];
+    if (!rows) throw new Error('support settings timeout');
     const settings = rows[0]
       ? normalizeSupportSettings(rows[0])
       : DEFAULT_SUPPORT_SETTINGS;
@@ -47,10 +57,16 @@ async function refresh(): Promise<void> {
   }
 }
 
+let inflight: Promise<void> | null = null;
+
 /** Resolve the support settings (cached, fallback-safe). */
 export async function getSupportSettings(): Promise<SupportSettings> {
   if (!cache || Date.now() - cache.at > TTL_MS) {
-    await refresh();
+    // Share one refresh across concurrent renders (no thundering herd).
+    inflight ??= refresh().finally(() => {
+      inflight = null;
+    });
+    await inflight;
   }
   return cache?.settings ?? DEFAULT_SUPPORT_SETTINGS;
 }

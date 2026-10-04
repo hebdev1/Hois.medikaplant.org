@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
 import { createServiceClient } from '@/lib/supabase/service';
+import { invalidatePublishedPlants } from '@/lib/plants-cache';
 import { hasCapability, type AdminRole } from '../../admin-nav-config';
 
 async function assertAdmin() {
@@ -56,7 +57,7 @@ export async function createPlant(input: PlantInput): Promise<{ ok: true; id: st
   const db = createServiceClient() as any;
   const { data, error } = await db.from('plants').insert(row).select('id').single();
   if (error) return { ok: false, error: dup(error.message) };
-  revalidatePath('/laboratwa'); revalidatePath('/admin/laboratwa/plant');
+  invalidatePublishedPlants(); revalidatePath('/laboratwa'); revalidatePath('/admin/laboratwa/plant');
   return { ok: true, id: (data as { id: string }).id };
 }
 
@@ -68,7 +69,7 @@ export async function updatePlant(id: string, input: PlantInput): Promise<{ ok: 
   const db = createServiceClient() as any;
   const { error } = await db.from('plants').update(row).eq('id', id);
   if (error) return { ok: false, error: dup(error.message) };
-  revalidatePath('/laboratwa'); revalidatePath('/admin/laboratwa/plant');
+  invalidatePublishedPlants(); revalidatePath('/laboratwa'); revalidatePath('/admin/laboratwa/plant');
   return { ok: true };
 }
 
@@ -78,6 +79,6 @@ export async function deletePlant(id: string): Promise<{ ok: true } | { ok: fals
   const db = createServiceClient() as any;
   const { error } = await db.from('plants').delete().eq('id', id);
   if (error) return { ok: false, error: error.message };
-  revalidatePath('/laboratwa'); revalidatePath('/admin/laboratwa/plant');
+  invalidatePublishedPlants(); revalidatePath('/laboratwa'); revalidatePath('/admin/laboratwa/plant');
   return { ok: true };
 }

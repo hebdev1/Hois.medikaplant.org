@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { createClient } from '@/lib/supabase/server';
+import { getPublishedPlants } from '@/lib/plants-cache';
 import { LabHeader, Disclaimer, Qty, readLang } from '../lab-ui';
 import Filters from './filters';
 import { PARTS, PREPS, REGIONS, type PlantRow } from './facets';
@@ -33,16 +33,9 @@ export default async function EksploratePage(
   const selSezon = csv(searchParams.sezon).map(Number).filter((n) => n >= 1 && n <= 12);
   const selRejyon = csv(searchParams.rejyon);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const sb = createClient() as any;
-  const { data } = await sb
-    .from('plants')
-    .select(
-      'slug, name_kr, name_fr, name_en, name_sci, family, parts_used, preparations, season_months, regions, summary_kr, photos'
-    )
-    .eq('status', 'published')
-    .order('name_kr', { ascending: true });
-  const all = (data ?? []) as PlantRow[];
+  // Cached + time-boxed (lib/plants-cache.ts). This page used to hit the
+  // database on every render, and crawlers walk its filter combinations.
+  const all = await getPublishedPlants<PlantRow>();
 
   // Facet counts over the full published set.
   const countBy = (pick: (p: PlantRow) => string[] | null) => {

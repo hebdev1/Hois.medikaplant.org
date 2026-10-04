@@ -6,6 +6,8 @@
 // current chrome). An empty table, a failed fetch, or missing env vars all
 // resolve to DEFAULTS, so the live header/footer can never render blank.
 
+import { withTimeout } from '@/lib/with-timeout';
+
 export type ChromeLink = { label: string; url: string; target: '_self' | '_blank' };
 export type ChromeColumn = { title: string; links: ChromeLink[] };
 export type SiteChrome = {
@@ -156,20 +158,30 @@ async function refresh(): Promise<void> {
   const timer = setTimeout(() => controller.abort(), 2500);
   try {
     const headers = { apikey: key, Authorization: `Bearer ${key}` };
-    const [navRes, setRes] = await Promise.all([
-      fetch(
-        `${base}/rest/v1/nav_items?active=eq.true&select=location,group_title,label,url,target,display_order&order=display_order.asc`,
-        { headers, cache: 'no-store', signal: controller.signal }
-      ),
-      fetch(`${base}/rest/v1/site_settings?id=eq.1&select=*`, {
-        headers,
-        cache: 'no-store',
-        signal: controller.signal,
-      }),
-    ]);
-    const nav = navRes.ok ? ((await navRes.json()) as NavRow[]) : [];
-    const settingsRows = setRes.ok ? ((await setRes.json()) as SettingsRow[]) : [];
-    cache = { chrome: buildChrome(nav, settingsRows[0] ?? null), at: Date.now() };
+    // withTimeout bounds the whole read (both fetches + body parsing) even when
+    // Next's patched fetch ignores the abort signal (see lib/with-timeout.ts).
+    const result = await withTimeout(
+      (async () => {
+        const [navRes, setRes] = await Promise.all([
+          fetch(
+            `${base}/rest/v1/nav_items?active=eq.true&select=location,group_title,label,url,target,display_order&order=display_order.asc`,
+            { headers, cache: 'no-store', signal: controller.signal }
+          ),
+          fetch(`${base}/rest/v1/site_settings?id=eq.1&select=*`, {
+            headers,
+            cache: 'no-store',
+            signal: controller.signal,
+          }),
+        ]);
+        const nav = navRes.ok ? ((await navRes.json()) as NavRow[]) : [];
+        const settingsRows = setRes.ok ? ((await setRes.json()) as SettingsRow[]) : [];
+        return { nav, settingsRows };
+      })(),
+      2500,
+      null
+    );
+    if (!result) throw new Error('site chrome timeout');
+    cache = { chrome: buildChrome(result.nav, result.settingsRows[0] ?? null), at: Date.now() };
   } catch {
     // Timeout or network error: never hang the page — reuse last-known chrome
     // (or defaults) and reset the TTL.

@@ -7,7 +7,15 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: '*',
       allow: '/',
-      disallow: ['/admin', '/dashboard', '/api'],
+      disallow: [
+        '/admin',
+        '/dashboard',
+        '/api',
+        // The plant explorer's filter combinations (?pati=…&prep=…&sezon=…) are
+        // an endless URL space; crawlers walking it re-rendered the page ~240×/h.
+        // The bare /laboratwa/eksplorate stays crawlable.
+        '/laboratwa/eksplorate?',
+      ],
     },
     sitemap: `${BASE}/sitemap.xml`,
   };
