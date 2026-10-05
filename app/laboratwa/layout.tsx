@@ -1,26 +1,33 @@
-import { Petrona, Archivo, IBM_Plex_Mono } from 'next/font/google';
+import localFont from 'next/font/local';
 import PromoteHeader from '@/components/ui/promote-header';
 import Footer from '@/components/ui/footer';
 import './laboratwa.css';
 
 // Handoff §2 typography: Petrona (display), Archivo (body/UI), IBM Plex Mono
 // (quantities + labels). Explicitly NOT Playfair / Inter / Fraunces.
-const petrona = Petrona({
-  subsets: ['latin'],
-  weight: ['400', '600'],
-  style: ['normal', 'italic'],
+// Self-hosted from app/fonts — see the note in app/layout.tsx.
+const petrona = localFont({
+  src: [
+    { path: '../fonts/petrona-latin-wght-normal.woff2', weight: '400', style: 'normal' },
+    { path: '../fonts/petrona-latin-wght-normal.woff2', weight: '600', style: 'normal' },
+    { path: '../fonts/petrona-latin-wght-italic.woff2', weight: '400', style: 'italic' },
+    { path: '../fonts/petrona-latin-wght-italic.woff2', weight: '600', style: 'italic' },
+  ],
   variable: '--font-petrona',
   display: 'swap',
+  adjustFontFallback: 'Times New Roman',
 });
-const archivo = Archivo({
-  subsets: ['latin'],
-  weight: ['400', '500', '600'],
+const archivo = localFont({
+  src: '../fonts/archivo-latin-wght-normal.woff2',
+  weight: '400 600',
+  style: 'normal',
   variable: '--font-archivo',
   display: 'swap',
 });
-const mono = IBM_Plex_Mono({
-  subsets: ['latin'],
-  weight: ['500'],
+const mono = localFont({
+  src: '../fonts/ibm-plex-mono-latin-500-normal.woff2',
+  weight: '500',
+  style: 'normal',
   variable: '--font-mono',
   display: 'swap',
 });

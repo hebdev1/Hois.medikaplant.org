@@ -1,19 +1,9 @@
-import { Poppins } from 'next/font/google';
 import { createClient } from '@/lib/supabase/server';
 import GlossaryReader, { type GlossTerm } from '@/components/glose/glossary-reader';
 import PromoteHeader from '@/components/ui/promote-header';
 import Footer from '@/components/ui/footer';
+import { poppins } from './poppins';
 import './glose.css';
-
-// Poppins, per the brief — scoped to this page via the --font-poppins variable
-// the reader's CSS reads.
-const poppins = Poppins({
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
-  style: ['normal', 'italic'],
-  variable: '--font-poppins',
-  display: 'swap',
-});
 
 export const metadata = {
   title: 'Glosè Plant Ayisyen',

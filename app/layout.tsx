@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Playfair_Display, Lora, DM_Sans } from 'next/font/google';
+import localFont from 'next/font/local';
 import './globals.css';
 import TranslateSwitcher from '@/components/translate-switcher';
 import RemedFinder from '@/components/remed-finder/remed-finder';
@@ -9,24 +9,33 @@ import GoogleAnalytics from '@/components/analytics/google-analytics';
 // site-wide and preload; Lora (serif accents, a handful of spots) loads only
 // where it's used. Poppins was only a sans fallback — dropped. Italics use the
 // browser's synthesized slant, so we don't ship italic font files.
-const playfair = Playfair_Display({
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700', '800'],
+// Every font is self-hosted from app/fonts (the same latin files Google Fonts
+// serves) so the build never downloads from Google: next/font/google fails the
+// build ("Cannot read properties of null (reading '1')") whenever Google
+// answers with a font URL that has no file extension.
+const playfair = localFont({
+  src: './fonts/playfair-display-latin-wght-normal.woff2',
+  weight: '400 800',
+  style: 'normal',
   variable: '--font-playfair',
   display: 'swap',
+  adjustFontFallback: 'Times New Roman',
 });
 
-const lora = Lora({
-  subsets: ['latin'],
-  weight: ['400', '500', '600'],
+const lora = localFont({
+  src: './fonts/lora-latin-wght-normal.woff2',
+  weight: '400 600',
+  style: 'normal',
   variable: '--font-lora',
   display: 'swap',
   preload: false,
+  adjustFontFallback: 'Times New Roman',
 });
 
-const dmSans = DM_Sans({
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
+const dmSans = localFont({
+  src: './fonts/dm-sans-latin-wght-normal.woff2',
+  weight: '400 700',
+  style: 'normal',
   variable: '--font-dm-sans',
   display: 'swap',
 });

@@ -1,17 +1,9 @@
-import { Poppins } from 'next/font/google';
 import { createClient } from '@/lib/supabase/server';
 import PromoteHeader from '@/components/ui/promote-header';
 import Footer from '@/components/ui/footer';
 import ContributionForm, { type PlantLite } from './contribution-form';
+import { poppins } from '../poppins';
 import './kontribye.css';
-
-const poppins = Poppins({
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
-  style: ['normal', 'italic'],
-  variable: '--font-poppins',
-  display: 'swap',
-});
 
 export const metadata = {
   title: 'Kontribye nan Glosè a',
