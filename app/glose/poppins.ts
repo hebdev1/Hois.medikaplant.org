@@ -1,4 +1,5 @@
 import localFont from 'next/font/local';
+import '../fonts/glose-fonts.css';
 
 // Poppins, per the brief — shared by the glossary pages and scoped to them via
 // the --font-poppins variable their CSS reads. Self-hosted from app/fonts — see
@@ -16,4 +17,7 @@ export const poppins = localFont({
   ],
   variable: '--font-poppins',
   display: 'swap',
+  declarations: [{ prop: 'font-family', value: "'Poppins'" }],
+  fallback: ["'Poppins Fallback'"],
+  adjustFontFallback: false,
 });

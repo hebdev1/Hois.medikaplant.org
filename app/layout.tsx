@@ -1,43 +1,50 @@
 import type { Metadata, Viewport } from 'next';
 import localFont from 'next/font/local';
 import './globals.css';
+import './fonts/site-fonts.css';
 import TranslateSwitcher from '@/components/translate-switcher';
 import RemedFinder from '@/components/remed-finder/remed-finder';
 import GoogleAnalytics from '@/components/analytics/google-analytics';
 
-// Fonts are trimmed for speed: DM_Sans (body) + Playfair (display) are used
-// site-wide and preload; Lora (serif accents, a handful of spots) loads only
-// where it's used. Poppins was only a sans fallback — dropped. Italics use the
-// browser's synthesized slant, so we don't ship italic font files.
-// Every font is self-hosted from app/fonts (the same latin files Google Fonts
-// serves) so the build never downloads from Google: next/font/google fails the
-// build ("Cannot read properties of null (reading '1')") whenever Google
-// answers with a font URL that has no file extension.
+// DM Sans (body) + Playfair Display (display) are used site-wide and preload;
+// Lora (serif accents, a handful of spots) loads only where it's used. The root
+// fonts ship upright files only — italics use the browser's synthesized slant.
+//
+// Fonts are self-hosted from app/fonts (scripts/vendor-fonts.mjs) because
+// next/font/google fails the production build ("Cannot read properties of
+// null (reading '1')") whenever Google answers with a font URL that has no
+// file extension. Each localFont() declares a family's latin file under its
+// real name; fonts/<scope>-fonts.css adds the family's other subsets and its
+// fallback face, so the output matches what next/font/google generated.
 const playfair = localFont({
   src: './fonts/playfair-display-latin-wght-normal.woff2',
   weight: '400 800',
-  style: 'normal',
   variable: '--font-playfair',
   display: 'swap',
-  adjustFontFallback: 'Times New Roman',
+  declarations: [{ prop: 'font-family', value: "'Playfair Display'" }],
+  fallback: ["'Playfair Display Fallback'"],
+  adjustFontFallback: false,
 });
 
 const lora = localFont({
   src: './fonts/lora-latin-wght-normal.woff2',
   weight: '400 600',
-  style: 'normal',
   variable: '--font-lora',
   display: 'swap',
   preload: false,
-  adjustFontFallback: 'Times New Roman',
+  declarations: [{ prop: 'font-family', value: "'Lora'" }],
+  fallback: ["'Lora Fallback'"],
+  adjustFontFallback: false,
 });
 
 const dmSans = localFont({
   src: './fonts/dm-sans-latin-wght-normal.woff2',
   weight: '400 700',
-  style: 'normal',
   variable: '--font-dm-sans',
   display: 'swap',
+  declarations: [{ prop: 'font-family', value: "'DM Sans'" }],
+  fallback: ["'DM Sans Fallback'"],
+  adjustFontFallback: false,
 });
 
 export const metadata: Metadata = {
