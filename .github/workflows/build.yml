@@ -1,0 +1,52 @@
+name: Build check
+
+# Chak push sou `main` (ak chak pull request) bati sit la sou GitHub menm jan
+# Hostinger bati l: npm ci → tcheke tip TypeScript yo → npm run build.
+# Si li wouj, deplwaman Hostinger la t ap kase tou — korije l anvan.
+#
+# Se Hostinger li menm ki deplwaye sit la (entegrasyon GitHub "Node.js App"
+# la — wè DEPLOY.md). Workflow sa a pa touche sèvè a, li pa bezwen okenn Secret.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch: {}
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      # Yon adrès Supabase ki pa janm reponn: build la dwe pase menm lè baz
+      # done a pa disponib (ensidan 4 oktòb 2026). Valè NEXT_PUBLIC_* yo pa
+      # sekrè; sa yo se plas-kenbe sèlman.
+      NEXT_PUBLIC_SUPABASE_URL: https://10.255.255.1
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ci-placeholder
+      NEXT_PUBLIC_SITE_URL: https://hoismedikaplant.com
+      NEXT_TELEMETRY_DISABLED: '1'
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      # Font yo self-hosted nan app/fonts (scripts/vendor-fonts.mjs) paske
+      # next/font/google kraze build Hostinger la ("Cannot read properties
+      # of null (reading '1')"). Pa remete l.
+      - name: No next/font/google
+        run: |
+          if git grep -nE "from ['\"]next/font/google['\"]" -- '*.ts' '*.tsx' '*.js' '*.jsx' '*.mjs'; then
+            echo "::error::next/font/google retounen — mete font lan nan app/fonts ak scripts/vendor-fonts.mjs (wè app/layout.tsx)."
+            exit 1
+          fi
+
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run build
