@@ -67,19 +67,19 @@ const NAV_GROUPS: { heading?: string; items: NavItem[] }[] = [
     ],
   },
   {
+    heading: 'Spirityalite',
+    items: [
+      { href: '/dashboard/lakou-limye', label: 'Lakou Limyè', icon: Sparkles },
+      { href: '/dashboard/beny-spirityel', label: 'Beny Spirityèl', icon: Bath, melisOnly: true },
+    ],
+  },
+  {
     heading: 'Sante',
     items: [
       { href: '/dashboard/health', label: 'Swivi Sante', icon: Activity },
       { href: '/dashboard/konsiltasyon', label: 'Konsiltasyon', icon: Stethoscope },
       { href: '/dashboard/programs', label: 'Pwotokòl mwen yo', icon: FolderOpen },
       { href: '/dashboard/reset-doz', label: 'Resèt ak Dòz', icon: FlaskConical },
-    ],
-  },
-  {
-    heading: 'Spirityalite',
-    items: [
-      { href: '/dashboard/lakou-limye', label: 'Lakou Limyè', icon: Sparkles },
-      { href: '/dashboard/beny-spirityel', label: 'Beny Spirityèl', icon: Bath, melisOnly: true },
     ],
   },
   {
