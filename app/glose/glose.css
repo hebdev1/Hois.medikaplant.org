@@ -52,7 +52,8 @@
 /* A–Z rail */
 .gl-az{display:flex;flex-wrap:wrap;gap:3px;margin:18px 0 0}
 .gl-az button{min-width:32px;height:32px;padding:0 4px;border:0;border-radius:9px;
-  background:transparent;font:600 13.5px/1 inherit;color:var(--gri-2);cursor:pointer;
+  background:transparent;font:inherit;font-size:13.5px;font-weight:600;line-height:1;
+  color:var(--gri-2);cursor:pointer;
   transition:background .15s,color .15s;font-variant-numeric:tabular-nums}
 .gl-az button:disabled{color:#CFC7B3;cursor:default}
 .gl-az button:not(:disabled):hover{background:var(--vet-soft);color:var(--vet-deep)}
@@ -120,7 +121,7 @@
 .gl-detail{background:var(--paper);border:1px solid var(--liy);border-radius:18px;
   box-shadow:var(--shadow);padding:clamp(24px,3vw,42px);min-height:60vh;position:relative;overflow:hidden}
 .gl-back{display:none}
-.gl-code{font:600 11.5px/1 inherit;letter-spacing:.08em;color:var(--gri-2);font-variant-numeric:tabular-nums}
+.gl-code{font:inherit;font-size:11.5px;font-weight:600;line-height:1;letter-spacing:.08em;color:var(--gri-2);font-variant-numeric:tabular-nums}
 .gl-name{font-weight:700;color:var(--vet-deep);font-size:clamp(28px,4vw,42px);
   line-height:1.04;letter-spacing:-.03em;margin:14px 0 0;text-wrap:balance}
 .gl-vari{margin:12px 0 0;font-size:14.5px;color:var(--gri)}
