@@ -14,7 +14,8 @@ export type AuditEntry = {
     | 'product'
     | 'coupon'
     | 'backup'
-    | 'chrome';
+    | 'chrome'
+    | 'bath';
   entity_id?: string | null;
   summary?: string | null;
 };

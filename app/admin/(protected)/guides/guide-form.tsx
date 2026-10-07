@@ -434,12 +434,15 @@ export default function GuideForm({
 }
 
 // ─── Cover image field: upload OR paste URL, with live preview ─────────────
-function CoverImageField({
+// Shared with the Beny Spirityèl admin form, which passes its own `upload`.
+export function CoverImageField({
   value,
   onChange,
+  upload = uploadGuideImage,
 }: {
   value: string;
   onChange: (url: string) => void;
+  upload?: (fd: FormData) => Promise<{ ok: true; url: string } | { ok: false; error: string }>;
 }) {
   const inputRef = React.useRef<HTMLInputElement | null>(null);
   const [busy, setBusy] = React.useState(false);
@@ -451,7 +454,7 @@ function CoverImageField({
     try {
       const fd = new FormData();
       fd.set('file', file);
-      const res = await uploadGuideImage(fd);
+      const res = await upload(fd);
       if (res.ok) onChange(res.url);
       else setErr(res.error);
     } catch (e) {

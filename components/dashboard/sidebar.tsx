@@ -31,6 +31,7 @@ import {
   Bell,
   PanelLeftClose,
   PanelLeftOpen,
+  Bath,
   type LucideIcon,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -54,6 +55,9 @@ type NavItem = {
   label: string;
   icon: LucideIcon;
   badge?: string;
+  /** Content is reserved for the Melis plan: other plans see a lock chip
+   *  (the link stays, it opens a preview + upgrade prompt). */
+  melisOnly?: boolean;
 };
 
 const NAV_GROUPS: { heading?: string; items: NavItem[] }[] = [
@@ -69,6 +73,13 @@ const NAV_GROUPS: { heading?: string; items: NavItem[] }[] = [
       { href: '/dashboard/konsiltasyon', label: 'Konsiltasyon', icon: Stethoscope },
       { href: '/dashboard/programs', label: 'Pwotokòl mwen yo', icon: FolderOpen },
       { href: '/dashboard/reset-doz', label: 'Resèt ak Dòz', icon: FlaskConical },
+    ],
+  },
+  {
+    heading: 'Spirityalite',
+    items: [
+      { href: '/dashboard/lakou-limye', label: 'Lakou Limyè', icon: Sparkles },
+      { href: '/dashboard/beny-spirityel', label: 'Beny Spirityèl', icon: Bath, melisOnly: true },
     ],
   },
   {
@@ -113,9 +124,8 @@ export default function Sidebar({
   const [drawerOpen, setDrawerOpen] = React.useState(false);
   const [open, setOpen] = React.useState(true); // desktop expanded/collapsed
 
-  // First group = Tablodebò, then (for non-Melis) Lakou Limyè, then the
-  // Notifikasyon inbox with a live unread badge. Melis reaches Lakou Limyè
-  // from the Espas VIP page, so it's only injected for the other plans.
+  // First group = Tablodebò, then the Notifikasyon inbox with a live unread
+  // badge. (Lakou Limyè lives in the Spirityalite group, for every plan.)
   const notifItem: NavItem = {
     href: '/dashboard/notifications',
     label: 'Notifikasyon',
@@ -123,25 +133,7 @@ export default function Sidebar({
     badge: unreadCount > 0 ? (unreadCount > 99 ? '99+' : String(unreadCount)) : undefined,
   };
   const navGroups = NAV_GROUPS.map((g, i) =>
-    i === 0
-      ? {
-          ...g,
-          items: [
-            g.items[0],
-            ...(plan !== 'vip'
-              ? [
-                  {
-                    href: '/dashboard/lakou-limye',
-                    label: 'Lakou Limyè',
-                    icon: Sparkles,
-                  } as NavItem,
-                ]
-              : []),
-            notifItem,
-            ...g.items.slice(1),
-          ],
-        }
-      : g
+    i === 0 ? { ...g, items: [g.items[0], notifItem, ...g.items.slice(1)] } : g
   );
 
   React.useEffect(() => {
@@ -215,8 +207,9 @@ export default function Sidebar({
     collapsed: boolean;
     onLinkClick?: () => void;
   }) {
-    const { href, label, icon: Icon, badge } = item;
+    const { href, label, icon: Icon, badge, melisOnly } = item;
     const active = isActive(href);
+    const melisLocked = !!melisOnly && plan !== 'vip';
     const tourKey = 'nav-' + href.replace(/^\//, '').replace(/\//g, '-');
 
     if (LOCKED_PATHS[href]) {
@@ -246,7 +239,7 @@ export default function Sidebar({
         href={href}
         onClick={onLinkClick}
         data-tour={tourKey}
-        title={collapsed ? label : undefined}
+        title={collapsed ? (melisLocked ? `${label} (Melis)` : label) : undefined}
         aria-current={active ? 'page' : undefined}
         className={cn(
           'group relative flex items-center rounded-lg text-sm transition-all',
@@ -264,11 +257,11 @@ export default function Sidebar({
             )}
             strokeWidth={1.75}
           />
-          {collapsed && badge && (
+          {collapsed && (badge || melisLocked) && (
             <span
               className={cn(
                 'absolute -top-1 -right-1 w-2 h-2 rounded-full',
-                badge === 'NEW' ? 'bg-gold-400' : 'bg-forest-500'
+                melisLocked || badge === 'NEW' ? 'bg-gold-400' : 'bg-forest-500'
               )}
             />
           )}
@@ -276,7 +269,15 @@ export default function Sidebar({
         {!collapsed && (
           <>
             <span className="flex-1 truncate">{label}</span>
-            {badge && (
+            {melisLocked ? (
+              <span
+                title="Rezève pou manm Melis"
+                className="inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wide bg-gold-100 text-gold-700"
+              >
+                <Lock className="w-2.5 h-2.5" strokeWidth={2.6} />
+                Melis
+              </span>
+            ) : badge && (
               <span
                 className={cn(
                   'text-[10px] font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wide',

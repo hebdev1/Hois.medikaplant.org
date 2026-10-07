@@ -14,6 +14,7 @@ import {
   CheckCircle2,
   UserRound,
   Users,
+  Bath,
   type LucideIcon,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
@@ -38,6 +39,7 @@ const PLAN_LABEL: Record<string, string> = {
 // Sitwonèl, plus the Lakou Limyè "Primè"/Salon content). These are real routes.
 const QUICK_ACCESS: { icon: LucideIcon; label: string; desc: string; href: string }[] = [
   { icon: Sparkles, label: 'Lakou Limyè', desc: 'Salon, emisyon & Limyè eksklizif (Primè)', href: '/dashboard/lakou-limye' },
+  { icon: Bath, label: 'Beny Spirityèl', desc: 'Resèt konplè beny yo, rezève pou Melis', href: '/dashboard/beny-spirityel' },
   { icon: LifeBuoy, label: 'Sipò priyoritè', desc: 'Repons pi rapid nan chat la', href: '/dashboard/support' },
   { icon: BookOpen, label: 'Gid & Konsèy', desc: 'Tout bibliyotèk konesans lan', href: '/dashboard/guides' },
   { icon: Activity, label: 'Swivi Sante', desc: 'Tablodebò sante pèsonèl ou', href: '/dashboard/health' },
@@ -247,7 +249,7 @@ export default async function VipPage() {
                   klik.
                 </p>
               </header>
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
                 {QUICK_ACCESS.map((q) => {
                   const Icon = q.icon;
                   return (
